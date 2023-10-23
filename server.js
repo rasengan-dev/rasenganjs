@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import express from "express";
-import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+// import { ViteDevServer } from "vite";
+import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const appPath = join(__dirname, "./../../");
 
@@ -44,8 +44,6 @@ if (!isProduction) {
 // Serve HTML
 app.use("*", async (req, res) => {
   try {
-    console.log({ appPath });
-
     const url = req.originalUrl.replace(base, "");
 
     let template;
@@ -54,11 +52,10 @@ app.use("*", async (req, res) => {
       // Always read fresh template in development
       template = await fs.readFile(join(appPath, "index.html"), "utf-8");
       template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule("./entries/entry-server.tsx")).render;
+      render = (await vite.ssrLoadModule("./lib/entries/entry-server.js")).render;
     } else {
       template = templateHtml;
-      render = (await import(join(appPath, "dist/server/entry-server.js")))
-        .render;
+      render = (await import(join(appPath, "dist/server/entry-server.js"))).render;
     }
 
     const rendered = await render(url, ssrManifest);
@@ -66,15 +63,6 @@ app.use("*", async (req, res) => {
     let html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")
       .replace(`<!--app-html-->`, rendered.html ?? "");
-
-    if (!isProduction) {
-      html = html.replace(
-        `<!--app-script-->`,
-        `<script type="module" src="/node_modules/rasengan/entries/entry-client.tsx"></script>`
-      );
-    } else {
-      // Read and import the generated main.js entry
-    }
 
     res.status(200).set({ "Content-Type": "text/html" }).end(html);
   } catch (e) {

@@ -3,11 +3,12 @@
   "private": false,
   "version": "1.0.0",
   "type": "module",
+  "main": "lib/index.js",
   "scripts": {
     "dev": "node server",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
-    "build:server": "vite build --ssr node_modules/rasengan/entries/entry-server.tsx --outDir dist/server",
+    "build:server": "vite build --ssr node_modules/rasengan/lib/entries/entry-server.js --outDir dist/server",
     "preview": "cross-env NODE_ENV=production node server",
     "build:lib": "tsc -p tsconfig.lib.json"
   },
@@ -22,6 +23,7 @@
     "vite": "^4.4.11"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.4",
     "@types/express": "^4.17.19",
     "@types/node": "^20.8.6",
     "@types/react": "^18.2.28",

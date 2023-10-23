@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "../src/App";
+// @ts-ignore
+import App from "./../../../../src/main";
 
 ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement,
