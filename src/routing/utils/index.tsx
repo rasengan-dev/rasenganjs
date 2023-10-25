@@ -4,6 +4,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 // import { json, useLoaderData } from "react-router-dom";
 import {
   RouteDecoratorProps,
+  RouteLayoutDecoratorProps,
   RouterDecoratorProps,
 } from "../../decorators/types.js";
 import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
@@ -157,13 +158,28 @@ export const generateStaticRoutes = (router: RouterComponent) => {
  * @param option
  * @returns
  */
-export const createRoute = (option: RouteDecoratorProps) => {
+export const defineRoutePage = (option: RouteDecoratorProps) => {
   const { path, title, description } = option;
 
-  return (Component: new () => LayoutComponent | PageComponent) => {
+  return (Component: new () => PageComponent) => {
     Component.prototype._path = path;
     Component.prototype["_title"] = title;
     Component.prototype["_description"] = description;
+
+    return Component;
+  };
+};
+
+/**
+ * This function add metadata to a page or a layout
+ * @param option
+ * @returns
+ */
+export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
+  const { path } = option;
+
+  return (Component: new () => LayoutComponent) => {
+    Component.prototype._path = path;
 
     return Component;
   };
@@ -174,7 +190,7 @@ export const createRoute = (option: RouteDecoratorProps) => {
  * @param option
  * @returns
  */
-export const createRouter = (option: RouterDecoratorProps) => {
+export const defineRouter = (option: RouterDecoratorProps) => {
   const { imports, layout, pages } = option;
 
   return (Component: new () => RouterComponent) => {

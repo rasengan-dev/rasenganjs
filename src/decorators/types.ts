@@ -21,12 +21,7 @@ export type RouterDecoratorProps = {
   pages: Array<new () => PageComponent>;
 };
 
-export type RouteDecoratorProps = {
-  /**
-   * Path of the page
-   */
-  path: string;
-
+export type RouteDecoratorProps = RouteLayoutDecoratorProps & {
   /**
    * Title of the page
    */
@@ -36,4 +31,14 @@ export type RouteDecoratorProps = {
    * Description of the page
    */
   description?: string;
+}
+
+/**
+ * Props for Layout Decorators
+ */
+export type RouteLayoutDecoratorProps = {
+  /**
+   * base path of the layout
+   */
+  path: string;
 }

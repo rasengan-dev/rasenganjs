@@ -1,4 +1,8 @@
-export { createRoute, createRouter } from "./utils/index.js";
+export {
+  defineRouteLayout,
+  defineRoutePage,
+  defineRouter,
+} from "./utils/index.js";
 export { RouterComponent } from "./interfaces.js";
 export {
   Outlet,
@@ -6,6 +10,8 @@ export {
   useLocation,
   useNavigate,
   useParams,
+  useSearchParams,
+  useFetcher,
   useMatch,
   useRoutes,
   useResolvedPath,
