@@ -1,13 +1,29 @@
-import React from "react";
-import ReactDOMServer from "react-dom/server";
+import * as React from "react";
+import * as ReactDOMServer from "react-dom/server";
 // @ts-ignore
-import App from "./../../../../src/main";
+import AppRouter from "./../../../../src/pages/app.router";
 
-export function render() {
+// @ts-ignore
+import { generateStaticRoutes } from "../routing/utils/index.js";
+import {
+  StaticHandlerContext,
+  StaticRouterProvider,
+} from "react-router-dom/server.js";
+import { Router } from "@remix-run/router";
+
+// TODO: Load configuration file (rasengan.config.js) in order to apply the configuration
+
+export function render(
+  url: string,
+  router: Router,
+  context: StaticHandlerContext
+) {
   const html = ReactDOMServer.renderToString(
     <React.StrictMode>
-      <App />
+      <StaticRouterProvider router={router} context={context} />
     </React.StrictMode>
   );
   return { html };
 }
+
+export const staticRoutes = () => generateStaticRoutes(new AppRouter());

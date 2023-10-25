@@ -1,3 +1,8 @@
-export { PageComponent, LayoutComponent } from "./interfaces.js";
+export {
+  type ILayoutComponent,
+  LayoutComponent,
+  DefaultLayout,
+  PageComponent,
+} from "./interfaces.js";
 
-export { type AppProps } from "./types.js";
+export type { AppProps, ReactComponentProps, ComponentProps } from "./types.js";

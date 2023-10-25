@@ -3,76 +3,146 @@ import express from "express";
 import { dirname, join } from "path";
 // import { ViteDevServer } from "vite";
 import { fileURLToPath } from "url";
+import {
+  createStaticHandler,
+  createStaticRouter,
+} from "react-router-dom/server.js";
+import { Request, Headers } from "node-fetch";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+/**
+ * This function is used to create a fetch request from an express request.
+ */
+function createFetchRequest(req) {
+  let origin = `${req.protocol}://${req.get("host")}`;
+  // Note: This had to take originalUrl into account for presumably vite's proxying
+  let url = new URL(req.originalUrl || req.url, origin);
 
-const appPath = join(__dirname, "./../../");
+  let controller = new AbortController();
+  req.on("close", () => controller.abort());
 
-// Constants
-const isProduction = process.env.NODE_ENV === "production";
-const port = process.env.PORT || isProduction ? 4320 : 5320;
-const base = process.env.BASE || "/";
+  let headers = new Headers();
 
-// Cached production assets
-const templateHtml = isProduction
-  ? await fs.readFile(join(appPath, "dist/client/index.html"), "utf-8")
-  : "";
-const ssrManifest = isProduction
-  ? await fs.readFile(join(appPath, "dist/client/ssr-manifest.json"), "utf-8")
-  : undefined;
+  for (let [key, values] of Object.entries(req.headers)) {
+    if (values) {
+      if (Array.isArray(values)) {
+        for (let value of values) {
+          headers.append(key, value);
+        }
+      } else {
+        headers.set(key, values);
+      }
+    }
+  }
 
-// Create http server
-const app = express();
+  let init = {
+    method: req.method,
+    headers,
+    signal: controller.signal,
+  };
 
-// Add Vite or respective production middlewares
-let vite;
-if (!isProduction) {
-  const { createServer } = await import("vite");
-  vite = await createServer({
-    server: { middlewareMode: true },
-    appType: "custom",
-    base,
-  });
-  app.use(vite.middlewares);
-} else {
-  const compression = (await import("compression")).default;
-  const sirv = (await import("sirv")).default;
-  app.use(compression());
-  app.use(base, sirv(join(appPath, "dist/client"), { extensions: [] }));
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    init.body = req.body;
+  }
+
+  return new Request(url.href, init);
 }
 
-// Serve HTML
-app.use("*", async (req, res) => {
-  try {
-    const url = req.originalUrl.replace(base, "");
+/**
+ * This function is responsible for creating a server for the development environment.
+ */
+async function createServer() {
+  const __dirname = dirname(fileURLToPath(import.meta.url));
 
-    let template;
-    let render;
-    if (!isProduction) {
-      // Always read fresh template in development
-      template = await fs.readFile(join(appPath, "index.html"), "utf-8");
-      template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule("./lib/entries/entry-server.js")).render;
-    } else {
-      template = templateHtml;
-      render = (await import(join(appPath, "dist/server/entry-server.js"))).render;
-    }
+  const appPath = join(__dirname, "./../../");
 
-    const rendered = await render(url, ssrManifest);
+  // Constants
+  const isProduction = process.env.NODE_ENV === "production";
+  const port = process.env.PORT || isProduction ? 4320 : 5320;
+  const base = process.env.BASE || "/";
 
-    let html = template
-      .replace(`<!--app-head-->`, rendered.head ?? "")
-      .replace(`<!--app-html-->`, rendered.html ?? "");
+  // Cached production assets
+  const templateHtml = isProduction
+    ? await fs.readFile(join(appPath, "dist/client/index.html"), "utf-8")
+    : "";
+  const ssrManifest = isProduction
+    ? await fs.readFile(join(appPath, "dist/client/ssr-manifest.json"), "utf-8")
+    : undefined;
 
-    res.status(200).set({ "Content-Type": "text/html" }).end(html);
-  } catch (e) {
-    vite?.ssrFixStacktrace(e);
-    console.log(e.stack);
-    res.status(500).end(e.stack);
+  // Create http server
+  const app = express();
+
+  // Add Vite or respective production middlewares
+  let vite;
+  if (!isProduction) {
+    const { createServer } = await import("vite");
+    vite = await createServer({
+      server: { middlewareMode: true },
+      appType: "custom",
+      base,
+    });
+    app.use(vite.middlewares);
+  } else {
+    const compression = (await import("compression")).default;
+    const sirv = (await import("sirv")).default;
+    app.use(compression());
+    app.use(base, sirv(join(appPath, "dist/client"), { extensions: [] }));
   }
-});
 
-// Start http server
-app.listen(port, () => {
-  console.log(`Server started at http://localhost:${port}`);
-});
+  // Serve HTML
+  app.use("*", async (req, res) => {
+    try {
+      const url = req.originalUrl.replace(base, "");
+
+      let template;
+      let render;
+      let staticRoutes;
+      if (!isProduction) {
+        // Always read fresh template in development
+        template = await fs.readFile(join(appPath, "index.html"), "utf-8");
+        template = await vite.transformIndexHtml(url, template);
+
+        const entry = await vite.ssrLoadModule("./lib/entries/entry-server.js");
+        render = entry.render;
+        staticRoutes = entry.staticRoutes();
+      } else {
+        template = templateHtml;
+        const entry = await import(
+          join(appPath, "dist/server/entry-server.js")
+        );
+        render = entry.render;
+        staticRoutes = entry.staticRoutes();
+      }
+
+      // Create static handler
+      let handler = createStaticHandler(staticRoutes);
+
+      // Create fetch request for static routing
+      let fetchRequest = createFetchRequest(req);
+      let context = await handler.query(fetchRequest);
+
+      // Create static router
+      let router = createStaticRouter(handler.dataRoutes, context);
+
+      // const rendered = await render(url, ssrManifest);
+      const rendered = await render(url, router, context);
+
+      let html = template
+        .replace(`<!--app-head-->`, rendered.head ?? "")
+        .replace(`<!--app-html-->`, rendered.html ?? "");
+
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    } catch (e) {
+      vite?.ssrFixStacktrace(e);
+      console.log(e.stack);
+      res.status(500).end(e.stack);
+    }
+  });
+
+  // Start http server
+  app.listen(port, () => {
+    console.log(`Server started at http://localhost:${port}`);
+  });
+}
+
+// Launch server
+createServer();

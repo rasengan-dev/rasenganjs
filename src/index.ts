@@ -1,5 +1,5 @@
 export * from "./core/index.js";
+export * from "./routing/index.js";
+export * from "./decorators/index.js";
 
-// export * as decorators from './decorators';
 // export * as hooks from './hooks';
-// export * as routing from './routing';
