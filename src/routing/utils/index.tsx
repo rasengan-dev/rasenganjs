@@ -74,7 +74,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
     const besidesRoutes = generateBrowserRoutes(besideRouter);
 
     // Add besides routes into the lists of route
-    routes.push(besidesRoutes);
+    routes.push(...besidesRoutes);
   }
 
   // Return the formated router
@@ -146,7 +146,7 @@ export const generateStaticRoutes = (router: RouterComponent) => {
     const besidesRoutes = generateStaticRoutes(besideRouter);
 
     // Add besides routes into the lists of route
-    routes.push(besidesRoutes);
+    routes.push(...besidesRoutes);
   }
 
   // Return the formated router
@@ -162,6 +162,8 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
   const { path, title, description } = option;
 
   return (Component: new () => PageComponent) => {
+    if (!path) throw new Error("You must provide a path to the page");
+
     Component.prototype._path = path;
     Component.prototype["_title"] = title;
     Component.prototype["_description"] = description;
@@ -179,6 +181,8 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
   const { path } = option;
 
   return (Component: new () => LayoutComponent) => {
+    if (!path) throw new Error("You must provide a path to the layout");
+
     Component.prototype._path = path;
 
     return Component;
