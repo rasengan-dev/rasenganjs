@@ -19,7 +19,7 @@ export function Router(props: RouterDecoratorProps) {
     constructor.prototype["_routers"] = props.imports || [];
 
     // Define layout if provided or set a default one.
-    constructor.prototype["_layout"] = props.layout || new DefaultLayout("/");
+    constructor.prototype["_layout"] = props.layout || DefaultLayout;
 
     // Define pages
     constructor.prototype["_pages"] = props.pages;

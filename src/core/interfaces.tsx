@@ -42,10 +42,10 @@ export abstract class LayoutComponent implements ILayoutComponent {
  * Default Layout
  */
 export class DefaultLayout extends LayoutComponent {
-  constructor(path: string) {
+  constructor() {
     super();
 
-    this._path = path;
+    this._path = "/";
   }
 
   render(): React.ReactNode {

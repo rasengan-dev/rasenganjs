@@ -56,24 +56,25 @@ const generateBrowserRoutes = (router: RouterComponent) => {
   });
 
   // Loop throug sub routers in order to apply the same thing.
-  for (const SubRouter of router.routers) {
-    const subRouter = new SubRouter();
+  // for (const SubRouter of router.routers) {
+  //   const subRouter = new SubRouter();
 
-    const subRoutes = generateBrowserRoutes(subRouter);
+  //   const subRoutes = generateBrowserRoutes(subRouter);
 
-    // Add sub routes into the lists of route
-    route.children.push(subRoutes);
-  }
+  //   // Add sub routes into the lists of route
+  //   route.children.push(subRoutes);
+  // }
 
   routes.push(route);
 
   // Loop throug besides routers in order to apply the same thing.
-  // for (const besideRouter of router.routers) {
-  //   const besidesRoutes = generateBrowserRoutes(besideRouter);
+  for (const BesideRouter of router.routers) {
+    const besideRouter = new BesideRouter();
+    const besidesRoutes = generateBrowserRoutes(besideRouter);
 
-  //   // Add besides routes into the lists of route
-  //   routes.push(besidesRoutes);
-  // }
+    // Add besides routes into the lists of route
+    routes.push(besidesRoutes);
+  }
 
   // Return the formated router
   return routes;
@@ -128,23 +129,24 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   });
 
   // Loop throug sub routers in order to apply the same thing.
-  for (const SubRouter of router.routers) {
-    const subRouter = new SubRouter();
-    const subRoutes = generateStaticRoutes(subRouter);
+  // for (const SubRouter of router.routers) {
+  //   const subRouter = new SubRouter();
+  //   const subRoutes = generateStaticRoutes(subRouter);
 
-    // Add sub routes into the lists of route
-    route.children.push(subRoutes);
-  }
+  //   // Add sub routes into the lists of route
+  //   route.children.push(subRoutes);
+  // }
 
   routes.push(route);
 
   // Loop throug besides routers in order to apply the same thing.
-  // for (const besideRouter of router.routers) {
-  //   const besidesRoutes = generateStaticRoutes(besideRouter);
+  for (const BesideRouter of router.routers) {
+    const besideRouter = new BesideRouter();
+    const besidesRoutes = generateStaticRoutes(besideRouter);
 
-  //   // Add besides routes into the lists of route
-  //   routes.push(besidesRoutes);
-  // }
+    // Add besides routes into the lists of route
+    routes.push(besidesRoutes);
+  }
 
   // Return the formated router
   return routes;
@@ -188,7 +190,7 @@ export const createRouter = (option: RouterDecoratorProps) => {
     Component.prototype["_routers"] = imports || [];
 
     // Define layout if provided or set a default one.
-    Component.prototype["_layout"] = layout || new DefaultLayout("/");
+    Component.prototype["_layout"] = layout || DefaultLayout;
 
     // Define pages
     Component.prototype["_pages"] = pages;
