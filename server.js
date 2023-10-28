@@ -124,7 +124,7 @@ async function createServer() {
       let router = createStaticRouter(handler.dataRoutes, context);
 
       // const rendered = await render(url, ssrManifest);
-      const rendered = await render(url, router, context);
+      const rendered = await render(router, context);
 
       let html = template
         .replace(`<!--app-head-->`, rendered.head ?? "")

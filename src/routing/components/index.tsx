@@ -9,9 +9,9 @@ import { LoaderResponse } from "../../core/types.js";
  * @returns
  */
 export function ErrorBoundary() {
-  // let error = useRouteError();
+  let error = useRouteError();
 
-  // console.error(error);
+  console.error(error);
 
   return <div>Dang!</div>;
 }
@@ -26,7 +26,11 @@ export const ServerComponent = ({ page }: { page: PageComponent }) => {
     props: {},
   };
 
-  return <PageToRender page={page} data={data} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PageToRender page={page} data={data} />
+    </Suspense> 
+  );
 };
 
 /**
@@ -36,5 +40,9 @@ export const ServerComponent = ({ page }: { page: PageComponent }) => {
 export const ClientComponent = ({ page }: { page: PageComponent }) => {
   const data = useLoaderData() as LoaderResponse;
 
-  return <PageToRender page={page} data={data} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PageToRender page={page} data={data} />
+    </Suspense>
+  );
 };

@@ -1,6 +1,5 @@
 import { RouterComponent } from "../routing/interfaces.js";
 import { PageComponent } from "./interfaces.js";
-import { Request } from "node-fetch";
 
 /**
  * Props for App component

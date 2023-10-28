@@ -7,4 +7,7 @@ export default defineConfig({
 
   // define index.html location
   root: "./../../",
+  optimizeDeps: {
+    exclude: ['node:http', 'node-fetch'],
+  },
 });

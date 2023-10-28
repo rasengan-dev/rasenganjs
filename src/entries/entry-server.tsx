@@ -1,5 +1,5 @@
-import * as React from "react";
-import * as ReactDOMServer from "react-dom/server";
+import React from "react";
+import ReactDOMServer from "react-dom/server";
 // @ts-ignore
 import AppRouter from "./../../../../src/pages/app.router";
 
@@ -12,20 +12,19 @@ import {
 import { Router } from "@remix-run/router";
 
 // @ts-ignore
-import * as config from "./../../../../rasengan.config.js";
+import config from "./../../../../rasengan.config.js";
 import { ErrorBoundary } from "../core/components";
 
 export function render(
-  url: string,
   router: Router,
   context: StaticHandlerContext
 ) {
   const html = ReactDOMServer.renderToString(
     config.reactStrictMode ? (
       <React.StrictMode>
-        {/* <ErrorBoundary> */}
+        <ErrorBoundary>
           <StaticRouterProvider router={router} context={context} />
-        {/* </ErrorBoundary> */}
+        </ErrorBoundary>
       </React.StrictMode>
     ) : (
       <ErrorBoundary>

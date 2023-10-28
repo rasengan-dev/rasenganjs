@@ -1,5 +1,3 @@
-import "../../config/global.js";
-
 import { RouterComponent } from "../interfaces.js";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import {
@@ -8,7 +6,6 @@ import {
   RouterDecoratorProps,
 } from "../../decorators/types.js";
 import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
-import { Suspense } from "react";
 import {
   ClientComponent,
   ErrorBoundary,
@@ -113,10 +110,12 @@ export const generateStaticRoutes = (router: RouterComponent) => {
 
     return {
       path: pageComponent.path,
-      loader: async ({ params, request }: any) => {
-        return await pageComponent.loader({ params, request });
+      loader({ params, request }: any) {
+        return pageComponent.loader({ params, request });
       },
-      element: <ServerComponent page={pageComponent} />,
+      Component() {
+        return <ServerComponent page={pageComponent} />;
+      },
     };
   });
 
@@ -210,6 +209,7 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 
     // Define pages
     Component.prototype["_pages"] = pages;
+
 
     return Component;
   };
