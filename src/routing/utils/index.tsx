@@ -1,20 +1,25 @@
-import { PageToRender } from "../../core/components/index.js";
+import "../../config/global.js";
+
 import { RouterComponent } from "../interfaces.js";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-// import { json, useLoaderData } from "react-router-dom";
 import {
   RouteDecoratorProps,
   RouteLayoutDecoratorProps,
   RouterDecoratorProps,
 } from "../../decorators/types.js";
 import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
+import { Suspense } from "react";
+import {
+  ClientComponent,
+  ErrorBoundary,
+  ServerComponent,
+} from "../components/index.js";
 
 /**
  * This function receive a router component and get a formated router first
  * and then return a router.
  */
 export const getRouter = (router: RouterComponent) => {
-  console.log(router);
   const routes = generateBrowserRoutes(router);
 
   let Router = createBrowserRouter(routes);
@@ -37,6 +42,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
 
   const route = {
     path: layout.path,
+    elementError: <ErrorBoundary />,
     element: <LayoutToRender />,
     children: [] as unknown as any,
   };
@@ -47,7 +53,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
 
     return {
       path: page.path,
-      element: <PageToRender page={page} />,
+      element: <ClientComponent page={page} />,
     };
   });
 
@@ -96,14 +102,8 @@ export const generateStaticRoutes = (router: RouterComponent) => {
 
   const route = {
     path: layout.path,
-    // loader() {
-    //   return json({ message: "Page loaded !" });
-    // },
-    Component() {
-      // const data = useLoaderData();
-
-      return <LayoutToRender />;
-    },
+    elementError: <ErrorBoundary />,
+    element: <LayoutToRender />,
     children: [] as unknown as any,
   };
 
@@ -113,14 +113,10 @@ export const generateStaticRoutes = (router: RouterComponent) => {
 
     return {
       path: pageComponent.path,
-      // loader() {
-      //   return json({ message: "Page loaded !" });
-      // },
-      Component() {
-        // const data = useLoaderData();
-
-        return <PageToRender page={pageComponent} />;
+      loader: async ({ params, request }: any) => {
+        return await pageComponent.loader({ params, request });
       },
+      element: <ServerComponent page={pageComponent} />,
     };
   });
 

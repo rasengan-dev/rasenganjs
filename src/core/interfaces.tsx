@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ReactComponentProps } from "./types.js";
+import { LoaderOptions, ReactComponentProps } from "./types.js";
 import { Outlet } from "react-router-dom";
 
 /**
@@ -87,7 +87,18 @@ export abstract class PageComponent extends LayoutComponent {
     return this._description;
   }
 
-  // Definition of abstract methods for SSR
-
-  // abstract getInitialProps(): Promise<any>;
+  /**
+   * Loader method that will be called during a routing on the server side
+   * in order to get data for the page from the server
+   * @returns Promise<any>
+   */
+  async loader(
+    _options: LoaderOptions
+  ): Promise<{ props: { [key: string]: any } }> {
+    return new Promise((resolve) => {
+      resolve({
+        props: {},
+      });
+    });
+  }
 }

@@ -15,7 +15,7 @@ export const Component = ({ router: AppRouter }: ComponentProps) => {
 /**
  * Page component that defines title and description to a page
  */
-export const PageToRender = ({ page }: PageToRenderProps) => {
+export const PageToRender = ({ page, data }: PageToRenderProps) => {
   // Get the page component
   const Page = page.render;
 
@@ -26,7 +26,38 @@ export const PageToRender = ({ page }: PageToRenderProps) => {
         <meta name="description" content={page.description} />
       </Helmet>
 
-      <Page />
+      <Page {...data.props} />
     </React.Fragment>
   );
+};
+
+/**
+ * Error fallback component that will be displayed if an error occurs
+ */
+export class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null, info: null };
+
+  componentDidCatch(error: any, info: any) {
+    this.setState({ hasError: true, error, info });
+  }
+
+  render() {
+    const { error, info } = this.state;
+
+    if (this.state.hasError) {
+      return <ErrorFallbackComponent error={error} info={info} />;
+    }
+
+    // @ts-ignore
+    return this.props.children;
+  }
+}
+
+/**
+ * Error fallback component that will be displayed if an error occurs
+ */
+const ErrorFallbackComponent = ({ error, info }: any) => {
+  console.log(error, info);
+
+  return <div>Something went wrong!</div>;
 };

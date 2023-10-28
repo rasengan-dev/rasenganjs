@@ -103,14 +103,14 @@ async function createServer() {
 
         const entry = await vite.ssrLoadModule("./lib/entries/entry-server.js");
         render = entry.render;
-        staticRoutes = entry.staticRoutes();
+        staticRoutes = entry.staticRoutes;
       } else {
         template = templateHtml;
         const entry = await import(
           join(appPath, "dist/server/entry-server.js")
         );
         render = entry.render;
-        staticRoutes = entry.staticRoutes();
+        staticRoutes = entry.staticRoutes;
       }
 
       // Create static handler

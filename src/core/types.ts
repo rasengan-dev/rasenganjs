@@ -1,5 +1,6 @@
 import { RouterComponent } from "../routing/interfaces.js";
 import { PageComponent } from "./interfaces.js";
+import { Request } from "node-fetch";
 
 /**
  * Props for App component
@@ -16,10 +17,26 @@ export type ComponentProps = {
 };
 
 export type PageToRenderProps = {
-  page: PageComponent
-}
+  page: PageComponent;
+  data: LoaderResponse;
+};
 
 /**
  * Props for component react components
  */
 export type ReactComponentProps = { [key: string]: any };
+
+/**
+ * Options for the loader function that loads data for a page from the server
+ */
+export type LoaderOptions = {
+  params: { [key: string]: any };
+  request: Request;
+};
+
+/**
+ * Data returned from the loader function
+ */
+export type LoaderResponse = {
+  props: { [key: string]: any };
+}

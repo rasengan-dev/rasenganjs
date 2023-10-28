@@ -11,7 +11,9 @@ import {
 } from "react-router-dom/server.js";
 import { Router } from "@remix-run/router";
 
-// TODO: Load configuration file (rasengan.config.js) in order to apply the configuration
+// @ts-ignore
+import * as config from "./../../../../rasengan.config.js";
+import { ErrorBoundary } from "../core/components";
 
 export function render(
   url: string,
@@ -19,11 +21,19 @@ export function render(
   context: StaticHandlerContext
 ) {
   const html = ReactDOMServer.renderToString(
-    <React.StrictMode>
-      <StaticRouterProvider router={router} context={context} />
-    </React.StrictMode>
+    config.reactStrictMode ? (
+      <React.StrictMode>
+        {/* <ErrorBoundary> */}
+          <StaticRouterProvider router={router} context={context} />
+        {/* </ErrorBoundary> */}
+      </React.StrictMode>
+    ) : (
+      <ErrorBoundary>
+        <StaticRouterProvider router={router} context={context} />
+      </ErrorBoundary>
+    )
   );
   return { html };
 }
 
-export const staticRoutes = () => generateStaticRoutes(new AppRouter());
+export const staticRoutes = generateStaticRoutes(new AppRouter());
