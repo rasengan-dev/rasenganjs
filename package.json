@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "main": "lib/index.js",
+  "bin": {
+    "rasengan": "./lib/cli/index.js"
+  },
   "scripts": {
     "dev": "node server",
     "build": "npm run build:client && npm run build:server",
@@ -13,9 +16,14 @@
     "build:lib": "tsc -p tsconfig.lib.json"
   },
   "dependencies": {
+    "@types/cross-spawn": "^6.0.4",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
     "compression": "^1.7.4",
+    "cross-spawn": "^7.0.3",
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
+    "ora": "^7.0.1",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.17.0",
     "sirv": "^2.0.3"

@@ -8,6 +8,8 @@ import {
   createStaticRouter,
 } from "react-router-dom/server.js";
 import { Request, Headers } from "node-fetch";
+import chalk from "chalk";
+import os from "node:os";
 
 /**
  * This function is used to create a fetch request from an express request.
@@ -101,7 +103,10 @@ async function createServer() {
         template = await fs.readFile(join(appPath, "index.html"), "utf-8");
         template = await vite.transformIndexHtml(url, template);
 
-        const entry = await vite.ssrLoadModule("./lib/entries/entry-server.js");
+        const entry = await vite.ssrLoadModule(
+          join(appPath, "node_modules/rasengan/lib/entries/entry-server.js")
+        );
+
         render = entry.render;
         staticRoutes = entry.staticRoutes;
       } else {
@@ -139,10 +144,49 @@ async function createServer() {
   });
 
   // Start http server
-  app.listen(port, () => {
-    console.log(`Server started at http://localhost:${port}`);
+  app.listen(port, async () => {
+    setTimeout(() => {
+      console.log(
+        `${chalk.bold("Local:")} ${chalk.blue(`http://localhost:${port}`)}`
+      );
+
+      const ipAddress = getIP();
+
+      if (ipAddress) {
+        console.log(
+          `${chalk.bold("Network:")} ${chalk.blue(`http://${getIP()}:${port}`)}`
+        );
+
+        console.log("");
+      }
+    }, 1000);
   });
 }
+
+// Get local IP
+export const getIP = () => {
+  // Get network interfaces
+  const networkInterfaces = os.networkInterfaces();
+
+  // Find the IPv4 address for the default network interface
+  let ipAddress = "";
+
+  for (const interfaceName in networkInterfaces) {
+    const iface = networkInterfaces[interfaceName];
+    for (let i = 0; i < iface.length; i++) {
+      const alias = iface[i];
+      if (alias.family === "IPv4" && !alias.internal) {
+        ipAddress = alias.address;
+        break;
+      }
+    }
+    if (ipAddress) {
+      break;
+    }
+  }
+
+  return ipAddress;
+};
 
 // Launch server
 createServer();
