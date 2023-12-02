@@ -48,8 +48,11 @@ const generateBrowserRoutes = (router: RouterComponent) => {
   const pages = router.pages.map((pageClass) => {
     const page = new pageClass();
 
+    // Get the path of the page
+    const path = page.path === "/" ? layout.path : page.path;
+
     return {
-      path: page.path,
+      path,
       element: <ClientComponent page={page} />,
     };
   });
@@ -108,8 +111,11 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   const pages = router.pages.map((pageClass) => {
     const pageComponent = new pageClass();
 
+    // Get the path of the page
+    const path = pageComponent.path === "/" ? layout.path : pageComponent.path;
+
     return {
-      path: pageComponent.path,
+      path,
       loader({ params, request }: any) {
         return pageComponent.loader({ params, request });
       },
@@ -209,7 +215,6 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 
     // Define pages
     Component.prototype["_pages"] = pages;
-
 
     return Component;
   };

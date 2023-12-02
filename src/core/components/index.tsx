@@ -19,6 +19,9 @@ export const PageToRender = ({ page, data }: PageToRenderProps) => {
   // Get the page component
   const Page = page.render;
 
+  // Get the page props
+  const props = data.props || {};
+
   return (
     <React.Fragment>
       <Helmet>
@@ -26,7 +29,7 @@ export const PageToRender = ({ page, data }: PageToRenderProps) => {
         <meta name="description" content={page.description} />
       </Helmet>
 
-      <Page {...data.props} />
+      <Page {...props} />
     </React.Fragment>
   );
 };
@@ -57,7 +60,5 @@ export class ErrorBoundary extends React.Component {
  * Error fallback component that will be displayed if an error occurs
  */
 const ErrorFallbackComponent = ({ error, info }: any) => {
-  console.log(error, info);
-
   return <div>Something went wrong!</div>;
 };

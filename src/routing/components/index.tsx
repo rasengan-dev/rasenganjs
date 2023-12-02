@@ -29,7 +29,7 @@ export const ServerComponent = ({ page }: { page: PageComponent }) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <PageToRender page={page} data={data} />
-    </Suspense> 
+    </Suspense>
   );
 };
 
@@ -38,7 +38,12 @@ export const ServerComponent = ({ page }: { page: PageComponent }) => {
  * @returns React.ReactNode
  */
 export const ClientComponent = ({ page }: { page: PageComponent }) => {
-  const data = useLoaderData() as LoaderResponse;
+  // Default data
+  const defaultData = {
+    props: {},
+  };
+
+  const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
