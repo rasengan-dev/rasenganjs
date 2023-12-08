@@ -93,6 +93,11 @@ async function createServer() {
   // Serve HTML
   app.use("*", async (req, res) => {
     try {
+      // ! Favicon Fix
+      if (req.originalUrl === "/favicon.ico") {
+        return res.sendFile(path.resolve(join(appPath, "public/rasengan.png")));
+      }
+
       const url = req.originalUrl.replace(base, "");
 
       let template;

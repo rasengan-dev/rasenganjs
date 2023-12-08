@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.0-beta-1",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
@@ -16,7 +16,6 @@
     "build:lib": "tsc -p tsconfig.lib.json"
   },
   "dependencies": {
-    "@types/cross-spawn": "^6.0.4",
     "chalk": "^5.3.0",
     "commander": "^11.1.0",
     "compression": "^1.7.4",
@@ -25,7 +24,7 @@
     "node-fetch": "^3.3.2",
     "ora": "^7.0.1",
     "react-helmet": "^6.1.0",
-    "react-router-dom": "^6.17.0",
+    "react-router-dom": "^6.20.1",
     "sirv": "^2.0.3"
   },
   "peerDependencies": {
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@types/compression": "^1.7.4",
+    "@types/cross-spawn": "^6.0.4",
     "@types/express": "^4.17.19",
     "@types/node": "^20.8.6",
     "@types/react": "^18.2.28",
@@ -42,7 +42,7 @@
     "@vitejs/plugin-react": "^4.1.0",
     "cross-env": "^7.0.3",
     "typescript": "^5.2.2",
-    "vite": "^4.4.11"
+    "vite": "^5.0.7"
   },
   "license": "MIT",
   "engines": {
