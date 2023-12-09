@@ -10,6 +10,7 @@ import {
 import { Request, Headers } from "node-fetch";
 import chalk from "chalk";
 import os from "node:os";
+import path from "node:path";
 
 /**
  * This function is used to create a fetch request from an express request.
