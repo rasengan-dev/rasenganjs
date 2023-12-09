@@ -1,11 +1,23 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-beta-3",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
     "rasengan": "./lib/cli/index.js"
+  },
+  "author": {
+    "name": "dilane3",
+    "email": "komboudilane125@gmail.com",
+    "url": "https://dilane3.com",
+    "twitter": "https://twitter.com/dilanekombou",
+    "github": "https://github.com/dilane3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan/rasengan",
+    "issues": "https://github.com/rasengan/rasengan/issues"
   },
   "scripts": {
     "dev": "node server",
@@ -13,7 +25,8 @@
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr node_modules/rasengan/lib/entries/entry-server.js --outDir dist/server",
     "preview": "cross-env NODE_ENV=production node server",
-    "build:lib": "tsc -p tsconfig.lib.json"
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "deploy": "npm publish --access public"
   },
   "dependencies": {
     "chalk": "^5.3.0",
@@ -25,7 +38,9 @@
     "ora": "^7.0.1",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.20.1",
-    "sirv": "^2.0.3"
+    "sirv": "^2.0.3",
+    "vite": "^5.0.7",
+    "@vitejs/plugin-react": "^4.1.0"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -39,10 +54,8 @@
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
     "@types/react-helmet": "^6.1.8",
-    "@vitejs/plugin-react": "^4.1.0",
     "cross-env": "^7.0.3",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.7"
+    "typescript": "^5.2.2"
   },
   "license": "MIT",
   "engines": {

@@ -67,7 +67,10 @@ async function createServer() {
     ? await fs.readFile(join(appPath, "dist/client/index.html"), "utf-8")
     : "";
   const ssrManifest = isProduction
-    ? await fs.readFile(join(appPath, "dist/client/ssr-manifest.json"), "utf-8")
+    ? await fs.readFile(
+        join(appPath, "dist/client/.vite/ssr-manifest.json"),
+        "utf-8"
+      )
     : undefined;
 
   // Create http server
