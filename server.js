@@ -98,8 +98,33 @@ async function createServer() {
     try {
       // ! Favicon Fix
       if (req.originalUrl === "/favicon.ico") {
-        return res.sendFile(path.resolve(join(appPath, "public/rasengan.png")));
+        return res.sendFile(
+          path.resolve(join(appPath, "dist/client/rasengan.png"))
+        );
       }
+
+      // ! Robots Fix
+      if (req.originalUrl === "/robots.txt") {
+        return res.sendFile(
+          path.resolve(join(appPath, "dist/client/robots.txt"))
+        );
+      }
+
+      // ! Sitemap Fix
+      if (req.originalUrl === "/sitemap.xml") {
+        return res.sendFile(
+          path.resolve(join(appPath, "dist/client/sitemap.xml"))
+        );
+      }
+
+      // ! Manifest Fix
+      if (req.originalUrl === "/manifest.json") {
+        return res.sendFile(
+          path.resolve(join(appPath, "dist/client/manifest.json"))
+        );
+      }
+
+      // ! Service Worker Fix
 
       const url = req.originalUrl.replace(base, "");
 
