@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "8",
+  "version": "1.0.0-beta-8",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
@@ -36,6 +36,7 @@
     "cross-spawn": "^7.0.3",
     "execa": "^8.0.1",
     "express": "^4.18.2",
+    "inquirer": "^9.2.12",
     "node-fetch": "^3.3.2",
     "ora": "^7.0.1",
     "react-helmet": "^6.1.0",

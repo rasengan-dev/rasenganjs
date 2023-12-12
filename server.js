@@ -11,6 +11,7 @@ import { Request, Headers } from "node-fetch";
 import chalk from "chalk";
 import os from "node:os";
 import path from "node:path";
+import inquirer from "inquirer";
 
 /**
  * This function is used to create a fetch request from an express request.
@@ -238,6 +239,21 @@ async function createServer({ isProduction, port, base = "/" }) {
           )} Port ${port} is already in use. \n\n`
         )
       );
+
+      // Ask user if they want to use a different port
+      const { useDifferentPort } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "useDifferentPort",
+          message: `Do you want to use port ${newPort}?`,
+        },
+      ]);
+
+      if (!useDifferentPort) {
+        console.log(chalk.blue("Closing server... \n\n"));
+        process.exit(0);
+      }
+
       console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
 
       await createServer({ isProduction, port: newPort, base });
