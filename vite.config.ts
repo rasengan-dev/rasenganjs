@@ -10,4 +10,8 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['node:http', 'node-fetch'],
   },
+
+  build: {
+    sourcemap: true,
+  }
 });

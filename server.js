@@ -52,16 +52,16 @@ function createFetchRequest(req) {
 
 /**
  * This function is responsible for creating a server for the development environment.
+ * @param {boolean} isProduction - Whether the server is in production mode or not.
+ * @param {number} port - The port to run the server on.
+ * @param {string} base - The base path for the server.
  */
-async function createServer() {
+async function createServer({ isProduction, port, base = "/" }) {
+  // Get directory name
   const __dirname = dirname(fileURLToPath(import.meta.url));
 
+  // Get app path
   const appPath = join(__dirname, "./../../");
-
-  // Constants
-  const isProduction = process.env.NODE_ENV === "production";
-  const port = process.env.PORT || isProduction ? 4320 : 5320;
-  const base = process.env.BASE || "/";
 
   // Cached production assets
   const templateHtml = isProduction
@@ -169,7 +169,13 @@ async function createServer() {
         .replace(`<!--app-head-->`, rendered.head ?? "")
         .replace(`<!--app-html-->`, rendered.html ?? "");
 
-      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+      res
+        .status(200)
+        .set({
+          "Content-Type": "text/html",
+          "Cache-Control": "max-age=31536000",
+        })
+        .end(html);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
       console.log(e.stack);
@@ -178,22 +184,64 @@ async function createServer() {
   });
 
   // Start http server
-  app.listen(port, async () => {
+  const server = app.listen(port, () => {
     setTimeout(() => {
-      console.log(
-        `${chalk.bold("Local:")} ${chalk.blue(`http://localhost:${port}`)}`
+      const arrowRight = "\u2192";
+
+      console.log("\n");
+
+      process.stdout.write(
+        `${chalk.bold.green(arrowRight)} ${chalk.bold("Local:")}   ${chalk.blue(
+          `http://localhost:${port}`
+        )}`
       );
+      console.log("");
 
       const ipAddress = getIP();
 
       if (ipAddress) {
-        console.log(
-          `${chalk.bold("Network:")} ${chalk.blue(`http://${getIP()}:${port}`)}`
+        process.stdout.write(
+          `${chalk.bold.green(arrowRight)} ${chalk.bold(
+            "Network:"
+          )} ${chalk.blue(`http://${getIP()}:${port}`)}\n`
         );
-
-        console.log("");
       }
-    }, 1000);
+
+      // Display options
+      process.stdout.write(
+        `${chalk.bold.green(arrowRight)} Press ${chalk.bold("c")} to clear`
+      );
+      console.log("");
+      process.stdout.write(
+        `${chalk.bold.green(arrowRight)} Press ${chalk.bold(
+          "ctrl+c"
+        )} to close the server`
+      );
+      console.log("");
+
+      console.log("\n");
+    }, 100);
+  });
+
+  // Handle errors
+  server.on("error", async (err) => {
+    const multiplicationSymbol = "\u00D7";
+
+    // Handle PORT in use error
+    if (err.code === "EADDRINUSE") {
+      const newPort = port + 1;
+
+      console.error(
+        chalk.red(
+          `${chalk.bold.red(
+            multiplicationSymbol
+          )} Port ${port} is already in use. \n\n`
+        )
+      );
+      console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
+
+      await createServer({ isProduction, port: newPort, base });
+    }
   });
 }
 
@@ -222,5 +270,14 @@ export const getIP = () => {
   return ipAddress;
 };
 
+// Constants
+const isProduction = process.env.NODE_ENV === "production";
+const port = process.env.PORT || isProduction ? 4320 : 5320;
+const base = process.env.BASE || "/";
+
 // Launch server
-createServer();
+createServer({
+  isProduction,
+  port,
+  base,
+});
