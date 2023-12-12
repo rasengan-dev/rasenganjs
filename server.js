@@ -57,7 +57,12 @@ function createFetchRequest(req) {
  * @param {number} port - The port to run the server on.
  * @param {string} base - The base path for the server.
  */
-async function createServer({ isProduction, port, base = "/" }) {
+async function createServer({
+  isProduction,
+  port,
+  base = "/",
+  enableSearchingPort = false,
+}) {
   // Get directory name
   const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -179,7 +184,7 @@ async function createServer({ isProduction, port, base = "/" }) {
         .end(html);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
-      console.log(e.stack);
+      // console.log(e.stack);
       res.status(500).end(e.stack);
     }
   });
@@ -240,23 +245,40 @@ async function createServer({ isProduction, port, base = "/" }) {
         )
       );
 
-      // Ask user if they want to use a different port
-      const { useDifferentPort } = await inquirer.prompt([
-        {
-          type: "confirm",
-          name: "useDifferentPort",
-          message: `Do you want to use port ${newPort}?`,
-        },
-      ]);
+      // Check if user wants to use a different port
+      if (!enableSearchingPort) {
+        // Ask user if they want to use a different port
+        const { useDifferentPort } = await inquirer.prompt([
+          {
+            type: "confirm",
+            name: "useDifferentPort",
+            message: `Do you want to use a different port?`,
+          },
+        ]);
 
-      if (!useDifferentPort) {
-        console.log(chalk.blue("Closing server... \n\n"));
-        process.exit(0);
+        if (!useDifferentPort) {
+          console.log(chalk.blue("Closing server... \n\n"));
+          process.exit(0);
+        }
+
+        console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
+
+        await createServer({
+          isProduction,
+          port: newPort,
+          base,
+          enableSearchingPort: true,
+        });
+      } else {
+        console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
+
+        await createServer({
+          isProduction,
+          port: newPort,
+          base,
+          enableSearchingPort,
+        });
       }
-
-      console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
-
-      await createServer({ isProduction, port: newPort, base });
     }
   });
 }
@@ -288,12 +310,12 @@ export const getIP = () => {
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
-const port = process.env.PORT || isProduction ? 4320 : 5320;
+const port =
+  (process.env.PORT && Number(process.env.PORT)) ||
+  (isProduction ? 4320 : 5320);
 const base = process.env.BASE || "/";
 
 // Launch server
-createServer({
-  isProduction,
-  port,
-  base,
-});
+(async function launchServer() {
+  await createServer({ isProduction, port, base });
+})();

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import chalk from "chalk";
 import { Command } from "commander";
-import { exec, spawn } from "child_process";
 import __dirname from "./dirname.js";
 import ora from "ora";
 import fs from "node:fs/promises";
@@ -15,8 +14,24 @@ program
 
 program
   .command("dev")
+  .option("-p <port>")
   .description("Start development server")
-  .action(async () => {
+  .action(async ({ p: port }: { p: number }) => {
+    const convertedPort = Number(port);
+
+    // Checking port
+    if (
+      port &&
+      (isNaN(convertedPort) || convertedPort < 0 || convertedPort > 65535)
+    ) {
+      console.log("");
+      console.log(
+        chalk.red("Please provide a valid port number between 0-65535")
+      );
+      console.log("");
+      process.exit(1);
+    }
+
     // Spinner
     console.log("");
     const spinner = ora({
@@ -25,7 +40,13 @@ program
       spinner: "dots",
     }).start();
 
-    execa("node", ["node_modules/rasengan/server"], { stdio: "inherit" });
+    execa("node", ["node_modules/rasengan/server"], {
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        PORT: convertedPort ? convertedPort.toString() : undefined,
+      },
+    });
 
     // Getting the package.json file
     const packageJson = await fs.readFile(
