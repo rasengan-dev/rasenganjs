@@ -53,7 +53,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
 
     return {
       path,
-      element: <ClientComponent page={page} />,
+      element: <ClientComponent page={page} loader={router.loaderComponent} />,
     };
   });
 
@@ -120,7 +120,12 @@ export const generateStaticRoutes = (router: RouterComponent) => {
         return pageComponent.loader({ params, request });
       },
       Component() {
-        return <ServerComponent page={pageComponent} />;
+        return (
+          <ServerComponent
+            page={pageComponent}
+            loader={router.loaderComponent}
+          />
+        );
       },
     };
   });
@@ -196,7 +201,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
  * @returns
  */
 export const defineRouter = (option: RouterDecoratorProps) => {
-  const { imports, layout, pages } = option;
+  const { imports, layout, pages, loaderComponent } = option;
 
   return (Component: new () => RouterComponent) => {
     // Handle errors
@@ -215,6 +220,10 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 
     // Define pages
     Component.prototype["_pages"] = pages;
+
+    // Define loader component
+    Component.prototype["_loaderComponent"] = (loaderComponent &&
+      loaderComponent({})) || <div>Loading...</div>;
 
     return Component;
   };

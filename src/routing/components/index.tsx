@@ -20,14 +20,14 @@ export function ErrorBoundary() {
  * Component that will be displayed during a routing on the server side
  * @returns React.ReactNode
  */
-export const ServerComponent = ({ page }: { page: PageComponent }) => {
+export const ServerComponent = ({ page, loader }: { page: PageComponent, loader: React.ReactNode }) => {
   // Default data
   const data = {
     props: {},
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={loader}>
       <PageToRender page={page} data={data} />
     </Suspense>
   );
@@ -37,7 +37,7 @@ export const ServerComponent = ({ page }: { page: PageComponent }) => {
  * Component that will be displayed during a routing on the client side
  * @returns React.ReactNode
  */
-export const ClientComponent = ({ page }: { page: PageComponent }) => {
+export const ClientComponent = ({ page, loader }: { page: PageComponent, loader: React.ReactNode }) => {
   // Default data
   const defaultData = {
     props: {},
@@ -46,7 +46,7 @@ export const ClientComponent = ({ page }: { page: PageComponent }) => {
   const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={loader}>
       <PageToRender page={page} data={data} />
     </Suspense>
   );

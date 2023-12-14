@@ -19,6 +19,11 @@ export class RouterComponent {
    */
   private _pages!: Array<new () => PageComponent>;
 
+  /**
+   * Defines the loader component to display when pages aren't available
+   */
+  private _loaderComponent!: React.ReactNode;
+
   // Getters
 
   /**
@@ -40,5 +45,12 @@ export class RouterComponent {
    */
   get pages() {
     return this._pages;
+  }
+
+  /**
+   * Get the loader component
+   */
+  get loaderComponent() {
+    return this._loaderComponent;
   }
 }

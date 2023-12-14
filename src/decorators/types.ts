@@ -19,6 +19,11 @@ export type RouterDecoratorProps = {
    * Usefull to collect pages
    */
   pages: Array<new () => PageComponent>;
+
+  /**
+   * Usefull to display a screen that let know to the user that the page is loading.
+   */
+  loaderComponent?: React.FC;
 };
 
 export type RouteDecoratorProps = RouteLayoutDecoratorProps & {
@@ -31,7 +36,7 @@ export type RouteDecoratorProps = RouteLayoutDecoratorProps & {
    * Description of the page
    */
   description?: string;
-}
+};
 
 /**
  * Props for Layout Decorators
@@ -41,4 +46,4 @@ export type RouteLayoutDecoratorProps = {
    * base path of the layout
    */
   path: string;
-}
+};
