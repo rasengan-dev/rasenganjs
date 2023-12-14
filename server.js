@@ -12,6 +12,8 @@ import chalk from "chalk";
 import os from "node:os";
 import path from "node:path";
 import inquirer from "inquirer";
+// @ts-ignore
+import config from "./../../rasengan.config.js";
 
 /**
  * This function is used to create a fetch request from an express request.
@@ -215,15 +217,20 @@ async function createServer({
 
       // Display options
       process.stdout.write(
-        `${chalk.bold.green(arrowRight)} Press ${chalk.bold("c")} to clear`
+        `${chalk.bold.green(arrowRight)} ${chalk.gray("Use")} ${chalk.bold(
+          "-p <PORT>"
+        )} ${chalk.gray("to specify a custom port")}\n`
       );
-      console.log("");
       process.stdout.write(
-        `${chalk.bold.green(arrowRight)} Press ${chalk.bold(
-          "ctrl+c"
-        )} to close the server`
+        `${chalk.bold.green(arrowRight)} ${chalk.gray("Press")} ${chalk.bold(
+          "c"
+        )} ${chalk.gray("to clear")}\n`
       );
-      console.log("");
+      process.stdout.write(
+        `${chalk.bold.green(arrowRight)} ${chalk.gray("Press")} ${chalk.bold(
+          "ctrl + c"
+        )} ${chalk.gray("to close the server")}\n`
+      );
 
       console.log("\n");
     }, 100);
@@ -312,6 +319,7 @@ export const getIP = () => {
 const isProduction = process.env.NODE_ENV === "production";
 const port =
   (process.env.PORT && Number(process.env.PORT)) ||
+  config.server?.development?.port ||
   (isProduction ? 4320 : 5320);
 const base = process.env.BASE || "/";
 

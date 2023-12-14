@@ -1,11 +1,12 @@
 import { type AppConfig } from "./type.js";
 
 export const defineConfig = (loadedConfig: AppConfig) => {
-  const { reactStrictMode } = loadedConfig;
+  const { reactStrictMode, server } = loadedConfig;
 
   try {
     const config = {
       reactStrictMode: reactStrictMode === undefined ? true : reactStrictMode,
+      server,
       // More config options...
     };
 
