@@ -1,5 +1,6 @@
-import { RouterComponent } from "../routing/interfaces.js";
-import { PageComponent } from "./interfaces.js";
+import { CSSProperties } from "react";
+import { RouterComponent } from "../routing/interfaces";
+import { PageComponent } from "./interfaces";
 
 /**
  * Props for App component
@@ -38,4 +39,20 @@ export type LoaderOptions = {
  */
 export type LoaderResponse = {
   props: { [key: string]: any };
-}
+};
+
+/**
+ * Props for the Image component
+ */
+export type ImageProps = {
+  src: string | { uri: string };
+  alt: string;
+  width?: CSSProperties["width"];
+  height?: CSSProperties["height"];
+  className?: string;
+  style?: { [key: string]: any };
+  loading?: "lazy" | "eager";
+  loadingType?: "blur" | "wave";
+  objectFit?: "cover" | "contain" | "fill" | "none";
+  onClick?: () => void;
+};

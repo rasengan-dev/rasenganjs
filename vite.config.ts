@@ -8,10 +8,14 @@ export default defineConfig({
   // define index.html location
   root: "./../../",
   optimizeDeps: {
-    exclude: ['node:http', 'node-fetch'],
+    exclude: ["node:http", "node-fetch"],
   },
 
   build: {
     sourcemap: true,
-  }
+  },
+
+  ssr: {
+    noExternal: [/\.css$/],
+  },
 });

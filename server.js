@@ -317,10 +317,11 @@ export const getIP = () => {
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
-const port =
-  (process.env.PORT && Number(process.env.PORT)) ||
-  config.server?.development?.port ||
-  (isProduction ? 4320 : 5320);
+const port = !isProduction
+  ? (process.env.PORT && Number(process.env.PORT)) ||
+    config.server?.development?.port ||
+    5320
+  : process.env.PORT || 4320;
 const base = process.env.BASE || "/";
 
 // Launch server
