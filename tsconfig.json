@@ -19,11 +19,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Aliases and path */
+    "baseUrl": "./../../",
+    // "paths": {
+    //   "@/*": ["src/*"]
+    // }
   },
   "include": ["src", "server.js"],
 
-  "references": [
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,3 +1,5 @@
+import Image from "./components/image.js";
+
 export {
   type ILayoutComponent,
   LayoutComponent,
@@ -5,4 +7,12 @@ export {
   PageComponent,
 } from "./interfaces.js";
 
-export type { AppProps, ReactComponentProps, ComponentProps, LoaderOptions, LoaderResponse } from "./types.js";
+export { Image };
+
+export type {
+  AppProps,
+  ReactComponentProps,
+  ComponentProps,
+  LoaderOptions,
+  LoaderResponse,
+} from "./types.js";

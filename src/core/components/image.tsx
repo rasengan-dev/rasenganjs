@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ImageProps } from "../types";
+import { ImageProps } from "../types.js";
 
 export default ({ src, alt, ...props }: ImageProps) => {
   // Load styles here with esm

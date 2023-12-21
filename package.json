@@ -24,9 +24,10 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr node_modules/rasengan/lib/entries/entry-server.js --outDir dist/server",
-    "build:lib": "tsc -p tsconfig.lib.json",
+    "build:lib": "tsc -p tsconfig.lib.json && cp -r src/core/styles lib/core/",
     "preview": "cross-env NODE_ENV=production node server",
-    "deploy": "npm publish --access public"
+    "deploy": "npm publish --access public",
+    "pack": "npm pack --pack-destination ./../packages/rasengan/"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.2.1",
@@ -42,7 +43,8 @@
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.20.1",
     "sirv": "^2.0.3",
-    "vite": "^5.0.7"
+    "vite": "^5.0.7",
+    "vite-plugin-css": "^1.0.4"
   },
   "peerDependencies": {
     "react": "^18.2.0",

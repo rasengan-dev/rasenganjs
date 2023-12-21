@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
-import { RouterComponent } from "../routing/interfaces";
-import { PageComponent } from "./interfaces";
+import { RouterComponent } from "../routing/interfaces.js";
+import { PageComponent } from "./interfaces.js";
 
 /**
  * Props for App component

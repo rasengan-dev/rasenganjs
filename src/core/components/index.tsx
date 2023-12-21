@@ -1,8 +1,8 @@
 import * as React from "react";
-import { ComponentProps, ImageProps, PageToRenderProps } from "../types";
-import { getRouter } from "../../routing/utils/index";
+import { ComponentProps, ImageProps, PageToRenderProps } from "../types.js";
+import { getRouter } from "../../routing/utils/index.js";
 import { Helmet } from "react-helmet";
-import { LoadingFallback } from "./image";
+import { LoadingFallback } from "./image.js";
 
 /**
  * App component that represent the entry point of the application
@@ -65,7 +65,7 @@ const ErrorFallbackComponent = ({}: any) => {
 };
 
 // Lazy load the actual image component
-const LazyLoadedImage = React.lazy(() => import("./image"));
+const LazyLoadedImage = React.lazy(() => import("./image.js"));
 
 export const LazyImage = ({
   src,
