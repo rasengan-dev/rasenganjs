@@ -24,7 +24,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr node_modules/rasengan/lib/entries/entry-server.js --outDir dist/server",
-    "build:lib": "tsc -p tsconfig.lib.json && cp -r src/core/styles lib/core/",
+    "build:lib": "tsc -p tsconfig.lib.json",
     "preview": "cross-env NODE_ENV=production node server",
     "deploy": "npm publish --access public",
     "pack": "npm pack --pack-destination ./../packages/rasengan/"

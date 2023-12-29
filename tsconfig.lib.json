@@ -2,9 +2,10 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "target": "ES2015",
+    "target": "ESNext",
     "lib": [
       "ES2015",
+      "ESNext",
       "dom",
       "dom.iterable",
       "esnext"
@@ -23,10 +24,17 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "declaration": true,
-    "sourceMap": true
+    "sourceMap": true,
+
+    /* Plugins */
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+
+    /* Types */
+    "typeRoots": ["node_modules/@types", "types"]
   },
   "include": [
-    "src"
+    "src",
+    "types",
   ],
   "exclude": ["node_modules", "lib"]
 }

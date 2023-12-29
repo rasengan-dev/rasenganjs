@@ -21,13 +21,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Aliases and path */
-    "baseUrl": "./../../",
-    // "paths": {
-    //   "@/*": ["src/*"]
-    // }
+    /* Plugins */
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
   },
-  "include": ["src", "server.js"],
+  "include": ["src", "server.js", "types"],
 
   "references": [{ "path": "./tsconfig.node.json" }]
 }
