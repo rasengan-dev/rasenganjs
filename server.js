@@ -167,6 +167,15 @@ async function createServer({
       let fetchRequest = createFetchRequest(req);
       let context = await handler.query(fetchRequest);
 
+      // Handle redirects
+      const status = context.status
+
+      if (status === 302) {
+        const redirect = context.headers.get("Location")
+
+        return res.redirect(redirect);
+      }
+
       // Create static router
       let router = createStaticRouter(handler.dataRoutes, context);
 

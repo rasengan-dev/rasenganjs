@@ -1,6 +1,6 @@
-import { CSSProperties } from "react";
 import { RouterComponent } from "../routing/interfaces.js";
 import { PageComponent } from "./interfaces.js";
+
 
 /**
  * Props for App component
@@ -38,5 +38,6 @@ export type LoaderOptions = {
  * Data returned from the loader function
  */
 export type LoaderResponse = {
-  props: { [key: string]: any };
+  props?: { [key: string]: any };
+  redirect?: string
 };

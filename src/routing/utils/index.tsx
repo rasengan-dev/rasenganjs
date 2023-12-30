@@ -1,5 +1,9 @@
 import { RouterComponent } from "../interfaces.js";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  redirect,
+} from "react-router-dom";
 import {
   RouteDecoratorProps,
   RouteLayoutDecoratorProps,
@@ -51,7 +55,28 @@ const generateBrowserRoutes = (router: RouterComponent) => {
 
     return {
       path,
+      loader: async ({ params, request }: any) => {
+        // Get the response from the loader
+        const response = await page.loader({ params, request });
+
+        // Handle redirection
+        if (response.redirect) {
+          const formData = new FormData();
+
+          formData.append("redirect", response.redirect);
+
+          return new Response(formData, {
+            status: 302,
+            headers: {
+              Location: response.redirect,
+            },
+          });
+        }
+
+        return response;
+      },
       element: <ClientComponent page={page} loader={router.loaderComponent} />,
+      elementError: <ErrorBoundary />,
     };
   });
 
@@ -97,8 +122,6 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   const layout = router.layout;
   const LayoutToRender = layout.render;
 
-  console.log({ layout, LayoutToRender });
-
   const route = {
     path: layout.path,
     elementError: <ErrorBoundary />,
@@ -113,17 +136,30 @@ export const generateStaticRoutes = (router: RouterComponent) => {
 
     return {
       path,
-      loader({ params, request }: any) {
-        return page.loader({ params, request });
+      async loader({ params, request }: any) {
+        // Get the response from the loader
+        const response = await page.loader({ params, request });
+
+        // Handle redirection
+        if (response.redirect) {
+          const formData = new FormData();
+
+          formData.append("redirect", response.redirect);
+
+          return new Response(formData, {
+            status: 302,
+            headers: {
+              Location: response.redirect,
+            },
+          });
+        }
+
+        return response;
       },
       Component() {
-        return (
-          <ServerComponent
-            page={page}
-            loader={router.loaderComponent}
-          />
-        );
+        return <ServerComponent page={page} loader={router.loaderComponent} />;
       },
+      elementError: <ErrorBoundary />,
     };
   });
 
@@ -224,8 +260,6 @@ export const defineRouter = (option: RouterDecoratorProps) => {
     router.loaderComponent = (loaderComponent && loaderComponent({})) || (
       <div>Loading...</div>
     );
-
-    console.log({ router });
 
     return router;
   };

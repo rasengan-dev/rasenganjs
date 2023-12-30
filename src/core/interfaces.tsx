@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LoaderOptions, ReactComponentProps } from "./types.js";
+import { LoaderOptions, LoaderResponse, ReactComponentProps } from "./types.js";
 import { Outlet } from "react-router-dom";
 
 /**
@@ -119,7 +119,7 @@ export abstract class PageComponent extends LayoutComponent {
    */
   async loader(
     _options: LoaderOptions
-  ): Promise<{ props: { [key: string]: any } }> {
+  ): Promise<LoaderResponse> {
     return new Promise((resolve) => {
       resolve({
         props: {},
