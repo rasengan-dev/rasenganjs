@@ -34,7 +34,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
   const routes = [] as any;
 
   // Get information about the layout and the path
-  const layout = new router.layout();
+  const layout = router.layout;
   const LayoutToRender = layout.render;
 
   const route = {
@@ -45,9 +45,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
   };
 
   // Get informations about pages
-  const pages = router.pages.map((pageClass) => {
-    const page = new pageClass();
-
+  const pages = router.pages.map((page) => {
     // Get the path of the page
     const path = page.path === "/" ? layout.path : page.path;
 
@@ -75,8 +73,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
   routes.push(route);
 
   // Loop throug besides routers in order to apply the same thing.
-  for (const BesideRouter of router.routers) {
-    const besideRouter = new BesideRouter();
+  for (const besideRouter of router.routers) {
     const besidesRoutes = generateBrowserRoutes(besideRouter);
 
     // Add besides routes into the lists of route
@@ -97,8 +94,10 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   const routes = [] as any;
 
   // Get information about the layout and the path
-  const layout = new router.layout();
+  const layout = router.layout;
   const LayoutToRender = layout.render;
+
+  console.log({ layout, LayoutToRender });
 
   const route = {
     path: layout.path,
@@ -108,21 +107,19 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   };
 
   // Get informations about pages
-  const pages = router.pages.map((pageClass) => {
-    const pageComponent = new pageClass();
-
+  const pages = router.pages.map((page) => {
     // Get the path of the page
-    const path = pageComponent.path === "/" ? layout.path : pageComponent.path;
+    const path = page.path === "/" ? layout.path : page.path;
 
     return {
       path,
       loader({ params, request }: any) {
-        return pageComponent.loader({ params, request });
+        return page.loader({ params, request });
       },
       Component() {
         return (
           <ServerComponent
-            page={pageComponent}
+            page={page}
             loader={router.loaderComponent}
           />
         );
@@ -147,8 +144,7 @@ export const generateStaticRoutes = (router: RouterComponent) => {
   routes.push(route);
 
   // Loop throug besides routers in order to apply the same thing.
-  for (const BesideRouter of router.routers) {
-    const besideRouter = new BesideRouter();
+  for (const besideRouter of router.routers) {
     const besidesRoutes = generateStaticRoutes(besideRouter);
 
     // Add besides routes into the lists of route
@@ -170,11 +166,15 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
   return (Component: new () => PageComponent) => {
     if (!path) throw new Error("You must provide a path to the page");
 
-    Component.prototype._path = path;
-    Component.prototype["_title"] = title;
-    Component.prototype["_description"] = description;
+    // Create a new instance of the component
+    const component = new Component();
 
-    return Component;
+    // Set properties
+    component.path = path;
+    component.title = title || Component.name;
+    component.description = description || "";
+
+    return component;
   };
 };
 
@@ -189,9 +189,13 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
   return (Component: new () => LayoutComponent) => {
     if (!path) throw new Error("You must provide a path to the layout");
 
-    Component.prototype._path = path;
+    // Create a new instance of the component
+    const component = new Component();
 
-    return Component;
+    // Set properties
+    component.path = path;
+
+    return component;
   };
 };
 
@@ -210,21 +214,19 @@ export const defineRouter = (option: RouterDecoratorProps) => {
         "You must provide a list of pages in the router decorator"
       );
 
-    // Add values to properties
+    // Create router
+    const router = new Component();
 
-    // Define sub routers if provided or set and empty array
-    Component.prototype["_routers"] = imports || [];
+    // Set properties
+    router.routers = imports || [];
+    router.layout = layout || new DefaultLayout();
+    router.pages = pages;
+    router.loaderComponent = (loaderComponent && loaderComponent({})) || (
+      <div>Loading...</div>
+    );
 
-    // Define layout if provided or set a default one.
-    Component.prototype["_layout"] = layout || DefaultLayout;
+    console.log({ router });
 
-    // Define pages
-    Component.prototype["_pages"] = pages;
-
-    // Define loader component
-    Component.prototype["_loaderComponent"] = (loaderComponent &&
-      loaderComponent({})) || <div>Loading...</div>;
-
-    return Component;
+    return router;
   };
 };

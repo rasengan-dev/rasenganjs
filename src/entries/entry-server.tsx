@@ -35,4 +35,4 @@ export function render(
   return { html };
 }
 
-export const staticRoutes = generateStaticRoutes(new AppRouter());
+export const staticRoutes = generateStaticRoutes(AppRouter);

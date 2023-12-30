@@ -1,14 +1,13 @@
 import * as React from "react";
-import { ComponentProps, ImageProps, PageToRenderProps } from "../types.js";
+import { ComponentProps, PageToRenderProps } from "../types.js";
 import { getRouter } from "../../routing/utils/index.js";
 import { Helmet } from "react-helmet";
-import { LoadingFallback } from "./image.js";
 
 /**
  * App component that represent the entry point of the application
  */
 export const Component = ({ router: AppRouter }: ComponentProps) => {
-  const Router = getRouter(new AppRouter());
+  const Router = getRouter(AppRouter);
 
   return <Router />;
 };
@@ -62,28 +61,4 @@ export class ErrorBoundary extends React.Component {
  */
 const ErrorFallbackComponent = ({}: any) => {
   return <div>Something went wrong!</div>;
-};
-
-// Lazy load the actual image component
-const LazyLoadedImage = React.lazy(() => import("./image.js"));
-
-export const LazyImage = ({
-  src,
-  alt,
-  loading = "lazy",
-  loadingType = "wave",
-  ...props
-}: ImageProps) => {
-  return (
-    <React.Suspense fallback={<LoadingFallback />}>
-      {/* Use lazy-loaded image component */}
-      <LazyLoadedImage
-        src={src}
-        alt={alt}
-        loading={loading}
-        loadingType={loadingType}
-        {...props}
-      />
-    </React.Suspense>
-  );
 };

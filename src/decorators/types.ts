@@ -8,17 +8,17 @@ export type RouterDecoratorProps = {
   /**
    * Usefull to collect sub routers
    */
-  imports?: Array<new () => RouterComponent>;
+  imports?: Array<RouterComponent>;
 
   /**
    * Usefull to define a layout
    */
-  layout?: new () => LayoutComponent;
+  layout?: LayoutComponent;
 
   /**
    * Usefull to collect pages
    */
-  pages: Array<new () => PageComponent>;
+  pages: Array<PageComponent>;
 
   /**
    * Usefull to display a screen that let know to the user that the page is loading.

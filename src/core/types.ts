@@ -13,7 +13,7 @@ export type AppProps = {
  * Props for the base Component that takes the app router
  */
 export type ComponentProps = {
-  router: new () => RouterComponent;
+  router: RouterComponent;
 };
 
 export type PageToRenderProps = {
@@ -39,20 +39,4 @@ export type LoaderOptions = {
  */
 export type LoaderResponse = {
   props: { [key: string]: any };
-};
-
-/**
- * Props for the Image component
- */
-export type ImageProps = {
-  src: string | { uri: string };
-  alt: string;
-  width?: CSSProperties["width"];
-  height?: CSSProperties["height"];
-  className?: string;
-  style?: { [key: string]: any };
-  loading?: "lazy" | "eager";
-  loadingType?: "blur" | "wave";
-  objectFit?: "cover" | "contain" | "fill" | "none";
-  onClick?: () => void;
 };

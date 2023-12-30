@@ -36,6 +36,15 @@ export abstract class LayoutComponent implements ILayoutComponent {
   get path(): string {
     return this._path;
   }
+
+  // Setters
+
+  /**
+   * Set page path
+   */
+  set path(path: string) {
+    this._path = path;
+  }
 }
 
 /**
@@ -85,6 +94,22 @@ export abstract class PageComponent extends LayoutComponent {
    */
   get description(): string {
     return this._description;
+  }
+
+  // Setters
+
+  /**
+   * Set page title
+   */
+  set title(title: string) {
+    this._title = title;
+  }
+
+  /**
+   * Set page description
+   */
+  set description(description: string) {
+    this._description = description;
   }
 
   /**
