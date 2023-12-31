@@ -1,57 +1,21 @@
 import fs from "node:fs/promises";
 import express from "express";
 import { dirname, join } from "path";
-// import { ViteDevServer } from "vite";
 import { fileURLToPath } from "url";
 import {
   createStaticHandler,
   createStaticRouter,
 } from "react-router-dom/server.js";
-import { Request, Headers } from "node-fetch";
 import chalk from "chalk";
-import os from "node:os";
 import path from "node:path";
 import inquirer from "inquirer";
+
+// Get config
 // @ts-ignore
 import config from "./../../rasengan.config.js";
 
-/**
- * This function is used to create a fetch request from an express request.
- */
-function createFetchRequest(req) {
-  let origin = `${req.protocol}://${req.get("host")}`;
-  // Note: This had to take originalUrl into account for presumably vite's proxying
-  let url = new URL(req.originalUrl || req.url, origin);
-
-  let controller = new AbortController();
-  req.on("close", () => controller.abort());
-
-  let headers = new Headers();
-
-  for (let [key, values] of Object.entries(req.headers)) {
-    if (values) {
-      if (Array.isArray(values)) {
-        for (let value of values) {
-          headers.append(key, value);
-        }
-      } else {
-        headers.set(key, values);
-      }
-    }
-  }
-
-  let init = {
-    method: req.method,
-    headers,
-    signal: controller.signal,
-  };
-
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    init.body = req.body;
-  }
-
-  return new Request(url.href, init);
-}
+// Load utils
+import { createFetchRequest, logServerInfo } from "./lib/server/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -168,10 +132,10 @@ async function createServer({
       let context = await handler.query(fetchRequest);
 
       // Handle redirects
-      const status = context.status
+      const status = context.status;
 
       if (status === 302) {
-        const redirect = context.headers.get("Location")
+        const redirect = context.headers.get("Location");
 
         return res.redirect(redirect);
       }
@@ -203,45 +167,7 @@ async function createServer({
   // Start http server
   const server = app.listen(port, () => {
     setTimeout(() => {
-      const arrowRight = "\u2192";
-
-      console.log("\n");
-
-      process.stdout.write(
-        `${chalk.bold.green(arrowRight)} ${chalk.bold("Local:")}   ${chalk.blue(
-          `http://localhost:${port}`
-        )}`
-      );
-      console.log("");
-
-      const ipAddress = getIP();
-
-      if (ipAddress) {
-        process.stdout.write(
-          `${chalk.bold.green(arrowRight)} ${chalk.bold(
-            "Network:"
-          )} ${chalk.blue(`http://${getIP()}:${port}`)}\n`
-        );
-      }
-
-      // Display options
-      process.stdout.write(
-        `${chalk.bold.green(arrowRight)} ${chalk.gray("Use")} ${chalk.bold(
-          "-p <PORT>"
-        )} ${chalk.gray("to specify a custom port")}\n`
-      );
-      process.stdout.write(
-        `${chalk.bold.green(arrowRight)} ${chalk.gray("Press")} ${chalk.bold(
-          "c"
-        )} ${chalk.gray("to clear")}\n`
-      );
-      process.stdout.write(
-        `${chalk.bold.green(arrowRight)} ${chalk.gray("Press")} ${chalk.bold(
-          "ctrl + c"
-        )} ${chalk.gray("to close the server")}\n`
-      );
-
-      console.log("\n");
+      logServerInfo(port, isProduction);
     }, 100);
   });
 
@@ -298,31 +224,6 @@ async function createServer({
     }
   });
 }
-
-// Get local IP
-export const getIP = () => {
-  // Get network interfaces
-  const networkInterfaces = os.networkInterfaces();
-
-  // Find the IPv4 address for the default network interface
-  let ipAddress = "";
-
-  for (const interfaceName in networkInterfaces) {
-    const iface = networkInterfaces[interfaceName];
-    for (let i = 0; i < iface.length; i++) {
-      const alias = iface[i];
-      if (alias.family === "IPv4" && !alias.internal) {
-        ipAddress = alias.address;
-        break;
-      }
-    }
-    if (ipAddress) {
-      break;
-    }
-  }
-
-  return ipAddress;
-};
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";

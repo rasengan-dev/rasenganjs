@@ -2,8 +2,6 @@
 import chalk from "chalk";
 import { Command } from "commander";
 import __dirname from "./dirname.js";
-import ora from "ora";
-import fs from "node:fs/promises";
 import { execa } from "execa";
 
 const program = new Command();
@@ -32,14 +30,6 @@ program
       process.exit(1);
     }
 
-    // Spinner
-    console.log("");
-    const spinner = ora({
-      text: `Starting server in development mode...`,
-      color: "blue",
-      spinner: "dots",
-    }).start();
-
     execa("node", ["node_modules/rasengan/server"], {
       stdio: "inherit",
       env: {
@@ -47,23 +37,6 @@ program
         PORT: convertedPort ? convertedPort.toString() : undefined,
       },
     });
-
-    // Getting the package.json file
-    const packageJson = await fs.readFile(
-      "node_modules/rasengan/package.json",
-      "utf-8"
-    );
-
-    // Parsing the package.json file
-    const parsedPackageJson = JSON.parse(packageJson);
-
-    spinner.succeed(
-      `${chalk.bold.blue(
-        `Rasengan v${parsedPackageJson["version"]}`
-      )} is running 🚀`
-    );
-
-    console.log("");
   });
 
 program
@@ -87,14 +60,6 @@ program
   .command("start")
   .description("Start the project in production mode")
   .action(async () => {
-    // Spinner
-    console.log("");
-    const spinner = ora({
-      text: `Starting server in production mode...`,
-      color: "blue",
-      spinner: "dots",
-    }).start();
-
     const childProcess = execa("npm", ["run", "preview"], {
       cwd: "node_modules/rasengan",
       stdio: "inherit", // Pipe child process output to the parent process
@@ -105,23 +70,6 @@ program
         process.stdout.write("Project started Succesfully");
       }
     });
-
-    // Getting the package.json file
-    const packageJson = await fs.readFile(
-      "node_modules/rasengan/package.json",
-      "utf-8"
-    );
-
-    // Parsing the package.json file
-    const parsedPackageJson = JSON.parse(packageJson);
-
-    spinner.succeed(
-      `${chalk.bold.blue(
-        `Rasengan v${parsedPackageJson["version"]}`
-      )} is running 🚀`
-    );
-
-    console.log("");
   });
 
 program.parse(process.argv);
