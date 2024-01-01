@@ -7,7 +7,6 @@ import {
   createStaticRouter,
 } from "react-router-dom/server.js";
 import chalk from "chalk";
-import path from "node:path";
 import inquirer from "inquirer";
 
 // Get config
@@ -15,7 +14,7 @@ import inquirer from "inquirer";
 import config from "./../../rasengan.config.js";
 
 // Load utils
-import { createFetchRequest, logServerInfo } from "./lib/server/utils/index.js";
+import { createFetchRequest, logServerInfo, fix404 } from "./lib/server/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -69,33 +68,8 @@ async function createServer({
   // Serve HTML
   app.use("*", async (req, res) => {
     try {
-      // ! Favicon Fix
-      if (req.originalUrl === "/favicon.ico") {
-        return res.sendFile(
-          path.resolve(join(appPath, "dist/client/rasengan.png"))
-        );
-      }
-
-      // ! Robots Fix
-      if (req.originalUrl === "/robots.txt") {
-        return res.sendFile(
-          path.resolve(join(appPath, "dist/client/robots.txt"))
-        );
-      }
-
-      // ! Sitemap Fix
-      if (req.originalUrl === "/sitemap.xml") {
-        return res.sendFile(
-          path.resolve(join(appPath, "dist/client/sitemap.xml"))
-        );
-      }
-
-      // ! Manifest Fix
-      if (req.originalUrl === "/manifest.json") {
-        return res.sendFile(
-          path.resolve(join(appPath, "dist/client/manifest.json"))
-        );
-      }
+      // ! 404 Fix related to some files not being found
+      fix404(req.originalUrl, res, appPath);
 
       // ! Service Worker Fix
 

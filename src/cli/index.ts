@@ -4,6 +4,11 @@ import { Command } from "commander";
 import __dirname from "./dirname.js";
 import { execa } from "execa";
 
+// Config
+
+// @ts-ignore
+import config from "../../../../rasengan.config.js";
+
 const program = new Command();
 
 program
@@ -51,7 +56,22 @@ program
 
     childProcess.on("close", (code) => {
       if (code === 0) {
-        process.stdout.write(chalk.green("Project built successfully!"));
+        // Checking the config file in order to know about hosting strategy
+        const { server } = config;
+
+        const hostingStrategy = server?.production?.hosting ?? "custom";
+
+        if (hostingStrategy === "vercel") {
+          // Copying the api folder to the root directory
+          execa("cp", ["-r", "node_modules/rasengan/lib/server/functions/vercel/api", "."], {
+            stdio: "inherit",
+          });
+
+          // Copying the vercel.json file to the root directory
+          execa("cp", ["node_modules/rasengan/src/server/functions/vercel/vercel.json", "."], {
+            stdio: "inherit",
+          });
+        }
       }
     });
   });

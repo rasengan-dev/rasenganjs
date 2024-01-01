@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "client/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/index.js"
+    }
+  ]
+}

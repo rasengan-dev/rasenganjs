@@ -35,6 +35,7 @@
   "include": [
     "src",
     "types",
+    "src/**/*.json",
   ],
   "exclude": ["node_modules", "lib"]
 }

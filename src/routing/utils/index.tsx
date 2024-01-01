@@ -1,8 +1,7 @@
 import { RouterComponent } from "../interfaces.js";
 import {
   RouterProvider,
-  createBrowserRouter,
-  redirect,
+  createBrowserRouter
 } from "react-router-dom";
 import {
   RouteDecoratorProps,
@@ -157,7 +156,7 @@ export const generateStaticRoutes = (router: RouterComponent) => {
         return response;
       },
       Component() {
-        return <ServerComponent page={page} loader={router.loaderComponent} />;
+        return <ServerComponent page={page} />;
       },
       elementError: <ErrorBoundary />,
     };

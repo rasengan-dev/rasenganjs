@@ -25,10 +25,15 @@ export async function logServerInfo(port: number, isProduction: boolean) {
   }).start();
 
   // Getting the package.json file
-  const packageJson = await fs.readFile(
-    "node_modules/rasengan/package.json",
-    "utf-8"
-  );
+  let packageJson;
+  if (!isProduction) {
+    packageJson = await fs.readFile(
+      "node_modules/rasengan/package.json",
+      "utf-8"
+    );
+  } else {
+    packageJson = await fs.readFile("package.json", "utf-8");
+  }
 
   // Parsing the package.json file
   const parsedPackageJson = JSON.parse(packageJson);
@@ -86,7 +91,11 @@ export async function logServerInfo(port: number, isProduction: boolean) {
     // Check if the key pressed is 'c'
     if (key) {
       if (key.name === "c" && key.ctrl) {
-        console.log(chalk.blue("Closing server... \n\n"));
+        console.log(
+          `${chalk.green("ctrl + c")} ${chalk.gray("pressed: ")} ${chalk.blue(
+            "Closing server... \n\n"
+          )}`
+        );
         process.exit(0);
       } else if (key.name === "c" && !key.ctrl && !key.meta && !key.shift) {
         // Clear terminal
