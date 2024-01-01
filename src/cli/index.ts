@@ -48,31 +48,35 @@ program
   .command("build")
   .description("Build the project")
   .action(() => {
+    // Checking the config file in order to know about hosting strategy
+    const { server } = config;
+
+    const hostingStrategy = server?.production?.hosting ?? "custom";
+
+    if (hostingStrategy === "vercel") {
+      // Copying the api folder to the root directory
+      execa(
+        "cp",
+        ["-r", "node_modules/rasengan/lib/server/functions/vercel/api", "."],
+        {
+          stdio: "inherit",
+        }
+      );
+
+      // Copying the vercel.json file to the root directory
+      execa(
+        "cp",
+        ["node_modules/rasengan/src/server/functions/vercel/vercel.json", "."],
+        {
+          stdio: "inherit",
+        }
+      );
+    }
+
     // const childProcess = exec("npm --prefix node_modules/rasengan run build");
-    const childProcess = execa("npm", ["run", "build"], {
+    execa("npm", ["run", "build"], {
       cwd: "node_modules/rasengan",
       stdio: "inherit", // Pipe child process output to the parent process
-    });
-
-    childProcess.on("close", (code) => {
-      if (code === 0) {
-        // Checking the config file in order to know about hosting strategy
-        const { server } = config;
-
-        const hostingStrategy = server?.production?.hosting ?? "custom";
-
-        if (hostingStrategy === "vercel") {
-          // Copying the api folder to the root directory
-          execa("cp", ["-r", "node_modules/rasengan/lib/server/functions/vercel/api", "."], {
-            stdio: "inherit",
-          });
-
-          // Copying the vercel.json file to the root directory
-          execa("cp", ["node_modules/rasengan/src/server/functions/vercel/vercel.json", "."], {
-            stdio: "inherit",
-          });
-        }
-      }
     });
   });
 

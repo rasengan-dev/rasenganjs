@@ -6,7 +6,7 @@ import {
   StaticHandlerContext,
   createStaticHandler,
   createStaticRouter,
-} from "react-router-dom/server";
+} from "react-router-dom/server.js";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
 
@@ -18,6 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Get URL
     const url = req.url;
+    const host = req.headers.host;
 
     // Get app path
     const appPath = join(__dirname, "..");
@@ -74,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let handler = createStaticHandler(staticRoutes);
 
     // Create fetch request for static routing
-    let fetchRequest = createFetchRequest(req);
+    let fetchRequest = createFetchRequest(req, host);
     let context = await handler.query(fetchRequest);
 
     // Handle redirects

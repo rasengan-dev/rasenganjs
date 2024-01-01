@@ -3,8 +3,8 @@ import { Request } from "express";
 /**
  * This function is used to create a fetch request from an express request.
  */
-export default function createFetchRequest(req: Request) {
-  let origin = `${req.protocol}://${req.get("host")}`;
+export default function createFetchRequest(req: Request, host: string) {
+  let origin = `${req.protocol}://${host}`;
   // Note: This had to take originalUrl into account for presumably vite's proxying
   let url = new URL(req.originalUrl || req.url, origin);
 

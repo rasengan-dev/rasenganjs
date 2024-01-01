@@ -14,7 +14,11 @@ import inquirer from "inquirer";
 import config from "./../../rasengan.config.js";
 
 // Load utils
-import { createFetchRequest, logServerInfo, fix404 } from "./lib/server/utils/index.js";
+import {
+  createFetchRequest,
+  logServerInfo,
+  fix404,
+} from "./lib/server/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -102,7 +106,7 @@ async function createServer({
       let handler = createStaticHandler(staticRoutes);
 
       // Create fetch request for static routing
-      let fetchRequest = createFetchRequest(req);
+      let fetchRequest = createFetchRequest(req, req.get("host"));
       let context = await handler.query(fetchRequest);
 
       // Handle redirects
