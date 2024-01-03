@@ -3,6 +3,7 @@ import { Link, useLoaderData, useRouteError } from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/interfaces.js";
 import { LoaderResponse } from "../../core/types.js";
+import { NotFoundComponentContainerProps } from "../types.js";
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
@@ -102,4 +103,13 @@ export const NotFoundPageComponent = () => {
       </Link>
     </section>
   );
+};
+
+/**
+ * Component that will be displayed when a page is not found
+ */
+export const NotFoundComponentContainer = ({
+  content,
+}: NotFoundComponentContainerProps) => {
+  return <>{content({})}</>;
 };

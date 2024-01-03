@@ -9,12 +9,13 @@ import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
 import {
   ClientComponent,
   ErrorBoundary,
+  NotFoundComponentContainer,
   NotFoundPageComponent,
   ServerComponent,
 } from "../components/index.js";
 
 /**
- * This function receive a router component and get a formated router first
+ * This function receives a router component and get a formated router first
  * and then return a router.
  */
 export const getRouter = (router: RouterComponent) => {
@@ -28,7 +29,7 @@ export const getRouter = (router: RouterComponent) => {
 };
 
 /**
- * This function receive a router component and return a formated router.
+ * This function receives a router component and return a formated router.
  */
 const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   // Initialization of the list of routes
@@ -49,7 +50,9 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   if (isRoot) {
     routes.push({
       path: "*",
-      element: router.notFoundComponent,
+      element: (
+        <NotFoundComponentContainer content={router.notFoundComponent} />
+      ),
     });
   }
 
@@ -80,7 +83,9 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
         return response;
       },
-      element: <ClientComponent page={page} loader={router.loaderComponent} />,
+      element: (
+        <ClientComponent page={page} loader={router.loaderComponent({})} />
+      ),
       elementError: <ErrorBoundary />,
     };
   });
@@ -115,7 +120,7 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 };
 
 /**
- * This function receive a router component and return a formated router for static routing
+ * This function receives a router component and return a formated router for static routing
  * @param router Represents the router component
  * @returns
  */
@@ -141,7 +146,9 @@ export const generateStaticRoutes = (
   if (isRoot) {
     routes.push({
       path: "*",
-      element: router.notFoundComponent,
+      element: (
+        <NotFoundComponentContainer content={router.notFoundComponent} />
+      ),
     });
   }
 
@@ -208,7 +215,7 @@ export const generateStaticRoutes = (
 };
 
 /**
- * This function add metadata to a page or a layout
+ * This function adds metadata to a page or a layout
  * @param option
  * @returns
  */
@@ -231,7 +238,7 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
 };
 
 /**
- * This function add metadata to a page or a layout
+ * This function adds metadata to a page or a layout
  * @param option
  * @returns
  */
@@ -252,7 +259,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
 };
 
 /**
- * This function add metadata to a router
+ * This function adds metadata to a router
  * @param option
  * @returns
  */
@@ -273,10 +280,8 @@ export const defineRouter = (option: RouterDecoratorProps) => {
     router.routers = imports || [];
     router.layout = layout || new DefaultLayout();
     router.pages = pages;
-    router.loaderComponent = (loaderComponent && loaderComponent({})) || null;
-    router.notFoundComponent = (notFoundComponent && notFoundComponent({})) || (
-      <NotFoundPageComponent />
-    );
+    router.loaderComponent = loaderComponent || (() => null);
+    router.notFoundComponent = notFoundComponent || NotFoundPageComponent;
 
     return router;
   };

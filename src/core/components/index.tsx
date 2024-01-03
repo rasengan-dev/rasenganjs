@@ -59,6 +59,34 @@ export class ErrorBoundary extends React.Component {
 /**
  * Error fallback component that will be displayed if an error occurs
  */
-const ErrorFallbackComponent = ({}: any) => {
-  return <div>Something went wrong!</div>;
+const ErrorFallbackComponent = ({ error, info }: any) => {
+  console.log({ error, info })
+  return (
+    <div
+      style={{
+        width: "calc(100% - 80px)",
+        height: "calc(100vh - 80px)",
+        padding: "40px",
+        backgroundColor: "#fff",
+      }}
+    >
+      <div>
+        <h1 style={{ fontSize: "2rem" }}>Something went wrong</h1>
+        <p>{error.toString()}</p>
+
+        <div
+          style={{
+            width: "calc(100% - 40px)",
+            height: "auto",
+            borderRadius: 10,
+            padding: "20px",
+            marginTop: "10px",
+            backgroundColor: "#f0f0f0",
+          }}
+        >
+          <p>{info.componentStack}</p>
+        </div>
+      </div>
+    </div>
+  );
 };

@@ -22,12 +22,12 @@ export class RouterComponent {
   /**
    * Defines the loader component to display when pages aren't available
    */
-  private _loaderComponent!: React.ReactNode;
+  private _loaderComponent!: React.FC;
 
   /**
    * Defines the not found component to display when pages aren't available
    */
-  private _notFoundComponent!: React.ReactNode;
+  private _notFoundComponent!: React.FC;
 
   // Getters
 
@@ -92,14 +92,14 @@ export class RouterComponent {
   /**
    * Set the loader component
    */
-  set loaderComponent(loaderComponent: React.ReactNode) {
+  set loaderComponent(loaderComponent: React.FC) {
     this._loaderComponent = loaderComponent;
   }
 
   /**
    * Set the not found component
    */
-  set notFoundComponent(notFoundComponent: React.ReactNode) {
+  set notFoundComponent(notFoundComponent: React.FC) {
     this._notFoundComponent = notFoundComponent;
   }
 }
