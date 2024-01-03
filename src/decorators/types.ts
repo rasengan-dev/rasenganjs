@@ -24,6 +24,11 @@ export type RouterDecoratorProps = {
    * Usefull to display a screen that let know to the user that the page is loading.
    */
   loaderComponent?: React.FC;
+
+  /**
+   * Usefull to display a screen that let know to the user that the page is not found.
+   */
+  notFoundComponent?: React.FC;
 };
 
 export type RouteDecoratorProps = RouteLayoutDecoratorProps & {

@@ -24,6 +24,11 @@ export class RouterComponent {
    */
   private _loaderComponent!: React.ReactNode;
 
+  /**
+   * Defines the not found component to display when pages aren't available
+   */
+  private _notFoundComponent!: React.ReactNode;
+
   // Getters
 
   /**
@@ -54,6 +59,13 @@ export class RouterComponent {
     return this._loaderComponent;
   }
 
+  /**
+   * Get the not found component
+   */
+  get notFoundComponent() {
+    return this._notFoundComponent;
+  }
+
   // Setters
 
   /**
@@ -82,5 +94,12 @@ export class RouterComponent {
    */
   set loaderComponent(loaderComponent: React.ReactNode) {
     this._loaderComponent = loaderComponent;
+  }
+
+  /**
+   * Set the not found component
+   */
+  set notFoundComponent(notFoundComponent: React.ReactNode) {
+    this._notFoundComponent = notFoundComponent;
   }
 }

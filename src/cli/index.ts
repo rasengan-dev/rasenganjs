@@ -15,6 +15,7 @@ program
   .name(chalk.blue("rasengan"))
   .version("1.0.0", "-v, --version", "Output the current version number");
 
+// Handle the dev command
 program
   .command("dev")
   .option("-p <port>")
@@ -44,16 +45,41 @@ program
     });
   });
 
+// Handle the build command
 program
   .command("build")
   .description("Build the project")
   .action(() => {
+    // const childProcess = exec("npm --prefix node_modules/rasengan run build");
+    execa("npm", ["run", "build"], {
+      cwd: "node_modules/rasengan",
+      stdio: "inherit", // Pipe child process output to the parent process
+    });
+  });
+
+// Handle the prebuild command
+program
+  .command("prebuild")
+  .description("Prebuild the project")
+  .action(() => {
+    // Displaying the message
+    console.log("");
+    console.log(chalk.blue("Prebuilding your project..."));
+    console.log("");
+
     // Checking the config file in order to know about hosting strategy
     const { server } = config;
 
     const hostingStrategy = server?.production?.hosting ?? "custom";
 
     if (hostingStrategy === "vercel") {
+      // Displaying the message
+      console.log(
+        `Your project is configured to be hosted on ${chalk.bold.blue(
+          hostingStrategy
+        )}\n`
+      );
+
       // Copying the api folder to the root directory
       execa(
         "cp",
@@ -71,15 +97,24 @@ program
           stdio: "inherit",
         }
       );
-    }
 
-    // const childProcess = exec("npm --prefix node_modules/rasengan run build");
-    execa("npm", ["run", "build"], {
-      cwd: "node_modules/rasengan",
-      stdio: "inherit", // Pipe child process output to the parent process
-    });
+      // Removing index.d.ts and index.js.map files from the api folder
+      execa("rm", ["api/index.d.ts", "api/index.js.map"], {
+        stdio: "inherit",
+      });
+    } else if (hostingStrategy === "netlify") {
+      // Copying the netlify.toml file to the root directory
+      // execa(
+      //   "cp",
+      //   ["node_modules/rasengan/src/server/functions/netlify/netlify.toml", "."],
+      //   {
+      //     stdio: "inherit",
+      //   }
+      // );
+    }
   });
 
+// Handle the start command
 program
   .command("start")
   .description("Start the project in production mode")

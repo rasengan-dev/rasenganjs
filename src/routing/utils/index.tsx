@@ -1,8 +1,5 @@
 import { RouterComponent } from "../interfaces.js";
-import {
-  RouterProvider,
-  createBrowserRouter
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import {
   RouteDecoratorProps,
   RouteLayoutDecoratorProps,
@@ -12,6 +9,7 @@ import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
 import {
   ClientComponent,
   ErrorBoundary,
+  NotFoundPageComponent,
   ServerComponent,
 } from "../components/index.js";
 
@@ -32,7 +30,7 @@ export const getRouter = (router: RouterComponent) => {
 /**
  * This function receive a router component and return a formated router.
  */
-const generateBrowserRoutes = (router: RouterComponent) => {
+const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   // Initialization of the list of routes
   const routes = [] as any;
 
@@ -46,6 +44,14 @@ const generateBrowserRoutes = (router: RouterComponent) => {
     element: <LayoutToRender />,
     children: [] as unknown as any,
   };
+
+  // Defining the page not found route
+  if (isRoot) {
+    routes.push({
+      path: "*",
+      element: router.notFoundComponent,
+    });
+  }
 
   // Get informations about pages
   const pages = router.pages.map((page) => {
@@ -98,7 +104,7 @@ const generateBrowserRoutes = (router: RouterComponent) => {
 
   // Loop throug besides routers in order to apply the same thing.
   for (const besideRouter of router.routers) {
-    const besidesRoutes = generateBrowserRoutes(besideRouter);
+    const besidesRoutes = generateBrowserRoutes(besideRouter, false);
 
     // Add besides routes into the lists of route
     routes.push(...besidesRoutes);
@@ -113,7 +119,10 @@ const generateBrowserRoutes = (router: RouterComponent) => {
  * @param router Represents the router component
  * @returns
  */
-export const generateStaticRoutes = (router: RouterComponent) => {
+export const generateStaticRoutes = (
+  router: RouterComponent,
+  isRoot = true
+) => {
   // Initialization of the list of routes
   const routes = [] as any;
 
@@ -127,6 +136,14 @@ export const generateStaticRoutes = (router: RouterComponent) => {
     element: <LayoutToRender />,
     children: [] as unknown as any,
   };
+
+  // Defining the page not found route
+  if (isRoot) {
+    routes.push({
+      path: "*",
+      element: router.notFoundComponent,
+    });
+  }
 
   // Get informations about pages
   const pages = router.pages.map((page) => {
@@ -180,7 +197,7 @@ export const generateStaticRoutes = (router: RouterComponent) => {
 
   // Loop throug besides routers in order to apply the same thing.
   for (const besideRouter of router.routers) {
-    const besidesRoutes = generateStaticRoutes(besideRouter);
+    const besidesRoutes = generateStaticRoutes(besideRouter, false);
 
     // Add besides routes into the lists of route
     routes.push(...besidesRoutes);
@@ -240,7 +257,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
  * @returns
  */
 export const defineRouter = (option: RouterDecoratorProps) => {
-  const { imports, layout, pages, loaderComponent } = option;
+  const { imports, layout, pages, loaderComponent, notFoundComponent } = option;
 
   return (Component: new () => RouterComponent) => {
     // Handle errors
@@ -256,8 +273,9 @@ export const defineRouter = (option: RouterDecoratorProps) => {
     router.routers = imports || [];
     router.layout = layout || new DefaultLayout();
     router.pages = pages;
-    router.loaderComponent = (loaderComponent && loaderComponent({})) || (
-      <div>Loading...</div>
+    router.loaderComponent = (loaderComponent && loaderComponent({})) || null;
+    router.notFoundComponent = (notFoundComponent && notFoundComponent({})) || (
+      <NotFoundPageComponent />
     );
 
     return router;

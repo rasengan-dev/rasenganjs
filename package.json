@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta-14",
+  "version": "1.0.0-beta-15",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rasengan/rasengan",
+    "url": "https://github.com/rasengan/rasengan.git",
     "issues": "https://github.com/rasengan/rasengan/issues"
   },
   "scripts": {
