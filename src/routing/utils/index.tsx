@@ -8,11 +8,11 @@ import {
 import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
 import {
   ClientComponent,
-  ErrorBoundary,
   NotFoundComponentContainer,
   NotFoundPageComponent,
   ServerComponent,
 } from "../components/index.js";
+import { ErrorBoundary } from "../../core/components/index.js";
 
 /**
  * This function receives a router component and get a formated router first
