@@ -82,6 +82,7 @@ async function createServer({
       let template;
       let render;
       let staticRoutes;
+      let metadatas;
       if (!isProduction) {
         // Always read fresh template in development
         template = await fs.readFile(join(appPath, "index.html"), "utf-8");
@@ -93,6 +94,7 @@ async function createServer({
 
         render = entry.render;
         staticRoutes = entry.staticRoutes;
+        metadatas = entry.metadatas;
       } else {
         template = templateHtml;
         const entry = await import(
@@ -100,6 +102,7 @@ async function createServer({
         );
         render = entry.render;
         staticRoutes = entry.staticRoutes;
+        metadatas = entry.metadatas;
       }
 
       // Create static handler
@@ -124,8 +127,20 @@ async function createServer({
       // const rendered = await render(url, ssrManifest);
       const rendered = await render(router, context);
 
+      // Get metadata
+      const metadata = metadatas.get(req.originalUrl);
+      let head = "";
+
+      // Construct description and title from metadata
+      if (metadata) {
+        head = `
+        <meta name="description" content="${metadata.description}" />
+        <title>${metadata.title}</title>  
+        `;
+      }
+
       let html = template
-        .replace(`<!--app-head-->`, rendered.head ?? "")
+        .replace(`<!--app-head-->`, head ?? "")
         .replace(`<!--app-html-->`, rendered.html ?? "");
 
       res

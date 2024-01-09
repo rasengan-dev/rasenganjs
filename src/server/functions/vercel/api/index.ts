@@ -69,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     manifest = await fs.readFile(ssrManifestFilePath, "utf-8");
 
     // Extract render and staticRoutes from entry
-    const { render, staticRoutes } = entry;
+    const { render, staticRoutes, metadatas } = entry;
 
     // Create static handler
     let handler = createStaticHandler(staticRoutes);
@@ -95,8 +95,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const rendered = await render(router, context);
 
+    // Get metadata
+    const metadata = metadatas.get(url ?? "/");
+    let head = "";
+
+    // Construct description and title from metadata
+    if (metadata) {
+      head = `
+      <meta name="description" content="${metadata.description}" />
+      <title>${metadata.title}</title>  
+      `;
+    }
+
+
     let html = template
-      .replace(`<!--app-head-->`, rendered.head ?? "")
+      .replace(`<!--app-head-->`, head ?? "")
       .replace(`<!--app-html-->`, rendered.html ?? "");
 
     res

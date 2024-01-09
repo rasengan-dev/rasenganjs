@@ -215,6 +215,42 @@ export const generateStaticRoutes = (
 };
 
 /**
+ * This function receives a router component and extract all metadatas of all pages
+ * and put all of them inside a map function in order to be used to enhance ssr
+ */
+export const extractPageMetadata = (router: RouterComponent) => {
+  // Initialisation of the Map of metadata
+  const metadatas = new Map<string, { title: string; description: string }>();
+
+  // Get base url
+  const baseURL = router.layout.path;
+
+  // Get informations about pages of the main router
+  router.pages.forEach((page) => {
+    // Get the path of the page
+    const path = page.path === "/" ? baseURL : baseURL + page.path;
+
+    // Add metadata
+    metadatas.set(path, {
+      title: page.title,
+      description: page.description,
+    });
+  });
+
+  // Loop through the others routers recursively
+  for (let besidesRouter of router.routers) {
+    const data = extractPageMetadata(besidesRouter);
+
+    // Copy metadata from data to metadatas map
+    data.forEach((value, key) => {
+      metadatas.set(key, value);
+    });
+  }
+
+  return metadatas;
+};
+
+/**
  * This function adds metadata to a page or a layout
  * @param option
  * @returns

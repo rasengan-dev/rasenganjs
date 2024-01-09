@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import AppRouter from "./../../../../src/pages/app.router";
 
 // @ts-ignore
-import { generateStaticRoutes } from "../routing/utils/index.js";
+import { extractPageMetadata, generateStaticRoutes } from "../routing/utils/index.js";
 import {
   StaticHandlerContext,
   StaticRouterProvider,
@@ -36,3 +36,4 @@ export function render(
 }
 
 export const staticRoutes = generateStaticRoutes(AppRouter);
+export const metadatas = extractPageMetadata(AppRouter);
