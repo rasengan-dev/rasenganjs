@@ -227,8 +227,24 @@ export const extractPageMetadata = (router: RouterComponent) => {
 
   // Get informations about pages of the main router
   router.pages.forEach((page) => {
+    // Add the first slash if not exists from the page path
+    const pagePath = page.path[0] === "/" ? page.path : "/" + page.path;
+
+    // Remove the last slash if exists from the base url
+    const finalBaseURL =
+      baseURL === "/"
+        ? baseURL
+        : baseURL[baseURL.length - 1] === "/"
+        ? baseURL.slice(0, -1)
+        : baseURL;
+
     // Get the path of the page
-    const path = page.path === "/" ? baseURL : baseURL + page.path;
+    const path =
+      pagePath === "/"
+        ? finalBaseURL
+        : finalBaseURL === "/"
+        ? pagePath
+        : finalBaseURL + "/" + pagePath;
 
     // Add metadata
     metadatas.set(path, {
