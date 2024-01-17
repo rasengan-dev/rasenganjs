@@ -1,7 +1,10 @@
 import * as React from "react";
 import { ComponentProps, PageToRenderProps } from "../types.js";
 import { getRouter } from "../../routing/utils/index.js";
-import { Helmet } from "react-helmet-async";
+import * as pkg from "react-helmet-async";
+
+// @ts-ignore
+const { Helmet } = pkg.default || pkg;
 
 /**
  * App component that represent the entry point of the application

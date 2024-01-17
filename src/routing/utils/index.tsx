@@ -180,7 +180,9 @@ export const generateStaticRoutes = (
         return response;
       },
       Component() {
-        return <ServerComponent page={page} />;
+        return (
+          <ServerComponent page={page} loader={router.loaderComponent({})} />
+        );
       },
       elementError: <ErrorBoundary />,
     };

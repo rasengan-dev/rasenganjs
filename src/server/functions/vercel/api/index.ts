@@ -69,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     manifest = await fs.readFile(ssrManifestFilePath, "utf-8");
 
     // Extract render and staticRoutes from entry
-    const { render, staticRoutes, metadatas } = entry;
+    const { render, staticRoutes } = entry;
 
     // Create static handler
     let handler = createStaticHandler(staticRoutes);
@@ -87,26 +87,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (redirect) return res.redirect(redirect);
     }
 
+    // Helmet context
+    const helmetContext = {} as { helmet: any };
+
     // Create static router
     let router = createStaticRouter(
       handler.dataRoutes,
       context as StaticHandlerContext
     );
 
-    const rendered = await render(router, context);
+    const rendered = await render(router, context, helmetContext);
 
     // Get metadata
-    const metadata = metadatas.get(url ?? "/");
-    let head = "";
+    const helmet = helmetContext.helmet;
 
-    // Construct description and title from metadata
-    if (metadata) {
-      head = `
-      <meta name="description" content="${metadata.description}" />
-      <title>${metadata.title}</title>  
-      `;
-    }
-
+    let head = `
+      ${helmet.title.toString()}
+      ${helmet.meta.toString()}
+    `;
 
     let html = template
       .replace(`<!--app-head-->`, head ?? "")

@@ -7,7 +7,11 @@ import App from "./../../../../src/main";
 import { Component, ErrorBoundary } from "../core/components/index.js";
 // @ts-ignore
 import config from "./../../../../rasengan.config.js";
-import { HelmetProvider } from "react-helmet-async";
+
+import * as pkg from "react-helmet-async";
+
+// @ts-ignore
+const { HelmetProvider } = pkg.default || pkg;
 
 ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement,

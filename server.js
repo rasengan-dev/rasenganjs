@@ -82,7 +82,6 @@ async function createServer({
       let template;
       let render;
       let staticRoutes;
-      let metadatas;
       if (!isProduction) {
         // Always read fresh template in development
         template = await fs.readFile(join(appPath, "index.html"), "utf-8");
@@ -94,7 +93,6 @@ async function createServer({
 
         render = entry.render;
         staticRoutes = entry.staticRoutes;
-        metadatas = entry.metadatas;
       } else {
         template = templateHtml;
         const entry = await import(
@@ -102,7 +100,6 @@ async function createServer({
         );
         render = entry.render;
         staticRoutes = entry.staticRoutes;
-        metadatas = entry.metadatas;
       }
 
       // Create static handler
@@ -121,23 +118,22 @@ async function createServer({
         return res.redirect(redirect);
       }
 
+      // Helmet context
+      const helmetContext = {};
+
       // Create static router
       let router = createStaticRouter(handler.dataRoutes, context);
 
       // const rendered = await render(url, ssrManifest);
-      const rendered = await render(router, context);
+      const rendered = await render(router, context, helmetContext);
 
       // Get metadata
-      const metadata = metadatas.get(req.originalUrl);
-      let head = "";
+      const helmet = helmetContext.helmet;
 
-      // Construct description and title from metadata
-      if (metadata) {
-        head = `
-        <meta name="description" content="${metadata.description}" />
-        <title>${metadata.title}</title>  
-        `;
-      }
+      const head = `
+        ${helmet.title.toString()}
+        ${helmet.meta.toString()}
+      `;
 
       let html = template
         .replace(`<!--app-head-->`, head ?? "")

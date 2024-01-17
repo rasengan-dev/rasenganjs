@@ -42,6 +42,7 @@
     "keypress": "^0.2.1",
     "node-fetch": "^3.3.2",
     "ora": "^7.0.1",
+    "react-helmet": "^6.1.0",
     "react-helmet-async": "^2.0.4",
     "react-router-dom": "^6.20.1",
     "sirv": "^2.0.3",

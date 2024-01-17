@@ -21,13 +21,23 @@ export function ErrorBoundary() {
  * Component that will be displayed during a routing on the server side
  * @returns React.ReactNode
  */
-export const ServerComponent = ({ page }: { page: PageComponent }) => {
+export const ServerComponent = ({
+  page,
+  loader,
+}: {
+  page: PageComponent;
+  loader: React.ReactNode;
+}) => {
   // Default data
   const data = {
     props: {},
   };
 
-  return <PageToRender page={page} data={data} />;
+  return (
+    <Suspense fallback={loader}>
+      <PageToRender page={page} data={data} />
+    </Suspense>
+  );
 };
 
 /**
