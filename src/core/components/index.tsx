@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ComponentProps, PageToRenderProps } from "../types.js";
 import { getRouter } from "../../routing/utils/index.js";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 /**
  * App component that represent the entry point of the application

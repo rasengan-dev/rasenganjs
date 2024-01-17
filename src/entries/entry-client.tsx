@@ -7,18 +7,23 @@ import App from "./../../../../src/main";
 import { Component, ErrorBoundary } from "../core/components/index.js";
 // @ts-ignore
 import config from "./../../../../rasengan.config.js";
+import { HelmetProvider } from "react-helmet-async";
 
 ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement,
   config.reactStrictMode ? (
     <React.StrictMode>
       <ErrorBoundary>
-        <App Component={Component} />
+        <HelmetProvider>
+          <App Component={Component} />
+        </HelmetProvider>
       </ErrorBoundary>
     </React.StrictMode>
   ) : (
     <ErrorBoundary>
-      <App Component={Component} />
+      <HelmetProvider>
+        <App Component={Component} />
+      </HelmetProvider>
     </ErrorBoundary>
   )
 );

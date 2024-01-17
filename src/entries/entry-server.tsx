@@ -4,7 +4,10 @@ import ReactDOMServer from "react-dom/server";
 import AppRouter from "./../../../../src/pages/app.router";
 
 // @ts-ignore
-import { extractPageMetadata, generateStaticRoutes } from "../routing/utils/index.js";
+import {
+  extractPageMetadata,
+  generateStaticRoutes,
+} from "../routing/utils/index.js";
 import {
   StaticHandlerContext,
   StaticRouterProvider,
@@ -14,21 +17,23 @@ import { Router } from "@remix-run/router";
 // @ts-ignore
 import config from "./../../../../rasengan.config.js";
 import { ErrorBoundary } from "../core/components";
+import { HelmetProvider } from "react-helmet-async";
 
-export function render(
-  router: Router,
-  context: StaticHandlerContext
-) {
+export function render(router: Router, context: StaticHandlerContext) {
   const html = ReactDOMServer.renderToString(
     config.reactStrictMode ? (
       <React.StrictMode>
         <ErrorBoundary>
-          <StaticRouterProvider router={router} context={context} />
+          <HelmetProvider>
+            <StaticRouterProvider router={router} context={context} />
+          </HelmetProvider>
         </ErrorBoundary>
       </React.StrictMode>
     ) : (
       <ErrorBoundary>
-        <StaticRouterProvider router={router} context={context} />
+        <HelmetProvider>
+          <StaticRouterProvider router={router} context={context} />
+        </HelmetProvider>
       </ErrorBoundary>
     )
   );
