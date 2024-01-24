@@ -5,14 +5,23 @@ import react from "@vitejs/plugin-react";
 // @ts-ignore
 import config from "./../../rasengan.config.js";
 
+// Importing __dirname
+// @ts-ignore
+import { fileURLToPath } from "url";
+import path, { dirname } from "path";
+
 // Extract vite config
 const { vite } = config;
+
+// Getting root path
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const __pathToRoot = path.resolve(__dirname, "./../../");
 
 export default defineConfig({
   plugins: [react(), ...vite?.plugins],
 
   // define index.html location
-  root: "./../../",
+  root: __pathToRoot,
   optimizeDeps: {
     exclude: [
       "node:http",

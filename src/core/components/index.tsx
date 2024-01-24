@@ -55,7 +55,7 @@ export class ErrorBoundary extends React.Component {
     }
 
     // @ts-ignore
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -63,7 +63,7 @@ export class ErrorBoundary extends React.Component {
  * Error fallback component that will be displayed if an error occurs
  */
 const ErrorFallbackComponent = ({ error, info }: any) => {
-  console.log({ error, info })
+  console.log({ error, info });
   return (
     <div
       style={{
@@ -79,7 +79,7 @@ const ErrorFallbackComponent = ({ error, info }: any) => {
 
         <div
           style={{
-            width: "calc(100% - 40px)",
+            width: "100%",
             height: "auto",
             borderRadius: 10,
             padding: "20px",

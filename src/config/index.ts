@@ -41,6 +41,15 @@ export const defineConfig = (loadedConfig: AppConfig) => {
     console.error(error);
     return {
       reactStrictMode: true,
+      vite: {
+        optimizeDeps: {
+          exclude: [
+            "node:http",
+            "node-fetch",
+          ],
+        },
+        appType: "custom",
+      }
     };
   }
 };

@@ -24,7 +24,7 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "declaration": true,
-    "sourceMap": true,
+    "sourceMap": false,
 
     /* Plugins */
     "plugins": [{ "name": "typescript-plugin-css-modules" }],

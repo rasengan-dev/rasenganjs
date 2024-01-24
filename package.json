@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.3",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
@@ -19,6 +19,7 @@
     "url": "https://github.com/rasengan/rasengan.git",
     "issues": "https://github.com/rasengan/rasengan/issues"
   },
+  "homepage": "https://rasengan.dev",
   "scripts": {
     "dev": "node server",
     "build": "npm run build:client && npm run build:server",
@@ -27,6 +28,7 @@
     "build:lib": "tsc -p tsconfig.lib.json",
     "preview": "cross-env NODE_ENV=production node server",
     "deploy": "npm publish --access public",
+    "deploy:beta": "npm run deploy --tag beta",
     "pack": "npm pack --pack-destination ./../packages/rasengan/"
   },
   "dependencies": {
@@ -42,11 +44,10 @@
     "keypress": "^0.2.1",
     "node-fetch": "^3.3.2",
     "ora": "^7.0.1",
-    "react-helmet": "^6.1.0",
     "react-helmet-async": "^2.0.4",
     "react-router-dom": "^6.20.1",
     "sirv": "^2.0.3",
-    "vite": "^5.0.7",
+    "vite": "^5.0.12",
     "vite-plugin-css": "^1.0.4"
   },
   "peerDependencies": {
@@ -60,7 +61,6 @@
     "@types/node": "^20.8.6",
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
-    "@types/react-helmet": "^6.1.8",
     "cross-env": "^7.0.3",
     "typescript": "^5.2.2"
   },

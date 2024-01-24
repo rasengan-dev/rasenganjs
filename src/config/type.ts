@@ -73,4 +73,4 @@ export type AppConfig = {
 /**
  * Hosting strategy
  */
-export type HostingStrategy = "vercel" | "netlify" | "heroku" | "custom";
+export type HostingStrategy = "vercel" | "custom";
