@@ -7,6 +7,22 @@
   "bin": {
     "rasengan": "./lib/cli/index.js"
   },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    },
+    "./types/image": {
+      "types": "./types/image.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "author": {
     "name": "dilane3",
     "email": "komboudilane125@gmail.com",
