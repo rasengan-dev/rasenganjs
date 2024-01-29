@@ -23,11 +23,7 @@ export default defineConfig({
   // define index.html location
   root: __pathToRoot,
   optimizeDeps: {
-    exclude: [
-      "node:http",
-      "node-fetch",
-      ...vite?.optimizeDeps?.exclude,
-    ],
+    exclude: ["node:http", "node-fetch", ...vite?.optimizeDeps?.exclude],
   },
 
   build: {
@@ -49,6 +45,19 @@ export default defineConfig({
 
     postcss: vite?.css?.postcss,
   },
+
+  // Aliases
+  resolve: {
+    alias: vite?.resolve?.alias.map(
+      (alias: { find: string; replacement: string }) => ({
+        find: alias.find,
+        replacement: path.join(__pathToRoot, alias.replacement),
+      })
+    ),
+  },
+
+  // Cache directory
+  cacheDir: ".rasengan/",
 
   appType: vite.appType,
 });
