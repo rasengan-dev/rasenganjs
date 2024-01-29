@@ -25,10 +25,22 @@ export const defineConfig = (loadedConfig: AppConfig) => {
     },
   };
 
+  // Define default values for server config coming from loadedConfig.server
+  const defaultServerConfig = {
+    development: {
+      port: server?.development?.port || undefined,
+      open: server?.development?.open || true,
+    },
+
+    production: {
+      hosting: server?.production?.hosting || "custom",
+    }
+  };
+
   try {
     const config = {
       reactStrictMode: reactStrictMode === undefined ? true : reactStrictMode,
-      server,
+      server: defaultServerConfig,
       vite: {
         plugins: defaultViteConfig.plugins,
 

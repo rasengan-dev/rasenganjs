@@ -18,6 +18,11 @@ export type AppConfig = {
        * @default 3000
        */
       port?: number;
+
+      /**
+       * Automatically open browser
+       */
+      open?: boolean;
     };
 
     /**

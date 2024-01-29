@@ -59,5 +59,8 @@ export default defineConfig({
   // Cache directory
   cacheDir: ".rasengan/",
 
+  // Environment variable prefix
+  envPrefix: "RASENGAN_",
+
   appType: vite.appType,
 });
