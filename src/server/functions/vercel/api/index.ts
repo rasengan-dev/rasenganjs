@@ -75,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let handler = createStaticHandler(staticRoutes);
 
     // Create fetch request for static routing
+    // @ts-ignore
     let fetchRequest = createFetchRequest(req, host);
     let context = await handler.query(fetchRequest);
 

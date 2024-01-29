@@ -6,7 +6,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "_rasengan/server/index.js"
+      "dest": "api/index.js"
     }
   ]
 }
