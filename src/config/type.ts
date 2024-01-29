@@ -65,7 +65,20 @@ export type AppConfig = {
        * Configure external dependencies
        */
       external?: string[];
-    }
+    };
+
+    /**
+     * Configure resolve options
+     */
+    resolve?: {
+      /**
+       * Configure aliases
+       */
+      alias?: Array<{
+        find: string;
+        replacement: string;
+      }>;
+    };
   };
   // More config options...
 };

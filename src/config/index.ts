@@ -8,27 +8,55 @@ import { type AppConfig } from "./type.js";
 export const defineConfig = (loadedConfig: AppConfig) => {
   const { reactStrictMode, server, vite } = loadedConfig;
 
+  // Define default values for vite config coming from loadedConfig.vite
+  const defaultViteConfig = {
+    plugins: vite?.plugins || [],
+    optimizeDeps: {
+      exclude: vite?.optimizeDeps?.exclude || [],
+    },
+    css: {
+      postcss: vite?.css?.postcss || undefined,
+    },
+    build: {
+      external: vite?.build?.external || [],
+    },
+    resolve: {
+      alias: vite?.resolve?.alias || [],
+    },
+  };
+
   try {
     const config = {
       reactStrictMode: reactStrictMode === undefined ? true : reactStrictMode,
       server,
       vite: {
-        plugins: vite?.plugins || [],
+        plugins: defaultViteConfig.plugins,
 
         optimizeDeps: {
           exclude: [
             "node:http",
             "node-fetch",
-            ...(vite?.optimizeDeps?.exclude || []),
+            ...defaultViteConfig.optimizeDeps.exclude,
           ],
         },
 
         css: {
-          postcss: vite?.css?.postcss || undefined,
+          postcss: defaultViteConfig.css.postcss,
         },
 
         build: {
-          external: vite?.build?.external || [],
+          external: defaultViteConfig.build.external,
+        },
+
+        resolve: {
+          // concat two arrays
+          alias: [
+            {
+              find: "@/",
+              replacement: "src/",
+            },
+            ...defaultViteConfig.resolve.alias,
+          ],
         },
 
         appType: "custom",
@@ -43,13 +71,18 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       reactStrictMode: true,
       vite: {
         optimizeDeps: {
-          exclude: [
-            "node:http",
-            "node-fetch",
-          ],
+          exclude: ["node:http", "node-fetch"],
         },
         appType: "custom",
-      }
+        resolve: {
+          alias: [
+            {
+              find: "@/",
+              replacement: "src/",
+            },
+          ],
+        },
+      },
     };
   }
 };
@@ -73,4 +106,4 @@ export const adaptPath = (paths: string | Array<string>) => {
 
   // If the path is a string
   return `${prefix}${paths}`;
-}
+};

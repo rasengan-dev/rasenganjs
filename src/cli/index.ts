@@ -92,14 +92,14 @@ program
       // Copying the vercel.json file to the root directory
       execa(
         "cp",
-        ["node_modules/rasengan/src/server/functions/vercel/vercel.json", "."],
+        ["node_modules/rasengan/lib/server/functions/vercel/vercel.json", "."],
         {
           stdio: "inherit",
         }
       );
 
       // Removing index.d.ts and index.js.map files from the api folder
-      execa("rm", ["api/index.d.ts", "api/index.js.map"], {
+      execa("rm", ["api/index.d.ts"], {
         stdio: "inherit",
       });
     } else if (hostingStrategy === "netlify") {
