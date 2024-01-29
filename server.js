@@ -60,6 +60,7 @@ async function createServer({
       server: { middlewareMode: true },
       appType: "custom",
       base,
+      configFile: "node_modules/rasengan/vite.config.js"
     });
     app.use(vite.middlewares);
   } else {
