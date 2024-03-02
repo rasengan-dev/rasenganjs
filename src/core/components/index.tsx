@@ -9,7 +9,11 @@ const { Helmet } = pkg.default || pkg;
 /**
  * App component that represent the entry point of the application
  */
-export const Component = ({ router: AppRouter }: ComponentProps) => {
+export const Component = ({ router: AppRouter, children = undefined }: ComponentProps) => {
+  // Return children if they exist
+  if (children) return children;
+
+  // Otherwise, get the router and return it
   const Router = getRouter(AppRouter);
 
   return <Router />;

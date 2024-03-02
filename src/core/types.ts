@@ -6,7 +6,8 @@ import { PageComponent } from "./interfaces.js";
  * Props for App component
  */
 export type AppProps = {
-  Component: React.FC<{ router: any }>;
+  Component: React.FC<ComponentProps>;
+  children: React.ReactNode;
 };
 
 /**
@@ -14,6 +15,7 @@ export type AppProps = {
  */
 export type ComponentProps = {
   router: RouterComponent;
+  children: React.ReactNode;
 };
 
 export type PageToRenderProps = {
