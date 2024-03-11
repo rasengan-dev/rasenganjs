@@ -59,12 +59,12 @@ program
 
 // Handle the prebuild command
 program
-  .command("prebuild")
-  .description("Prebuild the project")
+  .command("prepare")
+  .description("Prepare the project")
   .action(() => {
     // Displaying the message
     console.log("");
-    console.log(chalk.blue("Prebuilding your project..."));
+    console.log(chalk.blue("Preparing your project for production..."));
     console.log("");
 
     // Checking the config file in order to know about hosting strategy

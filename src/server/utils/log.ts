@@ -3,14 +3,16 @@ import ora from "ora";
 import fs from "fs/promises";
 // @ts-ignore
 import keypress from "keypress";
+import openBrowser from "open";
 import { getIP } from "./index.js";
 
 /**
  * Log server info after the server is started
  * @param {number} port The port the server is running on
  * @param {boolean} isProduction Whether the server is running in production mode
+ * @param {boolean} open Whether to open the browser automatically
  */
-export async function logServerInfo(port: number, isProduction: boolean) {
+export async function logServerInfo(port: number, isProduction: boolean, open: boolean = false) {
   // Constants
   const arrowRight = "\u2192";
 
@@ -82,6 +84,11 @@ export async function logServerInfo(port: number, isProduction: boolean) {
   );
 
   console.log("\n");
+
+  // Open the browser
+  if (open) {
+    openBrowser(`http://localhost:${port}`);
+  }
 
   // Enable keypress events on the process.stdin stream
   keypress(process.stdin);

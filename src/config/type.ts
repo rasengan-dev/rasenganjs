@@ -15,12 +15,13 @@ export type AppConfig = {
     development?: {
       /**
        * Port to listen on
-       * @default 3000
+       * @default 5320
        */
       port?: number;
 
       /**
        * Automatically open browser
+       * @default false
        */
       open?: boolean;
     };

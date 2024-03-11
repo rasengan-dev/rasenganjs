@@ -29,7 +29,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
   const defaultServerConfig = {
     development: {
       port: server?.development?.port || undefined,
-      open: server?.development?.open || true,
+      open: server?.development?.open || false,
     },
 
     production: {

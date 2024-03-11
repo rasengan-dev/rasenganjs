@@ -29,7 +29,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "server.js", "types", "types"],
+  "include": ["src", "server.js", "types"],
 
   "references": [{ "path": "./tsconfig.node.json" }]
 }

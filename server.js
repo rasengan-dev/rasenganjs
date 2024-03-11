@@ -31,6 +31,7 @@ async function createServer({
   port,
   base = "/",
   enableSearchingPort = false,
+  open = false
 }) {
   // Get directory name
   const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -60,7 +61,7 @@ async function createServer({
       server: { middlewareMode: true },
       appType: "custom",
       base,
-      configFile: "node_modules/rasengan/vite.config.js"
+      configFile: "node_modules/rasengan/vite.config.js",
     });
     app.use(vite.middlewares);
   } else {
@@ -157,7 +158,7 @@ async function createServer({
   // Start http server
   const server = app.listen(port, () => {
     setTimeout(() => {
-      logServerInfo(port, isProduction);
+      logServerInfo(port, isProduction, open);
     }, 100);
   });
 
@@ -200,6 +201,7 @@ async function createServer({
           port: newPort,
           base,
           enableSearchingPort: true,
+          open
         });
       } else {
         console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
@@ -209,6 +211,7 @@ async function createServer({
           port: newPort,
           base,
           enableSearchingPort,
+          open
         });
       }
     }
@@ -226,5 +229,10 @@ const base = process.env.BASE || "/";
 
 // Launch server
 (async function launchServer() {
-  await createServer({ isProduction, port, base });
+  await createServer({
+    isProduction,
+    port,
+    base,
+    open: config.server?.development?.open,
+  });
 })();
