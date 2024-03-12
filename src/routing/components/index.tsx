@@ -123,3 +123,20 @@ export const NotFoundComponentContainer = ({
 }: NotFoundComponentContainerProps) => {
   return <>{content({})}</>;
 };
+
+/**
+ * Custom Link Component
+ * @param props
+ * @returns React.ReactNode
+ */
+export const CustomLink = (props: any) => {
+  const { to, children, ...rest } = props;
+
+  const splitted = to.split("#");
+
+  if (splitted.length > 1) {
+    return <a href={to} {...rest}>{children}</a>;
+  }
+
+  return <Link to={to} {...rest}>{children}</Link>;
+}

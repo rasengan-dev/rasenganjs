@@ -1,11 +1,20 @@
 import { RouterComponent } from "../interfaces.js";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  useLoaderData,
+} from "react-router-dom";
 import {
   RouteDecoratorProps,
   RouteLayoutDecoratorProps,
   RouterDecoratorProps,
 } from "../../decorators/types.js";
-import { DefaultLayout, LayoutComponent, PageComponent } from "../../index.js";
+import {
+  DefaultLayout,
+  LayoutComponent,
+  LoaderResponse,
+  PageComponent,
+} from "../../index.js";
 import {
   ClientComponent,
   NotFoundComponentContainer,
@@ -42,7 +51,16 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   const route = {
     path: layout.path,
     elementError: <ErrorBoundary />,
-    element: <LayoutToRender />,
+    Component() {
+      // Default data
+      const defaultData = {
+        props: {},
+      };
+
+      const { props } = (useLoaderData() as LoaderResponse) || defaultData;
+
+      return <LayoutToRender {...props} />;
+    },
     children: [] as unknown as any,
   };
 
@@ -63,26 +81,6 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
     return {
       path,
-      loader: async ({ params, request }: any) => {
-        // Get the response from the loader
-        const response = await page.loader({ params, request });
-
-        // Handle redirection
-        if (response.redirect) {
-          const formData = new FormData();
-
-          formData.append("redirect", response.redirect);
-
-          return new Response(formData, {
-            status: 302,
-            headers: {
-              Location: response.redirect,
-            },
-          });
-        }
-
-        return response;
-      },
       element: (
         <ClientComponent page={page} loader={router.loaderComponent({})} />
       ),
@@ -138,7 +136,35 @@ export const generateStaticRoutes = (
   const route = {
     path: layout.path,
     elementError: <ErrorBoundary />,
-    element: <LayoutToRender />,
+    Component() {
+      return <LayoutToRender />;
+    },
+    loader: async ({ params, request }: any) => {
+      try {
+        // Get the response from the loader
+        const response = await layout.loader({ params, request });
+
+        // Handle redirection
+        if (response.redirect) {
+          const formData = new FormData();
+
+          formData.append("redirect", response.redirect);
+
+          return new Response(formData, {
+            status: 302,
+            headers: {
+              Location: response.redirect,
+            },
+          });
+        }
+
+        return response;
+      } catch (error) {
+        return {
+          props: {},
+        };
+      }
+    },
     children: [] as unknown as any,
   };
 
@@ -160,24 +186,30 @@ export const generateStaticRoutes = (
     return {
       path,
       async loader({ params, request }: any) {
-        // Get the response from the loader
-        const response = await page.loader({ params, request });
+        try {
+          // Get the response from the loader
+          const response = await page.loader({ params, request });
 
-        // Handle redirection
-        if (response.redirect) {
-          const formData = new FormData();
+          // Handle redirection
+          if (response.redirect) {
+            const formData = new FormData();
 
-          formData.append("redirect", response.redirect);
+            formData.append("redirect", response.redirect);
 
-          return new Response(formData, {
-            status: 302,
-            headers: {
-              Location: response.redirect,
-            },
-          });
+            return new Response(formData, {
+              status: 302,
+              headers: {
+                Location: response.redirect,
+              },
+            });
+          }
+
+          return response;
+        } catch (error) {
+          return {
+            props: {},
+          };
         }
-
-        return response;
       },
       Component() {
         return (

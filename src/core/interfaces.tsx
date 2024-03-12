@@ -45,6 +45,21 @@ export abstract class LayoutComponent implements ILayoutComponent {
   set path(path: string) {
     this._path = path;
   }
+
+  /**
+   * Loader method that will be called during a routing on the server side
+   * in order to get data for the page from the server
+   * @returns Promise<any>
+   */
+  async loader(
+    _options: LoaderOptions
+  ): Promise<LoaderResponse> {
+    return new Promise((resolve) => {
+      resolve({
+        props: {},
+      });
+    });
+  }
 }
 
 /**
@@ -110,20 +125,5 @@ export abstract class PageComponent extends LayoutComponent {
    */
   set description(description: string) {
     this._description = description;
-  }
-
-  /**
-   * Loader method that will be called during a routing on the server side
-   * in order to get data for the page from the server
-   * @returns Promise<any>
-   */
-  async loader(
-    _options: LoaderOptions
-  ): Promise<LoaderResponse> {
-    return new Promise((resolve) => {
-      resolve({
-        props: {},
-      });
-    });
   }
 }

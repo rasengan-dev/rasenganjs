@@ -12,7 +12,11 @@ import { getIP } from "./index.js";
  * @param {boolean} isProduction Whether the server is running in production mode
  * @param {boolean} open Whether to open the browser automatically
  */
-export async function logServerInfo(port: number, isProduction: boolean, open: boolean = false) {
+export async function logServerInfo(
+  port: number,
+  isProduction: boolean,
+  open: boolean = false
+) {
   // Constants
   const arrowRight = "\u2192";
 

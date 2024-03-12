@@ -1,3 +1,5 @@
+import { CustomLink } from "./components/index.js";
+
 export {
   defineRouteLayout,
   defineRoutePage,
@@ -6,7 +8,6 @@ export {
 export { RouterComponent } from "./interfaces.js";
 export {
   Outlet,
-  Link,
   useLocation,
   useNavigate,
   useParams,
@@ -21,3 +22,4 @@ export {
   createRoutesFromChildren,
   Navigate,
 } from "react-router-dom";
+export { CustomLink as Link };
