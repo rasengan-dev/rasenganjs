@@ -50,7 +50,6 @@ program
   .command("build")
   .description("Build the project")
   .action(() => {
-    // const childProcess = exec("npm --prefix node_modules/rasengan run build");
     execa("npm", ["run", "build"], {
       cwd: "node_modules/rasengan",
       stdio: "inherit", // Pipe child process output to the parent process

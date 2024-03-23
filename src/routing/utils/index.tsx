@@ -22,6 +22,7 @@ import {
   ServerComponent,
 } from "../components/index.js";
 import { ErrorBoundary } from "../../core/components/index.js";
+import { Metadata } from "../types.js";
 
 /**
  * This function receives a router component and get a formated router first
@@ -78,6 +79,9 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   const pages = router.pages.map((page) => {
     // Get the path of the page
     const path = page.path === "/" ? layout.path : page.path;
+
+    // Add metadata to the page
+    page.addMetadata(layout.metadata);
 
     return {
       path,
@@ -183,6 +187,9 @@ export const generateStaticRoutes = (
     // Get the path of the page
     const path = page.path === "/" ? layout.path : page.path;
 
+    // Add metadata to the page
+    page.addMetadata(layout.metadata);
+
     return {
       path,
       async loader({ params, request }: any) {
@@ -249,64 +256,12 @@ export const generateStaticRoutes = (
 };
 
 /**
- * This function receives a router component and extract all metadatas of all pages
- * and put all of them inside a map function in order to be used to enhance ssr
- */
-export const extractPageMetadata = (router: RouterComponent) => {
-  // Initialisation of the Map of metadata
-  const metadatas = new Map<string, { title: string; description: string }>();
-
-  // Get base url
-  const baseURL = router.layout.path;
-
-  // Get informations about pages of the main router
-  router.pages.forEach((page) => {
-    // Add the first slash if not exists from the page path
-    const pagePath = page.path[0] === "/" ? page.path : "/" + page.path;
-
-    // Remove the last slash if exists from the base url
-    const finalBaseURL =
-      baseURL === "/"
-        ? baseURL
-        : baseURL[baseURL.length - 1] === "/"
-        ? baseURL.slice(0, -1)
-        : baseURL;
-
-    // Get the path of the page
-    const path =
-      pagePath === "/"
-        ? finalBaseURL
-        : finalBaseURL === "/"
-        ? pagePath
-        : finalBaseURL + "/" + pagePath;
-
-    // Add metadata
-    metadatas.set(path, {
-      title: page.title,
-      description: page.description,
-    });
-  });
-
-  // Loop through the others routers recursively
-  for (let besidesRouter of router.routers) {
-    const data = extractPageMetadata(besidesRouter);
-
-    // Copy metadata from data to metadatas map
-    data.forEach((value, key) => {
-      metadatas.set(key, value);
-    });
-  }
-
-  return metadatas;
-};
-
-/**
  * This function adds metadata to a page or a layout
  * @param option
  * @returns
  */
 export const defineRoutePage = (option: RouteDecoratorProps) => {
-  const { path, title, description } = option;
+  const { path, title, description, metadata } = option;
 
   return (Component: new () => PageComponent) => {
     if (!path) throw new Error("You must provide a path to the page");
@@ -318,6 +273,7 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
     component.path = path;
     component.title = title || Component.name;
     component.description = description || "";
+    component.metadata = metadata || [];
 
     return component;
   };
@@ -329,7 +285,7 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
  * @returns
  */
 export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
-  const { path } = option;
+  const { path, metadata } = option;
 
   return (Component: new () => LayoutComponent) => {
     if (!path) throw new Error("You must provide a path to the layout");
@@ -339,6 +295,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
 
     // Set properties
     component.path = path;
+    component.metadata = metadata || [];
 
     return component;
   };
@@ -372,3 +329,20 @@ export const defineRouter = (option: RouterDecoratorProps) => {
     return router;
   };
 };
+
+/**
+ * This function generates metadata useful for pages to show images when sharing on social media
+ * @param {Metadata[]} metadatas 
+ */
+export const generateMetadata = (metadatas: Metadata[]) => {
+  return metadatas.map((metadata) => {
+    return (
+      <meta
+        key={metadata.property || metadata.name}
+        name={metadata.name}
+        property={metadata.property}
+        content={metadata.content}
+      />
+    );
+  });
+}

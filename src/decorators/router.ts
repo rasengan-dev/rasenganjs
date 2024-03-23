@@ -1,30 +1,46 @@
 // Router Decorators
 
+import { RouterComponent } from "../routing/interfaces.js";
 import { DefaultLayout } from "../core/interfaces.js";
 import { RouterDecoratorProps } from "./types.js";
+import { NotFoundPageComponent } from "../routing/components/index.js";
 
 /**
  * Decorator that define a new router.
  * @param props Object that define the necessary elements to create a router
  * @returns 
  */
-export function Router(props: RouterDecoratorProps) {
-  return function (constructor: Function) {
+export function Router(option: RouterDecoratorProps) {
+  const { imports, layout, pages, loaderComponent, notFoundComponent } = option;
+
+  return (Component: new () => RouterComponent) => {
     // Handle errors
-    if (!props.pages) throw new Error("You must provide a list of pages in the router decorator");
+    if (!option.pages)
+      throw new Error(
+        "You must provide a list of pages in the router decorator"
+      );
+    
+    // Set properties
+    Component.prototype._routers = imports || [];
+    Component.prototype._layout = layout || new DefaultLayout();
+    Component.prototype._pages = pages;
+    Component.prototype._loaderComponent = loaderComponent || (() => null);
+    Component.prototype._notFoundComponent = notFoundComponent || NotFoundPageComponent;
 
-    // Add values to properties
+    // Seal the class
+    Object.seal(Component);
+    Object.seal(Component.prototype);
+    
+    //   // Create router
+    // const router = new Component();
 
-    // Define sub routers if provided or set and empty array
-    constructor.prototype["_routers"] = props.imports || [];
+    // // Set properties
+    // router.routers = imports || [];
+    // router.layout = layout || new DefaultLayout();
+    // router.pages = pages;
+    // router.loaderComponent = loaderComponent || (() => null);
+    // router.notFoundComponent = notFoundComponent || NotFoundPageComponent;
 
-    // Define layout if provided or set a default one.
-    constructor.prototype["_layout"] = props.layout || DefaultLayout;
-
-    // Define pages
-    constructor.prototype["_pages"] = props.pages;
-
-    Object.seal(constructor);
-    Object.seal(constructor.prototype);
+    // return router;
   };
 }

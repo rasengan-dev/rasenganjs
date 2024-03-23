@@ -1,3 +1,4 @@
+import { Metadata } from "../routing/types.js";
 import { LayoutComponent, PageComponent } from "../core/interfaces.js";
 import { RouterComponent } from "../routing/interfaces.js";
 
@@ -51,4 +52,9 @@ export type RouteLayoutDecoratorProps = {
    * base path of the layout
    */
   path: string;
+
+  /**
+   * Metadata 
+   */
+  metadata?: Metadata[];
 };

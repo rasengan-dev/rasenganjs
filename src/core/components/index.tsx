@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ComponentProps, PageToRenderProps } from "../types.js";
-import { getRouter } from "../../routing/utils/index.js";
+import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import * as pkg from "react-helmet-async";
 
 // @ts-ignore
@@ -9,7 +9,10 @@ const { Helmet } = pkg.default || pkg;
 /**
  * App component that represent the entry point of the application
  */
-export const Component = ({ router: AppRouter, children = undefined }: ComponentProps) => {
+export const Component = ({
+  router: AppRouter,
+  children = undefined,
+}: ComponentProps) => {
   // Return children if they exist
   if (children) return children;
 
@@ -29,11 +32,18 @@ export const PageToRender = ({ page, data }: PageToRenderProps) => {
   // Get the page props
   const props = data.props || {};
 
+  // Generate meta tags
+  const metaTags = React.useMemo(() => {
+    return generateMetadata(page.metadata);
+  }, []);
+
   return (
     <React.Fragment>
       <Helmet>
-        <title>{page.title}</title>
+        {metaTags.map((meta) => meta)}
+
         <meta name="description" content={page.description} />
+        <title>{page.title}</title>
       </Helmet>
 
       <Page {...props} />
@@ -59,7 +69,7 @@ export class ErrorBoundary extends React.Component {
     }
 
     // @ts-ignore
-    return this.props.children
+    return this.props.children;
   }
 }
 

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { LoaderOptions, LoaderResponse, ReactComponentProps } from "./types.js";
 import { Outlet } from "react-router-dom";
+import { Metadata } from "../routing/types.js";
 
 /**
  * Layout component interface that defines the base structure of a Layout and a Page too.
@@ -23,6 +24,11 @@ export abstract class LayoutComponent implements ILayoutComponent {
   protected _path!: string;
 
   /**
+   * Metadata
+   */
+  protected _metadata!: Metadata[];
+
+  /**
    * Render method which is a React component
    * @param props - props for the component
    */
@@ -37,6 +43,13 @@ export abstract class LayoutComponent implements ILayoutComponent {
     return this._path;
   }
 
+  /**
+   * Get metadata
+   */
+  get metadata(): Metadata[] {
+    return this._metadata;
+  }
+
   // Setters
 
   /**
@@ -44,6 +57,22 @@ export abstract class LayoutComponent implements ILayoutComponent {
    */
   set path(path: string) {
     this._path = path;
+  }
+
+  /**
+   * Set metadata
+   */
+  set metadata(metadata: Metadata[]) {
+    this._metadata = metadata;
+  }
+
+  /**
+   * Add metadata
+   */
+  addMetadata(metadata: Metadata[]) {
+    metadata.forEach(meta => {
+      this._metadata.unshift(meta);
+    })
   }
 
   /**
@@ -94,6 +123,7 @@ export abstract class PageComponent extends LayoutComponent {
    * Page description
    */
   protected _description!: string;
+
 
   // Getters
 

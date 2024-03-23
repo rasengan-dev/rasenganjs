@@ -1,5 +1,6 @@
 // Router Decorators
 
+import { PageComponent } from "../core/interfaces.js";
 import { RouteDecoratorProps } from "./types.js";
 
 /**
@@ -8,25 +9,19 @@ import { RouteDecoratorProps } from "./types.js";
  * @returns
  */
 export function Route(props: RouteDecoratorProps) {
-  return function (constructor: Function) {
+  return function (Component: new () => PageComponent) {
     // Handle errors
     if (!props.path)
       throw new Error("You must provide a path in the route decorator");
 
-    // Add values to properties
 
-    // Define path of the page
-    constructor.prototype._path = props.path;
+    // Set properties
+    Component.prototype._path = props.path;
+    Component.prototype._title = props.title || Component.name;
+    Component.prototype._description = props.description || "";
 
-    // Define title of the page
-    constructor.prototype._title =
-      props.title ||
-      constructor.name.charAt(0).toUpperCase() + constructor.name.slice(1);
-
-    // Define description of the page
-    constructor.prototype._description = props.description || "";
-
-    Object.seal(constructor);
-    Object.seal(constructor.prototype);
+    // Seal the class
+    Object.seal(Component);
+    Object.seal(Component.prototype);
   };
 }
