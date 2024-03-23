@@ -22,7 +22,7 @@ import {
   ServerComponent,
 } from "../components/index.js";
 import { ErrorBoundary } from "../../core/components/index.js";
-import { Metadata } from "../types.js";
+import { Metadata, MetadataLink, MetadataTag } from "../types.js";
 
 /**
  * This function receives a router component and get a formated router first
@@ -336,12 +336,36 @@ export const defineRouter = (option: RouterDecoratorProps) => {
  */
 export const generateMetadata = (metadatas: Metadata[]) => {
   return metadatas.map((metadata) => {
+    const { rel, sizes, type, href } = metadata as MetadataLink;
+    const { content, name, property } = metadata as MetadataTag;
+
+    if (rel && href) {
+      return (
+        <link
+          key={rel}
+          rel={rel}
+          sizes={sizes}
+          type={type}
+          href={href}
+        />
+      );
+    }
+
+    if (property) {
+      return (
+        <meta
+          key={property}
+          property={property}
+          content={content}
+        />
+      );
+    }
+
     return (
       <meta
-        key={metadata.property || metadata.name}
-        name={metadata.name}
-        property={metadata.property}
-        content={metadata.content}
+        key={name}
+        name={name}
+        content={content}
       />
     );
   });

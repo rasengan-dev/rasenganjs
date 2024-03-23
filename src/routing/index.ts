@@ -1,5 +1,6 @@
 import { CustomLink } from "./components/index.js";
 
+export type { Metadata } from "./types.js";
 export {
   defineRouteLayout,
   defineRoutePage,
