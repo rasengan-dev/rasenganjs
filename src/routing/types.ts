@@ -15,4 +15,27 @@ export type MetadataTag = {
   content: string;
 };
 
-export type Metadata = MetadataTag | MetadataLink;
+export type Metadata = {
+  openGraph?: {
+    type?: string;
+    title?: string;
+    description?: string;
+    url: string;
+    image: string;
+    width?: string;
+    height?: string;
+  };
+
+  twitter?: {
+    card: "summary_large_image" | "summary";
+    image: string;
+    title: string;
+    description?: string;
+    creator?: string;
+    site?: string;
+  };
+
+  links?: Array<MetadataLink>;
+
+  metadataTags?: Array<MetadataTag>;
+}

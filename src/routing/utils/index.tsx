@@ -273,7 +273,7 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
     component.path = path;
     component.title = title || Component.name;
     component.description = description || "";
-    component.metadata = metadata || [];
+    component.metadata = metadata ? [metadata] : [];
 
     return component;
   };
@@ -295,7 +295,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
 
     // Set properties
     component.path = path;
-    component.metadata = metadata || [];
+    component.metadata = metadata ? [metadata] : [];
 
     return component;
   };
@@ -332,41 +332,160 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 
 /**
  * This function generates metadata useful for pages to show images when sharing on social media
- * @param {Metadata[]} metadatas 
+ * @param {Metadata[]} metadatas
  */
 export const generateMetadata = (metadatas: Metadata[]) => {
-  return metadatas.map((metadata) => {
-    const { rel, sizes, type, href } = metadata as MetadataLink;
-    const { content, name, property } = metadata as MetadataTag;
+  const metadataElements: JSX.Element[] = [];
 
-    if (rel && href) {
-      return (
-        <link
-          key={rel}
-          rel={rel}
-          sizes={sizes}
-          type={type}
-          href={href}
-        />
+  metadatas.forEach((metadata) => {
+    const { openGraph, twitter, links, metadataTags } = metadata;
+
+    // Handling openGraph
+    if (openGraph) {
+      const { title, description, url, image, width, height, type } = openGraph;
+
+      if (title) {
+        metadataElements.push(
+          <meta key="og:title" property="og:title" content={title} />
+        );
+      }
+
+      if (description) {
+        metadataElements.push(
+          <meta
+            key="og:description"
+            property="og:description"
+            content={description}
+          />
+        );
+      }
+
+      if (url) {
+        metadataElements.push(
+          <meta key="og:url" property="og:url" content={url} />
+        );
+      }
+
+      if (image) {
+        metadataElements.push(
+          <meta key="og:image" property="og:image" content={image} />
+        );
+      }
+
+      if (width) {
+        metadataElements.push(
+          <meta
+            key="og:image:width"
+            property="og:image:width"
+            content={width}
+          />
+        );
+      }
+
+      if (height) {
+        metadataElements.push(
+          <meta
+            key="og:image:height"
+            property="og:image:height"
+            content={height}
+          />
+        );
+      }
+
+      metadataElements.push(
+        <meta key="og:type" property="og:type" content={type || "website"} />
       );
     }
 
-    if (property) {
-      return (
+    // Handling twitter
+    if (twitter) {
+      const { card, site, creator, image, title, description } = twitter;
+
+      metadataElements.push(
         <meta
-          key={property}
-          property={property}
-          content={content}
+          key="twitter:card"
+          name="twitter:card"
+          content={card || "summary_large_image"}
         />
       );
+
+      if (site) {
+        metadataElements.push(
+          <meta key="twitter:site" name="twitter:site" content={site} />
+        );
+      }
+
+      if (creator) {
+        metadataElements.push(
+          <meta
+            key="twitter:creator"
+            name="twitter:creator"
+            content={creator}
+          />
+        );
+      }
+
+      if (image) {
+        metadataElements.push(
+          <meta key="twitter:image" name="twitter:image" content={image} />
+        );
+      }
+
+      if (title) {
+        metadataElements.push(
+          <meta key="twitter:title" name="twitter:title" content={title} />
+        );
+      }
+
+      if (description) {
+        metadataElements.push(
+          <meta
+            key="twitter:description"
+            name="twitter:description"
+            content={description}
+          />
+        );
+      }
     }
+
+    // Handling links
+    if (links) {
+      metadataElements.push(...generateLinks(links));
+    }
+
+    // Handling metadata tags
+    if (metadataTags) {
+      metadataElements.push(...generateMetadataTags(metadataTags));
+    }
+  });
+
+  return metadataElements;
+};
+
+const generateLinks = (links: MetadataLink[]) => {
+  return links.map((link) => {
+    const { rel, sizes, type, href } = link;
 
     return (
-      <meta
-        key={name}
-        name={name}
-        content={content}
+      <link
+        key={rel}
+        rel={rel}
+        sizes={sizes || "32x32"}
+        type={type || "image/png"}
+        href={href}
       />
     );
   });
-}
+};
+
+const generateMetadataTags = (metadataTags: MetadataTag[]) => {
+  return metadataTags.map((metadataTag) => {
+    const { content, name, property } = metadataTag;
+
+    if (property) {
+      return <meta key={property} property={property} content={content} />;
+    }
+
+    return <meta key={name} name={name} content={content} />;
+  });
+};

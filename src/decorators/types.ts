@@ -56,5 +56,5 @@ export type RouteLayoutDecoratorProps = {
   /**
    * Metadata 
    */
-  metadata?: Metadata[];
+  metadata?: Metadata;
 };

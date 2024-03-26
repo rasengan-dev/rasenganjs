@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "type": "module",
   "main": "lib/index.js",
   "bin": {
@@ -18,11 +18,8 @@
         "default": "./lib/index.js"
       }
     },
-    "./types/image": {
-      "types": "./types/image.d.ts"
-    },
-    "./types/style": {
-      "types": "./types/style.d.ts"
+    "./types/client": {
+      "types": "./types/client.d.ts"
     },
     "./package.json": "./package.json"
   },
