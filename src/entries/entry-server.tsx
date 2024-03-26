@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 // @ts-ignore
-import AppRouter from "./../../../../src/pages/app.router";
+import AppRouter from "./../../../../src/app/app.router";
 // @ts-ignore
 import App from "./../../../../src/main";
 
