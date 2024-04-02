@@ -9,13 +9,26 @@ export type MetadataLink = {
   href: string;
 };
 
-export type MetadataTag = {
+export type MetaTag = {
   name?: string;
   property?: string;
   content: string;
 };
 
 export type Metadata = {
+  /**
+   * Title of the pate
+   */
+  title?: string;
+
+  /**
+   * Description of the page
+   */
+  description?: string;
+
+  /**
+   * Configuring link preview on social media like facebook, linkedin, etc.
+   */
   openGraph?: {
     type?: string;
     title?: string;
@@ -26,6 +39,9 @@ export type Metadata = {
     height?: string;
   };
 
+  /**
+   * Configuring link preview on twitter
+   */
   twitter?: {
     card: "summary_large_image" | "summary";
     image: string;
@@ -35,7 +51,13 @@ export type Metadata = {
     site?: string;
   };
 
+  /**
+   * Configuring link tags to define icons and others
+   */
   links?: Array<MetadataLink>;
 
-  metadataTags?: Array<MetadataTag>;
+  /**
+   * Other metadata tags
+   */
+  metaTags?: Array<MetaTag>;
 }

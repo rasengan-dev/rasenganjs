@@ -10,7 +10,6 @@ import {
   RouterDecoratorProps,
 } from "../../decorators/types.js";
 import {
-  DefaultLayout,
   LayoutComponent,
   LoaderResponse,
   PageComponent,
@@ -21,8 +20,8 @@ import {
   NotFoundPageComponent,
   ServerComponent,
 } from "../components/index.js";
-import { ErrorBoundary } from "../../core/components/index.js";
-import { Metadata, MetadataLink, MetadataTag } from "../types.js";
+import { ErrorBoundary, DefaultLayout } from "../../core/components/index.js";
+import { Metadata, MetadataLink, MetaTag } from "../types.js";
 
 /**
  * This function receives a router component and get a formated router first
@@ -46,11 +45,10 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   const routes = [] as any;
 
   // Get information about the layout and the path
-  const layout = router.layout;
-  const LayoutToRender = layout.render;
+  const Layout = router.layout;
 
   const route = {
-    path: layout.path,
+    path: Layout.path,
     elementError: <ErrorBoundary />,
     Component() {
       // Default data
@@ -60,7 +58,7 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
       const { props } = (useLoaderData() as LoaderResponse) || defaultData;
 
-      return <LayoutToRender {...props} />;
+      return <Layout {...props} />;
     },
     children: [] as unknown as any,
   };
@@ -76,17 +74,18 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
   }
 
   // Get informations about pages
-  const pages = router.pages.map((page) => {
+  const pages = router.pages.map((Page) => {
     // Get the path of the page
-    const path = page.path === "/" ? layout.path : page.path;
+    const path = Page.path === "/" ? Layout.path : Page.path;
 
+    // TODO: Find a good way to use the layout metadata in the page
     // Add metadata to the page
-    page.addMetadata(layout.metadata);
+    // page.addMetadata(layout.metadata);
 
     return {
       path,
       element: (
-        <ClientComponent page={page} loader={router.loaderComponent({})} />
+        <ClientComponent page={Page} loader={router.loaderComponent({})} />
       ),
       elementError: <ErrorBoundary />,
     };
@@ -134,19 +133,23 @@ export const generateStaticRoutes = (
   const routes = [] as any;
 
   // Get information about the layout and the path
-  const layout = router.layout;
-  const LayoutToRender = layout.render;
+  const Layout = router.layout;
 
   const route = {
-    path: layout.path,
+    path: Layout.path,
     elementError: <ErrorBoundary />,
     Component() {
-      return <LayoutToRender />;
+      return <Layout />;
     },
     loader: async ({ params, request }: any) => {
       try {
+        // Check if the loader is defined
+        if (!Layout.loader) {
+          throw new Error("Missing loader function")
+        }
+
         // Get the response from the loader
-        const response = await layout.loader({ params, request });
+        const response = await Layout.loader({ params, request });
 
         // Handle redirection
         if (response.redirect) {
@@ -183,19 +186,25 @@ export const generateStaticRoutes = (
   }
 
   // Get informations about pages
-  const pages = router.pages.map((page) => {
+  const pages = router.pages.map((Page) => {
     // Get the path of the page
-    const path = page.path === "/" ? layout.path : page.path;
+    const path = Page.path === "/" ? Layout.path : Page.path;
 
+    // TODO: Find a good way to use the layout metadata in the page
     // Add metadata to the page
-    page.addMetadata(layout.metadata);
+    // Page.addMetadata(layout.metadata);
 
     return {
       path,
       async loader({ params, request }: any) {
         try {
+          // Check if the loader is defined
+          if (!Page.loader) {
+            throw new Error("Missing loader function")
+          }
+
           // Get the response from the loader
-          const response = await page.loader({ params, request });
+          const response = await Page.loader({ params, request });
 
           // Handle redirection
           if (response.redirect) {
@@ -220,7 +229,7 @@ export const generateStaticRoutes = (
       },
       Component() {
         return (
-          <ServerComponent page={page} loader={router.loaderComponent({})} />
+          <ServerComponent page={Page} loader={router.loaderComponent({})} />
         );
       },
       elementError: <ErrorBoundary />,
@@ -271,9 +280,7 @@ export const defineRoutePage = (option: RouteDecoratorProps) => {
 
     // Set properties
     component.path = path;
-    component.title = title || Component.name;
-    component.description = description || "";
-    component.metadata = metadata ? [metadata] : [];
+    component.metadata = metadata;
 
     return component;
   };
@@ -295,7 +302,7 @@ export const defineRouteLayout = (option: RouteLayoutDecoratorProps) => {
 
     // Set properties
     component.path = path;
-    component.metadata = metadata ? [metadata] : [];
+    component.metadata = metadata;
 
     return component;
   };
@@ -321,7 +328,7 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 
     // Set properties
     router.routers = imports || [];
-    router.layout = layout || new DefaultLayout();
+    router.layout = layout || DefaultLayout;
     router.pages = pages;
     router.loaderComponent = loaderComponent || (() => null);
     router.notFoundComponent = notFoundComponent || NotFoundPageComponent;
@@ -338,7 +345,7 @@ export const generateMetadata = (metadatas: Metadata[]) => {
   const metadataElements: JSX.Element[] = [];
 
   metadatas.forEach((metadata) => {
-    const { openGraph, twitter, links, metadataTags } = metadata;
+    const { openGraph, twitter, links, metaTags } = metadata;
 
     // Handling openGraph
     if (openGraph) {
@@ -454,14 +461,17 @@ export const generateMetadata = (metadatas: Metadata[]) => {
     }
 
     // Handling metadata tags
-    if (metadataTags) {
-      metadataElements.push(...generateMetadataTags(metadataTags));
+    if (metaTags) {
+      metadataElements.push(...generateMetaTags(metaTags));
     }
   });
 
   return metadataElements;
 };
 
+/**
+ * This function generates links for metadata
+ */
 const generateLinks = (links: MetadataLink[]) => {
   return links.map((link) => {
     const { rel, sizes, type, href } = link;
@@ -478,9 +488,14 @@ const generateLinks = (links: MetadataLink[]) => {
   });
 };
 
-const generateMetadataTags = (metadataTags: MetadataTag[]) => {
-  return metadataTags.map((metadataTag) => {
-    const { content, name, property } = metadataTag;
+/**
+ * This function generates meta tags for metadata
+ * @param metaTags 
+ * @returns 
+ */
+const generateMetaTags = (metaTags: MetaTag[]) => {
+  return metaTags.map((metaTag) => {
+    const { content, name, property } = metaTag;
 
     if (property) {
       return <meta key={property} property={property} content={content} />;

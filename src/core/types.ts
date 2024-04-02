@@ -1,5 +1,6 @@
+import React from "react";
 import { RouterComponent } from "../routing/interfaces.js";
-import { PageComponent } from "./interfaces.js";
+import { Metadata } from "../routing/index.js";
 
 
 /**
@@ -43,3 +44,33 @@ export type LoaderResponse = {
   props?: { [key: string]: any };
   redirect?: string
 };
+
+/**
+ * Page component that extends LayoutComponent and represents a page
+ */
+export type PageComponent = React.FC<ReactComponentProps> & {
+  /**
+   * Base path for the page
+   */
+  path: string;
+  
+  /**
+   * Metadata for the page 
+   */
+  metadata?: Metadata,
+
+  /**
+   * Loader function that loads data for the page from the server
+   */
+  loader?: (options: LoaderOptions) => Promise<LoaderResponse>;
+};
+
+/**
+ * Layout component that represents a layout
+ */
+export type LayoutComponent = PageComponent & {
+   /**
+   * Metadata for the page omit title
+   */
+   metadata?: Omit<Metadata, "title">,
+}

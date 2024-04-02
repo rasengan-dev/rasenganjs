@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Link, useLoaderData, useRouteError } from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
-import { PageComponent } from "../../core/interfaces.js";
+import { PageComponent } from "../../core/types.js";
 import { LoaderResponse } from "../../core/types.js";
 import { NotFoundComponentContainerProps } from "../types.js";
 

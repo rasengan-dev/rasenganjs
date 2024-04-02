@@ -1,7 +1,7 @@
 // Router Decorators
 
 import { RouterComponent } from "../routing/interfaces.js";
-import { DefaultLayout } from "../core/interfaces.js";
+import { DefaultLayout } from "../core/components/index.js";
 import { RouterDecoratorProps } from "./types.js";
 import { NotFoundPageComponent } from "../routing/components/index.js";
 
@@ -22,7 +22,7 @@ export function Router(option: RouterDecoratorProps) {
     
     // Set properties
     Component.prototype._routers = imports || [];
-    Component.prototype._layout = layout || new DefaultLayout();
+    Component.prototype._layout = layout || DefaultLayout;
     Component.prototype._pages = pages;
     Component.prototype._loaderComponent = loaderComponent || (() => null);
     Component.prototype._notFoundComponent = notFoundComponent || NotFoundPageComponent;

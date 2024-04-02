@@ -1,4 +1,4 @@
-import { LayoutComponent, PageComponent } from "../core/interfaces.js";
+import { LayoutComponent, PageComponent } from "../core/types.js";
 
 /**
  * Router component that define a routing system

@@ -2,8 +2,8 @@ import { CustomLink } from "./components/index.js";
 
 export type { Metadata } from "./types.js";
 export {
-  defineRouteLayout,
-  defineRoutePage,
+  // defineRouteLayout,
+  // defineRoutePage,
   defineRouter,
 } from "./utils/index.js";
 export { RouterComponent } from "./interfaces.js";

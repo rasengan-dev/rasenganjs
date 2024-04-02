@@ -1,5 +1,5 @@
 import { Metadata } from "../routing/types.js";
-import { LayoutComponent, PageComponent } from "../core/interfaces.js";
+import { LayoutComponent, PageComponent } from "../core/types.js";
 import { RouterComponent } from "../routing/interfaces.js";
 
 /**

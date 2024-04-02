@@ -1,8 +1,8 @@
 export {
-  type ILayoutComponent,
-  LayoutComponent,
-  DefaultLayout,
-  PageComponent,
+  // type ILayoutComponent,
+  // LayoutComponent,
+  // DefaultLayout,
+  // PageComponent,
 } from "./interfaces.js";
 
 export type {
@@ -11,4 +11,6 @@ export type {
   ComponentProps,
   LoaderOptions,
   LoaderResponse,
+  LayoutComponent,
+  PageComponent,
 } from "./types.js";

@@ -1,7 +1,8 @@
 import * as React from "react";
-import { ComponentProps, PageToRenderProps } from "../types.js";
+import { ComponentProps, LayoutComponent, PageToRenderProps } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import * as pkg from "react-helmet-async";
+import { Outlet } from "react-router-dom";
 
 // @ts-ignore
 const { Helmet } = pkg.default || pkg;
@@ -16,8 +17,10 @@ export const Component = ({
   // Return children if they exist
   if (children) return children;
 
+  let Router: any = null;
+
   // Otherwise, get the router and return it
-  const Router = getRouter(AppRouter);
+  Router = getRouter(AppRouter);
 
   return <Router />;
 };
@@ -25,16 +28,15 @@ export const Component = ({
 /**
  * Page component that defines title and description to a page
  */
-export const PageToRender = ({ page, data }: PageToRenderProps) => {
-  // Get the page component
-  const Page = page.render;
-
+export const PageToRender = ({ page: Page, data }: PageToRenderProps) => {
   // Get the page props
   const props = data.props || {};
 
   // Generate meta tags
   const metaTags = React.useMemo(() => {
-    return generateMetadata(page.metadata);
+    if (!Page.metadata) return [];
+
+    return generateMetadata([Page.metadata]);
   }, []);
 
   return (
@@ -42,8 +44,8 @@ export const PageToRender = ({ page, data }: PageToRenderProps) => {
       <Helmet>
         {metaTags.map((meta) => meta)}
 
-        <meta name="description" content={page.description} />
-        <title>{page.title}</title>
+        <meta name="description" content={Page.metadata?.description || ""} />
+        <title>{Page.metadata?.title || Page.name}</title>
       </Helmet>
 
       <Page {...props} />
@@ -77,7 +79,6 @@ export class ErrorBoundary extends React.Component {
  * Error fallback component that will be displayed if an error occurs
  */
 const ErrorFallbackComponent = ({ error, info }: any) => {
-  console.log({ error, info });
   return (
     <div
       style={{
@@ -107,3 +108,17 @@ const ErrorFallbackComponent = ({ error, info }: any) => {
     </div>
   );
 };
+
+/**
+ * Default layout component
+ */
+const DefaultLayout: LayoutComponent = () => {
+  return (
+    <React.Fragment>
+      <Outlet />
+    </React.Fragment>
+  );
+}
+DefaultLayout.path = "/";
+
+export { DefaultLayout }
