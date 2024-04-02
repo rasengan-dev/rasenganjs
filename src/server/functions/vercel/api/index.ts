@@ -53,20 +53,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let template;
     let entry;
-    let manifest;
+    // let manifest;
 
     // Always read fresh template in development
     const htmlFilePath = join(appPath, "dist/client/index.html");
     const serverFilePath = join(appPath, "dist/server/entry-server.js");
-    const ssrManifestFilePath = join(
-      appPath,
-      "dist/client/.vite/ssr-manifest.json"
-    );
+    // const ssrManifestFilePath = join(
+    //   appPath,
+    //   "dist/client/.vite/ssr-manifest.json"
+    // );
 
     // Read template, server-renderer and manifest in production
     template = await fs.readFile(htmlFilePath, "utf-8");
     entry = await import(serverFilePath);
-    manifest = await fs.readFile(ssrManifestFilePath, "utf-8");
+    // manifest = await fs.readFile(ssrManifestFilePath, "utf-8");
 
     // Extract render and staticRoutes from entry
     const { render, staticRoutes } = entry;

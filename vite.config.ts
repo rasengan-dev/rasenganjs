@@ -18,6 +18,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const __pathToRoot = path.resolve(__dirname, "./../../");
 
 export default defineConfig({
+  // Vite Plugins
   plugins: [react(), ...vite?.plugins],
 
   // define index.html location
@@ -26,6 +27,7 @@ export default defineConfig({
     exclude: ["node:http", "node-fetch", ...vite?.optimizeDeps?.exclude],
   },
 
+  // Build options
   build: {
     sourcemap: true,
     rollupOptions: {
@@ -33,11 +35,13 @@ export default defineConfig({
     },
   },
 
+  // SSR options
   ssr: {
     // Ignore CSS files
     noExternal: [/\.css$/],
   },
 
+  // Server options
   css: {
     modules: {
       localsConvention: "camelCaseOnly",
@@ -62,5 +66,6 @@ export default defineConfig({
   // Environment variable prefix
   envPrefix: "RASENGAN_",
 
+  // App type
   appType: vite.appType,
 });
