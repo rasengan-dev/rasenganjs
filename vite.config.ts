@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 
 // Load rasengan config file
 // @ts-ignore
@@ -7,8 +7,8 @@ import config from "./../../rasengan.config.js";
 
 // Importing __dirname
 // @ts-ignore
-import { fileURLToPath } from "url";
-import path, { dirname } from "path";
+import { fileURLToPath } from "node:url";
+import path, { dirname } from "node:path";
 
 // Extract vite config
 const { vite } = config;

@@ -5,6 +5,11 @@ export {
   // PageComponent,
 } from "./interfaces.js";
 
+export {
+  Body,
+  Scripts
+} from "./components/index.js"
+
 export type {
   AppProps,
   ReactComponentProps,
@@ -13,4 +18,5 @@ export type {
   LoaderResponse,
   LayoutComponent,
   PageComponent,
+  TemplateProps
 } from "./types.js";

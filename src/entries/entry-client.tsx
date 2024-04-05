@@ -15,17 +15,17 @@ ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement,
   config.reactStrictMode ? (
     <React.StrictMode>
-      <ErrorBoundary>
-        <HelmetProvider>
+      <HelmetProvider>
+        <ErrorBoundary>
           <App Component={Component} />
-        </HelmetProvider>
-      </ErrorBoundary>
+        </ErrorBoundary>
+      </HelmetProvider>
     </React.StrictMode>
   ) : (
-    <ErrorBoundary>
-      <HelmetProvider>
+    <HelmetProvider>
+      <ErrorBoundary>
         <App Component={Component} />
-      </HelmetProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </HelmetProvider>
   )
 );

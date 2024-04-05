@@ -270,7 +270,7 @@ export const generateStaticRoutes = (
  * @returns
  */
 export const defineRoutePage = (option: RouteDecoratorProps) => {
-  const { path, title, description, metadata } = option;
+  const { path, metadata } = option;
 
   return (Component: new () => PageComponent) => {
     if (!path) throw new Error("You must provide a path to the page");

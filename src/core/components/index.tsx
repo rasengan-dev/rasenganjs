@@ -1,8 +1,15 @@
 import * as React from "react";
-import { ComponentProps, LayoutComponent, PageToRenderProps } from "../types.js";
+import {
+  ComponentProps,
+  HelmetContext,
+  LayoutComponent,
+  PageToRenderProps,
+} from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import * as pkg from "react-helmet-async";
 import { Outlet } from "react-router-dom";
+
+import refreshScript from "../../scripts/refresh-hack.js?raw";
 
 // @ts-ignore
 const { Helmet } = pkg.default || pkg;
@@ -110,6 +117,52 @@ const ErrorFallbackComponent = ({ error, info }: any) => {
 };
 
 /**
+ * Head component
+ * @params data - Helmet context
+ * @returns 
+ */
+export const Heads = ({ data, children }: { data: HelmetContext, children: React.ReactNode }) => {
+  if (!data) return null;
+
+  return (
+    <React.Fragment>
+      {children}
+
+      {data.helmet && data.helmet.meta.toComponent({})}
+      {data.helmet && data.helmet.title.toComponent({})}
+    </React.Fragment>
+  );
+};
+
+/**
+ * Body component
+ */
+export const Body = ({ children }: { children: React.ReactNode }) => {
+  return <div id="root">{children}</div>
+}
+
+/**
+ * Scripts component
+ */
+export const Scripts = () => {
+  return (
+    <React.Fragment>
+      <noscript
+        dangerouslySetInnerHTML={{
+          __html: `<b>Enable JavaScript to run this app.</b>`,
+        }}
+      />
+
+      <script
+        type="module"
+        src="/node_modules/rasengan/lib/entries/entry-client.js"
+        defer
+      ></script>
+    </React.Fragment>
+  );
+};
+
+/**
  * Default layout component
  */
 const DefaultLayout: LayoutComponent = () => {
@@ -118,7 +171,7 @@ const DefaultLayout: LayoutComponent = () => {
       <Outlet />
     </React.Fragment>
   );
-}
+};
 DefaultLayout.path = "/";
 
-export { DefaultLayout }
+export { DefaultLayout };

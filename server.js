@@ -1,7 +1,6 @@
-import fs from "node:fs/promises";
 import express from "express";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createStaticHandler,
   createStaticRouter,
@@ -39,17 +38,6 @@ async function createServer({
   // Get app path
   const appPath = join(__dirname, "./../../");
 
-  // Cached production assets
-  const templateHtml = isProduction
-    ? await fs.readFile(join(appPath, "dist/client/index.html"), "utf-8")
-    : "";
-  // const ssrManifest = isProduction
-  //   ? await fs.readFile(
-  //       join(appPath, "dist/client/.vite/ssr-manifest.json"),
-  //       "utf-8"
-  //     )
-  //   : undefined;
-
   // Create http server
   const app = express();
 
@@ -58,7 +46,7 @@ async function createServer({
   if (!isProduction) {
     const { createServer } = await import("vite");
     vite = await createServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: true },
       appType: "custom",
       base,
       configFile: "node_modules/rasengan/vite.config.js",
@@ -77,18 +65,10 @@ async function createServer({
       // ! 404 Fix related to some files not being found
       fix404(req.originalUrl, res, appPath);
 
-      // ! Service Worker Fix
-
-      const url = req.originalUrl.replace(base, "");
-
-      let template;
       let render;
       let staticRoutes;
-      if (!isProduction) {
-        // Always read fresh template in development
-        template = await fs.readFile(join(appPath, "index.html"), "utf-8");
-        template = await vite.transformIndexHtml(url, template);
 
+      if (!isProduction) {
         const entry = await vite.ssrLoadModule(
           join(appPath, "node_modules/rasengan/lib/entries/entry-server.js")
         );
@@ -96,7 +76,6 @@ async function createServer({
         render = entry.render;
         staticRoutes = entry.staticRoutes;
       } else {
-        template = templateHtml;
         const entry = await import(
           join(appPath, "dist/server/entry-server.js")
         );
@@ -126,32 +105,10 @@ async function createServer({
       // Create static router
       let router = createStaticRouter(handler.dataRoutes, context);
 
-      // const rendered = await render(url, ssrManifest);
-      const rendered = await render(router, context, helmetContext);
-
-      // Get metadata
-      const helmet = helmetContext.helmet;
-
-      const head = `
-        ${helmet.title.toString()}
-        ${helmet.meta.toString()}
-      `;
-
-      let html = template
-        .replace(`<!--app-head-->`, head ?? "")
-        .replace(`<!--app-html-->`, rendered.html ?? "");
-
-      res
-        .status(200)
-        .set({
-          "Content-Type": "text/html",
-          "Cache-Control": "max-age=31536000",
-        })
-        .end(html);
+      // Render the html page on the server
+      render(router, context, helmetContext, res);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
-      // console.log(e.stack);
-      res.status(500).end(e.stack);
     }
   });
 

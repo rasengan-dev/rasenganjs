@@ -17,16 +17,6 @@ export type MetaTag = {
 
 export type Metadata = {
   /**
-   * Title of the pate
-   */
-  title?: string;
-
-  /**
-   * Description of the page
-   */
-  description?: string;
-
-  /**
    * Configuring link preview on social media like facebook, linkedin, etc.
    */
   openGraph?: {
