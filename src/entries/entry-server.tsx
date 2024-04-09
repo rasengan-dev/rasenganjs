@@ -17,98 +17,85 @@ import { Router } from "@remix-run/router";
 
 // @ts-ignore
 import config from "./../../../../rasengan.config.js";
-import { Component, ErrorBoundary, Heads } from "../core/components";
+import {
+  Component,
+  ErrorBoundary,
+  Heads,
+  Body,
+  Scripts,
+} from "../core/components/index.js";
+import * as H from "react-helmet-async";
 
-import refreshScript from "./../scripts/refresh-hack.js?raw";
+// const ABORT_DELAY = 5000;
 
-import * as pkg from "react-helmet-async";
+const TemplateHtml = ({
+  helmetContext,
+  bootstrap,
+}: {
+  helmetContext: any;
+  bootstrap: string;
+}) => {
+  return (
+    <Template
+      Head={({ children }) => (
+        <Heads data={helmetContext} bootstrap={bootstrap}>
+          {children}
+        </Heads>
+      )}
+      Body={({ children }) => <Body>{children}</Body>}
+      Script={({ children }) => (
+        <Scripts bootstrap={bootstrap}>{children}</Scripts>
+      )}
+    />
+  );
+};
 
-// @ts-ignore
-const { HelmetProvider } = pkg.default || pkg;
 
-const ABORT_DELAY = 5000;
-
-export async function render(
+/**
+ * Function used to render the app on the server
+ * @param router 
+ * @param context 
+ * @param helmetContext 
+ * @returns 
+ */
+export function render(
   router: Router,
   context: StaticHandlerContext,
-  helmetContext: any = {},
-  response: any
+  helmetContext: any = {}
 ) {
-  let shellRendered = false;
+  const html = ReactDOMServer.renderToString(
+    config.reactStrictMode ? (
+      <React.StrictMode>
+        <H.HelmetProvider context={helmetContext}>
+          <ErrorBoundary>
+            <App Component={Component}>
+              <StaticRouterProvider router={router} context={context} />
+            </App>
+          </ErrorBoundary>
+        </H.HelmetProvider>
+      </React.StrictMode>
+    ) : (
+      <H.HelmetProvider context={helmetContext}>
+        <ErrorBoundary>
+          <App Component={Component}>
+            <StaticRouterProvider router={router} context={context} />
+          </App>
+        </ErrorBoundary>
+      </H.HelmetProvider>
+    )
+  );
 
-  // inject vite refresh script to avoid "React refresh preamble was not loaded"
-  let viteScripts = <></>;
-  if (import.meta.env.DEV) {
-    viteScripts = (
-      <>
-        <script type="module" src="/@vite/client" />
-        <script
-          type="module"
-          dangerouslySetInnerHTML={{ __html: refreshScript }}
-        />
-      </>
-    );
-  }
-
-  return new Promise((resolve, reject) => {
-    const { pipe, abort } = ReactDOMServer.renderToPipeableStream(
-      config.reactStrictMode ? (
-        <Template Head={() => <Heads data={helmetContext}>{viteScripts}</Heads>}>
-          <React.StrictMode>
-            <HelmetProvider context={helmetContext}>
-              <ErrorBoundary>
-                <App Component={Component}>
-                  <StaticRouterProvider router={router} context={context} />
-                </App>
-              </ErrorBoundary>
-            </HelmetProvider>
-          </React.StrictMode>
-        </Template>
-      ) : (
-        <Template Head={() => <Heads data={helmetContext}>{viteScripts}</Heads>}>
-          <HelmetProvider context={helmetContext}>
-            <ErrorBoundary>
-              <App Component={Component}>
-                <StaticRouterProvider router={router} context={context} />
-              </App>
-            </ErrorBoundary>
-          </HelmetProvider>
-        </Template>
-      ),
-
-      {
-        onShellReady() {
-          shellRendered = true;
-          const headers = new Headers();
-
-          headers.append("Content-Type", "text/html");
-          headers.append("Cache-Control", "max-age=31536000");
-
-          response.status(200);
-          response.setHeaders(headers);
-
-          resolve(response);
-
-          pipe(response);
-        },
-
-        onShellError(error: unknown) {
-          reject(error);
-        },
-
-        onError(error: unknown) {
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
-      }
-    );
-
-    setTimeout(abort, ABORT_DELAY);
-  });
+  return { html };
 }
 
 export const staticRoutes = generateStaticRoutes(AppRouter);
+export const loadTemplateHtml = (helmetContext: any, bootstrap: string) => {
+  const html = ReactDOMServer.renderToString(
+    <TemplateHtml helmetContext={helmetContext} bootstrap={bootstrap} />
+  );
+
+  return `
+  <!DOCTYPE html>
+  ${html}
+  `;
+};

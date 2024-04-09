@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 // Load rasengan config file
 // @ts-ignore
@@ -19,18 +20,23 @@ const __pathToRoot = path.resolve(__dirname, "./../../");
 
 export default defineConfig({
   // Vite Plugins
-  plugins: [react(), ...vite?.plugins],
+  plugins: [react(), cssInjectedByJsPlugin(), ...vite?.plugins],
 
   // define index.html location
   root: __pathToRoot,
   optimizeDeps: {
-    exclude: ["node:http", "node-fetch", ...vite?.optimizeDeps?.exclude],
+    exclude: vite?.optimizeDeps?.exclude,
+    include: vite?.optimizeDeps?.include
   },
 
   // Build options
   build: {
     sourcemap: true,
     rollupOptions: {
+      input: "./lib/entries/entry-client.js",
+      output: {
+        manualChunks: undefined
+      },
       external: vite?.build?.external,
     },
   },

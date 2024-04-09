@@ -1,6 +1,7 @@
 import express from "express";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import fs from "node:fs";
 import {
   createStaticHandler,
   createStaticRouter,
@@ -30,7 +31,7 @@ async function createServer({
   port,
   base = "/",
   enableSearchingPort = false,
-  open = false
+  open = false,
 }) {
   // Get directory name
   const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,6 +41,11 @@ async function createServer({
 
   // Create http server
   const app = express();
+
+  // Template html
+  let templateHtml = "";
+  // Bootstrap
+  let bootstrap = "";
 
   // Add Vite or respective production middlewares
   let vite;
@@ -65,23 +71,30 @@ async function createServer({
       // ! 404 Fix related to some files not being found
       fix404(req.originalUrl, res, appPath);
 
-      let render;
-      let staticRoutes;
+      // Get url
+      const url = req.originalUrl.replace(base, "");
+
+      let entry;
 
       if (!isProduction) {
-        const entry = await vite.ssrLoadModule(
+        entry = await vite.ssrLoadModule(
           join(appPath, "node_modules/rasengan/lib/entries/entry-server.js")
         );
-
-        render = entry.render;
-        staticRoutes = entry.staticRoutes;
       } else {
-        const entry = await import(
-          join(appPath, "dist/server/entry-server.js")
-        );
-        render = entry.render;
-        staticRoutes = entry.staticRoutes;
+        entry = await import(join(appPath, "dist/server/entry-server.js"));
+
+        // replace bootstrap script with compiled scripts
+        bootstrap =
+          "/assets/" +
+          fs
+            .readdirSync(join(appPath, "dist/client/assets"))
+            .filter(
+              (fn) => fn.includes("entry-client") && fn.endsWith(".js")
+            )[0];
       }
+
+      // Get entry values
+      const { render, staticRoutes, loadTemplateHtml } = entry;
 
       // Create static handler
       let handler = createStaticHandler(staticRoutes);
@@ -106,9 +119,32 @@ async function createServer({
       let router = createStaticRouter(handler.dataRoutes, context);
 
       // Render the html page on the server
-      render(router, context, helmetContext, res);
+      const rendered = render(router, context, helmetContext);
+
+      // Load template html
+      if (!templateHtml) {
+        templateHtml = loadTemplateHtml(helmetContext, bootstrap);
+
+        if (!isProduction) {
+          templateHtml = await vite.transformIndexHtml(url, templateHtml);
+        }
+      }
+
+      // Replacing the app-html placeholder with the rendered html
+      let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+
+      // Send the rendered html page
+      res
+        .status(200)
+        .set({
+          "Content-Type": "text/html",
+          "Cache-Control": "max-age=31536000",
+        })
+        .end(html);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
+
+      console.error(e);
     }
   });
 
@@ -158,7 +194,7 @@ async function createServer({
           port: newPort,
           base,
           enableSearchingPort: true,
-          open
+          open,
         });
       } else {
         console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
@@ -168,7 +204,7 @@ async function createServer({
           port: newPort,
           base,
           enableSearchingPort,
-          open
+          open,
         });
       }
     }

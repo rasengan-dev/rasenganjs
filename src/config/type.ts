@@ -52,6 +52,7 @@ export type AppConfig = {
      */
     optimizeDeps?: {
       exclude?: string[];
+      include?: string[];
     };
 
     /**

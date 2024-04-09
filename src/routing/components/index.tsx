@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Link, useLoaderData, useRouteError } from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/types.js";
@@ -22,8 +21,7 @@ export function ErrorBoundary() {
  * @returns React.ReactNode
  */
 export const ServerComponent = ({
-  page,
-  loader,
+  page
 }: {
   page: PageComponent;
   loader: React.ReactNode;
@@ -34,9 +32,7 @@ export const ServerComponent = ({
   };
 
   return (
-    <Suspense fallback={loader}>
-      <PageToRender page={page} data={data} />
-    </Suspense>
+    <PageToRender page={page} data={data} />
   );
 };
 
@@ -45,8 +41,7 @@ export const ServerComponent = ({
  * @returns React.ReactNode
  */
 export const ClientComponent = ({
-  page,
-  loader,
+  page
 }: {
   page: PageComponent;
   loader: React.ReactNode;
@@ -59,9 +54,7 @@ export const ClientComponent = ({
   const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
-    <Suspense fallback={loader}>
-      <PageToRender page={page} data={data} />
-    </Suspense>
+    <PageToRender page={page} data={data} />
   );
 };
 

@@ -6,13 +6,8 @@ import {
   PageToRenderProps,
 } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
-import * as pkg from "react-helmet-async";
 import { Outlet } from "react-router-dom";
-
-import refreshScript from "../../scripts/refresh-hack.js?raw";
-
-// @ts-ignore
-const { Helmet } = pkg.default || pkg;
+import * as H from "react-helmet-async";
 
 /**
  * App component that represent the entry point of the application
@@ -48,12 +43,12 @@ export const PageToRender = ({ page: Page, data }: PageToRenderProps) => {
 
   return (
     <React.Fragment>
-      <Helmet>
+      <H.Helmet>
         {metaTags.map((meta) => meta)}
 
         <meta name="description" content={Page.metadata?.description || ""} />
         <title>{Page.metadata?.title || Page.name}</title>
-      </Helmet>
+      </H.Helmet>
 
       <Page {...props} />
     </React.Fragment>
@@ -119,45 +114,76 @@ const ErrorFallbackComponent = ({ error, info }: any) => {
 /**
  * Head component
  * @params data - Helmet context
- * @returns 
+ * @returns
  */
-export const Heads = ({ data, children }: { data: HelmetContext, children: React.ReactNode }) => {
+export const Heads = ({
+  data,
+  children = undefined,
+  bootstrap = "",
+}: {
+  data: HelmetContext;
+  children?: React.ReactNode;
+  bootstrap?: string;
+}) => {
   if (!data) return null;
 
   return (
-    <React.Fragment>
+    <head>
       {children}
 
       {data.helmet && data.helmet.meta.toComponent({})}
       {data.helmet && data.helmet.title.toComponent({})}
-    </React.Fragment>
+
+      {bootstrap && (
+        <script type="module" src={bootstrap} defer={true}></script>
+      )}
+    </head>
   );
 };
 
 /**
  * Body component
  */
-export const Body = ({ children }: { children: React.ReactNode }) => {
-  return <div id="root">{children}</div>
-}
-
-/**
- * Scripts component
- */
-export const Scripts = () => {
+export const Body = ({
+  children = undefined,
+}: {
+  children?: React.ReactNode;
+}) => {
   return (
-    <React.Fragment>
+    <body>
       <noscript
         dangerouslySetInnerHTML={{
           __html: `<b>Enable JavaScript to run this app.</b>`,
         }}
       />
 
-      <script
-        type="module"
-        src="/node_modules/rasengan/lib/entries/entry-client.js"
-        defer
-      ></script>
+      <div id="root">{"rasengan-body-app"}</div>
+
+      {children}
+    </body>
+  );
+};
+
+/**
+ * Scripts component
+ */
+export const Scripts = ({
+  children = undefined,
+  bootstrap = "",
+}: {
+  children?: React.ReactNode;
+  bootstrap?: string;
+}) => {
+  return (
+    <React.Fragment>
+      {bootstrap === "" && (
+        <script
+          type="module"
+          src="/node_modules/rasengan/lib/entries/entry-client.js"
+          defer={true}
+        ></script>
+      )}
+      {children}
     </React.Fragment>
   );
 };

@@ -13,6 +13,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
     plugins: vite?.plugins || [],
     optimizeDeps: {
       exclude: vite?.optimizeDeps?.exclude || [],
+      include: vite?.optimizeDeps?.include || [],
     },
     css: {
       postcss: vite?.css?.postcss || undefined,
@@ -50,6 +51,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
             "node-fetch",
             ...defaultViteConfig.optimizeDeps.exclude,
           ],
+          include: defaultViteConfig.optimizeDeps.include,
         },
 
         css: {
@@ -84,6 +86,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       vite: {
         optimizeDeps: {
           exclude: ["node:http", "node-fetch"],
+          include: []
         },
         appType: "custom",
         resolve: {
