@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LoaderOptions, LoaderResponse, ReactComponentProps } from "./types.js";
 import { Outlet } from "react-router-dom";
 import { Metadata } from "../routing/types.js";
@@ -70,9 +70,9 @@ export abstract class LayoutComponent implements ILayoutComponent {
    * Add metadata
    */
   addMetadata(metadata: Metadata[]) {
-    metadata.forEach(meta => {
+    metadata.forEach((meta) => {
       this._metadata.unshift(meta);
-    })
+    });
   }
 
   /**
@@ -80,9 +80,7 @@ export abstract class LayoutComponent implements ILayoutComponent {
    * in order to get data for the page from the server
    * @returns Promise<any>
    */
-  async loader(
-    _options: LoaderOptions
-  ): Promise<LoaderResponse> {
+  async loader(_options: LoaderOptions): Promise<LoaderResponse> {
     return new Promise((resolve) => {
       resolve({
         props: {},
@@ -124,7 +122,6 @@ export abstract class PageComponent extends LayoutComponent {
    */
   protected _description!: string;
 
-
   // Getters
 
   /**
@@ -157,4 +154,3 @@ export abstract class PageComponent extends LayoutComponent {
     this._description = description;
   }
 }
-

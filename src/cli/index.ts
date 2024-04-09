@@ -118,15 +118,9 @@ program
   .command("start")
   .description("Start the project in production mode")
   .action(async () => {
-    const childProcess = execa("npm", ["run", "preview"], {
+    execa("npm", ["run", "preview"], {
       cwd: "node_modules/rasengan",
       stdio: "inherit", // Pipe child process output to the parent process
-    });
-
-    childProcess.on("close", (code) => {
-      if (code === 0) {
-        process.stdout.write("Project started Succesfully");
-      }
     });
   });
 

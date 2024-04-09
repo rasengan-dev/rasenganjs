@@ -5,7 +5,10 @@ import App from "./../../../../src/main";
 import { Component, ErrorBoundary } from "../core/components/index.js";
 // @ts-ignore
 import config from "./../../../../rasengan.config.js";
-import * as H from "react-helmet-async";
+import * as HelmetAsync from "react-helmet-async";
+
+// @ts-ignore
+const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
 ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement,

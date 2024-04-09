@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   ComponentProps,
   HelmetContext,
@@ -7,7 +7,10 @@ import {
 } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import { Outlet } from "react-router-dom";
-import * as H from "react-helmet-async";
+import * as HelmetAsync from "react-helmet-async";
+
+// @ts-ignore
+const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
 /**
  * App component that represent the entry point of the application

@@ -24,7 +24,10 @@ import {
   Body,
   Scripts,
 } from "../core/components/index.js";
-import * as H from "react-helmet-async";
+import * as HelmetAsync from "react-helmet-async";
+
+// @ts-ignore
+const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
 // const ABORT_DELAY = 5000;
 
@@ -50,13 +53,12 @@ const TemplateHtml = ({
   );
 };
 
-
 /**
  * Function used to render the app on the server
- * @param router 
- * @param context 
- * @param helmetContext 
- * @returns 
+ * @param router
+ * @param context
+ * @param helmetContext
+ * @returns
  */
 export function render(
   router: Router,
