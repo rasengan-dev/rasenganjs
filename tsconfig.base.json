@@ -1,11 +1,29 @@
 {
   "compilerOptions": {
-    "composite": true,
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "composite": true,
+
+    /* Bundler mode */
     "module": "ESNext",
-    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "jsx": "preserve"
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "src/entries/entry-server.tsx", "types/client.d.ts"]
+  "include": [
+    "vite.config.ts",
+    "src/entries/entry-server.tsx",
+    "types/client.d.ts"
+  ]
 }

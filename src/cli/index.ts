@@ -7,7 +7,7 @@ import { execa } from "execa";
 // Config
 
 // @ts-ignore
-import config from "../../../../rasengan.config.js";
+import config from "../../../../../rasengan.config.js";
 
 const program = new Command();
 

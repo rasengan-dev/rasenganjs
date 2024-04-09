@@ -18,7 +18,7 @@ import {
   createFetchRequest,
   logServerInfo,
   fix404,
-} from "./lib/server/utils/index.js";
+} from "./lib/esm/server/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -77,8 +77,16 @@ async function createServer({
       let entry;
 
       if (!isProduction) {
+        let folder = "esm";
+
+        // if (typeof require === undefined || typeof __dirname === undefined)
+        //   folder = "esm";
+
         entry = await vite.ssrLoadModule(
-          join(appPath, "node_modules/rasengan/lib/entries/entry-server.js")
+          join(
+            appPath,
+            `node_modules/rasengan/lib/${folder}/entries/entry-server.js`
+          )
         );
       } else {
         entry = await import(join(appPath, "dist/server/entry-server.js"));

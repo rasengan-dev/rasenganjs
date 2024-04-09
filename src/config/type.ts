@@ -51,7 +51,14 @@ export type AppConfig = {
      * Optimize dependencies
      */
     optimizeDeps?: {
+      /**
+       * Dependencies to exclude from the optimized bundle
+       */
       exclude?: string[];
+
+      /**
+       * Dependencies to include in the optimized bundle
+       */
       include?: string[];
     };
 

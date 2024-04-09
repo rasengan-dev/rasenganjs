@@ -177,12 +177,18 @@ export const Scripts = ({
   children?: React.ReactNode;
   bootstrap?: string;
 }) => {
+  let folder = "esm";
+
+  if (typeof exports === "object" && typeof module !== "undefined") {
+    folder = "cjs";
+  }
+
   return (
     <React.Fragment>
       {bootstrap === "" && (
         <script
           type="module"
-          src="/node_modules/rasengan/lib/entries/entry-client.js"
+          src={`/node_modules/rasengan/lib/${folder}/entries/entry-client.js`}
           defer={true}
         ></script>
       )}

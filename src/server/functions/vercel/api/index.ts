@@ -10,6 +10,7 @@ import {
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
 
+// @ts-ignore
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 

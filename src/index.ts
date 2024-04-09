@@ -8,4 +8,5 @@ export * from "./routing/index.js";
 export * from "./config/index.js";
 export { createFetchRequest }
 
-// export * as hooks from './hooks';
+// Export types
+export type { AppConfig } from "./config/type.js";

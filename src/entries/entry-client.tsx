@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 // @ts-ignore
-import App from "./../../../../src/main";
+import App from "./../../../../../src/main";
 import { Component, ErrorBoundary } from "../core/components/index.js";
 // @ts-ignore
-import config from "./../../../../rasengan.config.js";
+import config from "./../../../../../rasengan.config.js";
 import * as HelmetAsync from "react-helmet-async";
 
 // @ts-ignore

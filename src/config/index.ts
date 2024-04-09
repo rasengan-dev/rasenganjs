@@ -35,7 +35,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 
     production: {
       hosting: server?.production?.hosting || "custom",
-    }
+    },
   };
 
   try {
@@ -51,7 +51,17 @@ export const defineConfig = (loadedConfig: AppConfig) => {
             "node-fetch",
             ...defaultViteConfig.optimizeDeps.exclude,
           ],
-          include: defaultViteConfig.optimizeDeps.include,
+          include: [
+            "react-fast-compare",
+            "invariant",
+            "shallowequal",
+            "react-dom/client",
+            "react-dom",
+            "react",
+            "react-router-dom",
+            "react-helmet-async",
+            ...defaultViteConfig.optimizeDeps.include,
+          ],
         },
 
         css: {
@@ -86,7 +96,16 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       vite: {
         optimizeDeps: {
           exclude: ["node:http", "node-fetch"],
-          include: []
+          include: [
+            "react-fast-compare",
+            "invariant",
+            "shallowequal",
+            "react-dom/client",
+            "react-dom",
+            "react",
+            "react-router-dom",
+            "react-helmet-async",
+          ],
         },
         appType: "custom",
         resolve: {
@@ -109,7 +128,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 export const adaptPath = (paths: string | Array<string>) => {
   // Check if we are in dev mode or prod
   const isProduction = process.env.NODE_ENV === "production";
-  const prefix = isProduction ? "./../../" : "";
+  const prefix = isProduction ? "./../../../" : "";
 
   // Chech if the path is an array
   const isArray = Array.isArray(paths);

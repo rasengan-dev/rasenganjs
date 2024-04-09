@@ -2,7 +2,6 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "target": "ESNext",
     "lib": [
       "ES2015",
       "ESNext",
@@ -17,14 +16,10 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
     "jsx": "react-jsx",
-    "declaration": true,
-    "sourceMap": false,
 
     /* Types */
     "typeRoots": ["node_modules/@types", "types"]

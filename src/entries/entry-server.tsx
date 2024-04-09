@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 // @ts-ignore
-import AppRouter from "./../../../../src/app/app.router";
+import AppRouter from "./../../../../../src/app/app.router";
 // @ts-ignore
-import App from "./../../../../src/main";
+import App from "./../../../../../src/main";
 // @ts-ignore
-import Template from "./../../../../src/template";
+import Template from "./../../../../../src/template";
 
 // @ts-ignore
 import { generateStaticRoutes } from "../routing/utils/index.js";
@@ -16,7 +16,7 @@ import {
 import { Router } from "@remix-run/router";
 
 // @ts-ignore
-import config from "./../../../../rasengan.config.js";
+import config from "./../../../../../rasengan.config.js";
 import {
   Component,
   ErrorBoundary,
