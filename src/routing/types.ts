@@ -15,7 +15,7 @@ export type MetaTag = {
   content: string;
 };
 
-export type Metadata = {
+export type MetadataWithoutTitleAndDescription = {
   /**
    * Configuring link preview on social media like facebook, linkedin, etc.
    */
@@ -51,3 +51,15 @@ export type Metadata = {
    */
   metaTags?: Array<MetaTag>;
 }
+
+export type Metadata = MetadataWithoutTitleAndDescription & {
+  /**
+   * Title of the pate
+   */
+  title?: string;
+
+  /**
+   * Description of the page
+   */
+  description?: string;
+};

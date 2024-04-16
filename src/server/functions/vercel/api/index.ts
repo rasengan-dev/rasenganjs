@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
-import path, { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import fsSync from "node:fs";
+import path, { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   StaticHandlerContext,
@@ -24,22 +25,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Get app path
     const appPath = join(__dirname, "..");
 
-    // ! Favicon Fix
-    if (url === "/favicon.ico") {
-      return res.send(path.resolve(join(appPath, "dist/client/rasengan.png")));
-    }
-
     // ! Robots Fix
     if (url === "/robots.txt") {
-      return res.send(`
-      user-agent: *
-      disallow: /downloads/
-      disallow: /private/
-      allow: /
-      
-      user-agent: magicsearchbot
-      disallow: /uploads/
-    `);
+      // Check if robots.txt exists using fs
+      // If it does, return it
+      try {
+        await fs.access(path.resolve(join(appPath, "dist/client/robots.txt")));
+
+        return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
+      } catch (err: any) {
+        return res.send(`
+        user-agent: *
+        disallow: /downloads/
+        disallow: /private/
+        allow: /
+        
+        user-agent: magicsearchbot
+        disallow: /uploads/
+      `);
+      }
     }
 
     // ! Sitemap Fix
@@ -52,25 +56,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
     }
 
-    let template;
-    let entry;
-    // let manifest;
+    // Template html
+    let templateHtml = "";
 
     // Always read fresh template in development
-    const htmlFilePath = join(appPath, "dist/client/index.html");
     const serverFilePath = join(appPath, "dist/server/entry-server.js");
-    // const ssrManifestFilePath = join(
-    //   appPath,
-    //   "dist/client/.vite/ssr-manifest.json"
-    // );
+    const bootstrapDirPath = join(appPath, "dist/client/assets")
 
-    // Read template, server-renderer and manifest in production
-    template = await fs.readFile(htmlFilePath, "utf-8");
-    entry = await import(serverFilePath);
-    // manifest = await fs.readFile(ssrManifestFilePath, "utf-8");
+    // Read the entry sever file
+    let entry = await import(serverFilePath);
+
+    // replace bootstrap script with compiled scripts
+    let bootstrap =
+      "/assets/" +
+      fsSync
+        .readdirSync(bootstrapDirPath)
+        .filter((fn) => fn.includes("entry-client") && fn.endsWith(".js"))[0];
 
     // Extract render and staticRoutes from entry
-    const { render, staticRoutes } = entry;
+    const { render, staticRoutes, loadTemplateHtml } = entry;
 
     // Create static handler
     let handler = createStaticHandler(staticRoutes);
@@ -100,18 +104,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const rendered = await render(router, context, helmetContext);
 
-    // Get metadata
-    const helmet = helmetContext.helmet;
+    // Load template html
+    if (!templateHtml) {
+      templateHtml = loadTemplateHtml(helmetContext, bootstrap);
+    }
 
-    let head = `
-      ${helmet.title.toString()}
-      ${helmet.meta.toString()}
-    `;
+    // Replacing the app-html placeholder with the rendered html
+    let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
 
-    let html = template
-      .replace(`<!--app-head-->`, head ?? "")
-      .replace(`<!--app-html-->`, rendered.html ?? "");
-
+    // Send the rendered html page
     res
       .status(200)
       .setHeader("Content-Type", "text/html")

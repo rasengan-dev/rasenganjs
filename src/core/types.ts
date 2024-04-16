@@ -1,6 +1,7 @@
 import React from "react";
 import { RouterComponent } from "../routing/interfaces.js";
 import { Metadata } from "../routing/index.js";
+import { MetadataWithoutTitleAndDescription } from "../routing/types.js";
 
 /**
  * Props for App component
@@ -56,7 +57,7 @@ export type LayoutComponent = React.FC<ReactComponentProps> & {
   /**
    * Metadata for the page
    */
-  metadata?: Metadata;
+  metadata?: MetadataWithoutTitleAndDescription;
 
   /**
    * Loader function that loads data for the page from the server
@@ -71,17 +72,7 @@ export type PageComponent = LayoutComponent & {
   /**
    * Metadata for the page omit title
    */
-  metadata?: Metadata & {
-    /**
-     * Title of the pate
-     */
-    title?: string;
-
-    /**
-     * Description of the page
-     */
-    description?: string;
-  };
+  metadata?: Metadata;
 };
 
 /**

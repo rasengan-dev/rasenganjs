@@ -77,15 +77,10 @@ async function createServer({
       let entry;
 
       if (!isProduction) {
-        let folder = "esm";
-
-        // if (typeof require === undefined || typeof __dirname === undefined)
-        //   folder = "esm";
-
         entry = await vite.ssrLoadModule(
           join(
             appPath,
-            `node_modules/rasengan/lib/${folder}/entries/entry-server.js`
+            `node_modules/rasengan/lib/esm/entries/entry-server.js`
           )
         );
       } else {

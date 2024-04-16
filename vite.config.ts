@@ -33,7 +33,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     rollupOptions: {
-      input: "./lib/entries/entry-client.js",
+      input: "./lib/esm/entries/entry-client.js",
       output: {
         manualChunks: undefined
       },
