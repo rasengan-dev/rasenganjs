@@ -128,16 +128,16 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 export const adaptPath = (paths: string | Array<string>) => {
   // Check if we are in dev mode or prod
   const isProduction = process.env.NODE_ENV === "production";
-  const prefix = isProduction ? "./../../../" : "";
+  const prefix = isProduction ? "./../../" : "";
 
   // Chech if the path is an array
   const isArray = Array.isArray(paths);
 
   // If the path is an array
   if (isArray) {
-    return paths.map((path) => `${prefix}${path}`);
+    return paths.map((path) => `${process.cwd()}/${prefix}${path}`);
   }
 
   // If the path is a string
-  return `${prefix}${paths}`;
+  return `${process.cwd()}/${prefix}${paths}`;
 };
