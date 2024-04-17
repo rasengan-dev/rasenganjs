@@ -46,6 +46,8 @@ async function createServer({
   let templateHtml = "";
   // Bootstrap
   let bootstrap = "";
+  // Styles
+  let styles = "";
 
   // Add Vite or respective production middlewares
   let vite;
@@ -94,6 +96,13 @@ async function createServer({
             .filter(
               (fn) => fn.includes("entry-client") && fn.endsWith(".js")
             )[0];
+
+        // replace styles with compiled styles
+        styles =
+          "/assets/" +
+          fs
+            .readdirSync(join(appPath, "dist/client/assets"))
+            .filter((fn) => fn.includes("entry-client") && fn.endsWith(".css"))[0];
       }
 
       // Get entry values
@@ -126,7 +135,7 @@ async function createServer({
 
       // Load template html
       if (!templateHtml) {
-        templateHtml = loadTemplateHtml(helmetContext, bootstrap);
+        templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
 
         if (!isProduction) {
           templateHtml = await vite.transformIndexHtml(url, templateHtml);
@@ -137,7 +146,7 @@ async function createServer({
       let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
 
       // Send the rendered html page
-      res
+      return res
         .status(200)
         .set({
           "Content-Type": "text/html",

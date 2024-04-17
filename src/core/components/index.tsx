@@ -123,10 +123,12 @@ export const Heads = ({
   data,
   children = undefined,
   bootstrap = "",
+  styles = "",
 }: {
   data: HelmetContext;
   children?: React.ReactNode;
   bootstrap?: string;
+  styles?: string;
 }) => {
   if (!data) return null;
 
@@ -139,6 +141,10 @@ export const Heads = ({
 
       {bootstrap && (
         <script type="module" src={bootstrap} defer={true}></script>
+      )}
+
+      {styles && (
+        <link rel="stylesheet" crossOrigin="" type="text/css" href={styles} />
       )}
     </head>
   );

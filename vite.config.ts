@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 // Load rasengan config file
 // @ts-ignore
@@ -20,7 +19,7 @@ const __pathToRoot = path.resolve(__dirname, "./../../");
 
 export default defineConfig({
   // Vite Plugins
-  plugins: [react(), cssInjectedByJsPlugin(), ...vite?.plugins],
+  plugins: [react(), ...vite?.plugins],
 
   // define index.html location
   root: __pathToRoot,

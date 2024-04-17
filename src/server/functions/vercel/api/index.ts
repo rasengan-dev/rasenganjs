@@ -73,6 +73,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .readdirSync(bootstrapDirPath)
         .filter((fn) => fn.includes("entry-client") && fn.endsWith(".js"))[0];
 
+    // replace styles with compiled styles
+    let styles =
+      "/assets/" +
+      fsSync
+        .readdirSync(join(appPath, "dist/client/assets"))
+        .filter((fn) => fn.includes("entry-client") && fn.endsWith(".css"))[0];
+
     // Extract render and staticRoutes from entry
     const { render, staticRoutes, loadTemplateHtml } = entry;
 
@@ -106,14 +113,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Load template html
     if (!templateHtml) {
-      templateHtml = loadTemplateHtml(helmetContext, bootstrap);
+      templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
     }
 
     // Replacing the app-html placeholder with the rendered html
     let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
 
     // Send the rendered html page
-    res
+    return res
       .status(200)
       .setHeader("Content-Type", "text/html")
       .setHeader("Cache-Control", "max-age=31536000")

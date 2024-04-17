@@ -34,14 +34,16 @@ const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 const TemplateHtml = ({
   helmetContext,
   bootstrap,
+  styles
 }: {
   helmetContext: any;
   bootstrap: string;
+  styles: string;
 }) => {
   return (
     <Template
       Head={({ children }) => (
-        <Heads data={helmetContext} bootstrap={bootstrap}>
+        <Heads data={helmetContext} bootstrap={bootstrap} styles={styles}>
           {children}
         </Heads>
       )}
@@ -91,9 +93,9 @@ export function render(
 }
 
 export const staticRoutes = generateStaticRoutes(AppRouter);
-export const loadTemplateHtml = (helmetContext: any, bootstrap: string) => {
+export const loadTemplateHtml = (helmetContext: any, bootstrap: string, styles: string) => {
   const html = ReactDOMServer.renderToString(
-    <TemplateHtml helmetContext={helmetContext} bootstrap={bootstrap} />
+    <TemplateHtml helmetContext={helmetContext} bootstrap={bootstrap} styles={styles} />
   );
 
   return `
