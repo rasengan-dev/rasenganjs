@@ -2,3 +2,4 @@ node_modules
 src
 yarn.lock
 *.tgz
+.github
