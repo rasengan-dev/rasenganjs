@@ -1,4 +1,4 @@
-[![Rasengan Logo](/assets/cards/1.png)](https://rasengan.dev)
+[![Rasengan Logo](./assets/cards/1.png)](https://rasengan.dev)
 
 [![npm version](https://badge.fury.io/js/rasengan.svg)](https://badge.fury.io/js/rasengan)
 [![npm downloads](https://img.shields.io/npm/dm/rasengan)](https://www.npmjs.com/package/rasengan)

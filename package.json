@@ -2,6 +2,7 @@
   "name": "rasengan",
   "private": false,
   "version": "1.0.0-beta.13",
+  "description": "The modern frontend framework for React",
   "type": "module",
   "main": "lib/esm/index.js",
   "bin": {
@@ -75,10 +76,10 @@
   },
   "peerDependencies": {
     "@types/node": "^18.0.0 || >=20.0.0",
-    "less": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "*",
+    "less": "*",
     "stylus": "*",
     "vite": "^5.2.0"
   },
@@ -112,7 +113,15 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=18.19.0",
     "npm": ">=7.0.0"
-  }
+  },
+  "keywords": [
+    "rasengan",
+    "frontend",
+    "framework",
+    "react",
+    "vite",
+    "ssr"
+  ]
 }

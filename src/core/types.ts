@@ -27,7 +27,12 @@ export type PageToRenderProps = {
 /**
  * Props for component react components
  */
-export type ReactComponentProps = { [key: string]: any };
+export type ReactComponentProps = { 
+  [key: string]: any, 
+  params: {
+    [key: string]: any
+  } 
+} | any;
 
 /**
  * Options for the loader function that loads data for a page from the server
