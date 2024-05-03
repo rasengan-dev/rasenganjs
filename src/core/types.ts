@@ -22,6 +22,7 @@ export type ComponentProps = {
 export type PageToRenderProps = {
   page: PageComponent;
   data: LoaderResponse;
+  layoutMetadata?: MetadataWithoutTitleAndDescription;
 };
 
 /**
