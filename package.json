@@ -35,8 +35,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rasengan/rasengan.git",
-    "issues": "https://github.com/rasengan/rasengan/issues"
+    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "homepage": "https://rasengan.dev",
   "scripts": {

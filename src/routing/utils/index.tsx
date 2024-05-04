@@ -154,10 +154,19 @@ export const generateStaticRoutes = (
     path: Layout.path,
     elementError: <ErrorBoundary />,
     Component() {
+      // Default data
+      const defaultData = {
+        props: {},
+      };
+
+      // Get SSR data
+      let { props } = (useLoaderData() as LoaderResponse) || defaultData;
+
       // get params
       const params = useParams();
 
       const finalProps = {
+        ...props,
         params,
       };
 

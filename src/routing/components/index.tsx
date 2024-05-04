@@ -29,11 +29,13 @@ export const ServerComponent = ({
   layoutMetadata?: MetadataWithoutTitleAndDescription
 }) => {
   // Default data
-  const data = {
+  const defaultData = {
     props: {
       params: {}
     },
   };
+
+  const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
     <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
