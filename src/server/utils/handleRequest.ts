@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
-import path, { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import path, { join } from "node:path";
 import {
   StaticHandlerContext,
   createStaticHandler,
@@ -9,10 +8,6 @@ import {
 } from "react-router-dom/server.js";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
-
-// @ts-ignore
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Create server for production only
 export default async function handleRequest(req: any, res?: any) {
