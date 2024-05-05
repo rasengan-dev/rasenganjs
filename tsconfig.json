@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
+    "module": "ESNext",
     "lib": [
       "ES2015",
       "ESNext",

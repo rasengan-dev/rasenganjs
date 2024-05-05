@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
-import path, { join } from "node:path";
+import path, { dirname, join } from "node:path";
 import {
   StaticHandlerContext,
   createStaticHandler,
@@ -8,6 +8,15 @@ import {
 } from "react-router-dom/server.js";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
+import { fileURLToPath } from "node:url";
+
+// check if we are in esm mode
+let __customDirname = "";
+
+if (__dirname === undefined) {
+  const __filename = fileURLToPath(import.meta.url);
+  __customDirname = dirname(__filename);
+}
 
 // Create server for production only
 export default async function handleRequest(req: any, res?: any) {
@@ -17,7 +26,8 @@ export default async function handleRequest(req: any, res?: any) {
     const host = req.headers.host;
 
     // Get app path
-    const appPath = process.cwd();
+    // const appPath = process.cwd();
+    const appPath = join(__dirname || __customDirname, "..");
 
     // ! Robots Fix
     if (url === "/robots.txt") {
