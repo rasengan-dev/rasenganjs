@@ -1,0 +1,26 @@
+[dev]
+  command = "npm run start"
+  publish = "dist"
+  # We need another port for the application because Vite occupies the 3000.
+  port = 5000
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  # We are goint to use ES modules so we need esbuild to transpile the code.
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  conditions = { Path = "/assets/*" }
+
+# We have to tell the Netlify that this URL will be served by the books.js function.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  conditions = { not = { Path = "/assets/*" }}

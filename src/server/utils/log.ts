@@ -118,7 +118,9 @@ export async function logServerInfo(
   });
 
   // Allow the process to exit when Ctrl+C is pressed
-  process.stdin.setRawMode(true);
+  if (process.stdin.setRawMode instanceof Function) {
+    process.stdin.setRawMode(true);
+  } 
   process.stdin.resume();
 
   // Set a higher limit for the number of listeners

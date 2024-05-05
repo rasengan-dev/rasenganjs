@@ -9,7 +9,10 @@ export default function createFetchRequest(req: Request, host: string) {
   let url = new URL(req.originalUrl || req.url, origin);
 
   let controller = new AbortController();
-  req.on("close", () => controller.abort());
+
+  if (req.on) {
+    req.on("close", () => controller.abort());
+  }
 
   let headers = new Headers();
 
