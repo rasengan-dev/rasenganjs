@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta.15",
+  "version": "1.0.0-beta.34",
   "description": "The modern frontend framework for React",
   "type": "module",
   "main": "lib/esm/index.js",
@@ -16,7 +16,7 @@
       },
       "require": {
         "types": "./lib/types/index.d.ts",
-        "default": "./lib/cjs/index.js"
+        "default": "./lib/esm/index.js"
       },
       "types": "./lib/types/index.d.ts",
       "default": "./lib/esm/index.js"
@@ -42,18 +42,15 @@
   "scripts": {
     "dev": "node server",
     "preview": "cross-env NODE_ENV=production node server",
-
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --ssrManifest --outDir dist/client",
     "build:server": "vite build --ssr node_modules/rasengan/lib/esm/entries/entry-server.js --outDir dist/server",
-    "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
+    "compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
     "build:lib:clean": "rm -rf ./lib",
     "build:lib:all": "npm-run-all build:lib:clean compile && node ./src/scripts/copy-extra-files.js",
-
     "deploy": "npm publish --access public",
     "deploy:beta": "npm run deploy --tag beta",
     "pack": "npm pack --pack-destination ./../packages/rasengan/"
-
   },
   "dependencies": {
     "@vercel/node": "^3.0.14",
@@ -64,6 +61,7 @@
     "cross-spawn": "^7.0.3",
     "execa": "^8.0.1",
     "express": "^4.18.2",
+    "file-type": "^19.0.0",
     "inquirer": "^9.2.12",
     "keypress": "^0.2.1",
     "node-fetch": "^3.3.2",
@@ -75,12 +73,12 @@
     "vite-plugin-css-injected-by-js": "^3.5.0"
   },
   "peerDependencies": {
-    "@types/node": "^18.0.0 || >=20.0.0",
     "@netlify/functions": "^2.6.0",
+    "@types/node": "^18.0.0 || >=20.0.0",
+    "less": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "*",
-    "less": "*",
     "stylus": "*",
     "vite": "^5.2.0"
   },

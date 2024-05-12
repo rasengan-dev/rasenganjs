@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
-import path, { dirname, join } from "node:path";
+import path, { join } from "node:path";
 import {
   StaticHandlerContext,
   createStaticHandler,
@@ -8,26 +8,15 @@ import {
 } from "react-router-dom/server.js";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
-import { fileURLToPath } from "node:url";
-
-// check if we are in esm mode
-let __customDirname = "";
-
-if (__dirname === undefined) {
-  const __filename = fileURLToPath(import.meta.url);
-  __customDirname = dirname(__filename);
-}
-
 // Create server for production only
-export default async function handleRequest(req: any, res?: any) {
+export async function handleRequest(req: any, res?: any) {
   try {
     // Get URL
     const url = req.url;
-    const host = req.headers.host;
+    const host = req.headers.host ? req.headers.host : req.headers.get("host") || "";
 
     // Get app path
-    // const appPath = process.cwd();
-    const appPath = join(__dirname || __customDirname, "..");
+    const appPath = process.cwd();
 
     // ! Robots Fix
     if (url === "/robots.txt") {
@@ -36,28 +25,111 @@ export default async function handleRequest(req: any, res?: any) {
       try {
         await fs.access(path.resolve(join(appPath, "dist/client/robots.txt")));
 
-        return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
+        if (res)
+          return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
+
+        return new Response(path.resolve(join(appPath, "dist/client/robots.txt")), {
+          status: 200
+        });
       } catch (err: any) {
-        return res.send(`
-        user-agent: *
-        disallow: /downloads/
-        disallow: /private/
-        allow: /
-        
-        user-agent: magicsearchbot
-        disallow: /uploads/
-      `);
+        if (res)
+          return res.send(`
+            user-agent: *
+            disallow: /downloads/
+            disallow: /private/
+            allow: /
+            
+            user-agent: magicsearchbot
+            disallow: /uploads/
+          `);
+
+          return new Response(`
+            user-agent: *
+            disallow: /downloads/
+            disallow: /private/
+            allow: /
+            
+            user-agent: magicsearchbot
+            disallow: /uploads/
+          `, {
+            status: 200
+          });
       }
     }
 
     // ! Sitemap Fix
     if (url === "/sitemap.xml") {
-      return res.send(path.resolve(join(appPath, "dist/client/sitemap.xml")));
+      if (res)
+        return res.send(path.resolve(join(appPath, "dist/client/sitemap.xml")));
+
+      return new Response(path.resolve(join(appPath, "dist/client/sitemap.xml")), {
+        status: 200
+      });
     }
 
     // ! Manifest Fix
     if (url === "/manifest.json") {
-      return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
+      if (res)
+        return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
+
+      return new Response(path.resolve(join(appPath, "dist/client/manifest.json")), {
+        status: 200
+      });
+    }
+
+    // ! Handle assets
+    if (url.includes("/assets")) {
+      // get segments from /assets to the end
+      const segments = url.split("/");
+
+      const segmentsWithoutOrigin = [...segments];
+
+      for (let segment of segments) {
+        if (segment === "assets") {
+          break;
+        }
+
+        segmentsWithoutOrigin.shift();
+      }
+
+      // replace assets by client/assets
+      const filePath = join(appPath, "dist/client", segmentsWithoutOrigin.join("/"));
+      const file = await fs.readFile(filePath, "utf-8");
+
+      if (res) {
+        return res
+        .status(200)
+        .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
+        .setHeader("Cache-Control", "max-age=31536000")
+        .end(file);
+      }
+
+      return new Response(file, {
+        headers: {
+          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
+          "Cache-Control": "max-age=31536000",
+        },
+      });
+    }
+
+    // Handle js and css files
+    if (url.endsWith(".js") || url.endsWith(".css")) {
+      const file = await fs.readFile(url, "utf-8");
+
+      if (res) {
+        return res
+        .status(200)
+        .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
+        .setHeader("Cache-Control", "max-age=31536000")
+        .end(file);
+      }
+
+      return new Response(file, {
+        headers: {
+          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
+          "Cache-Control": "max-age=31536000",
+        },
+      });
     }
 
     // Template html
@@ -101,7 +173,11 @@ export default async function handleRequest(req: any, res?: any) {
     if (status === 302) {
       const redirect = (context as Response).headers.get("Location");
 
-      if (redirect) return res.redirect(redirect);
+      if (redirect) {
+        if (res) return res.redirect(redirect);
+
+        return Response.redirect(redirect);
+      }
     }
 
     // Helmet context

@@ -14,7 +14,7 @@
 
 [[redirects]]
   from = "/assets/*"
-  to = "/assets/:splat"
+  to = "/client/assets/:splat"
   status = 200
   conditions = { Path = "/assets/*" }
 
@@ -23,4 +23,4 @@
   from = "/*"
   to = "/.netlify/functions/api"
   status = 200
-  conditions = { not = { Path = "/assets/*" }}
+  # Add condition to avoid .js and .css files
