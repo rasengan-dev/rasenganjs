@@ -29,9 +29,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Check if robots.txt exists using fs
       // If it does, return it
       try {
-        await fs.access(path.resolve(join(appPath, "dist/client/robots.txt")));
+        const filePath = join(appPath, "dist/client/robots.txt");
 
-        return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
+        await fs.access(path.resolve(filePath));
+
+        // read robot file with fs
+        const file = await fs.readFile(filePath, "utf-8");
+
+        return res.send(file);
       } catch (err: any) {
         return res.send(`
           user-agent: *

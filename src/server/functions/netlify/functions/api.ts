@@ -28,6 +28,22 @@ export default async (req: Request, context: Context) => {
     // const appPath = join(__dirname, "..");
     const appPath = process.cwd();
 
+    // ! Favicon Fix
+    if (url === "/favicon.ico") {
+      // Check if favicon.ico exists using fs
+      // If it does, return it
+      try {
+        await fs.access(path.resolve(join(appPath, "dist/client/favicon.ico")));
+
+        return new Response(path.resolve(join(appPath, "dist/client/favicon.ico"))
+        )
+      } catch (err: any) {
+        return new Response("", {
+          status: 404,
+        });
+      }
+    }
+
     // ! Robots Fix
     if (url === "/robots.txt") {
       // Check if robots.txt exists using fs
@@ -74,8 +90,11 @@ export default async (req: Request, context: Context) => {
         segmentsWithoutOrigin.shift();
       }
 
+      // New url without the search param if exist
+      const newUrl = segmentsWithoutOrigin.join("/").split("?")[0];
+
       // replace assets by client/assets
-      const filePath = join(appPath, "dist/client", segmentsWithoutOrigin.join("/"));
+      const filePath = join(appPath, "dist/client", newUrl);
       const file = await fs.readFile(filePath, "utf-8");
 
       if (url.endsWith(".js") || url.endsWith(".css")) {

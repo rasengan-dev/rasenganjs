@@ -33,6 +33,7 @@ export default function createFetchRequest(req: Request, host: string) {
     headers,
     signal: controller.signal,
     body: null,
+    duplex: 'half'
   };
 
   if (req.method !== "GET" && req.method !== "HEAD") {
