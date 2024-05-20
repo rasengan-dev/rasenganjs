@@ -17,6 +17,11 @@ const { vite } = config;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const __pathToRoot = path.resolve(__dirname, "./../../");
 
+const external = [
+  // `${__pathToRoot}/node_modules/rasengan/lib/esm/server/utils/handleRequest.js`,
+  // `${__pathToRoot}/node_modules/rasengan/lib/cjs/server/utils/handleRequest.js`,
+]
+
 export default defineConfig({
   // Vite Plugins
   plugins: [react(), ...vite?.plugins],
@@ -36,7 +41,10 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       },
-      external: vite?.build?.external,
+      external: [
+        ...vite?.build?.external,
+        ...external
+      ],
     },
   },
 

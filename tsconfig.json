@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
+    "module": "ESNext",
     "lib": [
       "ES2015",
       "ESNext",
@@ -28,6 +29,7 @@
     "src",
     "types",
     "src/**/*.json",
+    "src/**/*.toml",
   ],
   "exclude": ["node_modules", "lib"]
 }

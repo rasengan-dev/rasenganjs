@@ -3,17 +3,14 @@ import {
   RouterProvider,
   createBrowserRouter,
   useLoaderData,
+  useParams,
 } from "react-router-dom";
 import {
   RouteDecoratorProps,
   RouteLayoutDecoratorProps,
   RouterDecoratorProps,
 } from "../../decorators/types.js";
-import {
-  LayoutComponent,
-  LoaderResponse,
-  PageComponent,
-} from "../../index.js";
+import { LayoutComponent, LoaderResponse, PageComponent } from "../../index.js";
 import {
   ClientComponent,
   NotFoundComponentContainer,
@@ -56,9 +53,17 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
         props: {},
       };
 
-      const { props } = (useLoaderData() as LoaderResponse) || defaultData;
+      let { props } = (useLoaderData() as LoaderResponse) || defaultData;
 
-      return <Layout {...props} />;
+      // get params
+      const params = useParams();
+
+      const finalProps = {
+        ...props,
+        params,
+      };
+
+      return <Layout {...finalProps} />;
     },
     children: [] as unknown as any,
   };
@@ -75,17 +80,27 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
   // Get informations about pages
   const pages = router.pages.map((Page) => {
-    // Get the path of the page
-    const path = Page.path === "/" ? Layout.path : Page.path;
+    const pagePathFormated =
+      Page.path[0] === "/" && Page.path !== "/"
+        ? Page.path.slice(1)
+        : Page.path;
 
-    // TODO: Find a good way to use the layout metadata in the page
-    // Add metadata to the page
-    // page.addMetadata(layout.metadata);
+    // Get the path of the page
+    const path =
+      Page.path === "/"
+        ? Layout.path
+        : Layout.path.length > 1
+        ? pagePathFormated
+        : Page.path;
 
     return {
       path,
       element: (
-        <ClientComponent page={Page} loader={router.loaderComponent({})} />
+        <ClientComponent
+          page={Page}
+          loader={router.loaderComponent({})}
+          layoutMetadata={Layout.metadata}
+        />
       ),
       elementError: <ErrorBoundary />,
     };
@@ -139,13 +154,29 @@ export const generateStaticRoutes = (
     path: Layout.path,
     elementError: <ErrorBoundary />,
     Component() {
-      return <Layout />;
+      // Default data
+      const defaultData = {
+        props: {},
+      };
+
+      // Get SSR data
+      let { props } = (useLoaderData() as LoaderResponse) || defaultData;
+
+      // get params
+      const params = useParams();
+
+      const finalProps = {
+        ...props,
+        params,
+      };
+
+      return <Layout {...finalProps} />;
     },
     loader: async ({ params, request }: any) => {
       try {
         // Check if the loader is defined
         if (!Layout.loader) {
-          throw new Error("Missing loader function")
+          throw new Error("Missing loader function");
         }
 
         // Get the response from the loader
@@ -187,12 +218,18 @@ export const generateStaticRoutes = (
 
   // Get informations about pages
   const pages = router.pages.map((Page) => {
-    // Get the path of the page
-    const path = Page.path === "/" ? Layout.path : Page.path;
+    const pagePathFormated =
+      Page.path[0] === "/" && Page.path !== "/"
+        ? Page.path.slice(1)
+        : Page.path;
 
-    // TODO: Find a good way to use the layout metadata in the page
-    // Add metadata to the page
-    // Page.addMetadata(layout.metadata);
+    // Get the path of the page
+    const path =
+      Page.path === "/"
+        ? Layout.path
+        : Layout.path.length > 1
+        ? pagePathFormated
+        : Page.path;
 
     return {
       path,
@@ -200,7 +237,7 @@ export const generateStaticRoutes = (
         try {
           // Check if the loader is defined
           if (!Page.loader) {
-            throw new Error("Missing loader function")
+            throw new Error("Missing loader function");
           }
 
           // Get the response from the loader
@@ -229,7 +266,11 @@ export const generateStaticRoutes = (
       },
       Component() {
         return (
-          <ServerComponent page={Page} loader={router.loaderComponent({})} />
+          <ServerComponent
+            page={Page}
+            loader={router.loaderComponent({})}
+            layoutMetadata={Layout.metadata}
+          />
         );
       },
       elementError: <ErrorBoundary />,
@@ -490,8 +531,8 @@ const generateLinks = (links: MetadataLink[]) => {
 
 /**
  * This function generates meta tags for metadata
- * @param metaTags 
- * @returns 
+ * @param metaTags
+ * @returns
  */
 const generateMetaTags = (metaTags: MetaTag[]) => {
   return metaTags.map((metaTag) => {

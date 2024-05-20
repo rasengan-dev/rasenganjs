@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
-import path, { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import path, { join } from "node:path";
 import {
   StaticHandlerContext,
   createStaticHandler,
@@ -9,17 +8,12 @@ import {
 } from "react-router-dom/server.js";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
-
-// import { handleRequest } from "rasengan";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { fileTypeFromBuffer } from "file-type";
-
 // Create server for production only
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export async function handleRequest(req: any, res?: any) {
   try {
     // Get URL
     const url = req.url;
-    const host = req.headers.host;
+    const host = req.headers.host ? req.headers.host : req.headers.get("host") || "";
 
     // Get app path
     const appPath = process.cwd();
@@ -29,35 +23,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Check if robots.txt exists using fs
       // If it does, return it
       try {
-        const filePath = join(appPath, "dist/client/robots.txt");
+        await fs.access(path.resolve(join(appPath, "dist/client/robots.txt")));
 
-        await fs.access(path.resolve(filePath));
+        if (res)
+          return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
 
-        // read robot file with fs
-        const file = await fs.readFile(filePath, "utf-8");
-
-        return res.send(file);
+        return new Response(path.resolve(join(appPath, "dist/client/robots.txt")), {
+          status: 200
+        });
       } catch (err: any) {
-        return res.send(`
-          user-agent: *
-          disallow: /downloads/
-          disallow: /private/
-          allow: /
-          
-          user-agent: magicsearchbot
-          disallow: /uploads/
-        `);
+        if (res)
+          return res.send(`
+            user-agent: *
+            disallow: /downloads/
+            disallow: /private/
+            allow: /
+            
+            user-agent: magicsearchbot
+            disallow: /uploads/
+          `);
+
+          return new Response(`
+            user-agent: *
+            disallow: /downloads/
+            disallow: /private/
+            allow: /
+            
+            user-agent: magicsearchbot
+            disallow: /uploads/
+          `, {
+            status: 200
+          });
       }
     }
 
     // ! Sitemap Fix
     if (url === "/sitemap.xml") {
-      return res.send(path.resolve(join(appPath, "dist/client/sitemap.xml")));
+      if (res)
+        return res.send(path.resolve(join(appPath, "dist/client/sitemap.xml")));
+
+      return new Response(path.resolve(join(appPath, "dist/client/sitemap.xml")), {
+        status: 200
+      });
     }
 
     // ! Manifest Fix
     if (url === "/manifest.json") {
-      return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
+      if (res)
+        return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
+
+      return new Response(path.resolve(join(appPath, "dist/client/manifest.json")), {
+        status: 200
+      });
     }
 
     // ! Handle assets
@@ -79,25 +96,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const filePath = join(appPath, "dist/client", segmentsWithoutOrigin.join("/"));
       const file = await fs.readFile(filePath, "utf-8");
 
-      if (url.endsWith(".js") || url.endsWith(".css")) {
-        return new Response(file, {
-          headers: {
-            "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
-            "Cache-Control": "max-age=31536000",
-          },
-        });
+      if (res) {
+        return res
+        .status(200)
+        .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
+        .setHeader("Cache-Control", "max-age=31536000")
+        .end(file);
       }
 
-      // read other files
-      const otherFile = await fs.readFile(filePath);
-
-      const result = await fileTypeFromBuffer(otherFile);
-
-      const mimeType = result ? result.mime : url.endsWith(".svg") ? "image/svg+xml" : "application/octet-stream";
-
-      return new Response(otherFile, {
+      return new Response(file, {
         headers: {
-          "Content-Type":   mimeType,
+          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
           "Cache-Control": "max-age=31536000",
         },
       });
@@ -107,12 +116,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (url.endsWith(".js") || url.endsWith(".css")) {
       const file = await fs.readFile(url, "utf-8");
 
-      return res
+      if (res) {
+        return res
         .status(200)
         .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
         .setHeader("Cache-Control", "max-age=31536000")
         .end(file);
       }
+
+      return new Response(file, {
+        headers: {
+          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
+          "Cache-Control": "max-age=31536000",
+        },
+      });
+    }
 
     // Template html
     let templateHtml = "";
@@ -155,7 +173,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (status === 302) {
       const redirect = (context as Response).headers.get("Location");
 
-      if (redirect) return res.redirect(redirect);
+      if (redirect) {
+        if (res) return res.redirect(redirect);
+
+        return Response.redirect(redirect);
+      }
     }
 
     // Helmet context
@@ -178,17 +200,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
 
     // Send the rendered html page
-    return res
+    if (res) {
+      return res
       .status(200)
       .setHeader("Content-Type", "text/html")
-      .setHeader("Cache-Control", "max-age=31536000")
-      .end(html);
+        .setHeader("Cache-Control", "max-age=31536000")
+        .end(html);
+    }
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+        "Cache-Control": "max-age=31536000",
+      },
+    });
   } catch (e: any) {
     console.log(e.stack);
-    res.status(500).end(e.stack);
+
+    if (res) {
+      return res.status(500).end(e.stack);
+    }
+
+    return new Response(e.stack, {
+      status: 500,
+    });
   }
 }
-
-// export default async function handler(req: VercelRequest, res: VercelResponse) {
-//   return await handleRequest(req, res);
-// }

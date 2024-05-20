@@ -96,7 +96,41 @@ program
           stdio: "inherit",
         }
       );
-    } else if (hostingStrategy === "netlify") {}
+    } else if (hostingStrategy === "netlify") {
+      // Displaying the message
+      console.log(
+        `Your project is configured to be hosted on ${chalk.bold.blue(
+          hostingStrategy
+        )}\n`
+      );
+
+      // create a netlify folder at the root
+      execa("mkdir", ["-p", "netlify"], {
+        stdio: "inherit",
+      });
+
+      // Copying the netlify folder to the root directory
+      execa(
+        "cp",
+        [
+          "-r",
+          "node_modules/rasengan/lib/esm/server/functions/netlify/functions",
+          "./netlify",
+        ],
+        {
+          stdio: "inherit",
+        }
+      );
+
+      // Copying the netlify.toml file to the root directory
+      execa(
+        "cp",
+        ["node_modules/rasengan/lib/esm/server/functions/netlify/netlify.toml", "."],
+        {
+          stdio: "inherit",
+        }
+      );
+    }
   });
 
 // Handle the start command

@@ -6,7 +6,7 @@ import {
   PageToRenderProps,
 } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import * as HelmetAsync from "react-helmet-async";
 
 // @ts-ignore
@@ -33,15 +33,26 @@ export const Component = ({
 /**
  * Page component that defines title and description to a page
  */
-export const PageToRender = ({ page: Page, data }: PageToRenderProps) => {
+export const PageToRender = ({ page: Page, data, layoutMetadata }: PageToRenderProps) => {
   // Get the page props
   const props = data.props || {};
 
+  // get params
+  const params = useParams()
+
+  const finalProps = {
+    ...props,
+    params
+  }
+
   // Generate meta tags
   const metaTags = React.useMemo(() => {
-    if (!Page.metadata) return [];
+    const metadatas = [];
 
-    return generateMetadata([Page.metadata]);
+    if (Page.metadata) metadatas.push(Page.metadata);
+    if (layoutMetadata) metadatas.push(layoutMetadata);
+
+    return generateMetadata(metadatas);
   }, []);
 
   return (
@@ -53,7 +64,7 @@ export const PageToRender = ({ page: Page, data }: PageToRenderProps) => {
         <title>{Page.metadata?.title || Page.name}</title>
       </H.Helmet>
 
-      <Page {...props} />
+      <Page {...finalProps} />
     </React.Fragment>
   );
 };

@@ -2,7 +2,7 @@ import { Link, useLoaderData, useRouteError } from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/types.js";
 import { LoaderResponse } from "../../core/types.js";
-import { NotFoundComponentContainerProps } from "../types.js";
+import { MetadataWithoutTitleAndDescription, NotFoundComponentContainerProps } from "../types.js";
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
@@ -21,18 +21,24 @@ export function ErrorBoundary() {
  * @returns React.ReactNode
  */
 export const ServerComponent = ({
-  page
+  page,
+  layoutMetadata
 }: {
   page: PageComponent;
   loader: React.ReactNode;
+  layoutMetadata?: MetadataWithoutTitleAndDescription
 }) => {
   // Default data
-  const data = {
-    props: {},
+  const defaultData = {
+    props: {
+      params: {}
+    },
   };
 
+  const data = (useLoaderData() as LoaderResponse) || defaultData;
+
   return (
-    <PageToRender page={page} data={data} />
+    <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
   );
 };
 
@@ -41,20 +47,24 @@ export const ServerComponent = ({
  * @returns React.ReactNode
  */
 export const ClientComponent = ({
-  page
+  page,
+  layoutMetadata
 }: {
   page: PageComponent;
   loader: React.ReactNode;
+  layoutMetadata?: MetadataWithoutTitleAndDescription
 }) => {
   // Default data
   const defaultData = {
-    props: {},
+    props: {
+      params: {}
+    },
   };
 
   const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
-    <PageToRender page={page} data={data} />
+    <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
   );
 };
 
