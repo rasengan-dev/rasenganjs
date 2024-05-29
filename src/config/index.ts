@@ -22,6 +22,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       external: vite?.build?.external || [],
     },
     resolve: {
+      symbole: vite?.resolve?.symbole || '@',
       alias: vite?.resolve?.alias || [],
     },
   };
@@ -76,7 +77,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
           // concat two arrays
           alias: [
             {
-              find: "@",
+              find: defaultViteConfig.resolve.symbole,
               replacement: "./src",
             },
             ...defaultViteConfig.resolve.alias,

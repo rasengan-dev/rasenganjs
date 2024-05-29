@@ -86,6 +86,11 @@ export type AppConfig = {
      */
     resolve?: {
       /**
+       * Configure the starting point of the aliases
+       */
+      symbole?: string,
+
+      /**
        * Configure aliases
        */
       alias?: Array<{
