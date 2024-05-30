@@ -13,7 +13,7 @@ import {
   StaticHandlerContext,
   StaticRouterProvider,
 } from "react-router-dom/server.js";
-import { Router } from "@remix-run/router";
+import { type Router } from "@remix-run/router";
 
 // @ts-ignore
 import config from "./../../../../../rasengan.config.js";

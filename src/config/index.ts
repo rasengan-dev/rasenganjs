@@ -6,7 +6,7 @@ import { type AppConfig } from "./type.js";
  * @param {AppConfig} loadedConfig
  */
 export const defineConfig = (loadedConfig: AppConfig) => {
-  const { reactStrictMode, server, vite } = loadedConfig;
+  const { reactStrictMode, server, vite, experimental } = loadedConfig;
 
   // Define default values for vite config coming from loadedConfig.vite
   const defaultViteConfig = {
@@ -38,6 +38,11 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       hosting: server?.production?.hosting || "custom",
     },
   };
+
+  // Define default values for experimentals features coming from loadedConfig.experimentals
+  const defaultExperimentalFeaturesConfig = {
+    stream: experimental?.stream || false
+  }
 
   try {
     const config = {
@@ -86,6 +91,8 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 
         appType: "custom",
       },
+
+      experimental: defaultExperimentalFeaturesConfig,
       // More config options...
     };
 
@@ -117,6 +124,9 @@ export const defineConfig = (loadedConfig: AppConfig) => {
             },
           ],
         },
+      },
+      experimental: {
+        stream: false
       },
     };
   }

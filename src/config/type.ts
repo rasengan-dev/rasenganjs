@@ -99,6 +99,17 @@ export type AppConfig = {
       }>;
     };
   };
+
+  /**
+   * List of experimental features
+   */
+  experimental?: {
+    /**
+     * Enable stream mode in order to use suspense feature of react
+     */
+    stream?: boolean
+  };
+
   // More config options...
 };
 
