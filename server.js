@@ -131,28 +131,33 @@ async function createServer({
       let router = createStaticRouter(handler.dataRoutes, context);
 
       // Render the html page on the server
-      const rendered = render(router, context, helmetContext);
+      const rendered = await render(router, context, helmetContext, bootstrap, styles);
 
-      // Load template html
-      if (!templateHtml) {
-        templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
-
-        if (!isProduction) {
-          templateHtml = await vite.transformIndexHtml(url, templateHtml);
+      // If stream mode disable render the page as a plain text
+      if (!config.experimental.stream) {
+        // Load template html
+        if (!templateHtml) {
+          templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
+  
+          if (!isProduction) {
+            templateHtml = await vite.transformIndexHtml(url, templateHtml);
+          }
         }
+  
+        // Replacing the app-html placeholder with the rendered html
+        let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+  
+        // Send the rendered html page
+        return res
+          .status(200)
+          .set({
+            "Content-Type": "text/html",
+            "Cache-Control": "max-age=31536000",
+          })
+          .end(html);
       }
 
-      // Replacing the app-html placeholder with the rendered html
-      let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
-
-      // Send the rendered html page
-      return res
-        .status(200)
-        .set({
-          "Content-Type": "text/html",
-          "Cache-Control": "max-age=31536000",
-        })
-        .end(html);
+      return;
     } catch (e) {
       vite?.ssrFixStacktrace(e);
 

@@ -34,26 +34,26 @@ const RenderApp = ({
   router,
   context,
   helmetContext,
-  bootstrap,
+  // bootstrap,
   styles
 }: {
   router: Router;
   context: StaticHandlerContext;
   helmetContext: any;
-  bootstrap: string; 
+  // bootstrap: string; 
   styles: string
 }) => (
   <H.HelmetProvider context={helmetContext}>
     <ErrorBoundary>
       <Template
         Head={({ children }) => (
-          <Heads data={helmetContext} bootstrap={bootstrap} styles={styles}>
+          <Heads data={helmetContext} styles={styles}>
             {children}
           </Heads>
         )}
         Body={({ children }) => <Body asChild>{children}</Body>}
         Script={({ children }) => (
-          <Scripts bootstrap={bootstrap}>{children}</Scripts>
+          <Scripts>{children}</Scripts>
         )}
       >
         <App Component={Component}>
@@ -64,7 +64,7 @@ const RenderApp = ({
   </H.HelmetProvider>
 );
 
-function renderStream(
+export default async function renderStream(
   router: Router,
   context: StaticHandlerContext,
   helmetContext: any = {},
@@ -80,14 +80,21 @@ function renderStream(
         router={router}
         context={context}
         helmetContext={helmetContext}
-        bootstrap={bootstrap}
+        // bootstrap={bootstrap}
         styles={styles}
       />,
       {
+        bootstrapScripts: [bootstrap],
         onShellReady() {
+          console.log("hummm")
           shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
+
+          console.log({
+            body,
+            stream
+          })
 
           resolve(
             new Response(stream, {
@@ -102,6 +109,7 @@ function renderStream(
           pipe(body);
         },
         onShellError(error: unknown) {
+          console.log({error})
           reject(error);
         },
         onError(error: unknown) {
@@ -119,11 +127,3 @@ function renderStream(
     setTimeout(abort, ABORT_DELAY);
   });
 }
-
-const { pipe } = renderToPipeableStream(<App />, {
-  bootstrapScripts: ["/main.js"],
-  onShellReady() {
-    response.setHeader("content-type", "text/html");
-    pipe(response);
-  },
-});

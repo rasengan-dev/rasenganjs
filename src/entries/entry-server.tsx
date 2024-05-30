@@ -25,6 +25,7 @@ import {
   Scripts,
 } from "../core/components/index.js";
 import * as HelmetAsync from "react-helmet-async";
+import renderStream from "./entry-server-stream.js";
 
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
@@ -62,11 +63,19 @@ const TemplateHtml = ({
  * @param helmetContext
  * @returns
  */
-export function render(
+export async function render(
   router: Router,
   context: StaticHandlerContext,
-  helmetContext: any = {}
+  helmetContext: any = {},
+  bootstrap = "",
+  styles = ""
 ) {
+  if (config.experimental.stream) {
+    await renderStream(router, context, helmetContext, bootstrap, styles);
+
+    return;
+  }
+
   const html = ReactDOMServer.renderToString(
     config.reactStrictMode ? (
       <React.StrictMode>
