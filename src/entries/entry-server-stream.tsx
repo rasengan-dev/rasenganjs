@@ -14,7 +14,7 @@ import {
   Scripts,
 } from "../core/components/index.js";
 
-import { request, response } from "express";
+import { Request, Response } from "express";
 import { type Router } from "@remix-run/router";
 import {
   StaticHandlerContext,
@@ -24,9 +24,10 @@ import { PassThrough } from "stream";
 import * as HelmetAsync from "react-helmet-async";
 import { createReadableStreamFromReadable } from "../server/utils";
 
+import refreshScript from "../scripts/refresh-hack.js?raw";
+
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
-
 
 const ABORT_DELAY = 5_000;
 
@@ -35,41 +36,57 @@ const RenderApp = ({
   context,
   helmetContext,
   // bootstrap,
-  styles
+  styles,
 }: {
   router: Router;
   context: StaticHandlerContext;
   helmetContext: any;
-  // bootstrap: string; 
-  styles: string
-}) => (
-  <H.HelmetProvider context={helmetContext}>
-    <ErrorBoundary>
-      <Template
-        Head={({ children }) => (
-          <Heads data={helmetContext} styles={styles}>
-            {children}
-          </Heads>
-        )}
-        Body={({ children }) => <Body asChild>{children}</Body>}
-        Script={({ children }) => (
-          <Scripts>{children}</Scripts>
-        )}
-      >
-        <App Component={Component}>
-          <StaticRouterProvider router={router} context={context} />
-        </App>
-      </Template>
-    </ErrorBoundary>
-  </H.HelmetProvider>
-);
+  // bootstrap: string;
+  styles: string;
+}) => {
+  // inject vite refresh script to avoid "React refresh preamble was not loaded"
+  let viteScripts = <React.Fragment></React.Fragment>;
+  if (process.env.NODE_ENV !== "production") {
+    viteScripts = (
+      <React.Fragment>
+        <script type="module" src="/@vite/client" />
+        <script
+          type="module"
+          dangerouslySetInnerHTML={{ __html: refreshScript }}
+        />
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <H.HelmetProvider context={helmetContext}>
+      <ErrorBoundary>
+        <Template
+          Head={({ children }) => (
+            <Heads data={helmetContext} styles={styles}>
+              {viteScripts}
+              {children}
+            </Heads>
+          )}
+          Body={({ children }) => <Body asChild>{children}</Body>}
+          Script={({ children }) => <Scripts>{children}</Scripts>}
+        >
+          <App Component={Component}>
+            <StaticRouterProvider router={router} context={context} />
+          </App>
+        </Template>
+      </ErrorBoundary>
+    </H.HelmetProvider>
+  );
+};
 
 export default async function renderStream(
   router: Router,
   context: StaticHandlerContext,
   helmetContext: any = {},
   bootstrap: string,
-  styles: string
+  styles: string,
+  res: Response
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
@@ -86,30 +103,27 @@ export default async function renderStream(
       {
         bootstrapScripts: [bootstrap],
         onShellReady() {
-          console.log("hummm")
+          // console.log("hummm")
           shellRendered = true;
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
+          // const body = new PassThrough();
+          // const stream = createReadableStreamFromReadable(body);
 
-          console.log({
-            body,
-            stream
-          })
+          // console.log({
+          //   body,
+          //   stream
+          // })
 
-          resolve(
-            new Response(stream, {
-              headers: {
-                "Content-Type": "text/html",
-                "Cache-Control": "max-age=31536000",
-              },
-              status: responseStatusCode,
-            })
-          );
+          res.status(200).set({
+            "Content-Type": "text/html",
+            "Cache-Control": "max-age=31536000",
+          });
 
-          pipe(body);
+          resolve(res);
+
+          pipe(res);
         },
         onShellError(error: unknown) {
-          console.log({error})
+          console.log({ error });
           reject(error);
         },
         onError(error: unknown) {

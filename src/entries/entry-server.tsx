@@ -14,6 +14,7 @@ import {
   StaticRouterProvider,
 } from "react-router-dom/server.js";
 import { type Router } from "@remix-run/router";
+import { Response } from "express";
 
 // @ts-ignore
 import config from "./../../../../../rasengan.config.js";
@@ -68,12 +69,13 @@ export async function render(
   context: StaticHandlerContext,
   helmetContext: any = {},
   bootstrap = "",
-  styles = ""
+  styles = "",
+  res?: Response
 ) {
   if (config.experimental.stream) {
-    await renderStream(router, context, helmetContext, bootstrap, styles);
+    if (!res) return;
 
-    return;
+    return await renderStream(router, context, helmetContext, bootstrap, styles, res);
   }
 
   const html = ReactDOMServer.renderToString(

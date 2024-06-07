@@ -80,10 +80,7 @@ async function createServer({
 
       if (!isProduction) {
         entry = await vite.ssrLoadModule(
-          join(
-            appPath,
-            `node_modules/rasengan/lib/esm/entries/entry-server.js`
-          )
+          join(appPath, `node_modules/rasengan/lib/esm/entries/entry-server.js`)
         );
       } else {
         entry = await import(join(appPath, "dist/server/entry-server.js"));
@@ -102,7 +99,9 @@ async function createServer({
           "/assets/" +
           fs
             .readdirSync(join(appPath, "dist/client/assets"))
-            .filter((fn) => fn.includes("entry-client") && fn.endsWith(".css"))[0];
+            .filter(
+              (fn) => fn.includes("entry-client") && fn.endsWith(".css")
+            )[0];
       }
 
       // Get entry values
@@ -130,34 +129,47 @@ async function createServer({
       // Create static router
       let router = createStaticRouter(handler.dataRoutes, context);
 
-      // Render the html page on the server
-      const rendered = await render(router, context, helmetContext, bootstrap, styles);
-
-      // If stream mode disable render the page as a plain text
-      if (!config.experimental.stream) {
-        // Load template html
-        if (!templateHtml) {
-          templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
-  
-          if (!isProduction) {
-            templateHtml = await vite.transformIndexHtml(url, templateHtml);
-          }
-        }
-  
-        // Replacing the app-html placeholder with the rendered html
-        let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
-  
-        // Send the rendered html page
-        return res
-          .status(200)
-          .set({
-            "Content-Type": "text/html",
-            "Cache-Control": "max-age=31536000",
-          })
-          .end(html);
+      // If stream mode enabled, render the page as a plain text
+      if (config.experimental.stream) {
+        return await render(
+          router,
+          context,
+          helmetContext,
+          bootstrap,
+          styles,
+          res,
+        );
       }
 
-      return;
+      // Render the html page on the server
+      const rendered = await render(
+        router,
+        context,
+        helmetContext,
+        bootstrap,
+        styles
+      );
+
+      // Load template html
+      if (!templateHtml) {
+        templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
+
+        if (!isProduction) {
+          templateHtml = await vite.transformIndexHtml(url, templateHtml);
+        }
+      }
+
+      // Replacing the app-html placeholder with the rendered html
+      let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+
+      // Send the rendered html page
+      return res
+        .status(200)
+        .set({
+          "Content-Type": "text/html",
+          "Cache-Control": "max-age=31536000",
+        })
+        .end(html);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
 

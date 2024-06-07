@@ -184,7 +184,9 @@ export const Body = ({
       />
 
       {asChild ? (
-        <div id="root">{children}</div>
+        <div id='root'>
+          {children}
+        </div>
       ) : (
         <>
           <div id="root">{"rasengan-body-app"}</div>
