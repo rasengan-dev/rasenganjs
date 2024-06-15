@@ -1,11 +1,4 @@
 export {
-  // type ILayoutComponent,
-  // LayoutComponent,
-  // DefaultLayout,
-  // PageComponent,
-} from "./interfaces.js";
-
-export {
   Body,
   Scripts
 } from "./components/index.js"

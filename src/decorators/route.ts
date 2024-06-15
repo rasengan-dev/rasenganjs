@@ -1,6 +1,6 @@
 // Router Decorators
 
-import { PageComponent } from "../core/interfaces.js";
+import { PageComponent } from "../core/types.js";
 import { RouteDecoratorProps } from "./types.js";
 
 /**
