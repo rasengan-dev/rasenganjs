@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Link, useLoaderData, useRouteError } from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/types.js";
@@ -22,7 +23,8 @@ export function ErrorBoundary() {
  */
 export const ServerComponent = ({
   page,
-  layoutMetadata
+  layoutMetadata,
+  loader
 }: {
   page: PageComponent;
   loader: React.ReactNode;
@@ -38,7 +40,9 @@ export const ServerComponent = ({
   const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
-    <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+    <Suspense fallback={loader}>
+      <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+    </Suspense>
   );
 };
 
@@ -48,7 +52,8 @@ export const ServerComponent = ({
  */
 export const ClientComponent = ({
   page,
-  layoutMetadata
+  layoutMetadata,
+  loader
 }: {
   page: PageComponent;
   loader: React.ReactNode;
@@ -64,7 +69,9 @@ export const ClientComponent = ({
   const data = (useLoaderData() as LoaderResponse) || defaultData;
 
   return (
-    <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+    <Suspense fallback={loader}>
+      <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+    </Suspense>
   );
 };
 

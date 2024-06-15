@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta.36",
+  "version": "1.1.0",
   "description": "The modern frontend framework for React",
   "type": "module",
   "main": "lib/esm/index.js",
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "chalk": "^5.3.0",
     "commander": "^11.1.0",
     "compression": "^1.7.4",
