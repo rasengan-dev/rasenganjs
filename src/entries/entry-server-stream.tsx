@@ -35,17 +35,18 @@ const RenderApp = ({
   router,
   context,
   helmetContext,
-  // bootstrap,
   styles,
+  bootstrap,
 }: {
   router: Router;
   context: StaticHandlerContext;
   helmetContext: any;
-  // bootstrap: string;
   styles: string;
+  bootstrap: string;
 }) => {
   // inject vite refresh script to avoid "React refresh preamble was not loaded"
   let viteScripts = <React.Fragment></React.Fragment>;
+
   if (process.env.NODE_ENV !== "production") {
     viteScripts = (
       <React.Fragment>
@@ -63,13 +64,13 @@ const RenderApp = ({
       <ErrorBoundary>
         <Template
           Head={({ children }) => (
-            <Heads data={helmetContext} styles={styles}>
+            <Heads data={helmetContext} styles={styles} bootstrap={bootstrap}>
               {viteScripts}
               {children}
             </Heads>
           )}
           Body={({ children }) => <Body asChild>{children}</Body>}
-          Script={({ children }) => <Scripts>{children}</Scripts>}
+          Script={({ children }) => <Scripts bootstrap={bootstrap}>{children}</Scripts>}
         >
           <App Component={Component}>
             <StaticRouterProvider router={router} context={context} />
@@ -97,11 +98,11 @@ export default async function renderStream(
         router={router}
         context={context}
         helmetContext={helmetContext}
-        // bootstrap={bootstrap}
+        bootstrap={bootstrap}
         styles={styles}
       />,
       {
-        bootstrapScripts: [bootstrap],
+        // bootstrapModules: [bootstrap],
         onShellReady() {
           // console.log("hummm")
           shellRendered = true;

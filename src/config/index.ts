@@ -85,6 +85,10 @@ export const defineConfig = (loadedConfig: AppConfig) => {
               find: defaultViteConfig.resolve.symbole,
               replacement: "./src",
             },
+            {
+              find: "path",
+              replacement: "node_modules/path-browserify",
+            },
             ...defaultViteConfig.resolve.alias,
           ],
         },
@@ -121,6 +125,10 @@ export const defineConfig = (loadedConfig: AppConfig) => {
             {
               find: "@",
               replacement: "./src",
+            },
+            {
+              find: "path",
+              replacement: "node_modules/path-browserify",
             },
           ],
         },
