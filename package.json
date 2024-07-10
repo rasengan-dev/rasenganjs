@@ -71,7 +71,6 @@
 		"sirv": "^2.0.3"
 	},
 	"peerDependencies": {
-		"@vercel/node": "^3.0.14",
 		"@netlify/functions": "^2.6.0",
 		"@types/node": "^18.0.0 || >=20.0.0",
 		"less": "*",
@@ -105,6 +104,7 @@
 		"@types/node": "^20.8.6",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
+		"@vercel/node": "^3.0.14",
 		"cross-env": "^7.0.3",
 		"npm-run-all": "^4.1.5",
 		"typescript": "^5.2.2"
