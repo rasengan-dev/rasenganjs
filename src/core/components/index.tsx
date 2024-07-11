@@ -33,17 +33,21 @@ export const Component = ({
 /**
  * Page component that defines title and description to a page
  */
-export const PageToRender = ({ page: Page, data, layoutMetadata }: PageToRenderProps) => {
+export const PageToRender = ({
+  page: Page,
+  data,
+  layoutMetadata,
+}: PageToRenderProps) => {
   // Get the page props
   const props = data.props || {};
 
   // get params
-  const params = useParams()
+  const params = useParams();
 
   const finalProps = {
     ...props,
-    params
-  }
+    params,
+  };
 
   // Generate meta tags
   const metaTags = React.useMemo(() => {
@@ -166,8 +170,10 @@ export const Heads = ({
  */
 export const Body = ({
   children = undefined,
+  asChild = false,
 }: {
   children?: React.ReactNode;
+  asChild?: boolean;
 }) => {
   return (
     <body>
@@ -177,9 +183,17 @@ export const Body = ({
         }}
       />
 
-      <div id="root">{"rasengan-body-app"}</div>
+      {asChild ? (
+        <div id='root'>
+          {children}
+        </div>
+      ) : (
+        <>
+          <div id="root">{"rasengan-body-app"}</div>
 
-      {children}
+          {children}
+        </>
+      )}
     </body>
   );
 };

@@ -13,7 +13,8 @@ import {
   StaticHandlerContext,
   StaticRouterProvider,
 } from "react-router-dom/server.js";
-import { Router } from "@remix-run/router";
+import { type Router } from "@remix-run/router";
+import { Response } from "express";
 
 // @ts-ignore
 import config from "./../../../../../rasengan.config.js";
@@ -25,6 +26,7 @@ import {
   Scripts,
 } from "../core/components/index.js";
 import * as HelmetAsync from "react-helmet-async";
+import renderStream from "./entry-server-stream.js";
 
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
@@ -62,11 +64,20 @@ const TemplateHtml = ({
  * @param helmetContext
  * @returns
  */
-export function render(
+export async function render(
   router: Router,
   context: StaticHandlerContext,
-  helmetContext: any = {}
+  helmetContext: any = {},
+  bootstrap = "",
+  styles = "",
+  res?: Response
 ) {
+  if (config.experimental.stream) {
+    if (!res) return;
+
+    return await renderStream(router, context, helmetContext, bootstrap, styles, res);
+  }
+
   const html = ReactDOMServer.renderToString(
     config.reactStrictMode ? (
       <React.StrictMode>

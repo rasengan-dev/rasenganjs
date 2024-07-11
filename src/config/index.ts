@@ -6,7 +6,7 @@ import { type AppConfig } from "./type.js";
  * @param {AppConfig} loadedConfig
  */
 export const defineConfig = (loadedConfig: AppConfig) => {
-  const { reactStrictMode, server, vite } = loadedConfig;
+  const { reactStrictMode, server, vite, experimental } = loadedConfig;
 
   // Define default values for vite config coming from loadedConfig.vite
   const defaultViteConfig = {
@@ -22,6 +22,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       external: vite?.build?.external || [],
     },
     resolve: {
+      symbole: vite?.resolve?.symbole || '@',
       alias: vite?.resolve?.alias || [],
     },
   };
@@ -37,6 +38,11 @@ export const defineConfig = (loadedConfig: AppConfig) => {
       hosting: server?.production?.hosting || "custom",
     },
   };
+
+  // Define default values for experimentals features coming from loadedConfig.experimentals
+  const defaultExperimentalFeaturesConfig = {
+    stream: experimental?.stream || false
+  }
 
   try {
     const config = {
@@ -72,52 +78,65 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 					external: defaultViteConfig.build.external,
 				},
 
-				resolve: {
-					// concat two arrays
-					alias: [
-						{
-							find: "@",
-							replacement: "./src",
-						},
-						...defaultViteConfig.resolve.alias,
-					],
-				},
+        resolve: {
+          // concat two arrays
+          alias: [
+            {
+              find: defaultViteConfig.resolve.symbole,
+              replacement: "./src",
+            },
+            {
+              find: "path",
+              replacement: "node_modules/path-browserify",
+            },
+            ...defaultViteConfig.resolve.alias,
+          ],
+        },
 
-				appType: "custom",
-			},
-			// More config options...
-		};
+        appType: "custom",
+      },
+
+      experimental: defaultExperimentalFeaturesConfig,
+      // More config options...
+    };
 
     return config;
   } catch (error) {
     console.error(error);
     return {
-			reactStrictMode: true,
-			vite: {
-				optimizeDeps: {
-					exclude: ["node:http", "node-fetch"],
-					include: [
-						"react-fast-compare",
-						"invariant",
-						"shallowequal",
-						"react-dom/client",
-						"react-dom",
-						"react",
-						"react-router-dom",
-						"react-helmet-async",
-					],
-				},
-				appType: "custom",
-				resolve: {
-					alias: [
-						{
-							find: "@",
-							replacement: "./src",
-						},
-					],
-				},
-			},
-		};
+      reactStrictMode: true,
+      vite: {
+        optimizeDeps: {
+          exclude: ["node:http", "node-fetch"],
+          include: [
+            "react-fast-compare",
+            "invariant",
+            "shallowequal",
+            "react-dom/client",
+            "react-dom",
+            "react",
+            "react-router-dom",
+            "react-helmet-async",
+          ],
+        },
+        appType: "custom",
+        resolve: {
+          alias: [
+            {
+              find: "@",
+              replacement: "./src",
+            },
+            {
+              find: "path",
+              replacement: "node_modules/path-browserify",
+            },
+          ],
+        },
+      },
+      experimental: {
+        stream: false
+      },
+    };
   }
 };
 

@@ -28,6 +28,7 @@ async function createServer({
 	base = "/",
 	enableSearchingPort = false,
 	open = false,
+	config,
 }) {
 	// Get directory name
 	const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -42,6 +43,7 @@ async function createServer({
 	let templateHtml = "";
 	// Bootstrap
 	let bootstrap = "";
+	// let bootstrap = "/node_modules/rasengan/lib/esm/entries/entry-client.js";
 	// Styles
 	let styles = "";
 
@@ -125,8 +127,26 @@ async function createServer({
 			// Create static router
 			let router = createStaticRouter(handler.dataRoutes, context);
 
+			// If stream mode enabled, render the page as a plain text
+			if (config.experimental.stream) {
+				return await render(
+					router,
+					context,
+					helmetContext,
+					bootstrap,
+					styles,
+					res
+				);
+			}
+
 			// Render the html page on the server
-			const rendered = render(router, context, helmetContext);
+			const rendered = await render(
+				router,
+				context,
+				helmetContext,
+				bootstrap,
+				styles
+			);
 
 			// Load template html
 			if (!templateHtml) {
@@ -220,10 +240,9 @@ async function createServer({
 
 // Launch server
 (async function launchServer() {
-  // Get config
-	const config = await import(
-		join(process.cwd(), "rasengan.config.js")
-	);
+	// Get config
+	const config = (await import(join(process.cwd(), "rasengan.config.js")))
+		.default;
 
 	// Constants
 	const isProduction = process.env.NODE_ENV === "production";
@@ -239,5 +258,6 @@ async function createServer({
 		port,
 		base,
 		open: config.server?.development?.open,
+		config,
 	});
 })();

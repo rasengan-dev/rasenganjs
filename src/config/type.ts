@@ -86,6 +86,11 @@ export type AppConfig = {
      */
     resolve?: {
       /**
+       * Configure the starting point of the aliases
+       */
+      symbole?: string,
+
+      /**
        * Configure aliases
        */
       alias?: Array<{
@@ -94,6 +99,17 @@ export type AppConfig = {
       }>;
     };
   };
+
+  /**
+   * List of experimental features
+   */
+  experimental?: {
+    /**
+     * Enable stream mode in order to use suspense feature of react
+     */
+    stream?: boolean
+  };
+
   // More config options...
 };
 

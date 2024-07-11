@@ -1,69 +1,52 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Importing __dirname
+// Load rasengan config file
 // @ts-ignore
-import { fileURLToPath } from "node:url";
-import path, { dirname, resolve } from "node:path";
+import config from "./../../rasengan.config.js";
+
+import path from "node:path";
+
+// Extract vite config
+const { vite } = config;
 
 // Getting root path
-const __dirname = dirname(fileURLToPath(import.meta.url));
 let __pathToRoot = "";
 
-const external = [
-	// `${__pathToRoot}/node_modules/rasengan/lib/esm/server/utils/handleRequest.js`,
-	// `${__pathToRoot}/node_modules/rasengan/lib/cjs/server/utils/handleRequest.js`,
-];
-
-export default defineConfig(({ command, mode }: any) => {
+/**
+ * Configures the Vite build for the Rasengan.js application.
+ *
+ * This function is exported as the default configuration for the Vite build system.
+ * It loads the Rasengan.js configuration file and uses it to configure the Vite build.
+ *
+ * The configuration includes:
+ * - Defining environment variables
+ * - Registering Vite plugins, including the React plugin
+ * - Setting the root directory for the build
+ * - Configuring dependency optimization
+ * - Configuring the build output, including source maps and manual chunking
+ * - Configuring SSR options, including ignoring CSS files
+ * - Configuring CSS modules and PostCSS
+ * - Configuring aliases for the build
+ * - Setting the cache directory and environment variable prefix
+ * - Configuring the app type
+ *
+ * @param {object} options - The Vite build options, including the command and mode.
+ * @returns {object} The Vite configuration object.
+ */
+export default defineConfig(async ({ command, mode }: any) => {
 	if (command === "serve") {
 		__pathToRoot = process.cwd();
 	} else {
 		__pathToRoot = path.join(process.cwd(), "./../../");
 	}
 
-	// Default Vite config
-	let vite = {
-		plugins: [],
-		optimizeDeps: {
-			exclude: [],
-			include: [],
-		},
-		build: {
-			sourcemap: true,
-			rollupOptions: {
-				input: "./lib/esm/entries/entry-client.js",
-				output: {
-					manualChunks: undefined,
-				},
-			},
-			external: [],
-		},
-		ssr: {
-			external: [],
-		},
-		css: {
-			modules: {
-				localsConvention: "camelCaseOnly",
-			},
-
-			postcss: undefined,
-		},
-		resolve: {
-			alias: [],
-		},
-		appType: "custom",
-	};
-
-	// Load rasengan config file
-	import(path.join(process.cwd(), "rasengan.config.js")).then((config) => {
-		// Extract vite config
-		const { vite: viteConfig } = config;
-
-		vite = viteConfig;
-	});
-
 	return {
+		// Define env
+		define: {
+			"process.env": process.env,
+		},
+
 		// Vite Plugins
 		plugins: [react(), ...vite?.plugins],
 
@@ -82,9 +65,9 @@ export default defineConfig(({ command, mode }: any) => {
 				output: {
 					manualChunks: undefined,
 				},
-				external: [...vite?.build?.external, ...external],
+				external: [...vite?.build?.external],
 			},
-			external: [],
+			chunkSizeWarningLimit: 1000,
 		},
 
 		// SSR options
