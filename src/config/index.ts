@@ -76,7 +76,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 					// concat two arrays
 					alias: [
 						{
-							find: "@/",
+							find: "@",
 							replacement: "./src",
 						},
 						...defaultViteConfig.resolve.alias,
@@ -111,7 +111,7 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 				resolve: {
 					alias: [
 						{
-							find: "@/",
+							find: "@",
 							replacement: "./src",
 						},
 					],

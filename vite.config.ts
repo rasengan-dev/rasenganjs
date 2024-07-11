@@ -16,7 +16,6 @@ const external = [
 ];
 
 export default defineConfig(({ command, mode }: any) => {
-	console.log({ command, mode });
 	if (command === "serve") {
 		__pathToRoot = process.cwd();
 	} else {
