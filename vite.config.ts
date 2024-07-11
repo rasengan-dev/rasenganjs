@@ -1,84 +1,125 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Load rasengan config file
-// @ts-ignore
-import config from "./../../rasengan.config.js";
-
 // Importing __dirname
 // @ts-ignore
 import { fileURLToPath } from "node:url";
-import path, { dirname } from "node:path";
-
-// Extract vite config
-const { vite } = config;
+import path, { dirname, resolve } from "node:path";
 
 // Getting root path
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const __pathToRoot = path.resolve(__dirname, "./../../");
+let __pathToRoot = "";
 
 const external = [
-  // `${__pathToRoot}/node_modules/rasengan/lib/esm/server/utils/handleRequest.js`,
-  // `${__pathToRoot}/node_modules/rasengan/lib/cjs/server/utils/handleRequest.js`,
-]
+	// `${__pathToRoot}/node_modules/rasengan/lib/esm/server/utils/handleRequest.js`,
+	// `${__pathToRoot}/node_modules/rasengan/lib/cjs/server/utils/handleRequest.js`,
+];
 
-export default defineConfig({
-  // Vite Plugins
-  plugins: [react(), ...vite?.plugins],
+export default defineConfig(({ command, mode }: any) => {
+	console.log({ command, mode });
+	if (command === "serve") {
+		__pathToRoot = process.cwd();
+	} else {
+		__pathToRoot = path.join(process.cwd(), "./../../");
+	}
 
-  // define index.html location
-  root: __pathToRoot,
-  optimizeDeps: {
-    exclude: vite?.optimizeDeps?.exclude,
-    include: vite?.optimizeDeps?.include
-  },
+	// Default Vite config
+	let vite = {
+		plugins: [],
+		optimizeDeps: {
+			exclude: [],
+			include: [],
+		},
+		build: {
+			sourcemap: true,
+			rollupOptions: {
+				input: "./lib/esm/entries/entry-client.js",
+				output: {
+					manualChunks: undefined,
+				},
+			},
+			external: [],
+		},
+		ssr: {
+			external: [],
+		},
+		css: {
+			modules: {
+				localsConvention: "camelCaseOnly",
+			},
 
-  // Build options
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      input: "./lib/esm/entries/entry-client.js",
-      output: {
-        manualChunks: undefined
-      },
-      external: [
-        ...vite?.build?.external,
-        ...external
-      ],
-    },
-  },
+			postcss: undefined,
+		},
+		resolve: {
+			alias: [],
+		},
+		appType: "custom",
+	};
 
-  // SSR options
-  ssr: {
-    // Ignore CSS files
-    noExternal: [/\.css$/],
-  },
+	// Load rasengan config file
+	import(path.join(process.cwd(), "rasengan.config.js")).then((config) => {
+		// Extract vite config
+		const { vite: viteConfig } = config;
 
-  // Server options
-  css: {
-    modules: {
-      localsConvention: "camelCaseOnly",
-    },
+		vite = viteConfig;
+	});
 
-    postcss: vite?.css?.postcss,
-  },
+	return {
+		// Vite Plugins
+		plugins: [react(), ...vite?.plugins],
 
-  // Aliases
-  resolve: {
-    alias: vite?.resolve?.alias.map(
-      (alias: { find: string; replacement: string }) => ({
-        find: alias.find,
-        replacement: path.join(__pathToRoot, alias.replacement),
-      })
-    ),
-  },
+		// define index.html location
+		root: __pathToRoot,
+		optimizeDeps: {
+			exclude: vite?.optimizeDeps?.exclude,
+			include: vite?.optimizeDeps?.include,
+		},
 
-  // Cache directory
-  cacheDir: ".rasengan/",
+		// Build options
+		build: {
+			sourcemap: true,
+			rollupOptions: {
+				input: "./lib/esm/entries/entry-client.js",
+				output: {
+					manualChunks: undefined,
+				},
+				external: [...vite?.build?.external, ...external],
+			},
+			external: [],
+		},
 
-  // Environment variable prefix
-  envPrefix: "RASENGAN_",
+		// SSR options
+		ssr: {
+			// Ignore CSS files
+			noExternal: [/\.css$/],
+		},
 
-  // App type
-  appType: vite.appType,
+		// Server options
+		css: {
+			modules: {
+				localsConvention: "camelCaseOnly",
+			},
+
+			postcss: vite?.css?.postcss,
+		},
+
+		// Aliases
+		resolve: {
+			alias: vite?.resolve?.alias.map(
+				(alias: { find: string; replacement: string }) => ({
+					find: alias.find,
+					replacement: path.join(__pathToRoot, alias.replacement),
+				})
+			),
+		},
+
+		// Cache directory
+		cacheDir: ".rasengan/",
+
+		// Environment variable prefix
+		envPrefix: "RASENGAN_",
+
+		// App type
+		appType: vite.appType,
+	};
 });

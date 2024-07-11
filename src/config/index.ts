@@ -40,84 +40,84 @@ export const defineConfig = (loadedConfig: AppConfig) => {
 
   try {
     const config = {
-      reactStrictMode: reactStrictMode === undefined ? true : reactStrictMode,
-      server: defaultServerConfig,
-      vite: {
-        plugins: defaultViteConfig.plugins,
+			reactStrictMode: reactStrictMode === undefined ? true : reactStrictMode,
+			server: defaultServerConfig,
+			vite: {
+				plugins: defaultViteConfig.plugins,
 
-        optimizeDeps: {
-          exclude: [
-            "node:http",
-            "node-fetch",
-            ...defaultViteConfig.optimizeDeps.exclude,
-          ],
-          include: [
-            "react-fast-compare",
-            "invariant",
-            "shallowequal",
-            "react-dom/client",
-            "react-dom",
-            "react",
-            "react-router-dom",
-            "react-helmet-async",
-            ...defaultViteConfig.optimizeDeps.include,
-          ],
-        },
+				optimizeDeps: {
+					exclude: [
+						"node:http",
+						"node-fetch",
+						...defaultViteConfig.optimizeDeps.exclude,
+					],
+					include: [
+						"react-fast-compare",
+						"invariant",
+						"shallowequal",
+						"react-dom/client",
+						"react-dom",
+						"react",
+						"react-router-dom",
+						"react-helmet-async",
+						...defaultViteConfig.optimizeDeps.include,
+					],
+				},
 
-        css: {
-          postcss: defaultViteConfig.css.postcss,
-        },
+				css: {
+					postcss: defaultViteConfig.css.postcss,
+				},
 
-        build: {
-          external: defaultViteConfig.build.external,
-        },
+				build: {
+					external: defaultViteConfig.build.external,
+				},
 
-        resolve: {
-          // concat two arrays
-          alias: [
-            {
-              find: "@/",
-              replacement: "src/",
-            },
-            ...defaultViteConfig.resolve.alias,
-          ],
-        },
+				resolve: {
+					// concat two arrays
+					alias: [
+						{
+							find: "@/",
+							replacement: "./src",
+						},
+						...defaultViteConfig.resolve.alias,
+					],
+				},
 
-        appType: "custom",
-      },
-      // More config options...
-    };
+				appType: "custom",
+			},
+			// More config options...
+		};
 
     return config;
   } catch (error) {
     console.error(error);
     return {
-      reactStrictMode: true,
-      vite: {
-        optimizeDeps: {
-          exclude: ["node:http", "node-fetch"],
-          include: [
-            "react-fast-compare",
-            "invariant",
-            "shallowequal",
-            "react-dom/client",
-            "react-dom",
-            "react",
-            "react-router-dom",
-            "react-helmet-async",
-          ],
-        },
-        appType: "custom",
-        resolve: {
-          alias: [
-            {
-              find: "@/",
-              replacement: "src/",
-            },
-          ],
-        },
-      },
-    };
+			reactStrictMode: true,
+			vite: {
+				optimizeDeps: {
+					exclude: ["node:http", "node-fetch"],
+					include: [
+						"react-fast-compare",
+						"invariant",
+						"shallowequal",
+						"react-dom/client",
+						"react-dom",
+						"react",
+						"react-router-dom",
+						"react-helmet-async",
+					],
+				},
+				appType: "custom",
+				resolve: {
+					alias: [
+						{
+							find: "@/",
+							replacement: "./src",
+						},
+					],
+				},
+			},
+		};
   }
 };
 
