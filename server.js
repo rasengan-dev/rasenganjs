@@ -240,12 +240,19 @@ async function createServer({
 
 // Launch server
 (async function launchServer() {
-	// Get config
-	const config = (await import(join(process.cwd(), "rasengan.config.js")))
-		.default;
-
 	// Constants
 	const isProduction = process.env.NODE_ENV === "production";
+
+	// Get config
+	const config = (
+		await import(
+			join(
+				isProduction ? process.cwd() + "./../../" : process.cwd(),
+				"rasengan.config.js"
+			)
+		)
+	).default;
+
 	const port = !isProduction
 		? (process.env.PORT && Number(process.env.PORT)) ||
 		  config.server?.development?.port ||
