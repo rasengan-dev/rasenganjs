@@ -16,6 +16,9 @@ import {
 	fix404,
 } from "./lib/esm/server/utils/index.js";
 
+// Resolve path
+import { resolvePath } from "./lib/esm/config/index.js";
+
 /**
  * This function is responsible for creating a server for the development environment.
  * @param {boolean} isProduction - Whether the server is in production mode or not.
@@ -81,7 +84,9 @@ async function createServer({
 					join(appPath, `node_modules/rasengan/lib/esm/entries/entry-server.js`)
 				);
 			} else {
-				entry = await import(join(appPath, "dist/server/entry-server.js"));
+				entry = await import(
+					resolvePath(join(appPath, "dist/server/entry-server.js"))
+				);
 
 				// replace bootstrap script with compiled scripts
 				bootstrap =
@@ -243,15 +248,16 @@ async function createServer({
 	// Constants
 	const isProduction = process.env.NODE_ENV === "production";
 
-	// Get config
-	const config = (
-		await import(
-			join(
-				isProduction ? process.cwd() + "./../../" : process.cwd(),
-				"rasengan.config.js"
-			)
+	// Format config path
+	const configPath = resolvePath(
+		join(
+			isProduction ? process.cwd() + "./../../" : process.cwd(),
+			"rasengan.config.js"
 		)
-	).default;
+	);
+
+	// Get config
+	const config = (await import(configPath)).default;
 
 	const port = !isProduction
 		? (process.env.PORT && Number(process.env.PORT)) ||

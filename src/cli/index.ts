@@ -6,6 +6,7 @@ import { execa } from "execa";
 
 // @ts-ignore
 import path from "node:path";
+import { resolvePath } from "../config/index.js";
 
 const program = new Command();
 
@@ -65,10 +66,12 @@ program
     console.log("");
 
     // Importing the config file
-    const appConfig = await import(path.join(process.cwd(), "rasengan.config.js"));
+    const configPath = resolvePath(path.join(process.cwd(), "rasengan.config.js"));
+
+    const appConfig = await import(configPath);
 
     // Checking the config file in order to know about hosting strategy
-    const { server } = appConfig;
+    const { server } = appConfig.default ?? {};
 
     const hostingStrategy = server?.production?.hosting ?? "custom";
 
