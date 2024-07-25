@@ -227,6 +227,7 @@ async function createServer({
 					base,
 					enableSearchingPort: true,
 					open,
+					config,
 				});
 			} else {
 				console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
@@ -237,6 +238,7 @@ async function createServer({
 					base,
 					enableSearchingPort,
 					open,
+					config,
 				});
 			}
 		}
