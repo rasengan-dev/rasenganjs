@@ -26,21 +26,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		// Get app path
 		let appPath = process.cwd();
 
-    // Check if RASENGAN_VERCEL_CONFIG is set
-    if (RASENGAN_VERCEL_CONFIG) {
-      // Parse the config
-      const config = JSON.parse(RASENGAN_VERCEL_CONFIG);
+		// Check if RASENGAN_VERCEL_CONFIG is set
+		if (RASENGAN_VERCEL_CONFIG) {
+			// Parse the config
+			const config = JSON.parse(RASENGAN_VERCEL_CONFIG);
 
-      // Get the app path
-      appPath = join(appPath, config.rootDirectory);
-    }
-
-    console.log({env: appPath})
+			// Get the app path
+			appPath = join(appPath, config.rootDirectory);
+		}
 
 		// Format config path
-		const configPath = path.resolve(
-			join(process.cwd() + "./../../", "rasengan.config.js")
-		);
+		const configPath = path.resolve(join(appPath, "rasengan.config.js"));
 
 		// Get config
 		const config = (await import(configPath)).default;
