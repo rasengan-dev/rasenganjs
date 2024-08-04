@@ -14,6 +14,8 @@ import { createFetchRequest } from "rasengan";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { fileTypeFromBuffer } from "file-type";
 
+const { RASENGAN_VERCEL_CONFIG } = process.env;
+
 // Create server for production only
 export default async function handler(req: VercelRequest, res: VercelResponse) {
 	try {
@@ -22,9 +24,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		const host = req.headers.host;
 
 		// Get app path
-		const appPath = process.cwd();
+		let appPath = process.cwd();
 
-    console.log({env: process.cwd()})
+    // Check if RASENGAN_VERCEL_CONFIG is set
+    if (RASENGAN_VERCEL_CONFIG) {
+      // Parse the config
+      const config = JSON.parse(RASENGAN_VERCEL_CONFIG);
+
+      // Get the app path
+      appPath = join(appPath, config.rootDirectory);
+    }
+
+    console.log({env: appPath})
 
 		// Format config path
 		const configPath = path.resolve(
