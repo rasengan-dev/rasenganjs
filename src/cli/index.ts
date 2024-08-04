@@ -68,10 +68,10 @@ program
     // Importing the config file
     const configPath = resolvePath(path.join(process.cwd(), "rasengan.config.js"));
 
-    const appConfig = await import(configPath);
+    const appConfig = (await import(configPath)).default;
 
     // Checking the config file in order to know about hosting strategy
-    const { server } = appConfig.default ?? {};
+    const { server } = appConfig;
 
     const hostingStrategy = server?.production?.hosting ?? "custom";
 
