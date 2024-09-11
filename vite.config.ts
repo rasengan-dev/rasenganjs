@@ -1,14 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Load rasengan config file
-// @ts-ignore
-import config from "./../../rasengan.config.js";
-
 import path from "node:path";
 
-// Extract vite config
-const { vite } = config;
+// Load config
+// @ts-ignore
+import config from "./../../rasengan.config.js";
+// import { config } from "./AppEntry";
 
 // Getting root path
 let __pathToRoot = "";
@@ -41,6 +39,9 @@ export default defineConfig(async ({ command, mode }: any) => {
 		__pathToRoot = path.join(process.cwd(), "./../../");
 	}
 
+	// Extract vite config
+	const { vite } = config;
+
 	return {
 		// Define env
 		define: {
@@ -59,7 +60,8 @@ export default defineConfig(async ({ command, mode }: any) => {
 
 		// Build options
 		build: {
-			sourcemap: true,
+			sourcemap: mode === "development" ? true : false,
+			minify: "esbuild",
 			rollupOptions: {
 				input: "./lib/esm/entries/entry-client.js",
 				output: {
