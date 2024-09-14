@@ -68,13 +68,20 @@ const RenderApp = ({
               {children}
             </Heads>
           )}
-          Body={({ children }) => <Body asChild>{children}</Body>}
+          Body={({ children }) => (
+            <Body
+              asChild
+              AppContent={
+                <App Component={Component}>
+                  <StaticRouterProvider router={router} context={context} />
+                </App>
+              }
+            >
+              {children}
+            </Body>
+          )}
           Script={({ children }) => <Scripts>{children}</Scripts>}
-        >
-          <App Component={Component}>
-            <StaticRouterProvider router={router} context={context} />
-          </App>
-        </Template>
+        />
       </ErrorBoundary>
     </H.HelmetProvider>
   );
