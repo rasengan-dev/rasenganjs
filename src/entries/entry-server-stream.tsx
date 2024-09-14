@@ -1,8 +1,6 @@
 import React from "react";
 import { renderToPipeableStream } from "react-dom/server";
 // @ts-ignore
-import AppRouter from "./../../../../../src/app/app.router";
-// @ts-ignore
 import App from "./../../../../../src/main";
 // @ts-ignore
 import Template from "./../../../../../src/template";
@@ -14,15 +12,13 @@ import {
   Scripts,
 } from "../core/components/index.js";
 
-import { Request, Response } from "express";
+import { Response } from "express";
 import { type Router } from "@remix-run/router";
 import {
   StaticHandlerContext,
   StaticRouterProvider,
 } from "react-router-dom/server";
-import { PassThrough } from "stream";
 import * as HelmetAsync from "react-helmet-async";
-import { createReadableStreamFromReadable } from "../server/utils";
 
 import refreshScript from "../scripts/refresh-hack.js?raw";
 
@@ -109,19 +105,10 @@ export default async function renderStream(
         styles={styles}
       />,
       {
-        // bootstrapModules: [bootstrap],
         onShellReady() {
-          // console.log("hummm")
           shellRendered = true;
-          // const body = new PassThrough();
-          // const stream = createReadableStreamFromReadable(body);
 
-          // console.log({
-          //   body,
-          //   stream
-          // })
-
-          res.status(200).set({
+          res.status(responseStatusCode).set({
             "Content-Type": "text/html",
             "Cache-Control": "max-age=31536000",
           });

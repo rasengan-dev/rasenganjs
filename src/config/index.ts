@@ -40,9 +40,9 @@ export const defineConfig = (loadedConfig: AppConfig) => {
   };
 
   // Define default values for experimentals features coming from loadedConfig.experimentals
-  const defaultExperimentalFeaturesConfig = {
-    stream: experimental?.stream || false
-  }
+  // const defaultExperimentalFeaturesConfig = {
+  //   stream: experimental?.stream || true
+  // }
 
   try {
     const config = {
@@ -96,13 +96,12 @@ export const defineConfig = (loadedConfig: AppConfig) => {
         appType: "custom",
       },
 
-      experimental: defaultExperimentalFeaturesConfig,
+      // experimental: defaultExperimentalFeaturesConfig,
       // More config options...
     };
 
     return config;
   } catch (error) {
-    console.error(error);
     return {
       reactStrictMode: true,
       vite: {
@@ -133,9 +132,9 @@ export const defineConfig = (loadedConfig: AppConfig) => {
           ],
         },
       },
-      experimental: {
-        stream: false
-      },
+      // experimental: {
+      //   stream: true
+      // },
     };
   }
 };
