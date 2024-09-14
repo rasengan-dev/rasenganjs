@@ -56,32 +56,34 @@ const RenderApp = ({
   }
 
   return (
-    <H.HelmetProvider context={helmetContext}>
-      <ErrorBoundary>
-        <Template
-          Head={({ children }) => (
-            <Heads data={helmetContext} styles={styles} bootstrap={bootstrap}>
-              {viteScripts}
-              {children}
-            </Heads>
-          )}
-          Body={({ children }) => (
-            <Body
-              asChild
-              AppContent={
-                <App Component={Component}>
-                  <StaticRouterProvider router={router} context={context} />
-                </App>
-              }
-            >
-              {children}
-            </Body>
-          )}
-          Script={({ children }) => <Scripts>{children}</Scripts>}
-        />
-      </ErrorBoundary>
-    </H.HelmetProvider>
-  );
+		<H.HelmetProvider context={helmetContext}>
+			<ErrorBoundary>
+				<Template
+					Head={({ children }) => (
+						<Heads data={helmetContext} styles={styles} bootstrap={bootstrap}>
+							{viteScripts}
+							{children}
+						</Heads>
+					)}
+					Body={({ children }) => (
+						<Body
+							asChild
+							AppContent={
+								<App Component={Component}>
+									<StaticRouterProvider router={router} context={context} />
+								</App>
+							}
+						>
+							{children}
+						</Body>
+					)}
+					Script={({ children }) => (
+						<Scripts bootstrap={bootstrap}>{children}</Scripts>
+					)}
+				/>
+			</ErrorBoundary>
+		</H.HelmetProvider>
+	);
 };
 
 export default async function renderStream(
