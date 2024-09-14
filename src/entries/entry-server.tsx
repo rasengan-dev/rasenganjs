@@ -1,29 +1,29 @@
-import React from "react";
+// import React from "react";
 import ReactDOMServer from "react-dom/server";
 // @ts-ignore
 import AppRouter from "./../../../../../src/app/app.router";
 // @ts-ignore
-import App from "./../../../../../src/main";
+// import App from "./../../../../../src/main";
 // @ts-ignore
 import Template from "./../../../../../src/template";
 
 // @ts-ignore
 import { generateStaticRoutes } from "../routing/utils/index.js";
 import {
-  StaticHandlerContext,
-  StaticRouterProvider,
+	StaticHandlerContext,
+	// StaticRouterProvider,
 } from "react-router-dom/server.js";
 import { type Router } from "@remix-run/router";
 import { Response } from "express";
 
 // @ts-ignore
-import config from "./../../../../../rasengan.config.js";
+// import config from "./../../../../../rasengan.config.js";
 import {
-  Component,
-  ErrorBoundary,
-  Heads,
-  Body,
-  Scripts,
+	// Component,
+	// ErrorBoundary,
+	Heads,
+	Body,
+	Scripts,
 } from "../core/components/index.js";
 import * as HelmetAsync from "react-helmet-async";
 import renderStream from "./entry-server-stream.js";
@@ -34,27 +34,27 @@ const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 // const ABORT_DELAY = 5000;
 
 const TemplateHtml = ({
-  helmetContext,
-  bootstrap,
-  styles
+	helmetContext,
+	bootstrap,
+	styles,
 }: {
-  helmetContext: any;
-  bootstrap: string;
-  styles: string;
+	helmetContext: any;
+	bootstrap: string;
+	styles: string;
 }) => {
-  return (
-    <Template
-      Head={({ children }) => (
-        <Heads data={helmetContext} bootstrap={bootstrap} styles={styles}>
-          {children}
-        </Heads>
-      )}
-      Body={({ children }) => <Body>{children}</Body>}
-      Script={({ children }) => (
-        <Scripts bootstrap={bootstrap}>{children}</Scripts>
-      )}
-    />
-  );
+	return (
+		<Template
+			Head={({ children }) => (
+				<Heads data={helmetContext} bootstrap={bootstrap} styles={styles}>
+					{children}
+				</Heads>
+			)}
+			Body={({ children }) => <Body>{children}</Body>}
+			Script={({ children }) => (
+				<Scripts bootstrap={bootstrap}>{children}</Scripts>
+			)}
+		/>
+	);
 };
 
 /**
@@ -65,51 +65,64 @@ const TemplateHtml = ({
  * @returns
  */
 export async function render(
-  router: Router,
-  context: StaticHandlerContext,
-  helmetContext: any = {},
-  bootstrap = "",
-  styles = "",
-  res?: Response
+	router: Router,
+	context: StaticHandlerContext,
+	helmetContext: any = {},
+	bootstrap = "",
+	styles = "",
+	res?: Response
 ) {
-  if (config.experimental.stream) {
-    if (!res) return;
+	if (!res) return;
 
-    return await renderStream(router, context, helmetContext, bootstrap, styles, res);
-  }
+	return await renderStream(
+		router,
+		context,
+		helmetContext,
+		bootstrap,
+		styles,
+		res
+	);
 
-  const html = ReactDOMServer.renderToString(
-    config.reactStrictMode ? (
-      <React.StrictMode>
-        <H.HelmetProvider context={helmetContext}>
-          <ErrorBoundary>
-            <App Component={Component}>
-              <StaticRouterProvider router={router} context={context} />
-            </App>
-          </ErrorBoundary>
-        </H.HelmetProvider>
-      </React.StrictMode>
-    ) : (
-      <H.HelmetProvider context={helmetContext}>
-        <ErrorBoundary>
-          <App Component={Component}>
-            <StaticRouterProvider router={router} context={context} />
-          </App>
-        </ErrorBoundary>
-      </H.HelmetProvider>
-    )
-  );
+	// const html = ReactDOMServer.renderToString(
+	//   config.reactStrictMode ? (
+	//     <React.StrictMode>
+	//       <H.HelmetProvider context={helmetContext}>
+	//         <ErrorBoundary>
+	//           <App Component={Component}>
+	//             <StaticRouterProvider router={router} context={context} />
+	//           </App>
+	//         </ErrorBoundary>
+	//       </H.HelmetProvider>
+	//     </React.StrictMode>
+	//   ) : (
+	//     <H.HelmetProvider context={helmetContext}>
+	//       <ErrorBoundary>
+	//         <App Component={Component}>
+	//           <StaticRouterProvider router={router} context={context} />
+	//         </App>
+	//       </ErrorBoundary>
+	//     </H.HelmetProvider>
+	//   )
+	// );
 
-  return { html };
+	// return { html };
 }
 
 export const staticRoutes = generateStaticRoutes(AppRouter);
-export const loadTemplateHtml = (helmetContext: any, bootstrap: string, styles: string) => {
-  const html = ReactDOMServer.renderToString(
-    <TemplateHtml helmetContext={helmetContext} bootstrap={bootstrap} styles={styles} />
-  );
+export const loadTemplateHtml = (
+	helmetContext: any,
+	bootstrap: string,
+	styles: string
+) => {
+	const html = ReactDOMServer.renderToString(
+		<TemplateHtml
+			helmetContext={helmetContext}
+			bootstrap={bootstrap}
+			styles={styles}
+		/>
+	);
 
-  return `
+	return `
   <!DOCTYPE html>
   ${html}
   `;
