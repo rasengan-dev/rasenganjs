@@ -92,7 +92,8 @@ export default async function renderStream(
   helmetContext: any = {},
   bootstrap: string,
   styles: string,
-  res: Response
+  res: Response,
+  env?: "vercel" | "netlify" | "cloudflare" | "other"
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
@@ -110,10 +111,17 @@ export default async function renderStream(
         onShellReady() {
           shellRendered = true;
 
-          res.status(responseStatusCode).set({
-            "Content-Type": "text/html",
-            "Cache-Control": "max-age=31536000",
-          });
+          if (env === "vercel") {
+						res
+							.status(responseStatusCode)
+							.setHeader("Content-Type", "text/html")
+							.setHeader("Cache-Control", "max-age=31536000");
+					} else {
+            res.status(responseStatusCode).set({
+              "Content-Type": "text/html",
+              "Cache-Control": "max-age=31536000",
+            });
+          }
 
           resolve(res);
 

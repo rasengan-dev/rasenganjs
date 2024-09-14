@@ -198,11 +198,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		);
 
 		// If stream mode enabled, render the page as a plain text
-		return await render(router, context, helmetContext, bootstrap, styles, res);
+		return await render(
+			router,
+			context,
+			helmetContext,
+			bootstrap,
+			styles,
+			res,
+			"vercel"
+		);
 
 		// const rendered = await render(router, context, helmetContext);
 
-		// // Load template html
+		// // Load template htmls
 		// if (!templateHtml) {
 		// 	templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
 		// }

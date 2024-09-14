@@ -70,7 +70,8 @@ export async function render(
 	helmetContext: any = {},
 	bootstrap = "",
 	styles = "",
-	res?: Response
+	res?: Response,
+  env?: "vercel" | "netlify" | "cloudflare" | "other"
 ) {
 	if (!res) return;
 
@@ -80,7 +81,8 @@ export async function render(
 		helmetContext,
 		bootstrap,
 		styles,
-		res
+		res,
+    env
 	);
 
 	// const html = ReactDOMServer.renderToString(
