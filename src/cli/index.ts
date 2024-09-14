@@ -4,10 +4,9 @@ import { Command } from "commander";
 import __dirname from "./dirname.js";
 import { execa } from "execa";
 
-// Config
-
 // @ts-ignore
-import config from "../../../../../rasengan.config.js";
+import path from "node:path";
+import { resolvePath } from "../config/index.js";
 
 const program = new Command();
 
@@ -60,14 +59,19 @@ program
 program
   .command("prepare")
   .description("Prepare the project")
-  .action(() => {
+  .action(async () => {
     // Displaying the message
     console.log("");
     console.log(chalk.blue("Preparing your project for production..."));
     console.log("");
 
+    // Importing the config file
+    const configPath = resolvePath(path.join(process.cwd(), "rasengan.config.js"));
+
+    const appConfig = (await import(configPath)).default;
+
     // Checking the config file in order to know about hosting strategy
-    const { server } = config;
+    const { server } = appConfig;
 
     const hostingStrategy = server?.production?.hosting ?? "custom";
 
