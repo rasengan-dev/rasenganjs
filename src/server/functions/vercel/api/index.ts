@@ -198,33 +198,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		);
 
 		// If stream mode enabled, render the page as a plain text
-		if (config.experimental.stream) {
-			return await render(
-				router,
-				context,
-				helmetContext,
-				bootstrap,
-				styles,
-				res
-			);
-		}
+		return await render(
+			router,
+			context,
+			helmetContext,
+			bootstrap,
+			styles,
+			res,
+			"vercel"
+		);
 
-		const rendered = await render(router, context, helmetContext);
+		// const rendered = await render(router, context, helmetContext);
 
-		// Load template html
-		if (!templateHtml) {
-			templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
-		}
+		// // Load template htmls
+		// if (!templateHtml) {
+		// 	templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
+		// }
 
-		// Replacing the app-html placeholder with the rendered html
-		let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+		// // Replacing the app-html placeholder with the rendered html
+		// let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
 
-		// Send the rendered html page
-		return res
-			.status(200)
-			.setHeader("Content-Type", "text/html")
-			.setHeader("Cache-Control", "max-age=31536000")
-			.end(html);
+		// // Send the rendered html page
+		// return res
+		// 	.status(200)
+		// 	.setHeader("Content-Type", "text/html")
+		// 	.setHeader("Cache-Control", "max-age=31536000")
+		// 	.end(html);
 	} catch (e: any) {
 		console.log(e.stack);
 		res.status(500).end(e.stack);

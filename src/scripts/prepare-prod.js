@@ -1,9 +1,12 @@
 import { execa } from "execa";
 import chalk from "chalk";
+import { checkOsPlateform } from "./utils/check-os.js";
+import { generateCopyExecaArray } from "./utils/copy.js";
 
 const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
 
-(function() {
+(function () {
+  const copyCommand = checkOsPlateform("win32") ? "xcopy" : "cp";
   if (hostingStrategy === "vercel") {
     // Displaying the message
     console.log(
@@ -12,21 +15,16 @@ const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
       )}\n`
     );
 
-    // Copying the api folder to the root directory
+    // Copying the vercel folder content to the root directory
     execa(
-      "cp",
-      ["-r", "node_modules/rasengan/lib/esm/server/functions/vercel/api", "."],
+      copyCommand,
+      generateCopyExecaArray(
+        "node_modules/rasengan/lib/esm/server/functions/vercel",
+        "."
+      ),
       {
         stdio: "inherit",
-      }
-    );
-
-    // Copying the vercel.json file to the root directory
-    execa(
-      "cp",
-      ["node_modules/rasengan/lib/esm/server/functions/vercel/vercel.json", "."],
-      {
-        stdio: "inherit",
+        shell: true,
       }
     );
   } else if (hostingStrategy === "netlify") {
@@ -36,32 +34,17 @@ const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
         hostingStrategy
       )}\n`
     );
-
-    // create a netlify folder at the root
-    execa("mkdir", ["-p", "netlify"], {
-      stdio: "inherit",
-    });
-
-    // Copying the netlify folder to the root directory
+    // Copying the netlify folder content to the root directory
     execa(
-      "cp",
-      [
-        "-r",
-        "node_modules/rasengan/lib/esm/server/functions/netlify/functions",
-        "./netlify",
-      ],
+      copyCommand,
+      generateCopyExecaArray(
+        "node_modules/rasengan/lib/esm/server/functions/netlify",
+        "."
+      ),
       {
         stdio: "inherit",
-      }
-    );
-
-    // Copying the netlify.toml file to the root directory
-    execa(
-      "cp",
-      ["node_modules/rasengan/lib/esm/server/functions/netlify/netlify.toml", "."],
-      {
-        stdio: "inherit",
+        shell: true,
       }
     );
   }
-})()
+})();

@@ -133,46 +133,44 @@ async function createServer({
 			let router = createStaticRouter(handler.dataRoutes, context);
 
 			// If stream mode enabled, render the page as a plain text
-			if (config.experimental.stream) {
-				return await render(
-					router,
-					context,
-					helmetContext,
-					bootstrap,
-					styles,
-					res
-				);
-			}
-
-			// Render the html page on the server
-			const rendered = await render(
+			return await render(
 				router,
 				context,
 				helmetContext,
 				bootstrap,
-				styles
+				styles,
+				res
 			);
 
-			// Load template html
-			if (!templateHtml) {
-				templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
+			// Render the html page on the server
+			// const rendered = await render(
+			// 	router,
+			// 	context,
+			// 	helmetContext,
+			// 	bootstrap,
+			// 	styles
+			// );
 
-				if (!isProduction) {
-					templateHtml = await vite.transformIndexHtml(url, templateHtml);
-				}
-			}
+			// // Load template html
+			// if (!templateHtml) {
+			// 	templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
 
-			// Replacing the app-html placeholder with the rendered html
-			let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+			// 	if (!isProduction) {
+			// 		templateHtml = await vite.transformIndexHtml(url, templateHtml);
+			// 	}
+			// }
 
-			// Send the rendered html page
-			return res
-				.status(200)
-				.set({
-					"Content-Type": "text/html",
-					"Cache-Control": "max-age=31536000",
-				})
-				.end(html);
+			// // Replacing the app-html placeholder with the rendered html
+			// let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+
+			// // Send the rendered html page
+			// return res
+			// 	.status(200)
+			// 	.set({
+			// 		"Content-Type": "text/html",
+			// 		"Cache-Control": "max-age=31536000",
+			// 	})
+			// 	.end(html);
 		} catch (e) {
 			vite?.ssrFixStacktrace(e);
 

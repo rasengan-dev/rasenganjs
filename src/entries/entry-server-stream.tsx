@@ -1,8 +1,6 @@
 import React from "react";
 import { renderToPipeableStream } from "react-dom/server";
 // @ts-ignore
-import AppRouter from "./../../../../../src/app/app.router";
-// @ts-ignore
 import App from "./../../../../../src/main";
 // @ts-ignore
 import Template from "./../../../../../src/template";
@@ -14,15 +12,13 @@ import {
   Scripts,
 } from "../core/components/index.js";
 
-import { Request, Response } from "express";
+import { Response } from "express";
 import { type Router } from "@remix-run/router";
 import {
   StaticHandlerContext,
   StaticRouterProvider,
 } from "react-router-dom/server";
-import { PassThrough } from "stream";
 import * as HelmetAsync from "react-helmet-async";
-import { createReadableStreamFromReadable } from "../server/utils";
 
 import refreshScript from "../scripts/refresh-hack.js?raw";
 
@@ -60,25 +56,34 @@ const RenderApp = ({
   }
 
   return (
-    <H.HelmetProvider context={helmetContext}>
-      <ErrorBoundary>
-        <Template
-          Head={({ children }) => (
-            <Heads data={helmetContext} styles={styles} bootstrap={bootstrap}>
-              {viteScripts}
-              {children}
-            </Heads>
-          )}
-          Body={({ children }) => <Body asChild>{children}</Body>}
-          Script={({ children }) => <Scripts bootstrap={bootstrap}>{children}</Scripts>}
-        >
-          <App Component={Component}>
-            <StaticRouterProvider router={router} context={context} />
-          </App>
-        </Template>
-      </ErrorBoundary>
-    </H.HelmetProvider>
-  );
+		<H.HelmetProvider context={helmetContext}>
+			<ErrorBoundary>
+				<Template
+					Head={({ children }) => (
+						<Heads data={helmetContext} styles={styles} bootstrap={bootstrap}>
+							{viteScripts}
+							{children}
+						</Heads>
+					)}
+					Body={({ children }) => (
+						<Body
+							asChild
+							AppContent={
+								<App Component={Component}>
+									<StaticRouterProvider router={router} context={context} />
+								</App>
+							}
+						>
+							{children}
+						</Body>
+					)}
+					Script={({ children }) => (
+						<Scripts bootstrap={bootstrap}>{children}</Scripts>
+					)}
+				/>
+			</ErrorBoundary>
+		</H.HelmetProvider>
+	);
 };
 
 export default async function renderStream(
@@ -87,7 +92,8 @@ export default async function renderStream(
   helmetContext: any = {},
   bootstrap: string,
   styles: string,
-  res: Response
+  res: Response,
+  env?: "vercel" | "netlify" | "cloudflare" | "other"
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
@@ -102,22 +108,20 @@ export default async function renderStream(
         styles={styles}
       />,
       {
-        // bootstrapModules: [bootstrap],
         onShellReady() {
-          // console.log("hummm")
           shellRendered = true;
-          // const body = new PassThrough();
-          // const stream = createReadableStreamFromReadable(body);
 
-          // console.log({
-          //   body,
-          //   stream
-          // })
-
-          res.status(200).set({
-            "Content-Type": "text/html",
-            "Cache-Control": "max-age=31536000",
-          });
+          if (env === "vercel") {
+						res
+							.status(responseStatusCode)
+							.setHeader("Content-Type", "text/html")
+							.setHeader("Cache-Control", "max-age=31536000");
+					} else {
+            res.status(responseStatusCode).set({
+              "Content-Type": "text/html",
+              "Cache-Control": "max-age=31536000",
+            });
+          }
 
           resolve(res);
 

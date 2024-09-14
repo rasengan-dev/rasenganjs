@@ -1,4 +1,6 @@
+// import path, { dirname } from "node:path";
 import { type AppConfig } from "./type.js";
+// import { fileURLToPath } from "node:url";
 
 /**
  * Function to define the config for the app
@@ -40,9 +42,9 @@ export const defineConfig = (loadedConfig: AppConfig) => {
   };
 
   // Define default values for experimentals features coming from loadedConfig.experimentals
-  const defaultExperimentalFeaturesConfig = {
-    stream: experimental?.stream || false
-  }
+  // const defaultExperimentalFeaturesConfig = {
+  //   stream: experimental?.stream || true
+  // }
 
   try {
     const config = {
@@ -96,13 +98,12 @@ export const defineConfig = (loadedConfig: AppConfig) => {
         appType: "custom",
       },
 
-      experimental: defaultExperimentalFeaturesConfig,
+      // experimental: defaultExperimentalFeaturesConfig,
       // More config options...
     };
 
     return config;
   } catch (error) {
-    console.error(error);
     return {
       reactStrictMode: true,
       vite: {
@@ -133,9 +134,9 @@ export const defineConfig = (loadedConfig: AppConfig) => {
           ],
         },
       },
-      experimental: {
-        stream: false
-      },
+      // experimental: {
+      //   stream: true
+      // },
     };
   }
 };
@@ -179,3 +180,41 @@ export const resolvePath = (path: string) => {
 
   return path;
 }
+
+
+/**
+ * Asynchronously loads a module from a file path relative to the project root directory.
+ *
+ * This function checks the current environment (production or development) and adjusts the file path accordingly. It then resolves the file path to a valid URL format based on the operating system.
+ *
+ * @param filename - The name of the file to be loaded.
+ * @returns The loaded module.
+ */
+// export const loadAsyncFromRoot = async (filename: string) => {
+//   try {
+//     const isProduction = process.env.NODE_ENV === "production";
+//     let __pathToRoot = "";
+
+//     if (!isProduction) {
+//       __pathToRoot = process.cwd();
+// 		} else {
+//       __pathToRoot = path.join(process.cwd(), "./../../");
+// 		}
+
+//     const filePath = resolvePath(path.join(__pathToRoot, filename));
+
+//     const file = await import(`./${filePath}`);
+
+//     return file;
+//   } catch (error) {
+//     console.error(error);
+//     return {};
+//   }
+// }
+
+// export const getDirname = (url: string) => {
+// 	// Get directory name
+// 	const __dirname = dirname(fileURLToPath(url));
+
+//   return __dirname;
+// }
