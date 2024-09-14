@@ -171,9 +171,11 @@ export const Heads = ({
 export const Body = ({
   children = undefined,
   asChild = false,
+  AppContent = undefined,
 }: {
   children?: React.ReactNode;
   asChild?: boolean;
+  AppContent?: React.ReactNode;
 }) => {
   return (
     <body>
@@ -185,15 +187,13 @@ export const Body = ({
 
       {asChild ? (
         <div id='root'>
-          {children}
+          {AppContent}
         </div>
       ) : (
-        <>
-          <div id="root">{"rasengan-body-app"}</div>
-
-          {children}
-        </>
+        <div id="root">{"rasengan-body-app"}</div>
       )}
+
+      {children}
     </body>
   );
 };

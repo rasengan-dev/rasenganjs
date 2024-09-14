@@ -133,7 +133,6 @@ export type HelmetContext = {
  * Template props
  */
 export type TemplateProps = {
-  children: React.ReactNode;
   Head: React.FC<{ children: React.ReactNode }>;
   Body: React.FC<{ children: React.ReactNode }>;
   Script: React.FC<{ children?: React.ReactNode }>;
