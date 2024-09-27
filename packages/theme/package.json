@@ -1,16 +1,15 @@
 {
-	"name": "@rasenganjs/image",
+	"name": "@rasenganjs/theme",
 	"private": false,
-	"version": "1.1.2",
-	"description": "Image component provided by RasenganJS to display images with ease",
+	"version": "1.0.0",
+	"description": "Library that handles themes for Rasengan.JS applications",
 	"type": "module",
 	"main": "lib/index.js",
 	"exports": {
 		".": {
 			"import": "./lib/index.js",
 			"require": "./lib/index.js"
-		},
-		"./lib/styles/index.css": "./lib/styles/index.css"
+		}
 	},
 	"author": {
 		"name": "dilane3",
@@ -21,8 +20,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/rasengan-dev/rasengan-image.git",
-		"issues": "https://github.com/rasengan-dev/rasengan-image/issues"
+		"url": "https://github.com/rasengan-dev/rasengan-theme.git",
+		"issues": "https://github.com/rasengan-dev/rasengan-theme/issues"
 	},
 	"license": "MIT",
 	"scripts": {
@@ -33,11 +32,11 @@
 		"deploy": "npm publish --access public"
 	},
 	"peerDependencies": {
-		"react": "^18.2.0"
+		"react": "^18.*"
 	},
 	"devDependencies": {
-		"@types/react": "^18.2.43",
-		"@types/react-dom": "^18.2.17",
+		"@types/react": "^18.*",
+		"@types/react-dom": "^18.*",
 		"@typescript-eslint/eslint-plugin": "^6.14.0",
 		"@typescript-eslint/parser": "^6.14.0",
 		"eslint": "^8.55.0",
