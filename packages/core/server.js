@@ -14,10 +14,10 @@ import {
 	createFetchRequest,
 	logServerInfo,
 	fix404,
-} from "./lib/esm/server/utils/index.js";
+} from "../../lib/esm/server/utils/index.js";
 
 // Resolve path
-import { resolvePath } from "./lib/esm/config/index.js";
+import { resolvePath } from "../../lib/esm/config/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
