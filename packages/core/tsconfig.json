@@ -27,9 +27,7 @@
   },
   "include": [
     "src",
-    "types",
-    "src/**/*.json",
-    "src/**/*.toml",
+    "types"
   ],
   "exclude": ["node_modules", "lib"]
 }

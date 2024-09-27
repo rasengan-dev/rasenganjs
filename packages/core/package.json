@@ -50,7 +50,7 @@
     "build:lib:all": "npm-run-all build:lib:clean compile && node ./src/scripts/copy-extra-files.js",
     "deploy": "npm publish --access public",
     "deploy:beta": "npm run deploy --tag beta",
-    "pack": "npm pack --pack-destination ./../packages/rasengan/"
+    "pack": "npm pack --pack-destination ./release/"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.2.1",

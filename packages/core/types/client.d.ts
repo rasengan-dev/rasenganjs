@@ -18,3 +18,10 @@ declare module '*.md' {
 
   export default MDXComponent;
 }
+
+// ?raw files
+
+declare module '*.js?raw' {
+  const value: string;
+  export default value;
+}
