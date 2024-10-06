@@ -11,5 +11,6 @@ export type {
   LoaderResponse,
   LayoutComponent,
   PageComponent,
+  MDXPageComponent,
   TemplateProps
 } from "./types.js";
