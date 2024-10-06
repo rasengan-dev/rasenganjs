@@ -1,0 +1,155 @@
+/* Load Urbanist and Comfortaa font */
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap");
+
+:root {
+  font-family: var(--font-mono);
+
+  /* Fonts */
+  --font-sans: "Urbanist", sans-serif;
+  --font-mono: "Comfortaa", monospace;
+
+  /* Colors */
+  --primary: #2a7fff;
+}
+
+body,
+html {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Styles to be applied to the welcome page */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(100% - 40px);
+  height: 100%;
+  background-color: #fff;
+  padding: 2rem 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.header > div {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.header .logo-text {
+  font-weight: 600;
+  color: var(--primary);
+  font-family: var(--font-sans);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.hero .title {
+  font-weight: 600;
+  font-size: 3rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  margin: 0;
+}
+
+.hero .title span {
+  color: var(--primary);
+}
+
+.hero .subtitle {
+  font-weight: 400;
+  font-size: 1.125rem /* 18px */;
+  line-height: 1.75rem /* 28px */;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.hero .subtitle code {
+  font-weight: 500;
+  font-size: 0.875rem /* 14px */;
+  line-height: 1.25rem /* 20px */;
+  margin-left: 0.5rem;
+}
+
+.instructions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 0.375rem /* 6px */;
+  border: 1px solid #efefef;
+  max-width: 500px;
+  width: 100%;
+}
+
+.card .title {
+  font-weight: 600;
+  font-size: 1.125rem /* 18px */;
+  line-height: 1.75rem /* 28px */;
+  font-family: var(--font-sans);
+  margin: 0;
+}
+
+.card p {
+  margin-top: 0.5rem;
+}
+
+.card a {
+  margin-top: 0.5rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* mt-4 text-primary font-bold */
+
+@media screen and (min-width: 768px) {
+  .main {
+    padding: 2rem 50px;
+    width: calc(100% - 100px);
+  }
+
+  .hero .title {
+    font-size: 4rem;
+  }
+
+  .card {
+    width: 300px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .main {
+    padding: 2rem 200px;
+    width: calc(100% - 400px);
+  }
+
+  .card {
+    width: 400px;
+  }
+}
