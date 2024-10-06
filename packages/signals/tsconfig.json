@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "module": "ESNext",
+    "lib": [
+      "ES2015",
+      "ESNext",
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+
+    /* Types */
+    "typeRoots": ["node_modules/@types", "types"]
+  },
+  "include": [
+    "src",
+    "types",
+    "src/**/*.json",
+    "src/**/*.toml",
+  ],
+  "exclude": ["node_modules", "lib"]
+}
