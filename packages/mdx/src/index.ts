@@ -7,9 +7,6 @@
  */
 
 export * from './types/index.js';
-import { plugin, generatePage, globalsPolyfill } from "./utils/index.js";
+import { plugin } from "./utils/index.js";
 
-export default function() {
-  return [plugin(), globalsPolyfill()];
-}
-export { generatePage };
+export default plugin;

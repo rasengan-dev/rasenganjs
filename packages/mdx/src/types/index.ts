@@ -1,4 +1,4 @@
-import {type Metadata } from "rasengan";
+import { type Metadata } from "rasengan";
 
 /**
  * A React functional component that represents an MDX page.
@@ -9,7 +9,7 @@ import {type Metadata } from "rasengan";
  */
 export type MDXPageComponent = React.FC<any> & {
 	metadata?: {
-    path: string;
-    metadata: Metadata;
-  };
+		path: string;
+		metadata: Metadata;
+	};
 };
