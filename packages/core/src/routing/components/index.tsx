@@ -1,20 +1,28 @@
 import { Suspense } from "react";
-import { Link, useLoaderData, useRouteError } from "react-router-dom";
+import {
+	Link,
+	LinkProps,
+	useLoaderData,
+	useRouteError,
+} from "react-router-dom";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/types.js";
 import { LoaderResponse } from "../../core/types.js";
-import { MetadataWithoutTitleAndDescription, NotFoundComponentContainerProps } from "../types.js";
+import {
+	MetadataWithoutTitleAndDescription,
+	NotFoundComponentContainerProps,
+} from "../types.js";
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
  * @returns
  */
 export function ErrorBoundary() {
-  let error = useRouteError();
+	let error = useRouteError();
 
-  console.error(error);
+	console.error(error);
 
-  return <div>Dang!</div>;
+	return <div>Dang!</div>;
 }
 
 /**
@@ -22,28 +30,28 @@ export function ErrorBoundary() {
  * @returns React.ReactNode
  */
 export const ServerComponent = ({
-  page,
-  layoutMetadata,
-  loader
+	page,
+	layoutMetadata,
+	loader,
 }: {
-  page: PageComponent;
-  loader: React.ReactNode;
-  layoutMetadata?: MetadataWithoutTitleAndDescription
+	page: PageComponent;
+	loader: React.ReactNode;
+	layoutMetadata?: MetadataWithoutTitleAndDescription;
 }) => {
-  // Default data
-  const defaultData = {
-    props: {
-      params: {}
-    },
-  };
+	// Default data
+	const defaultData = {
+		props: {
+			params: {},
+		},
+	};
 
-  const data = (useLoaderData() as LoaderResponse) || defaultData;
+	const data = (useLoaderData() as LoaderResponse) || defaultData;
 
-  return (
-    <Suspense fallback={loader}>
-      <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={loader}>
+			<PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+		</Suspense>
+	);
 };
 
 /**
@@ -51,28 +59,28 @@ export const ServerComponent = ({
  * @returns React.ReactNode
  */
 export const ClientComponent = ({
-  page,
-  layoutMetadata,
-  loader
+	page,
+	layoutMetadata,
+	loader,
 }: {
-  page: PageComponent;
-  loader: React.ReactNode;
-  layoutMetadata?: MetadataWithoutTitleAndDescription
+	page: PageComponent;
+	loader: React.ReactNode;
+	layoutMetadata?: MetadataWithoutTitleAndDescription;
 }) => {
-  // Default data
-  const defaultData = {
-    props: {
-      params: {}
-    },
-  };
+	// Default data
+	const defaultData = {
+		props: {
+			params: {},
+		},
+	};
 
-  const data = (useLoaderData() as LoaderResponse) || defaultData;
+	const data = (useLoaderData() as LoaderResponse) || defaultData;
 
-  return (
-    <Suspense fallback={loader}>
-      <PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={loader}>
+			<PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
+		</Suspense>
+	);
 };
 
 /**
@@ -80,58 +88,58 @@ export const ClientComponent = ({
  * @returns React.ReactNode
  */
 export const NotFoundPageComponent = () => {
-  return (
-    <section
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <h1
-        style={{
-          fontSize: "3rem",
-          fontWeight: "bold",
-          marginBottom: 10,
-        }}
-      >
-        404 Page Not Found
-      </h1>
+	return (
+		<section
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				alignItems: "center",
+				height: "100vh",
+				width: "100vw",
+			}}
+		>
+			<h1
+				style={{
+					fontSize: "3rem",
+					fontWeight: "bold",
+					marginBottom: 10,
+				}}
+			>
+				404 Page Not Found
+			</h1>
 
-      <p
-        style={{
-          fontSize: "1.2rem",
-          marginBottom: 20,
-        }}
-      >
-        The page you are looking for does not exist or has been moved.
-      </p>
+			<p
+				style={{
+					fontSize: "1.2rem",
+					marginBottom: 20,
+				}}
+			>
+				The page you are looking for does not exist or has been moved.
+			</p>
 
-      <Link
-        to="/"
-        style={{
-          fontSize: "1.2rem",
-          fontWeight: 800,
-          marginBottom: 20,
-          textDecoration: "none",
-        }}
-      >
-        Go back to home page
-      </Link>
-    </section>
-  );
+			<Link
+				to='/'
+				style={{
+					fontSize: "1.2rem",
+					fontWeight: 800,
+					marginBottom: 20,
+					textDecoration: "none",
+				}}
+			>
+				Go back to home page
+			</Link>
+		</section>
+	);
 };
 
 /**
  * Component that will be displayed when a page is not found
  */
 export const NotFoundComponentContainer = ({
-  content,
+	content,
 }: NotFoundComponentContainerProps) => {
-  return <>{content({})}</>;
+	return <>{content({})}</>;
 };
 
 /**
@@ -139,14 +147,22 @@ export const NotFoundComponentContainer = ({
  * @param props
  * @returns React.ReactNode
  */
-export const CustomLink = (props: any) => {
-  const { to, children, ...rest } = props;
+export const CustomLink = (props: LinkProps) => {
+	const { to, children, ...rest } = props;
 
-  const splitted = to.split("#");
+	if (typeof to === "string") {
+		const splitted = to.split("#");
+		if (splitted.length > 1)
+			return (
+				<a href={to} {...rest}>
+					{children}
+				</a>
+			);
+	}
 
-  if (splitted.length > 1) {
-    return <a href={to} {...rest}>{children}</a>;
-  }
-
-  return <Link to={to} {...rest}>{children}</Link>;
-}
+	return (
+		<Link to={to} {...rest}>
+			{children}
+		</Link>
+	);
+};
