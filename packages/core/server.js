@@ -14,10 +14,10 @@ import {
 	createFetchRequest,
 	logServerInfo,
 	fix404,
-} from "../../lib/esm/server/utils/index.js";
+} from "./lib/esm/server/utils/index.js";
 
 // Resolve path
-import { resolvePath } from "../../lib/esm/config/index.js";
+import { resolvePath } from "./lib/esm/config/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -74,9 +74,6 @@ async function createServer({
 			// ! 404 Fix related to some files not being found
 			fix404(req.originalUrl, res, appPath);
 
-			// Get url
-			const url = req.originalUrl.replace(base, "");
-
 			let entry;
 
 			if (!isProduction) {
@@ -108,7 +105,7 @@ async function createServer({
 			}
 
 			// Get entry values
-			const { render, staticRoutes, loadTemplateHtml } = entry;
+			const { render, staticRoutes } = entry;
 
 			// Create static handler
 			let handler = createStaticHandler(staticRoutes);
@@ -141,36 +138,6 @@ async function createServer({
 				styles,
 				res
 			);
-
-			// Render the html page on the server
-			// const rendered = await render(
-			// 	router,
-			// 	context,
-			// 	helmetContext,
-			// 	bootstrap,
-			// 	styles
-			// );
-
-			// // Load template html
-			// if (!templateHtml) {
-			// 	templateHtml = loadTemplateHtml(helmetContext, bootstrap, styles);
-
-			// 	if (!isProduction) {
-			// 		templateHtml = await vite.transformIndexHtml(url, templateHtml);
-			// 	}
-			// }
-
-			// // Replacing the app-html placeholder with the rendered html
-			// let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
-
-			// // Send the rendered html page
-			// return res
-			// 	.status(200)
-			// 	.set({
-			// 		"Content-Type": "text/html",
-			// 		"Cache-Control": "max-age=31536000",
-			// 	})
-			// 	.end(html);
 		} catch (e) {
 			vite?.ssrFixStacktrace(e);
 
@@ -257,7 +224,7 @@ async function createServer({
 	);
 
 	// Get config
-	const config = (await import(configPath)).default;
+	const config = await (await import(configPath)).default;
 
 	const port = !isProduction
 		? (process.env.PORT && Number(process.env.PORT)) ||

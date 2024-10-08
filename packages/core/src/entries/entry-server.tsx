@@ -3,21 +3,14 @@ import ReactDOMServer from "react-dom/server";
 // @ts-ignore
 import AppRouter from "./../../../../../src/app/app.router";
 // @ts-ignore
-// import App from "./../../../../../src/main";
-// @ts-ignore
 import Template from "./../../../../../src/template";
 
 // @ts-ignore
 import { generateStaticRoutes } from "../routing/utils/index.js";
-import {
-	StaticHandlerContext,
-	// StaticRouterProvider,
-} from "react-router-dom/server.js";
+import { StaticHandlerContext } from "react-router-dom/server.js";
 import { type Router } from "@remix-run/router";
 import { Response } from "express";
 
-// @ts-ignore
-// import config from "./../../../../../rasengan.config.js";
 import {
 	// Component,
 	// ErrorBoundary,
@@ -25,11 +18,7 @@ import {
 	Body,
 	Scripts,
 } from "../core/components/index.js";
-import * as HelmetAsync from "react-helmet-async";
 import renderStream from "./entry-server-stream.js";
-
-// @ts-ignore
-const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
 // const ABORT_DELAY = 5000;
 
@@ -71,7 +60,7 @@ export async function render(
 	bootstrap = "",
 	styles = "",
 	res?: Response,
-  env?: "vercel" | "netlify" | "cloudflare" | "other"
+	env?: "vercel" | "netlify" | "cloudflare" | "other"
 ) {
 	if (!res) return;
 
@@ -82,32 +71,8 @@ export async function render(
 		bootstrap,
 		styles,
 		res,
-    env
+		env
 	);
-
-	// const html = ReactDOMServer.renderToString(
-	//   config.reactStrictMode ? (
-	//     <React.StrictMode>
-	//       <H.HelmetProvider context={helmetContext}>
-	//         <ErrorBoundary>
-	//           <App Component={Component}>
-	//             <StaticRouterProvider router={router} context={context} />
-	//           </App>
-	//         </ErrorBoundary>
-	//       </H.HelmetProvider>
-	//     </React.StrictMode>
-	//   ) : (
-	//     <H.HelmetProvider context={helmetContext}>
-	//       <ErrorBoundary>
-	//         <App Component={Component}>
-	//           <StaticRouterProvider router={router} context={context} />
-	//         </App>
-	//       </ErrorBoundary>
-	//     </H.HelmetProvider>
-	//   )
-	// );
-
-	// return { html };
 }
 
 export const staticRoutes = generateStaticRoutes(AppRouter);

@@ -98,6 +98,8 @@ export type AppConfig = {
         replacement: string;
       }>;
     };
+
+    appType: "custom" | "mpa"
   };
 
   /**
@@ -112,6 +114,10 @@ export type AppConfig = {
 
   // More config options...
 };
+
+export type AppConfigFunction = () => AppConfig;
+
+export type AppConfigFunctionAsync = () => Promise<AppConfig>;
 
 /**
  * Hosting strategy

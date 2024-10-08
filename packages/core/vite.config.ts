@@ -40,7 +40,7 @@ export default defineConfig(async ({ command, mode }: any) => {
 	}
 
 	// Extract vite config
-	const { vite } = config;
+	const { vite } = await config;
 
 	return {
 		// Define env

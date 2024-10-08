@@ -1,5 +1,5 @@
 import { Metadata } from "../routing/types.js";
-import { LayoutComponent, PageComponent } from "../core/types.js";
+import { LayoutComponent, MDXPageComponent, PageComponent } from "../core/types.js";
 import { RouterComponent } from "../routing/interfaces.js";
 
 /**
@@ -19,7 +19,7 @@ export type RouterDecoratorProps = {
   /**
    * Usefull to collect pages
    */
-  pages: Array<PageComponent>;
+  pages: Array<PageComponent | MDXPageComponent>;
 
   /**
    * Usefull to display a screen that let know to the user that the page is loading.
