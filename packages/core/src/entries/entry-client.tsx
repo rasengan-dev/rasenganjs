@@ -10,46 +10,25 @@ import * as HelmetAsync from "react-helmet-async";
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
-// (async () => {
-// 	const { reactStrictMode } = await config;
+(async () => {
+	const { reactStrictMode } = await config;
 
-//   console.log("reactStrictMode", reactStrictMode);
-
-// 	ReactDOM.hydrateRoot(
-// 		document.getElementById("root") as HTMLElement,
-// 		reactStrictMode ? (
-// 			<React.StrictMode>
-// 				<H.HelmetProvider>
-// 					<ErrorBoundary>
-// 						<App Component={Component} />
-// 					</ErrorBoundary>
-// 				</H.HelmetProvider>
-// 			</React.StrictMode>
-// 		) : (
-// 			<H.HelmetProvider>
-// 				<ErrorBoundary>
-// 					<App Component={Component} />
-// 				</ErrorBoundary>
-// 			</H.HelmetProvider>
-// 		)
-// 	);
-// })();
-
-ReactDOM.hydrateRoot(
-	document.getElementById("root") as HTMLElement,
-	true ? (
-		<React.StrictMode>
+	ReactDOM.hydrateRoot(
+		document.getElementById("root") as HTMLElement,
+		reactStrictMode ? (
+			<React.StrictMode>
+				<H.HelmetProvider>
+					<ErrorBoundary>
+						<App Component={Component} />
+					</ErrorBoundary>
+				</H.HelmetProvider>
+			</React.StrictMode>
+		) : (
 			<H.HelmetProvider>
 				<ErrorBoundary>
 					<App Component={Component} />
 				</ErrorBoundary>
 			</H.HelmetProvider>
-		</React.StrictMode>
-	) : (
-		<H.HelmetProvider>
-			<ErrorBoundary>
-				<App Component={Component} />
-			</ErrorBoundary>
-		</H.HelmetProvider>
-	)
-);
+		)
+	);
+})();
