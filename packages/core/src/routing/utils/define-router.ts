@@ -1,8 +1,8 @@
-import { PageComponent, MDXPageComponent } from "../../core";
-import { DefaultLayout } from "../../core/components";
-import { RouterDecoratorProps } from "../../decorators/types";
-import { NotFoundPageComponent } from "../components";
-import { RouterComponent } from "../interfaces";
+import { PageComponent, MDXPageComponent } from "../../core/index.js";
+import { DefaultLayout } from "../../core/components/index.js";
+import { RouterDecoratorProps } from "../../decorators/types.js";
+import { NotFoundPageComponent } from "../components/index.js";
+import { RouterComponent } from "../interfaces.js";
 
 /**
  * This function adds metadata to a router

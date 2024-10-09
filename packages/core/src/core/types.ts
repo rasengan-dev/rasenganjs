@@ -7,78 +7,83 @@ import { MetadataWithoutTitleAndDescription } from "../routing/types.js";
  * Props for App component
  */
 export type AppProps = {
-  Component: React.FC<ComponentProps>;
-  children: React.ReactNode;
+	Component: React.FC<ComponentProps>;
+	children: React.ReactNode;
+	StrictMode: React.ExoticComponent<{
+		children?: React.ReactNode;
+	}>;
 };
 
 /**
  * Props for the base Component that takes the app router
  */
 export type ComponentProps = {
-  router: RouterComponent;
-  children: React.ReactNode;
+	router: RouterComponent;
+	children: React.ReactNode;
 };
 
 export type PageToRenderProps = {
-  page: PageComponent;
-  data: LoaderResponse;
-  layoutMetadata?: MetadataWithoutTitleAndDescription;
+	page: PageComponent;
+	data: LoaderResponse;
+	layoutMetadata?: MetadataWithoutTitleAndDescription;
 };
 
 /**
  * Props for component react components
  */
-export type ReactComponentProps = { 
-  [key: string]: any, 
-  params: {
-    [key: string]: any
-  } 
-} | any;
+export type ReactComponentProps =
+	| {
+			[key: string]: any;
+			params: {
+				[key: string]: any;
+			};
+	  }
+	| any;
 
 /**
  * Options for the loader function that loads data for a page from the server
  */
 export type LoaderOptions = {
-  params: { [key: string]: any };
-  request: Request;
+	params: { [key: string]: any };
+	request: Request;
 };
 
 /**
  * Data returned from the loader function
  */
 export type LoaderResponse = {
-  props?: { [key: string]: any };
-  redirect?: string;
+	props?: { [key: string]: any };
+	redirect?: string;
 };
 
 /**
  * Layout component that represents a layout
  */
 export type LayoutComponent = React.FC<ReactComponentProps> & {
-  /**
-   * Base path for the page
-   */
-  path: string;
+	/**
+	 * Base path for the page
+	 */
+	path: string;
 
-  /**
-   * Metadata for the page
-   */
-  metadata?: MetadataWithoutTitleAndDescription;
+	/**
+	 * Metadata for the page
+	 */
+	metadata?: MetadataWithoutTitleAndDescription;
 
-  /**
-   * Loader function that loads data for the page from the server
-   */
-  loader?: (options: LoaderOptions) => Promise<LoaderResponse>;
+	/**
+	 * Loader function that loads data for the page from the server
+	 */
+	loader?: (options: LoaderOptions) => Promise<LoaderResponse>;
 };
 
 /**
  * Page component that extends LayoutComponent and represents a page
  */
 export type PageComponent = LayoutComponent & {
-  /**
-   * Metadata for the page omit title
-   */
-  metadata?: Metadata;
+	/**
+	 * Metadata for the page omit title
+	 */
+	metadata?: Metadata;
 };
 
 /**
@@ -99,55 +104,55 @@ export type MDXPageComponent = React.FC<any> & {
  * Helmet context type
  */
 export type HelmetContext = {
-  helmet: {
-    priority: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    base: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    bodyAttributes: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    htmlAttributes: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    link: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    meta: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    noscript: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    script: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    style: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-    title: {
-      toComponent: React.FC;
-      toString: () => string;
-    };
-  };
+	helmet: {
+		priority: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		base: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		bodyAttributes: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		htmlAttributes: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		link: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		meta: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		noscript: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		script: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		style: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+		title: {
+			toComponent: React.FC;
+			toString: () => string;
+		};
+	};
 };
 
 /**
  * Template props
  */
 export type TemplateProps = {
-  Head: React.FC<{ children: React.ReactNode }>;
-  Body: React.FC<{ children: React.ReactNode }>;
-  Script: React.FC<{ children?: React.ReactNode }>;
+	Head: React.FC<{ children: React.ReactNode }>;
+	Body: React.FC<{ children: React.ReactNode }>;
+	Script: React.FC<{ children?: React.ReactNode }>;
 };

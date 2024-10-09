@@ -1,4 +1,4 @@
-import { Metadata, MetadataLink, MetaTag } from "../types";
+import { Metadata, MetadataLink, MetaTag } from "../types.js";
 
 /**
  * This function generates metadata useful for pages to show images when sharing on social media

@@ -4,14 +4,14 @@ import {
 	useLoaderData,
 	useParams,
 } from "react-router-dom";
-import { LoaderResponse } from "../../core";
+import { LoaderResponse } from "../../core/index.js";
 import {
 	ErrorBoundary,
 	NotFoundComponentContainer,
 	ClientComponent,
 	ServerComponent,
-} from "../components";
-import { RouterComponent } from "../interfaces";
+} from "../components/index.js";
+import { RouterComponent } from "../interfaces.js";
 
 /**
  * This function receives a router component and get a formated router first

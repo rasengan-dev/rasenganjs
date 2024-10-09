@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { loadModuleSSR } from "./lib/esm/config/utils/index.js";
 
 import path from "node:path";
 
@@ -33,6 +34,8 @@ let __pathToRoot = "";
  * @returns {object} The Vite configuration object.
  */
 export default defineConfig(async ({ command, mode }: any) => {
+	const config = (await loadModuleSSR("./../../rasengan.config.js")).default;
+
 	if (command === "serve") {
 		__pathToRoot = process.cwd();
 	} else {

@@ -69,7 +69,7 @@ const RenderApp = ({
 						<Body
 							asChild
 							AppContent={
-								<App Component={Component}>
+								<App Component={Component} StrictMode={React.StrictMode}>
 									<StaticRouterProvider router={router} context={context} />
 								</App>
 							}
