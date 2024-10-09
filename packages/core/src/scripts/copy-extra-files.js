@@ -25,6 +25,17 @@ function copyExtraFiles() {
             stdio: "inherit",
           }
         );
+
+         execa(
+						"cp",
+						[
+							`./src/server/functions/vercel/vercel.json`,
+							`${targetDir}/server/functions/vercel`,
+						],
+						{
+							stdio: "inherit",
+						}
+					);
       }
     });
   });

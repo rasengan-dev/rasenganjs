@@ -70,8 +70,6 @@ program
 
     const appConfig = (await import(configPath)).default;
 
-    console.log(appConfig);
-
     // Checking the config file in order to know about hosting strategy
     const { server } = await appConfig;
 
