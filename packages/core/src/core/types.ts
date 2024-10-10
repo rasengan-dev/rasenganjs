@@ -101,6 +101,14 @@ export type MDXPageComponent = React.FC<any> & {
 };
 
 /**
+ * A React functional component that represents a simple block element.
+ */
+export type MDXRendererProps = {
+	children: MDXPageComponent;
+	className?: string;
+};
+
+/**
  * Helmet context type
  */
 export type HelmetContext = {

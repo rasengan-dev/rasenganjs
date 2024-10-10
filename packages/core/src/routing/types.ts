@@ -1,65 +1,108 @@
+import {
+	LayoutComponent,
+	MDXPageComponent,
+	MDXRendererProps,
+	PageComponent,
+} from "../core/types.js";
+import { RouterComponent } from "./interfaces.js";
+
 export type NotFoundComponentContainerProps = {
-  content: React.FC;
+	content: React.FC;
 };
 
 export type MetadataLink = {
-  rel: string;
-  type?: string;
-  sizes?: string;
-  href: string;
+	rel: string;
+	type?: string;
+	sizes?: string;
+	href: string;
 };
 
 export type MetaTag = {
-  name?: string;
-  property?: string;
-  content: string;
+	name?: string;
+	property?: string;
+	content: string;
 };
 
 export type MetadataWithoutTitleAndDescription = {
-  /**
-   * Configuring link preview on social media like facebook, linkedin, etc.
-   */
-  openGraph?: {
-    type?: string;
-    title?: string;
-    description?: string;
-    url: string;
-    image: string;
-    width?: string;
-    height?: string;
-  };
+	/**
+	 * Configuring link preview on social media like facebook, linkedin, etc.
+	 */
+	openGraph?: {
+		type?: string;
+		title?: string;
+		description?: string;
+		url: string;
+		image: string;
+		width?: string;
+		height?: string;
+	};
 
-  /**
-   * Configuring link preview on twitter
-   */
-  twitter?: {
-    card: "summary_large_image" | "summary";
-    image: string;
-    title: string;
-    description?: string;
-    creator?: string;
-    site?: string;
-  };
+	/**
+	 * Configuring link preview on twitter
+	 */
+	twitter?: {
+		card: "summary_large_image" | "summary";
+		image: string;
+		title: string;
+		description?: string;
+		creator?: string;
+		site?: string;
+	};
 
-  /**
-   * Configuring link tags to define icons and others
-   */
-  links?: Array<MetadataLink>;
+	/**
+	 * Configuring link tags to define icons and others
+	 */
+	links?: Array<MetadataLink>;
 
-  /**
-   * Other metadata tags
-   */
-  metaTags?: Array<MetaTag>;
-}
+	/**
+	 * Other metadata tags
+	 */
+	metaTags?: Array<MetaTag>;
+};
 
 export type Metadata = MetadataWithoutTitleAndDescription & {
-  /**
-   * Title of the pate
-   */
-  title?: string;
+	/**
+	 * Title of the pate
+	 */
+	title?: string;
 
-  /**
-   * Description of the page
-   */
-  description?: string;
+	/**
+	 * Description of the page
+	 */
+	description?: string;
+};
+
+/**
+ * Props for Router Decorators
+ */
+export type RouterProps = {
+	/**
+	 * Usefull to collect sub routers
+	 */
+	imports?: Array<RouterComponent>;
+
+	/**
+	 * Usefull to define a layout
+	 */
+	layout?: LayoutComponent;
+
+	/**
+	 * Usefull to collect pages
+	 */
+	pages: Array<PageComponent | MDXPageComponent>;
+
+	/**
+	 * Usefull to render MDX pages
+	 */
+	MDXRenderer?: React.FC<MDXRendererProps>;
+
+	/**
+	 * Usefull to display a screen that let know to the user that the page is loading.
+	 */
+	loaderComponent?: React.FC;
+
+	/**
+	 * Usefull to display a screen that let know to the user that the page is not found.
+	 */
+	notFoundComponent?: React.FC;
 };

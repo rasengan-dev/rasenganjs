@@ -1,6 +1,6 @@
 import { PageComponent, MDXPageComponent } from "../../core/index.js";
 import { DefaultLayout } from "../../core/components/index.js";
-import { RouterDecoratorProps } from "../../decorators/types.js";
+import { RouterProps } from "../types.js";
 import { NotFoundPageComponent } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 
@@ -9,8 +9,8 @@ import { RouterComponent } from "../interfaces.js";
  * @param option
  * @returns
  */
-export const defineRouter = (option: RouterDecoratorProps) => {
-	const { imports, layout, pages, loaderComponent, notFoundComponent } = option;
+export const defineRouter = (option: RouterProps) => {
+	const { imports, layout, pages, loaderComponent, notFoundComponent, MDXRenderer } = option;
 
 	return (Component: new () => RouterComponent) => {
 		// Handle errors
@@ -28,14 +28,22 @@ export const defineRouter = (option: RouterDecoratorProps) => {
 		for (let p of pages) {
 			// When p is a MDXPageComponent
 			if (!p["path"]) {
-				const mdxPage = p as MDXPageComponent;
+				if (!MDXRenderer) {
+					throw new Error(
+						"You must provide a MDXRenderer component to render MDX pages"
+					);
+				}
 
-				const normalizedPage = p as PageComponent;
+				const MDXPage = p as MDXPageComponent;
 
-				normalizedPage.path = mdxPage.metadata.path;
-				normalizedPage.metadata = mdxPage.metadata.metadata;
+				const Page: PageComponent = () => {
+					return <MDXRenderer className={""}>{MDXPage}</MDXRenderer>;
+				};
 
-				normalizedPages.push(normalizedPage);
+				Page.path = MDXPage.metadata.path;
+				Page.metadata = MDXPage.metadata.metadata;
+
+				normalizedPages.push(Page);
 			} else {
 				normalizedPages.push(p as PageComponent);
 			}
