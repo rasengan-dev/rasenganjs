@@ -1,4 +1,4 @@
-import mdx from '@mdx-js/rollup'
+// import mdx from '@mdx-js/rollup'
 import matter from 'gray-matter';
 import createFilter from './create-filter.js';
 
@@ -13,7 +13,9 @@ import createFilter from './create-filter.js';
  *
  * The transformed MDX content can then be used in the RasenganJs application, with the `metadata` object providing additional information about the content.
  */
-export default function plugin() {
+export default async function plugin() {
+	const mdx = (await import('@mdx-js/rollup')).default;
+
 	let config: unknown;
 	const filter = createFilter("**/*.md?(x)");
 	const mdxInstance  = mdx();

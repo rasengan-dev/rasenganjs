@@ -7,6 +7,7 @@
  */
 
 export * from './types/index.js';
+export * from './components/index.js';
 import { plugin } from "./utils/index.js";
 
 export default plugin;

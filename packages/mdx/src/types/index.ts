@@ -13,3 +13,25 @@ export type MDXPageComponent = React.FC<any> & {
 		metadata: Metadata;
 	};
 };
+
+/**
+ * A React functional component that represents a simple block element.
+ */
+export type ComponentWithTextChildrenProps = {
+	children: string;
+};
+
+/**
+ * A React functional component that represents a simple block element.
+ */
+export type MDXRendererProps = {
+	children: MDXPageComponent;
+	className?: string;
+};
+
+/**
+ * A React functional component that represents a simple block element.
+ */
+export type CodeBlockProps = ComponentWithTextChildrenProps & {
+	className?: string;
+};
