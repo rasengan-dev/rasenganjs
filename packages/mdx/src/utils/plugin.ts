@@ -1,6 +1,12 @@
-// import mdx from '@mdx-js/rollup'
-import matter from 'gray-matter';
-import createFilter from './create-filter.js';
+import matter from "gray-matter";
+import createFilter from "./create-filter.js";
+import { remark } from "remark";
+import remarkGfm from "remark-gfm";
+import stringWidth from "string-width";
+import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
 
 /**
  * A Vite plugin that transforms MDX files into a format that can be used in a RasenganJs application.
@@ -14,17 +20,20 @@ import createFilter from './create-filter.js';
  * The transformed MDX content can then be used in the RasenganJs application, with the `metadata` object providing additional information about the content.
  */
 export default async function plugin() {
-	const mdx = (await import('@mdx-js/rollup')).default;
+	const mdx = (await import("@mdx-js/rollup")).default;
 
 	let config: unknown;
 	const filter = createFilter("**/*.md?(x)");
-	const mdxInstance  = mdx();
+	const mdxInstance = mdx({
+		remarkPlugins: [remarkParse, remarkGfm],
+		rehypePlugins: [remarkRehype, rehypeStringify],
+	});
 
 	return {
 		name: "vite-plugin-rasengan-mdx",
 
 		// Apply transformation of the mdx file before other plugins
-		enforce: 'pre',
+		enforce: "pre",
 
 		config(config: unknown, env: any) {
 			mdxInstance.config(config, env);
