@@ -1,6 +1,8 @@
 import React from "react";
 import { MDXRendererProps } from "../types/index.js";
 import { CodeBlock, SimpleBlock } from "./codeblock.js";
+import { Table } from "./table.js";
+import { Heading } from "./heading.js";
 
 
 /**
@@ -17,6 +19,13 @@ const MDXRenderer = ({ children: MDXContent, className }: MDXRendererProps): Rea
 			<MDXContent
 				components={{
 					code: CodeBlock,
+					table: Table,
+					h1: Heading({ variant: "h1" }),
+					h2: Heading({ variant: "h2" }),
+					h3: Heading({ variant: "h3" }),
+					h4: Heading({ variant: "h4" }),
+					h5: Heading({ variant: "h5" }),
+					h6: Heading({ variant: "h6" }),
 				}}
 			/>
 		</section>

@@ -35,3 +35,11 @@ export type MDXRendererProps = {
 export type CodeBlockProps = ComponentWithTextChildrenProps & {
 	className?: string;
 };
+
+export type HeadingProps = {
+	variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+};
+
+export type HeadingProps2 = ComponentWithTextChildrenProps & {
+	className?: string;
+};
