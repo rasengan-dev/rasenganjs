@@ -1,8 +1,8 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import CleanCSS from 'clean-css';
+export const compileCss = async () => {
+  const fs = (await import('node:fs')).default;
+  const path = (await import('node:path')).default;
+  const CleanCSS = (await import('clean-css')).default;
 
-export const compileCss = () => {
   const folder = path.join(process.cwd(), 'src/styles');
   const destination = path.join(process.cwd(), 'lib/styles');
   const files = fs.readdirSync(folder);
