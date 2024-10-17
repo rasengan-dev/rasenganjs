@@ -35,13 +35,8 @@ import { defineConfig } from "rasengan";
 import mdx from "@rasenganjs/mdx";
 
 export default defineConfig({
-  reactStrictMode: true,
-
-  // Define aliases
   vite: {
-    plugins: [
-      ...mdx(),
-    ],
+    plugins: [mdx()],
   },
 });
 ```
@@ -69,24 +64,25 @@ This is a `blog` page.
 
 3. Use your `markdown` file.
 
-Inside the `app.router.ts` file, import your Markdown Component and the `generatePage` function from `@rasenganjs/mdx`
+Inside the `app.router.ts` file, import your Markdown Component and the `MDXRenderer` component from `@rasenganjs/mdx` and add it to `defineRouter` option like this:
 
 ```typescript
 import { RouterComponent, defineRouter } from "rasengan";
 import AppLayout from "@app/app.layout";
 import Blog from "@app/blog.page.mdx";
-import { generatePage } from "@rasenganjs/mdx";
-
-const BlogPage = generatePage(Blog);
+import { MDXRenderer } from "@rasenganjs/mdx";
 
 class AppRouter extends RouterComponent {}
 
 export default defineRouter({
   imports: [],
   layout: AppLayout,
-  pages: [BlogPage],
+  pages: [Blog],
+  MDXRenderer
 })(AppRouter);
 ```
+
+The `MDXRenderer` component is used to render the Markdown content.
 
 Now visit [http://localhost:5320/blog](http://localhost:5320/blog)
 
