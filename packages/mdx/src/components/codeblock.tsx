@@ -3,6 +3,7 @@ import {
 	CodeBlockProps,
 	ComponentWithTextChildrenProps,
 } from "../types/index.js";
+import { renderToString } from "react-dom/server";
 
 /**
  * A React component that renders a code block with syntax highlighting and a copy button.
@@ -44,8 +45,26 @@ export const CodeBlock = ({
 	 * It sets the `copied` state to `true` for 2 seconds to display a "copied" indicator.
 	 */
 	const handleCopy = () => {
-		navigator.clipboard.writeText(children);
+		const content = renderToString(children);
+
+		const code = extractTextFromHTML(content);
+
+		navigator.clipboard.writeText(code);
 		setCopied(true);
+	};
+
+	/**
+  * Extracts the text content from an HTML string.
+  *
+  * This function takes an HTML string as input and returns the plain text content of the HTML, excluding any HTML tags or markup.
+  *
+  * @param htmlString - The HTML string to extract text from.
+  * @returns The plain text content of the HTML string.
+  */
+ const extractTextFromHTML = (htmlString: string) => {
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(htmlString, "text/html");
+		return doc.body.textContent || "";
 	};
 
 	if (!language) {
