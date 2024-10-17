@@ -1,12 +1,12 @@
 import matter from "gray-matter";
 import createFilter from "./create-filter.js";
-import { remark } from "remark";
 import remarkGfm from "remark-gfm";
-import stringWidth from "string-width";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { unified } from "unified";
+import { extractToc } from "./extract-toc.js";
+import markToHtml from "./mark-to-html.js";
+import rehypePrettyCode from "rehype-pretty-code";
 
 /**
  * A Vite plugin that transforms MDX files into a format that can be used in a RasenganJs application.
@@ -26,7 +26,7 @@ export default async function plugin() {
 	const filter = createFilter("**/*.md?(x)");
 	const mdxInstance = mdx({
 		remarkPlugins: [remarkParse, remarkGfm],
-		rehypePlugins: [remarkRehype, rehypeStringify],
+		rehypePlugins: [remarkRehype, rehypeStringify, rehypePrettyCode],
 	});
 
 	return {
@@ -66,6 +66,11 @@ export default async function plugin() {
 			// Apply transformation of the mdx file
 			const result = await mdxInstance.transform(content, id);
 
+			const toc = await extractToc(content);
+			// const html = await markToHtml(content);
+
+			// console.log({ toc });
+
 			// Extract the file name from the path
 			const fileName = id
 				.split("/")
@@ -79,6 +84,8 @@ export default async function plugin() {
 					title: fileName,
 				},
 			};
+
+			// console.log(result.code)
 
 			return {
 				code: `
