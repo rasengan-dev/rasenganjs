@@ -84,6 +84,18 @@ export default defineRouter({
 
 The `MDXRenderer` component is used to render the Markdown content.
 
+4. Load the `css` file from `@rasenganjs/mdx` package into your `main.ts` file.
+
+```typescript
+import "@rasenganjs/mdx/styles/rasengan-mdx.min.css";
+import { type AppProps } from "rasengan";
+import AppRouter from "@/app/app.router";
+
+export default function App({ children, Component }: AppProps) {
+	return <Component router={AppRouter}>{children}</Component>;
+}
+```
+
 Now visit [http://localhost:5320/blog](http://localhost:5320/blog)
 
 ## Community

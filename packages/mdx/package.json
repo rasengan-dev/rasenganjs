@@ -1,7 +1,7 @@
 {
 	"name": "@rasenganjs/mdx",
 	"private": false,
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "RasenganJS plugin for MDX support",
 	"type": "module",
 	"main": "lib/index.js",
@@ -10,7 +10,8 @@
 			"import": "./lib/index.js",
 			"require": "./lib/index.js",
 			"types": "./lib/types/index.d.ts"
-		}
+		},
+		"./styles/rasengan-mdx.min.css": "./lib/styles/rasengan-mdx.min.css"
 	},
 	"author": {
 		"name": "dilane3",
@@ -27,16 +28,19 @@
 	"license": "MIT",
 	"scripts": {
 		"build:clean": "rm -rf ./lib",
-		"build": "npm run build:clean && tsc",
+		"build:css": "node ./src/scripts/compile-css.js",
+		"build": "npm run build:clean && tsc && npm run build:css",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"pack": "npm pack --pack-destination ./release",
 		"deploy": "npm publish --access public"
 	},
 	"devDependencies": {
+		"@types/clean-css": "^4.2.11",
 		"@types/micromatch": "^4.0.7",
 		"@types/node": "^22.7.4",
 		"@types/react": "^18.3.11",
 		"@types/react-dom": "^18.3.1",
+		"clean-css": "^5.3.3",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
