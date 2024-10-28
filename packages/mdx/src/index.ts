@@ -8,6 +8,7 @@
 
 export * from './types/index.js';
 export * from './components/index.js';
-import { plugin } from "./utils/index.js";
+import { plugin, generateNavigation } from "./utils/index.js";
 
+export { generateNavigation };
 export default plugin;

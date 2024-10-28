@@ -27,7 +27,12 @@ export class RouterComponent {
   /**
    * Defines the not found component to display when pages aren't available
    */
-  private _notFoundComponent!: React.FC;
+  private _notFoundComponent!: React.FC | undefined;
+
+  /**
+   * Defines if the layout of the parent router must be used
+   */
+  private _useParentLayout!: boolean;
 
   // Getters
 
@@ -66,6 +71,13 @@ export class RouterComponent {
     return this._notFoundComponent;
   }
 
+  /**
+   * Get the use parent layout value
+   */
+  get useParentLayout() {
+    return this._useParentLayout;
+  }
+
   // Setters
 
   /**
@@ -101,5 +113,12 @@ export class RouterComponent {
    */
   set notFoundComponent(notFoundComponent: React.FC) {
     this._notFoundComponent = notFoundComponent;
+  }
+
+  /**
+   * Set the use parent layout value
+   */
+  set useParentLayout(useParentLayout: boolean) {
+    this._useParentLayout = useParentLayout;
   }
 }

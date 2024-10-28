@@ -1,5 +1,6 @@
 import {
 	LayoutComponent,
+	LoaderResponse,
 	MDXPageComponent,
 	MDXRendererProps,
 	PageComponent,
@@ -89,7 +90,7 @@ export type RouterProps = {
 	/**
 	 * Usefull to collect pages
 	 */
-	pages: Array<PageComponent | MDXPageComponent>;
+	pages?: Array<PageComponent | MDXPageComponent>;
 
 	/**
 	 * Usefull to render MDX pages
@@ -105,4 +106,53 @@ export type RouterProps = {
 	 * Usefull to display a screen that let know to the user that the page is not found.
 	 */
 	notFoundComponent?: React.FC;
+
+	/**
+	 * Determines whether the current page should use the parent layout, or render its own layout.
+	 */
+	useParentLayout?: boolean;
 };
+
+export type Route = {
+	/**
+	 * Path of the route
+	 */
+	path: string;
+
+	Component(): JSX.Element | undefined;
+	element?: React.ReactNode;
+
+	loader?: ({ params, request }: any) => Promise<LoaderResponse | Response>;
+
+	/**
+	 * Error element to render
+	 */
+	elementError?: React.ReactNode;
+
+	/**
+	 * Routes children
+	 */
+	children?: Array<Route | RoutePage>;
+
+	/**
+	 * Determines if the route is nested
+	 */
+	nested?: boolean;
+};
+
+export type RoutePage = {
+	/**
+	 * Path of the route
+	 */
+	path: string;
+
+	/**
+	 * Element to render
+	 */
+	element: React.ReactNode;
+
+	/**
+	 * Element error to render
+	 */
+	elementError?: React.ReactNode;
+}

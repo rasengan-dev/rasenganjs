@@ -10,7 +10,15 @@ import { RouterComponent } from "../interfaces.js";
  * @returns
  */
 export const defineRouter = (option: RouterProps) => {
-	const { imports, layout, pages, loaderComponent, notFoundComponent, MDXRenderer } = option;
+	const {
+		imports,
+		layout,
+		pages,
+		loaderComponent,
+		notFoundComponent,
+		MDXRenderer,
+		useParentLayout,
+	} = option;
 
 	return (Component: new () => RouterComponent) => {
 		// Handle errors
@@ -25,7 +33,7 @@ export const defineRouter = (option: RouterProps) => {
 		// Normalize pages
 		const normalizedPages: PageComponent[] = [];
 
-		for (let p of pages) {
+		for (let p of pages ?? []) {
 			// When p is a MDXPageComponent
 			if (!p["path"]) {
 				if (!MDXRenderer) {
@@ -54,7 +62,8 @@ export const defineRouter = (option: RouterProps) => {
 		router.layout = layout || DefaultLayout;
 		router.pages = normalizedPages;
 		router.loaderComponent = loaderComponent || (() => null);
-		router.notFoundComponent = notFoundComponent || NotFoundPageComponent;
+		router.notFoundComponent = notFoundComponent;
+		router.useParentLayout = useParentLayout ?? true;
 
 		return router;
 	};

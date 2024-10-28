@@ -4,14 +4,16 @@ import {
 	useLoaderData,
 	useParams,
 } from "react-router-dom";
-import { LoaderResponse } from "../../core/index.js";
+import { LayoutComponent, LoaderResponse } from "../../core/index.js";
 import {
 	ErrorBoundary,
 	NotFoundComponentContainer,
 	ClientComponent,
 	ServerComponent,
+	NotFoundPageComponent,
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
+import { Route } from "../types.js";
 
 /**
  * This function receives a router component and get a formated router first
@@ -30,15 +32,23 @@ export const getRouter = (router: RouterComponent) => {
 /**
  * This function receives a router component and return a formated router.
  */
-const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
+const generateBrowserRoutes = (
+	router: RouterComponent,
+	isRoot = true,
+	parentLayout: LayoutComponent | undefined = undefined
+) => {
 	// Initialization of the list of routes
-	const routes = [] as any;
+	const routes: Array<Route> = [];
 
 	// Get information about the layout and the path
 	const Layout = router.layout;
 
-	const route = {
-		path: Layout.path,
+	const route: Route = {
+		path: !isRoot
+			? router.useParentLayout
+				? parentLayout.path + Layout.path
+				: Layout.path
+			: Layout.path,
 		elementError: <ErrorBoundary />,
 		Component() {
 			// Default data
@@ -58,15 +68,18 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
 			return <Layout {...finalProps} />;
 		},
-		children: [] as unknown as any,
+		children: [],
+		nested: router.useParentLayout,
 	};
 
 	// Defining the page not found route
-	if (isRoot) {
-		routes.push({
+	if (isRoot || router.notFoundComponent) {
+		route.children.push({
 			path: "*",
 			element: (
-				<NotFoundComponentContainer content={router.notFoundComponent} />
+				<NotFoundComponentContainer
+					content={router.notFoundComponent ?? NotFoundPageComponent}
+				/>
 			),
 		});
 	}
@@ -101,7 +114,7 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 
 	// Add pages into children of the current route
 	pages.forEach((page) => {
-		route.children.push(page);
+		route.children.unshift(page);
 	});
 
 	// Loop throug sub routers in order to apply the same thing.
@@ -114,15 +127,21 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
 	//   route.children.push(subRoutes);
 	// }
 
-	routes.push(route);
-
 	// Loop throug besides routers in order to apply the same thing.
 	for (const besideRouter of router.routers) {
-		const besidesRoutes = generateBrowserRoutes(besideRouter, false);
+		const besidesRoutes = generateBrowserRoutes(besideRouter, false, Layout);
 
 		// Add besides routes into the lists of route
-		routes.push(...besidesRoutes);
+		besidesRoutes.forEach((r) => {
+			if (r.nested) {
+				route.children.unshift(r);
+			} else {
+				routes.push(r);
+			}
+		});
 	}
+
+	routes.unshift(route);
 
 	// Return the formated router
 	return routes;
@@ -135,16 +154,21 @@ const generateBrowserRoutes = (router: RouterComponent, isRoot = true) => {
  */
 export const generateStaticRoutes = (
 	router: RouterComponent,
-	isRoot = true
+	isRoot = true,
+	parentLayout: LayoutComponent | undefined = undefined
 ) => {
 	// Initialization of the list of routes
-	const routes = [] as any;
+	const routes: Array<Route> = [];
 
 	// Get information about the layout and the path
 	const Layout = router.layout;
 
-	const route = {
-		path: Layout.path,
+	const route: Route = {
+		path: !isRoot
+			? router.useParentLayout
+				? parentLayout.path + Layout.path
+				: Layout.path
+			: Layout.path,
 		elementError: <ErrorBoundary />,
 		Component() {
 			// Default data
@@ -196,15 +220,18 @@ export const generateStaticRoutes = (
 				};
 			}
 		},
-		children: [] as unknown as any,
+		children: [],
+		nested: router.useParentLayout,
 	};
 
 	// Defining the page not found route
-	if (isRoot) {
-		routes.push({
+	if (isRoot || router.notFoundComponent) {
+		route.children.push({
 			path: "*",
 			element: (
-				<NotFoundComponentContainer content={router.notFoundComponent} />
+				<NotFoundComponentContainer
+					content={router.notFoundComponent ?? NotFoundPageComponent}
+				/>
 			),
 		});
 	}
@@ -284,15 +311,20 @@ export const generateStaticRoutes = (
 	//   route.children.push(subRoutes);
 	// }
 
-	routes.push(route);
-
 	// Loop throug besides routers in order to apply the same thing.
 	for (const besideRouter of router.routers) {
-		const besidesRoutes = generateStaticRoutes(besideRouter, false);
+		const besidesRoutes = generateStaticRoutes(besideRouter, false, Layout);
 
-		// Add besides routes into the lists of route
-		routes.push(...besidesRoutes);
+		besidesRoutes.forEach((r) => {
+			if (r.nested) {
+				route.children.push(r);
+			} else {
+				routes.push(r);
+			}
+		});
 	}
+
+	routes.unshift(route);
 
 	// Return the formated router
 	return routes;

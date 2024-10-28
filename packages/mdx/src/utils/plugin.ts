@@ -4,8 +4,6 @@ import remarkGfm from "remark-gfm";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { extractToc } from "./extract-toc.js";
-import markToHtml from "./mark-to-html.js";
 import rehypePrettyCode from "rehype-pretty-code";
 
 /**
@@ -65,11 +63,6 @@ export default async function plugin() {
 
 			// Apply transformation of the mdx file
 			const result = await mdxInstance.transform(content, id);
-
-			const toc = await extractToc(content);
-			// const html = await markToHtml(content);
-
-			// console.log({ toc });
 
 			// Extract the file name from the path
 			const fileName = id

@@ -43,3 +43,10 @@ export type HeadingProps = {
 export type HeadingProps2 = ComponentWithTextChildrenProps & {
 	className?: string;
 };
+
+export type NavigationStructure = {
+	title: string;
+	link: string;
+	level: number;
+	children?: NavigationStructure[];
+}
