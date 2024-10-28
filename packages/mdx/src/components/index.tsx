@@ -10,6 +10,7 @@ import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypePrettyCode from "rehype-pretty-code";
+import { CodeBlock2 } from "./codeblock2.js";
 
 /**
  * Renders an MDX content component with a custom code block component.
@@ -61,7 +62,7 @@ function Markdown({
 					// }]
 				]}
 				components={{
-					code: CodeBlock,
+					code: CodeBlock2,
 					table: Table,
 					h1: Heading({ variant: "h1" }),
 					h2: Heading({ variant: "h2" }),

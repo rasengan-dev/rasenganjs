@@ -48,7 +48,7 @@
 		"gray-matter": "^4.0.3",
 		"micromatch": "^4.0.7",
 		"path-browserify": "^1.0.1",
-		"prismjs": "^1.29.0",
+		"prism-react-renderer": "^2.4.0",
 		"react-markdown": "^9.0.1",
 		"rehype-pretty-code": "^0.14.0",
 		"rehype-stringify": "^10.0.1",
