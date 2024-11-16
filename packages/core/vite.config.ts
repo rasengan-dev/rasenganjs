@@ -4,14 +4,6 @@ import { loadModuleSSR } from "./lib/esm/config/utils/index.js";
 
 import path from "node:path";
 
-// Load config
-// @ts-ignore
-import config from "./../../rasengan.config.js";
-// import { config } from "./AppEntry";
-
-// Getting root path
-let __pathToRoot = "";
-
 /**
  * Configures the Vite build for the Rasengan.js application.
  *
@@ -36,11 +28,8 @@ let __pathToRoot = "";
 export default defineConfig(async ({ command, mode }: any) => {
 	const config = (await loadModuleSSR("./../../rasengan.config.js")).default;
 
-	if (command === "serve") {
-		__pathToRoot = process.cwd();
-	} else {
-		__pathToRoot = path.join(process.cwd(), "./../../");
-	}
+	// Getting root path
+	let __pathToRoot = process.cwd();
 
 	// Extract vite config
 	const { vite } = await config;
@@ -66,7 +55,7 @@ export default defineConfig(async ({ command, mode }: any) => {
 			sourcemap: mode === "development" ? true : false,
 			minify: "esbuild",
 			rollupOptions: {
-				input: "./lib/esm/entries/entry-client.js",
+				input: "./node_modules/rasengan/lib/esm/entries/entry-client.js",
 				output: {
 					manualChunks: undefined,
 				},

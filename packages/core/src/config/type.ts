@@ -68,9 +68,7 @@ export type AppConfig = {
 		 * Configure css options
 		 */
 		css?: {
-			postcss?: {
-				plugins?: any[];
-			};
+			postcss?: string;
 		};
 
 		/**

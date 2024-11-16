@@ -39,7 +39,7 @@ export const defineConfig = async (
 			include: vite?.optimizeDeps?.include || [],
 		},
 		css: {
-			postcss: vite?.css?.postcss || undefined,
+			postcss: vite?.css?.postcss || "./postcss.config.js",
 		},
 		build: {
 			external: vite?.build?.external || [],
@@ -148,6 +148,9 @@ export const defineConfig = async (
 							replacement: "node_modules/path-browserify",
 						},
 					],
+				},
+				css: {
+					postcss: "./postcss.config.js",
 				},
 			},
 			redirects: () => new Promise((resolve) => resolve([])),

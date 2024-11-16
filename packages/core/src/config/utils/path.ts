@@ -1,25 +1,4 @@
 /**
- * Function to adapt the path for dev and prod
- * @param {string | Array<string>} paths
- */
-export const adaptPath = (paths: string | Array<string>) => {
-	// Check if we are in dev mode or prod
-	const isProduction = process.env.NODE_ENV === "production";
-	const prefix = isProduction ? "./../../" : "";
-
-	// Chech if the path is an array
-	const isArray = Array.isArray(paths);
-
-	// If the path is an array
-	if (isArray) {
-		return paths.map((path) => `${process.cwd()}/${prefix}${path}`);
-	}
-
-	// If the path is a string
-	return `${process.cwd()}/${prefix}${paths}`;
-};
-
-/**
  * Adapts the provided file path to a valid URL format based on the operating system.
  *
  * @param path - The file path to be adapted.

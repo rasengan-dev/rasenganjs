@@ -1,3 +1,3 @@
-import { defineConfig, adaptPath, resolvePath } from "./utils/index.js";
+import { defineConfig, resolvePath } from "./utils/index.js";
 
-export { defineConfig, adaptPath, resolvePath };
+export { defineConfig, resolvePath };

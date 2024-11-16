@@ -228,12 +228,7 @@ async function createServer({
 	const isProduction = process.env.NODE_ENV === "production";
 
 	// Format config path
-	const configPath = resolvePath(
-		join(
-			isProduction ? process.cwd() + "./../../" : process.cwd(),
-			"rasengan.config.js"
-		)
-	);
+	const configPath = resolvePath(join(`${process.cwd()}/rasengan.config.js`));
 
 	// Get config
 	const config = await (await import(configPath)).default;
