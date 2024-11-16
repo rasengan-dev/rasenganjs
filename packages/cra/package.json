@@ -1,7 +1,7 @@
 {
-  "name": "@rasenganjs/cli",
-  "version": "1.0.0",
-  "description": "The Rasengan.js CLI tool to automate basic development tasks like generating pages, routers, layouts or resources",
+  "name": "create-rasengan",
+  "version": "1.1.9",
+  "description": "The Rasengan.js CLI tool to generate a new project with a simple template",
   "main": "/dist/main.js",
   "type": "module",
   "author": {
@@ -19,7 +19,7 @@
   "homepage": "https://rasengan.dev",
   "license": "MIT",
   "bin": {
-    "rasengan": "./dist/main.js"
+    "create-rasengan": "./dist/main.js"
   },
   "scripts": {
     "build:clean": "rm -rf ./dist",
@@ -35,7 +35,8 @@
     "inquirer": "^9.2.11",
     "ncp": "^2.0.0",
     "ora": "^7.0.1",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "simple-git": "^3.24.0"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.4",

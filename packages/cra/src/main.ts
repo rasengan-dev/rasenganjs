@@ -8,9 +8,20 @@
  */
 
 /**
- * Rasengan CLI Tool for creating your frontend projects built using Rasengan.js Framework.
+ * Create-Rasengan-App CLI Tool for creating your frontend projects built using Rasengan.js Framework.
  *
  * You don't need to install this package manually before trying to use it in order to create your project.
+ * You can use this package by running the following command:
+ *
+ * npx create-rasengan <project-name>
+ *
+ * or
+ *
+ * yarn create rasengan <project-name>
+ *
+ * or
+ *
+ * pnpm create rasengan <project-name>
  */
 
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
