@@ -127,7 +127,7 @@ export type Route = {
 	/**
 	 * Error element to render
 	 */
-	elementError?: React.ReactNode;
+	errorElement?: React.ReactNode;
 
 	/**
 	 * Routes children
@@ -154,5 +154,5 @@ export type RoutePage = {
 	/**
 	 * Element error to render
 	 */
-	elementError?: React.ReactNode;
-}
+	errorElement?: React.ReactNode;
+};

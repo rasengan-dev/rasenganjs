@@ -49,7 +49,7 @@ const generateBrowserRoutes = (
 				? parentLayout.path + Layout.path
 				: Layout.path
 			: Layout.path,
-		elementError: <ErrorBoundary />,
+		errorElement: <ErrorBoundary />,
 		Component() {
 			// Default data
 			const defaultData = {
@@ -108,7 +108,7 @@ const generateBrowserRoutes = (
 					layoutMetadata={Layout.metadata}
 				/>
 			),
-			elementError: <ErrorBoundary />,
+			errorElement: <ErrorBoundary />,
 		};
 	});
 
@@ -169,7 +169,7 @@ export const generateStaticRoutes = (
 				? parentLayout.path + Layout.path
 				: Layout.path
 			: Layout.path,
-		elementError: <ErrorBoundary />,
+		errorElement: <ErrorBoundary />,
 		Component() {
 			// Default data
 			const defaultData = {
@@ -293,7 +293,7 @@ export const generateStaticRoutes = (
 					/>
 				);
 			},
-			elementError: <ErrorBoundary />,
+			errorElement: <ErrorBoundary />,
 		};
 	});
 
