@@ -144,9 +144,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				.end(file);
 		}
 
-		// Template html
-		let templateHtml = "";
-
 		// Always read fresh template in development
 		const serverFilePath = join(appPath, "dist/server/entry-server.js");
 		const bootstrapDirPath = join(appPath, "dist/client/assets");
@@ -169,7 +166,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				.filter((fn) => fn.includes("entry-client") && fn.endsWith(".css"))[0];
 
 		// Extract render and staticRoutes from entry
-		const { render, staticRoutes, loadTemplateHtml } = entry;
+		const { render, staticRoutes } = entry;
 
 		// Create static handler
 		let handler = createStaticHandler(staticRoutes);
@@ -179,7 +176,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		let fetchRequest = createFetchRequest(req, host);
 		let context = await handler.query(fetchRequest);
 
-		// Handle redirects
+		// Handle redirects from config file
+		const redirects = await config.redirects();
+
+		for (let redirect of redirects) {
+			if (redirect.source === req.url) {
+				res.status(redirect.permanent ? 301 : 302);
+				return res.redirect(redirect.destination);
+			}
+		}
+
+		// Handle redirects from loader functions
 		const status = (context as Response).status;
 
 		if (status === 302) {

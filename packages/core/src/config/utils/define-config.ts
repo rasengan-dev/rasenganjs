@@ -29,7 +29,7 @@ export const defineConfig = async (
 		config = loadedConfig;
 	}
 
-	const { server, vite } = config;
+	const { server, vite, redirects } = config;
 
 	// Define default values for vite config coming from loadedConfig.vite
 	const defaultViteConfig = {
@@ -61,6 +61,10 @@ export const defineConfig = async (
 			hosting: server?.production?.hosting || "custom",
 		},
 	};
+
+	// Define default values for redirects config coming from loadedConfig.redirects
+	const defaultRedirectsConfig =
+		redirects || (() => new Promise((resolve) => resolve([])));
 
 	try {
 		const config: AppConfig = {
@@ -112,6 +116,7 @@ export const defineConfig = async (
 
 				appType: "custom",
 			},
+			redirects: defaultRedirectsConfig,
 		};
 
 		return config;
@@ -145,6 +150,7 @@ export const defineConfig = async (
 					],
 				},
 			},
+			redirects: () => new Promise((resolve) => resolve([])),
 		};
 	}
 };

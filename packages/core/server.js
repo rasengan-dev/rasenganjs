@@ -42,11 +42,9 @@ async function createServer({
 	// Create http server
 	const app = express();
 
-	// Template html
-	let templateHtml = "";
 	// Bootstrap
 	let bootstrap = "";
-	// let bootstrap = "/node_modules/rasengan/lib/esm/entries/entry-client.js";
+
 	// Styles
 	let styles = "";
 
@@ -114,12 +112,26 @@ async function createServer({
 			let fetchRequest = createFetchRequest(req, req.get("host"));
 			let context = await handler.query(fetchRequest);
 
-			// Handle redirects
+			// Handle redirects from config file
+			const redirects = await config.redirects();
+
+			for (let redirect of redirects) {
+				if (redirect.source === req.originalUrl) {
+					res.status(redirect.permanent ? 301 : 302);
+					return res.redirect(redirect.destination);
+				}
+			}
+
+			// Handle redirects from loader functions
 			const status = context.status;
 
-			if (status === 302) {
+			if (status === 302 || status === 301) {
 				const redirect = context.headers.get("Location");
 
+				// Set redirect status
+				res.status(status);
+
+				// Redirect
 				return res.redirect(redirect);
 			}
 

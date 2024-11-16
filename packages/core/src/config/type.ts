@@ -107,12 +107,17 @@ export type AppConfig = {
 	/**
 	 * List of experimental features
 	 */
-	experimental?: {
-		/**
-		 * Enable stream mode in order to use suspense feature of react
-		 */
-		stream?: boolean;
-	};
+	// experimental?: {
+	// 	/**
+	// 	 * Enable stream mode in order to use suspense feature of react
+	// 	 */
+	// 	stream?: boolean;
+	// };
+
+	/**
+	 * Configure the app
+	 */
+	redirects?: () => Promise<Redirect[]>;
 
 	// More config options...
 };
@@ -125,3 +130,23 @@ export type AppConfigFunctionAsync = () => Promise<AppConfig>;
  * Hosting strategy
  */
 export type HostingStrategy = "vercel" | "custom";
+
+/**
+ * Redirect
+ */
+export type Redirect = {
+	/**
+	 * Source path
+	 */
+	source: string;
+
+	/**
+	 * Destination path
+	 */
+	destination: string;
+
+	/**
+	 * Permanent redirect
+	 */
+	permanent?: boolean;
+}
