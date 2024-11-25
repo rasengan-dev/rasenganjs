@@ -14,6 +14,7 @@ import {
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 import { Route } from "../types.js";
+import { lazy } from "react";
 
 /**
  * This function receives a router component and get a formated router first

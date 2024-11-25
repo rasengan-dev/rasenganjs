@@ -90,7 +90,9 @@ export type RouterProps = {
 	/**
 	 * Usefull to collect pages
 	 */
-	pages?: Array<PageComponent | MDXPageComponent>;
+	pages?: Array<
+		PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
+	>;
 
 	/**
 	 * Usefull to render MDX pages
@@ -155,4 +157,18 @@ export type RoutePage = {
 	 * Element error to render
 	 */
 	errorElement?: React.ReactNode;
+};
+
+export type RoutesGroupProps = {
+	/**
+	 * Path of the group
+	 */
+	path: string;
+
+	/**
+	 * Routes children
+	 */
+	children: Array<
+		PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
+	>;
 };

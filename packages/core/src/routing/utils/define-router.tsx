@@ -34,6 +34,36 @@ export const defineRouter = (option: RouterProps) => {
 		const normalizedPages: PageComponent[] = [];
 
 		for (let p of pages ?? []) {
+			// Check if p is an array
+			if (Array.isArray(p)) {
+				for (let page of p) {
+					if (!page["path"]) {
+						if (!MDXRenderer) {
+							throw new Error(
+								"You must provide a MDXRenderer component to render MDX pages"
+							);
+						}
+
+						const MDXPage = page as MDXPageComponent;
+
+						const Page: PageComponent = () => {
+							return (
+								<MDXRenderer className={""}>{MDXPage}</MDXRenderer>
+							);
+						};
+
+						Page.path = MDXPage.metadata.path;
+						Page.metadata = MDXPage.metadata.metadata;
+
+						normalizedPages.push(Page);
+					} else {
+						normalizedPages.push(page as PageComponent);
+					}
+				}
+
+				continue;
+			}
+
 			// When p is a MDXPageComponent
 			if (!p["path"]) {
 				if (!MDXRenderer) {
