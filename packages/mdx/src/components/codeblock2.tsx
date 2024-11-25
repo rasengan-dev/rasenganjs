@@ -52,7 +52,7 @@ export const CodeBlock2 = ({
 				 * It sets the `copied` state to `true` for 2 seconds to display a "copied" indicator.
 				 */
 				const handleCopy = () => {
-					navigator.clipboard.writeText(children.trim());
+					navigator.clipboard.writeText((children ?? "").trim());
 					setCopied(true);
 				};
 
@@ -121,14 +121,6 @@ export const CodeBlock2 = ({
 								<code className={`${className} code-block`} data-line-numbers>
 									{tokens.map((line: any, i: number) => (
 										<span data-line key={i} {...getLineProps({ line })}>
-											{/* <span
-                        style={{
-                          opacity: 0.6,
-                          marginRight: "5px",
-                        }}
-                      >
-                        {i + 1}
-                      </span> */}
 											<span> </span>
 											{line.map((token: any, key: number) => (
 												<span key={key} {...getTokenProps({ token })} />
