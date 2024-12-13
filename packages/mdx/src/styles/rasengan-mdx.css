@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
 :root {
 	--bg: transparent;
 	--bg-light: #f5f5f5;
 	--bg-code: #282c34;
-	--bg-code-highlight: #30313E;
+	--bg-code-highlight: #30313e;
 	--bg-code-highlight-2: #494c54;
 	--fg: #333;
 	--fg-code: #adbac7;
@@ -13,22 +13,22 @@
 	--fg-accent: #007bff;
 	--border: #eee;
 	--border-dark: #494c54;
-	--table-border: #D1D5DC;
+	--table-border: #d1d5dc;
 }
 
 .dark {
 	--bg: #212121;
-	--bg-light: #30313E;
+	--bg-light: #30313e55;
 	--bg-code: #282c34;
-	--bg-code-highlight: #30313E;
+	--bg-code-highlight: #30313e;
 	--fg: #eee;
 	--fg-code: #abb2bf;
 	--fg-light: #ccc;
 	--fg-dark: #fff;
 	--fg-accent: #007bff;
-	--border: #2F2F2F;
+	--border: #2f2f2f;
 	--border-dark: #494c54;
-	--table-border: #4B5563;
+	--table-border: #4b5563;
 }
 
 .rasengan-markdown-body {
@@ -46,7 +46,7 @@
 	justify-content: start;
 }
 
-.rasengan-markdown-body .ra-heading-wrapper:has(h2, h3, h4) {
+.rasengan-markdown-body .ra-heading-wrapper:has(h2) {
 	border-bottom: 1px solid var(--border);
 	margin: 2rem 0;
 }
@@ -102,14 +102,12 @@
 	font-size: 2em;
 	color: var(--fg);
 	font-weight: 700;
-	/* margin: 1em 0; */
 }
 
 .rasengan-markdown-body h3 {
 	font-size: 1.5em;
 	color: var(--fg);
 	font-weight: 700;
-	/* margin: 1em 0; */
 }
 
 .rasengan-markdown-body h4 {
@@ -158,7 +156,7 @@
 
 .rasengan-markdown-body code.simple-block {
 	font-size: 0.8em;
-	font-family: 'JetBrains Mono', monospace;
+	font-family: "JetBrains Mono", monospace;
 	border-radius: 5px;
 	padding: 2px 3.6px;
 	margin: auto 0;
@@ -168,7 +166,7 @@
 
 .rasengan-markdown-body figure:has(pre[data-language]) {
 	background-color: var(--bg-code);
-  border-radius: 8px;
+	border-radius: 8px;
 	margin: 10px 0;
 	color: var(--fg-code);
 	border: 1px solid var(--border);
@@ -176,7 +174,7 @@
 }
 
 .rasengan-markdown-body figure:has(pre[data-language]) figcaption {
-  padding: 10px 20px;
+	padding: 10px 20px;
 	font-size: 14px;
 	font-weight: 400;
 	background-color: var(--bg-code-highlight);
@@ -184,7 +182,7 @@
 }
 
 .rasengan-markdown-body code[data-line-numbers] {
-  counter-reset: line;
+	counter-reset: line;
 }
 .rasengan-markdown-body pre[data-language] {
 	position: relative;
@@ -193,21 +191,21 @@
 }
 
 .rasengan-markdown-body pre[data-language] code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  overflow-x: auto;
+	font-family: "JetBrains Mono", monospace;
+	font-size: 14px;
+	overflow-x: auto;
 }
 
 .rasengan-markdown-body pre[data-language] > div code {
-  display: grid;
-  grid-template-columns: 1fr;
-  line-height: 1.6;
-  word-wrap: break-word;
+	display: grid;
+	grid-template-columns: 1fr;
+	line-height: 1.6;
+	word-wrap: break-word;
 	padding: 16px 0;
 }
 
 .rasengan-markdown-body pre[data-language] code > span {
-  padding: 0 16px;
+	padding: 0 16px;
 	border-left: 4px solid transparent;
 }
 
@@ -216,25 +214,27 @@
 }
 
 .rasengan-markdown-body pre[data-language] mark[data-highlighted-chars] {
-  background-color: var(--bg-code-highlight-2); /* Highlight for specific lines */
+	background-color: var(
+		--bg-code-highlight-2
+	); /* Highlight for specific lines */
 	border-radius: 5px;
 	padding: 0 5px;
 }
 
 .rasengan-markdown-body pre[data-language] span[data-highlighted-line] {
-  background-color: var(--bg-code-highlight); /* Highlight for specific lines */
+	background-color: var(--bg-code-highlight); /* Highlight for specific lines */
 	border-left: 4px solid var(--fg-accent);
 }
 
 .rasengan-markdown-body code[data-line-numbers] span[data-line]:before {
 	counter-increment: line;
-  content: counter(line);
-  display: inline-block;
-  width: 2ch;
-  color: #6a737d;
-  text-align: right;
-  margin-right: 16px;
-  opacity: 0.9;
+	content: counter(line);
+	display: inline-block;
+	width: 2ch;
+	color: #6a737d;
+	text-align: right;
+	margin-right: 16px;
+	opacity: 0.9;
 }
 
 .rasengan-markdown-body code.code-block {
@@ -266,7 +266,7 @@
 }
 
 .rasengan-markdown-body pre[data-language] code {
-	font-family: 'JetBrains Mono', monospace;
+	font-family: "JetBrains Mono", monospace;
 }
 
 .rasengan-markdown-body pre[data-language] button {
@@ -310,7 +310,7 @@
 .rasengan-markdown-body th,
 .rasengan-markdown-body td {
 	padding: 10px 20px;
-	border: 1px solid var(--table-border);
+	border: 1px solid var(--border);
 	transition: all 0.3s;
 	cursor: pointer;
 }
@@ -319,12 +319,12 @@
 	background-color: var(--bg-light);
 }
 
-.rasengan-markdown-body tr:hover {
-	background-color: var(--bg-light);
-}
-
 .rasengan-markdown-body tr:nth-child(odd) {
 	background-color: transparent;
+}
+
+.rasengan-markdown-body tr:hover {
+	background-color: var(--bg-light);
 }
 
 /* Lists */

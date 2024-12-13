@@ -299,21 +299,27 @@ program
         let packageJson = null;
 
         if (templateName === "blank") {
-          packageJson = await fs.readFile(
-            path.join(projectPath, "package.json"),
-            "utf-8"
-          );
-        } else if (templateName === "tailwind") {
-          packageJson = await fs.readFile(
-            path.join(
-              __dirname,
-              "../..",
-              `templates/${templateName}/${languageName}`,
-              "package.json"
-            ),
-            "utf-8"
-          );
-        } else {
+					packageJson = await fs.readFile(
+						path.join(projectPath, "pkg.json"),
+						"utf-8"
+					);
+
+					// Removing pkg file from the project
+					await fs.rm(path.join(projectPath, "pkg.json"));
+				} else if (templateName === "tailwind") {
+					packageJson = await fs.readFile(
+						path.join(
+							__dirname,
+							"../..",
+							`templates/${templateName}/${languageName}`,
+							"pkg.json"
+						),
+						"utf-8"
+					);
+
+					// Removing gitignore file from the project
+					await fs.rm(path.join(projectPath, "pkg.json"));
+				} else {
           console.log(chalk.red("Invalid template name!"));
 
           return;

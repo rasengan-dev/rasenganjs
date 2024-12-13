@@ -107,18 +107,18 @@ export default async (req: Request, context: Context) => {
       }
 
       // read other files
-      const otherFile = await fs.readFile(filePath);
+      // const otherFile = await fs.readFile(filePath);
 
-      const result = await fileTypeFromBuffer(otherFile);
+      // const result = await fileTypeFromBuffer(otherFile);
 
-      const mimeType = result ? result.mime : url.endsWith(".svg") ? "image/svg+xml" : "application/octet-stream";
+      // const mimeType = result ? result.mime : url.endsWith(".svg") ? "image/svg+xml" : "application/octet-stream";
 
-      return new Response(otherFile, {
-        headers: {
-          "Content-Type": mimeType,
-          "Cache-Control": "max-age=31536000",
-        },
-      });
+      // return new Response(otherFile, {
+      //   headers: {
+      //     "Content-Type": mimeType,
+      //     "Cache-Control": "max-age=31536000",
+      //   },
+      // });
     }
 
     // Handle js and css files

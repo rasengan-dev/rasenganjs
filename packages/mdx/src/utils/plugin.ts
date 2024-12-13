@@ -17,7 +17,19 @@ import rehypePrettyCode from "rehype-pretty-code";
  *
  * The transformed MDX content can then be used in the RasenganJs application, with the `metadata` object providing additional information about the content.
  */
-export default async function plugin() {
+export default async function plugin(): Promise<{
+	name: string;
+	enforce: string;
+	config(config: unknown, env: any): void;
+	configResolved(resolvedConfig: unknown): void;
+	transform(
+		code: string,
+		id: string
+	): Promise<{
+		code: string;
+		map: any;
+	}>;
+}> {
 	const mdx = (await import("@mdx-js/rollup")).default;
 
 	let config: unknown;

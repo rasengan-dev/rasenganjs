@@ -29,10 +29,9 @@
 	"scripts": {
 		"build:clean": "rm -rf ./lib",
 		"build:css": "node ./src/scripts/compile-css.js",
-		"build": "npm run build:clean && tsc && npm run build:css",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-		"pack": "npm pack --pack-destination ./release",
-		"deploy": "npm publish --access public"
+		"build": "pnpm run build:clean && tsc && npm run build:css",
+		"pack": "pnpm pack --pack-destination ./release",
+		"deploy": "pnpm publish --access public"
 	},
 	"devDependencies": {
 		"@types/clean-css": "^4.2.11",
@@ -40,8 +39,7 @@
 		"@types/node": "^22.7.4",
 		"@types/react": "^18.3.11",
 		"@types/react-dom": "^18.3.1",
-		"clean-css": "^5.3.3",
-		"typescript": "^5.2.2"
+		"clean-css": "^5.3.3"
 	},
 	"dependencies": {
 		"@mdx-js/rollup": "^3.0.1",
@@ -57,10 +55,11 @@
 		"remark-parse": "^11.0.0",
 		"remark-rehype": "^11.1.1",
 		"remark-toc": "^9.0.0",
+		"shiki": "^1.24.2",
 		"unified": "^11.0.5"
 	},
 	"peerDependencies": {
-		"rasengan": "*",
+		"rasengan": "workspace:*",
 		"react": "^18.3.*",
 		"react-dom": "^18.3.*"
 	}

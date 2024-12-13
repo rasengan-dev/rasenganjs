@@ -1,5 +1,5 @@
 import React from "react";
-import { renderToPipeableStream } from "react-dom/server";
+import { renderToPipeableStream, renderToString } from "react-dom/server";
 // @ts-ignore
 import App from "./../../../../../src/main";
 // @ts-ignore

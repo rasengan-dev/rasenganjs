@@ -112,7 +112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			}
 
 			// read other files
-			const otherFile = await fs.readFile(filePath);
+			const otherFile = (await fs.readFile(filePath)) as unknown as Uint8Array;
 
 			const result = await fileTypeFromBuffer(otherFile);
 

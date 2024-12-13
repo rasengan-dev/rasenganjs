@@ -1,0 +1,21 @@
+{
+	"name": "rasengan",
+	"private": true,
+	"type": "module",
+	"engines": {
+		"node": ">=18.19.0"
+	},
+	"packageManager": "pnpm@9.14.2",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"build": "pnpm -r --filter='./packages/*' run build",
+    "pack": "pnpm -r --filter='./packages/*' run pack"
+	},
+	"resolutions": {
+		"@vitejs/plugin-react": "^4.2.1"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.2",
+		"typescript": "^5.7.2"
+	}
+}

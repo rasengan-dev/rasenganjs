@@ -26,22 +26,15 @@
 	"license": "MIT",
 	"scripts": {
 		"build:clean": "rm -rf ./lib",
-		"build": "npm run build:clean && tsc && cp -r src/styles lib/",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-		"pack": "npm pack --pack-destination ./release",
-		"deploy": "npm publish --access public"
+		"build": "pnpm run build:clean && tsc",
+		"pack": "pnpm pack --pack-destination ./release",
+		"deploy": "pnpm publish --access public"
 	},
 	"peerDependencies": {
-		"react": "^18.*"
+		"react": "^18.3.*"
 	},
 	"devDependencies": {
 		"@types/react": "^18.*",
-		"@types/react-dom": "^18.*",
-		"@typescript-eslint/eslint-plugin": "^6.14.0",
-		"@typescript-eslint/parser": "^6.14.0",
-		"eslint": "^8.55.0",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"eslint-plugin-react-refresh": "^0.4.5",
-		"typescript": "^5.2.2"
+		"@types/react-dom": "^18.*"
 	}
 }
