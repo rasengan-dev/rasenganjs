@@ -14,7 +14,6 @@ import {
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 import { Route } from "../types.js";
-import { lazy } from "react";
 
 /**
  * This function receives a router component and get a formated router first
@@ -23,10 +22,23 @@ import { lazy } from "react";
 export const getRouter = (router: RouterComponent) => {
 	const routes = generateBrowserRoutes(router);
 
-	let Router = createBrowserRouter(routes);
+	let Router = createBrowserRouter(routes, {
+		future: {
+			v7_relativeSplatPath: true,
+			v7_fetcherPersist: true,
+			v7_normalizeFormMethod: true,
+			v7_partialHydration: true,
+			v7_skipActionErrorRevalidation: true,
+		},
+	});
 
 	return () => (
-		<RouterProvider fallbackElement={<>Not Found</>} router={Router} />
+		<RouterProvider
+			router={Router}
+			future={{
+				v7_startTransition: true,
+			}}
+		/>
 	);
 };
 
@@ -69,6 +81,7 @@ const generateBrowserRoutes = (
 
 			return <Layout {...finalProps} />;
 		},
+		hydrateFallbackElement: <>Loading</>,
 		children: [],
 		nested: router.useParentLayout,
 	};
@@ -110,6 +123,7 @@ const generateBrowserRoutes = (
 				/>
 			),
 			errorElement: <ErrorBoundary />,
+			hydrateFallbackElement: <>Loading</>,
 		};
 	});
 

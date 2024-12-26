@@ -131,6 +131,8 @@ export type Route = {
 	 */
 	errorElement?: React.ReactNode;
 
+	hydrateFallbackElement?: React.ReactNode;
+
 	/**
 	 * Routes children
 	 */
