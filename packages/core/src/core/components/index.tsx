@@ -6,7 +6,7 @@ import {
 	PageToRenderProps,
 } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router";
 import * as HelmetAsync from "react-helmet-async";
 
 // @ts-ignore
@@ -157,8 +157,8 @@ export const Heads = ({
 		<head>
 			{children}
 
-			{data.helmet && data.helmet.meta.toComponent({})}
-			{data.helmet && data.helmet.title.toComponent({})}
+			{/* {data.helmet && data.helmet.meta.toComponent({})}
+			{data.helmet && data.helmet.title.toComponent({})} */}
 
 			{bootstrap && (
 				<script type='module' src={bootstrap} defer={true}></script>
@@ -212,21 +212,15 @@ export const Scripts = ({
 	children?: React.ReactNode;
 	bootstrap?: string;
 }) => {
-	let folder = "esm";
-
-	if (typeof exports === "object" && typeof module !== "undefined") {
-		folder = "cjs";
-	}
-
 	return (
 		<React.Fragment>
-			{bootstrap === "" && (
+			{/* {bootstrap === "" && (
 				<script
 					type='module'
-					src={`/node_modules/rasengan/lib/${folder}/entries/entry-client.js`}
+					src={`/src/index.js`}
 					defer={true}
 				></script>
-			)}
+			)} */}
 			{children}
 		</React.Fragment>
 	);

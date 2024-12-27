@@ -3,7 +3,7 @@ import {
 	createBrowserRouter,
 	useLoaderData,
 	useParams,
-} from "react-router-dom";
+} from "react-router";
 import { LayoutComponent, LoaderResponse } from "../../core/index.js";
 import {
 	ErrorBoundary,
@@ -35,9 +35,6 @@ export const getRouter = (router: RouterComponent) => {
 	return () => (
 		<RouterProvider
 			router={Router}
-			future={{
-				v7_startTransition: true,
-			}}
 		/>
 	);
 };
@@ -118,7 +115,8 @@ const generateBrowserRoutes = (
 			element: (
 				<ClientComponent
 					page={Page}
-					loader={router.loaderComponent({})}
+					// loader={router.loaderComponent({})}
+					loader={<>Loading</>}
 					layoutMetadata={Layout.metadata}
 				/>
 			),
@@ -303,7 +301,8 @@ export const generateStaticRoutes = (
 				return (
 					<ServerComponent
 						page={Page}
-						loader={router.loaderComponent({})}
+						// loader={router.loaderComponent({})}
+						loader={<>Loading</>}
 						layoutMetadata={Layout.metadata}
 					/>
 				);

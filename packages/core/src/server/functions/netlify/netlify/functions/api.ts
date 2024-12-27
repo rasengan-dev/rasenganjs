@@ -7,7 +7,7 @@ import {
   StaticHandlerContext,
   createStaticHandler,
   createStaticRouter,
-} from "react-router-dom/server.js";
+} from "react-router";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
 import { fileTypeFromBuffer } from "file-type";

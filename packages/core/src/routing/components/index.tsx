@@ -4,7 +4,7 @@ import {
 	LinkProps,
 	useLoaderData,
 	useRouteError,
-} from "react-router-dom";
+} from "react-router";
 import { PageToRender } from "../../core/components/index.js";
 import { PageComponent } from "../../core/types.js";
 import { LoaderResponse } from "../../core/types.js";
@@ -139,7 +139,8 @@ export const NotFoundPageComponent = () => {
 export const NotFoundComponentContainer = ({
 	content,
 }: NotFoundComponentContainerProps) => {
-	return <>{content({})}</>;
+	// return <>{content({})}</>;
+	return <></>
 };
 
 /**

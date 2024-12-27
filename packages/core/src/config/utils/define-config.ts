@@ -74,19 +74,11 @@ export const defineConfig = async (
 
 				optimizeDeps: {
 					exclude: [
-						"node:http",
-						"node-fetch",
+						// "node:http",
+						// "node-fetch",
 						...defaultViteConfig.optimizeDeps.exclude,
 					],
 					include: [
-						"react-fast-compare",
-						"invariant",
-						"shallowequal",
-						"react-dom/client",
-						"react-dom",
-						"react",
-						"react-router-dom",
-						"react-helmet-async",
 						...defaultViteConfig.optimizeDeps.include,
 					],
 				},
@@ -106,10 +98,10 @@ export const defineConfig = async (
 							find: defaultViteConfig.resolve.symbole,
 							replacement: "./src",
 						},
-						{
-							find: "path",
-							replacement: "node_modules/path-browserify",
-						},
+						// {
+						// 	find: "path",
+						// 	replacement: "node_modules/path-browserify",
+						// },
 						...defaultViteConfig.resolve.alias,
 					],
 				},
@@ -124,17 +116,8 @@ export const defineConfig = async (
 		return {
 			vite: {
 				optimizeDeps: {
-					exclude: ["node:http", "node-fetch"],
-					include: [
-						"react-fast-compare",
-						"invariant",
-						"shallowequal",
-						"react-dom/client",
-						"react-dom",
-						"react",
-						"react-router-dom",
-						"react-helmet-async",
-					],
+					exclude: [],
+					include: [],
 				},
 				appType: "custom",
 				resolve: {

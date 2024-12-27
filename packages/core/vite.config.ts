@@ -1,8 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { loadModuleSSR } from "./lib/esm/config/utils/index.js";
-
-import path from "node:path";
+import { loadModuleSSR, getDirname } from "./lib/esm/config/utils/index.js";
+import { join } from "node:path";
 
 /**
  * Configures the Vite build for the Rasengan.js application.
@@ -26,10 +25,14 @@ import path from "node:path";
  * @returns {object} The Vite configuration object.
  */
 export default defineConfig(async ({ command, mode }: any) => {
-	const config = (await loadModuleSSR("./../../rasengan.config.js")).default;
+	const rootPath = process.cwd();
+	const __dirname = await getDirname(import.meta.url);
 
-	// Getting root path
-	let __pathToRoot = process.cwd();
+	// Format config path
+	const configPath = join(`${rootPath}/rasengan.config.js`);
+
+	// Get config
+	const config = await(await loadModuleSSR(configPath)).default;
 
 	// Extract vite config
 	const { vite } = await config;
@@ -44,7 +47,7 @@ export default defineConfig(async ({ command, mode }: any) => {
 		plugins: [react(), ...vite?.plugins],
 
 		// define index.html location
-		root: __pathToRoot,
+		root: rootPath,
 		optimizeDeps: {
 			exclude: vite?.optimizeDeps?.exclude,
 			include: vite?.optimizeDeps?.include,
@@ -52,22 +55,17 @@ export default defineConfig(async ({ command, mode }: any) => {
 
 		// Build options
 		build: {
-			sourcemap: mode === "development" ? true : false,
+			sourcemap: mode === "development",
 			minify: "esbuild",
+			outDir: "./dist/client",
 			rollupOptions: {
-				input: "./node_modules/rasengan/lib/esm/entries/entry-client.js",
+				input: "./src/index.ts",
 				output: {
-					manualChunks: undefined,
+					manualChunks: undefined, // TODO: Add manual chunks
 				},
 				external: [...vite?.build?.external],
 			},
 			chunkSizeWarningLimit: 1000,
-		},
-
-		// SSR options
-		ssr: {
-			// Ignore CSS files
-			noExternal: [/\.css$/],
 		},
 
 		// Server options
@@ -79,12 +77,24 @@ export default defineConfig(async ({ command, mode }: any) => {
 			postcss: vite?.css?.postcss,
 		},
 
+		// Environment options
+		environments: {
+			ssr: {
+				build: {
+					outDir: "./dist/server",
+					rollupOptions: {
+						input: `${join(__dirname, "./lib/esm/entries/server/entry.server.js")}`,
+					},
+				},
+			},
+		},
+
 		// Aliases
 		resolve: {
 			alias: vite?.resolve?.alias.map(
 				(alias: { find: string; replacement: string }) => ({
 					find: alias.find,
-					replacement: path.join(__pathToRoot, alias.replacement),
+					replacement: join(rootPath, alias.replacement),
 				})
 			),
 		},

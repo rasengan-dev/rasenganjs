@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import chalk from "chalk";
 import { Command } from "commander";
-import __dirname from "./dirname.js";
-import { execa, execaCommand } from "execa";
+import { execa } from "execa";
 
 // @ts-ignore
 import path from "node:path";
@@ -35,7 +34,7 @@ program
 			process.exit(1);
 		}
 
-		execa("node", ["node_modules/rasengan/server"], {
+		execa("node", ["node_modules/rasengan/dev-server"], {
 			stdio: "inherit",
 			env: {
 				...process.env,

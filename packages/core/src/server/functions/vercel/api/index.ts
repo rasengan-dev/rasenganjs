@@ -6,18 +6,17 @@ import {
 	StaticHandlerContext,
 	createStaticHandler,
 	createStaticRouter,
-} from "react-router-dom/server.js";
+} from "react-router";
 // @ts-ignore
 import { createFetchRequest } from "rasengan";
 
 // import { handleRequest } from "rasengan";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { fileTypeFromBuffer } from "file-type";
 
 const { RASENGAN_VERCEL_CONFIG } = process.env;
 
 // Create server for production only
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
 	try {
 		// Get URL
 		const url = req.url;

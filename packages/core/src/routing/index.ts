@@ -18,5 +18,5 @@ export {
 	matchPath,
 	createRoutesFromChildren,
 	Navigate,
-} from "react-router-dom";
+} from "react-router";
 export { CustomLink as Link };

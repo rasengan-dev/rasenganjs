@@ -1,17 +1,4 @@
-/**
- * Asynchronously loads a module from a file path.
- *
- * @param path - The path to the module.
- * @returns The loaded module.
- */
-export const loadModule = async (path: string) => {
-	try {
-		const module = await import(path);
-		return module;
-	} catch (error) {
-		throw new Error(error);
-	}
-};
+import { resolvePath } from "./path.js";
 
 /**
  * Asynchronously loads a module from a file path only in the server-side environment.
@@ -21,50 +8,65 @@ export const loadModule = async (path: string) => {
  */
 export const loadModuleSSR = async (path: string) => {
 	try {
-		if (typeof window === "undefined") {
-			const module = await loadModule(path);
-			return module;
-		}
+		const { path: modulePath } = await findModulePath(path);
 
-		return {};
+		const module = await import(resolvePath(modulePath));
+		return module;
 	} catch (error) {
 		throw new Error(error);
 	}
 };
 
 /**
- * Asynchronously loads a module from a file path relative to the project root directory.
+ * Finds the module path with the right extension.
  *
- * This function checks the current environment (production or development) and adjusts the file path accordingly. It then resolves the file path to a valid URL format based on the operating system.
- *
- * @param filename - The name of the file to be loaded.
- * @returns The loaded module.
+ * @param path - The path to the module.
+ * @returns The module path and extension.
  */
-// export const loadAsyncFromRoot = async (filename: string) => {
-//   try {
-//     const isProduction = process.env.NODE_ENV === "production";
-//     let __pathToRoot = "";
+export const findModulePath = async (path: string) => {
+	try {
+		const fs = (await import("node:fs/promises")).default;
 
-//     if (!isProduction) {
-//       __pathToRoot = process.cwd();
-// 		} else {
-//       __pathToRoot = path.join(process.cwd(), "./../../");
-// 		}
+		const extensions = ["js", "jsx", "ts", "tsx"];
+		let modulePath = path;
+		let rightExtension = "";
 
-//     const filePath = resolvePath(path.join(__pathToRoot, filename));
+		// Check if the module path has an extension
+		const moduleExtension = path.split(".").pop();
 
-//     const file = await import(`./${filePath}`);
+		if (!moduleExtension || !extensions.includes(moduleExtension)) {
+			for (let ext of extensions) {
+				const newModulePath = `${modulePath}.${ext}`;
 
-//     return file;
-//   } catch (error) {
-//     console.error(error);
-//     return {};
-//   }
-// }
+				try {
+					await fs.access(newModulePath);
+					modulePath = newModulePath;
+					rightExtension = ext;
+					break;
+				} catch (error) {
+					continue;
+				}
+			}
 
-// export const getDirname = (url: string) => {
-// 	// Get directory name
-// 	const __dirname = dirname(fileURLToPath(url));
+			if (modulePath === path) {
+				throw new Error(`Module "${path}" not found`);
+			}
+		}
 
-//   return __dirname;
-// }
+		return {
+			path: modulePath,
+			extension: rightExtension,
+		};
+	} catch (error) {
+		throw new Error(error);
+	}
+};
+
+export const getDirname = async (url: string) => {
+	// Load the dirname function from the path module
+	// and return the dirname of the file URL
+	const { dirname } = await import("node:path");
+	const { fileURLToPath } = await import("node:url");
+
+	return dirname(fileURLToPath(url));
+};

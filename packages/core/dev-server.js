@@ -1,23 +1,20 @@
+import { join } from "node:path";
 import express from "express";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import fs from "node:fs";
-import {
-	createStaticHandler,
-	createStaticRouter,
-} from "react-router";
+
+import { createStaticHandler, createStaticRouter } from "react-router";
 import chalk from "chalk";
 import inquirer from "inquirer";
 
-// Load utils
+// Middlewares
+import { loggerMiddleware } from "./lib/esm/middlewares/index.js";
+
+// Load utilities functions
 import {
 	createFetchRequest,
 	logServerInfo,
-	fix404,
 } from "./lib/esm/server/utils/index.js";
-
-// Resolve path
-import { resolvePath } from "./lib/esm/config/index.js";
+import { getDirname, loadModuleSSR } from "./lib/esm/config/utils/index.js";
+import { generateStaticRoutes } from "./lib/esm/routing/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -26,84 +23,50 @@ import { resolvePath } from "./lib/esm/config/index.js";
  * @param {string} base - The base path for the server.
  */
 async function createServer({
-	isProduction,
 	port,
 	base = "/",
 	enableSearchingPort = false,
 	open = false,
-	config,
+	config, 
 }) {
-	// Get directory name
-	const __dirname = dirname(fileURLToPath(import.meta.url));
-
 	// Get app path
-	const appPath = join(__dirname, "./../../");
+	const rootPath = process.cwd();
+
+	// Get directory name
+	const __dirname = await getDirname(import.meta.url);
 
 	// Create http server
 	const app = express();
 
-	// Bootstrap
-	let bootstrap = "";
+	// Initialize a vite dev server as middleware
+	const { createServer } = await import("vite");
 
-	// Styles
-	let styles = "";
+	const viteDevServer = await createServer({
+		server: { middlewareMode: true, hmr: true },
+		base,
+		configFile: `${__dirname}/vite.config.ts`,
+	});
 
-	// Add Vite or respective production middlewares
-	let vite;
-	if (!isProduction) {
-		const { createServer } = await import("vite");
-		vite = await createServer({
-			server: { middlewareMode: true, hmr: true },
-			appType: "custom",
-			base,
-			configFile: "node_modules/rasengan/vite.config.js",
-		});
-		app.use(vite.middlewares);
-	} else {
-		const compression = (await import("compression")).default;
-		const sirv = (await import("sirv")).default;
-		app.use(compression());
-		app.use(base, sirv(join(appPath, "dist/client"), { extensions: [] }));
-	}
+	app.use(viteDevServer.middlewares);
 
-	// Serve HTML
-	app.use("*", async (req, res) => {
+	// Create the request handler
+	app.use("*", loggerMiddleware, async (req, res, next) => {
 		try {
-			// ! 404 Fix related to some files not being found
-			fix404(req.originalUrl, res, appPath);
+			const url = req.url || req.originalUrl;
 
-			let entry;
+			// Get the environment
+			const environment = viteDevServer.environments.ssr;
 
-			if (!isProduction) {
-				entry = await vite.ssrLoadModule(
-					join(appPath, `node_modules/rasengan/lib/esm/entries/entry-server.js`)
-				);
-			} else {
-				entry = await import(
-					resolvePath(join(appPath, "dist/server/entry-server.js"))
-				);
+			// Get the render function and app router
+			const { render } = await environment.runner.import(
+				join(`${__dirname}/lib/esm/entries/server/entry.server.js`)
+			);
+			const AppRouter = (
+				await environment.runner.import(join(`${rootPath}/src/app/app.router`))
+			).default;
 
-				// replace bootstrap script with compiled scripts
-				bootstrap =
-					"/assets/" +
-					fs
-						.readdirSync(join(appPath, "dist/client/assets"))
-						.filter(
-							(fn) => fn.includes("entry-client") && fn.endsWith(".js")
-						)[0];
-
-				// replace styles with compiled styles
-				styles =
-					"/assets/" +
-					fs
-						.readdirSync(join(appPath, "dist/client/assets"))
-						.filter(
-							(fn) => fn.includes("entry-client") && fn.endsWith(".css")
-						)[0];
-			}
-
-			// Get entry values
-			const { render, staticRoutes } = entry;
+			// Get static routes
+			const staticRoutes = generateStaticRoutes(AppRouter);
 
 			// Create static handler
 			let handler = createStaticHandler(staticRoutes);
@@ -142,25 +105,19 @@ async function createServer({
 			let router = createStaticRouter(handler.dataRoutes, context);
 
 			// If stream mode enabled, render the page as a plain text
-			return await render(
-				router,
-				context,
-				helmetContext,
-				bootstrap,
-				styles,
-				res
-			);
-		} catch (e) {
-			vite?.ssrFixStacktrace(e);
-
-			console.error(e);
+			return await render(router, context, helmetContext, res);
+		} catch (error) {
+			if (typeof error === "object" && error instanceof Error) {
+				viteDevServer.ssrFixStacktrace(error);
+			}
+			next(error);
 		}
 	});
 
 	// Start http server
 	const server = app.listen(port, () => {
 		setTimeout(() => {
-			logServerInfo(port, isProduction, open);
+			logServerInfo(port, false, open);
 		}, 100);
 	});
 
@@ -199,7 +156,6 @@ async function createServer({
 				console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
 
 				await createServer({
-					isProduction,
 					port: newPort,
 					base,
 					enableSearchingPort: true,
@@ -210,7 +166,6 @@ async function createServer({
 				console.log(chalk.blue(`Trying port ${newPort}... \n\n`));
 
 				await createServer({
-					isProduction,
 					port: newPort,
 					base,
 					enableSearchingPort,
@@ -224,24 +179,21 @@ async function createServer({
 
 // Launch server
 (async function launchServer() {
-	// Constants
-	const isProduction = process.env.NODE_ENV === "production";
+	const rootPath = process.cwd();
 
 	// Format config path
-	const configPath = resolvePath(join(`${process.cwd()}/rasengan.config.js`));
+	const configPath = join(`${rootPath}/rasengan.config.js`);
 
 	// Get config
-	const config = await (await import(configPath)).default;
+	const config = await (await loadModuleSSR(configPath)).default;
 
-	const port = !isProduction
-		? (process.env.PORT && Number(process.env.PORT)) ||
-		  config.server?.development?.port ||
-		  5320
-		: process.env.PORT || 4320;
+	const port =
+		(process.env.PORT && Number(process.env.PORT)) ||
+		config.server?.development?.port ||
+		5320;
 	const base = process.env.BASE || "/";
 
 	await createServer({
-		isProduction,
 		port,
 		base,
 		open: config.server?.development?.open,

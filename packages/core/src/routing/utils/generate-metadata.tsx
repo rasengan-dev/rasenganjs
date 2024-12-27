@@ -1,4 +1,5 @@
 import { Metadata, MetadataLink, MetaTag } from "../types.js";
+import { JSX } from "react";
 
 /**
  * This function generates metadata useful for pages to show images when sharing on social media

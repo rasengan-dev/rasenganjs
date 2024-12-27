@@ -16,9 +16,6 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "react-jsx",
-
-		/* Types */
-		"typeRoots": ["node_modules/@types", "types"]
 	},
   "include": [
     "src",
