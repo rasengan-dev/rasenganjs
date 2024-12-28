@@ -24,7 +24,7 @@ import { join } from "node:path";
  * @param {object} options - The Vite build options, including the command and mode.
  * @returns {object} The Vite configuration object.
  */
-export default defineConfig(async ({ command, mode }: any) => {
+export default defineConfig(async ({ mode }: any) => {
 	const rootPath = process.cwd();
 	const __dirname = await getDirname(import.meta.url);
 
@@ -61,7 +61,27 @@ export default defineConfig(async ({ command, mode }: any) => {
 			rollupOptions: {
 				input: "./src/index.ts",
 				output: {
-					manualChunks: undefined, // TODO: Add manual chunks
+					manualChunks(id: string) {
+						if (id.includes("node_modules")) {
+							return "vendor"; // All third-party dependencies in one chunk
+						}
+						if (id.includes("src/components")) {
+							return "shared-components"; // Shared UI components
+						}
+						if (id.includes("src/app")) {
+							// Check if the file contains follow the [name].page.[ext] pattern
+							if (id.includes(".page.")) {
+								const pageFileName = id.split("src/app")[1].split("/").pop();
+
+								if (pageFileName) {
+									const pageName = pageFileName.split(".")[0];
+									return `page-${pageName}`; // One chunk per page
+								}
+							}
+						}
+
+						return undefined;
+					},
 				},
 				external: [...vite?.build?.external],
 			},
@@ -79,12 +99,35 @@ export default defineConfig(async ({ command, mode }: any) => {
 
 		// Environment options
 		environments: {
-			ssr: {
+			client: {
 				build: {
+					// Emit manifest
+					manifest: true,
+				},
+			},
+			ssr: {
+				dev: {},
+
+				/**
+				 * Server-side rendering build options.
+				 */
+				build: {
+					// Output directory
 					outDir: "./dist/server",
+
+					// Rollup options
 					rollupOptions: {
-						input: `${join(__dirname, "./lib/esm/entries/server/entry.server.js")}`,
+						input: `${join(
+							__dirname,
+							"./lib/esm/entries/server/entry.server.js"
+						)}`,
 					},
+
+					// Enable SSR
+					ssr: true,
+
+					// Emit assets
+					ssrEmitAssets: true,
 				},
 			},
 		},

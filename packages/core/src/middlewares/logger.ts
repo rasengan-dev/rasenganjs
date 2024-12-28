@@ -3,7 +3,7 @@ import chalk from "chalk";
 
 export const loggerMiddleware = (
 	req: Request,
-	res: Response,
+	_: Response,
 	next: NextFunction
 ) => {
 	const url = req.originalUrl;

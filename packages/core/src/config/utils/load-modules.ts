@@ -1,5 +1,7 @@
 import { resolvePath } from "./path.js";
 
+export const extensions = [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"];
+
 /**
  * Asynchronously loads a module from a file path only in the server-side environment.
  *
@@ -27,16 +29,15 @@ export const findModulePath = async (path: string) => {
 	try {
 		const fs = (await import("node:fs/promises")).default;
 
-		const extensions = ["js", "jsx", "ts", "tsx"];
 		let modulePath = path;
 		let rightExtension = "";
 
 		// Check if the module path has an extension
-		const moduleExtension = path.split(".").pop();
+		const moduleExtension = path.split(".").pop(); // eg: js or ts
 
-		if (!moduleExtension || !extensions.includes(moduleExtension)) {
+		if (!moduleExtension || !extensions.includes(`.${moduleExtension}`)) {
 			for (let ext of extensions) {
-				const newModulePath = `${modulePath}.${ext}`;
+				const newModulePath = `${modulePath}${ext}`;
 
 				try {
 					await fs.access(newModulePath);

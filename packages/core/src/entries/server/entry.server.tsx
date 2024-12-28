@@ -2,7 +2,6 @@ import React, { FunctionComponent } from "react";
 import { renderToPipeableStream } from "react-dom/server";
 import {
 	Component,
-	ErrorBoundary,
 	Heads,
 	Body,
 	Scripts,
@@ -90,7 +89,7 @@ export async function render(
 		.default as FunctionComponent<AppProps>;
 
 	// Import Template
-	const Template = (await import(`${rootPath}/src/template`))
+	const Template = (await loadModuleSSR(`${rootPath}/src/template`))
 		.default as FunctionComponent<TemplateProps>;
 
 	return new Promise(async (resolve, reject) => {
@@ -108,14 +107,14 @@ export async function render(
 				Template={Template}
 			/>,
 			{
-				bootstrapModules: [`/src/index.${extension}`],
+				bootstrapModules: [`/src/index${extension}`],
 				onShellReady() {
 					shellRendered = true;
 
-					res
-						.status(responseStatusCode)
-						.setHeader("Content-Type", "text/html")
-						.setHeader("Cache-Control", "max-age=31536000");
+					// res
+					// 	.status(responseStatusCode)
+					// 	.setHeader("Content-Type", "text/html")
+					// 	.setHeader("Cache-Control", "max-age=31536000");
 
 					resolve(res);
 

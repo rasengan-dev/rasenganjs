@@ -7,6 +7,7 @@ import {
 	PageComponent,
 } from "../core/types.js";
 import { RouterComponent } from "./interfaces.js";
+import { RouteObject as RRRouteObject } from "react-router";
 
 export type NotFoundComponentContainerProps = {
 	content: React.FC;
@@ -116,28 +117,21 @@ export type RouterProps = {
 	useParentLayout?: boolean;
 };
 
-export type Route = {
-	/**
-	 * Path of the route
-	 */
-	path: string;
+export type LoaderFunction = ({
+	params,
+	request,
+}: {
+	params: Record<string, string>;
+	request: Request;
+}) => Promise<LoaderResponse | Response>;
 
-	Component(): JSX.Element | undefined;
-	element?: React.ReactNode;
-
-	loader?: ({ params, request }: any) => Promise<LoaderResponse | Response>;
-
-	/**
-	 * Error element to render
-	 */
-	errorElement?: React.ReactNode;
-
-	hydrateFallbackElement?: React.ReactNode;
+export type RouteObject = RRRouteObject & {
+	loader?: LoaderFunction;
 
 	/**
 	 * Routes children
 	 */
-	children?: Array<Route | RoutePage>;
+	children?: Array<RouteObject>;
 
 	/**
 	 * Determines if the route is nested
@@ -145,22 +139,51 @@ export type Route = {
 	nested?: boolean;
 };
 
-export type RoutePage = {
-	/**
-	 * Path of the route
-	 */
-	path: string;
+// export type Route = {
+// 	/**
+// 	 * Path of the route
+// 	 */
+// 	path: string;
 
-	/**
-	 * Element to render
-	 */
-	element: React.ReactNode;
+// 	Component(): JSX.Element | undefined;
+// 	element?: React.ReactNode;
 
-	/**
-	 * Element error to render
-	 */
-	errorElement?: React.ReactNode;
-};
+// 	loader?: ({ params, request }: any) => Promise<LoaderResponse | Response>;
+
+// 	/**
+// 	 * Error element to render
+// 	 */
+// 	errorElement?: React.ReactNode;
+
+// 	hydrateFallbackElement?: React.ReactNode;
+
+// 	/**
+// 	 * Routes children
+// 	 */
+// 	children?: Array<Route | RoutePage>;
+
+// 	/**
+// 	 * Determines if the route is nested
+// 	 */
+// 	nested?: boolean;
+// };
+
+// export type RoutePage = {
+// 	/**
+// 	 * Path of the route
+// 	 */
+// 	path: string;
+
+// 	/**
+// 	 * Element to render
+// 	 */
+// 	element: React.ReactNode;
+
+// 	/**
+// 	 * Element error to render
+// 	 */
+// 	errorElement?: React.ReactNode;
+// };
 
 export type RoutesGroupProps = {
 	/**

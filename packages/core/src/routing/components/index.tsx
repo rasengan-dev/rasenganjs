@@ -20,7 +20,7 @@ import {
 export function ErrorBoundary() {
 	let error = useRouteError();
 
-	console.log({error});
+	console.error({error});
 
 	return <div>Dang!</div>;
 }

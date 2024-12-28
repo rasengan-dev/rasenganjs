@@ -60,6 +60,8 @@ export type LoaderResponse = {
 	redirect?: string;
 };
 
+export type RouteLoaderFunction = (options: LoaderOptions) => Promise<LoaderResponse>;
+
 /**
  * Layout component that represents a layout
  */
@@ -77,7 +79,7 @@ export type LayoutComponent = React.FC<ReactComponentProps> & {
 	/**
 	 * Loader function that loads data for the page from the server
 	 */
-	loader?: (options: LoaderOptions) => Promise<LoaderResponse>;
+	loader?: RouteLoaderFunction;
 };
 
 /**

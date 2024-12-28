@@ -13,16 +13,24 @@ import {
 	NotFoundPageComponent,
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
-import { Route } from "../types.js";
+import { LoaderFunction, RouteObject } from "../types.js";
+import { RouteLoaderFunction } from "../../core/types.js";
+
+declare global {
+	interface Window {
+		__staticRouterHydrationData: any;
+	}
+}
 
 /**
  * This function receives a router component and get a formated router first
  * and then return a router.
  */
-export const getRouter = (router: RouterComponent) => {
-	const routes = generateBrowserRoutes(router);
+export const getRouter = (routerInstance: RouterComponent) => {
+	const routes = generateBrowserRoutes(routerInstance);
 
-	let Router = createBrowserRouter(routes, {
+	let router = createBrowserRouter(routes, {
+		hydrationData: window.__staticRouterHydrationData,
 		future: {
 			v7_relativeSplatPath: true,
 			v7_fetcherPersist: true,
@@ -32,11 +40,44 @@ export const getRouter = (router: RouterComponent) => {
 		},
 	});
 
-	return () => (
-		<RouterProvider
-			router={Router}
-		/>
-	);
+	return () => <RouterProvider router={router} />;
+};
+
+/**
+ * This function create a loader function
+ */
+const createLoaderFunction = (loader?: RouteLoaderFunction): LoaderFunction => {
+	return async ({ params, request }) => {
+		try {
+			// Check if the loader is defined
+			if (!loader) {
+				throw new Error("Missing loader function");
+			}
+
+			// Get the response from the loader
+			const response = await loader({ params, request });
+
+			// Handle redirection
+			if (response.redirect) {
+				const formData = new FormData();
+
+				formData.append("redirect", response.redirect);
+
+				return new Response(formData, {
+					status: 302,
+					headers: {
+						Location: response.redirect,
+					},
+				});
+			}
+
+			return response;
+		} catch (error) {
+			return {
+				props: {},
+			};
+		}
+	};
 };
 
 /**
@@ -48,18 +89,21 @@ const generateBrowserRoutes = (
 	parentLayout: LayoutComponent | undefined = undefined
 ) => {
 	// Initialization of the list of routes
-	const routes: Array<Route> = [];
+	const routes: Array<RouteObject> = [];
 
 	// Get information about the layout and the path
 	const Layout = router.layout;
 
-	const route: Route = {
+	const route: RouteObject = {
 		path: !isRoot
 			? router.useParentLayout
 				? parentLayout.path + Layout.path
 				: Layout.path
 			: Layout.path,
 		errorElement: <ErrorBoundary />,
+		loader: async ({ params, request }) => {
+			return createLoaderFunction(Layout.loader)({ params, request });
+		},
 		Component() {
 			// Default data
 			const defaultData = {
@@ -112,14 +156,19 @@ const generateBrowserRoutes = (
 
 		return {
 			path,
-			element: (
-				<ClientComponent
-					page={Page}
-					// loader={router.loaderComponent({})}
-					loader={<>Loading</>}
-					layoutMetadata={Layout.metadata}
-				/>
-			),
+			loader: async ({ params, request }) => {
+				return createLoaderFunction(Layout.loader)({ params, request });
+			},
+			Component() {
+				return (
+					<ClientComponent
+						page={Page}
+						// loader={router.loaderComponent({})}
+						loader={<>Loading</>}
+						layoutMetadata={Layout.metadata}
+					/>
+				);
+			},
 			errorElement: <ErrorBoundary />,
 			hydrateFallbackElement: <>Loading</>,
 		};
@@ -171,12 +220,12 @@ export const generateStaticRoutes = (
 	parentLayout: LayoutComponent | undefined = undefined
 ) => {
 	// Initialization of the list of routes
-	const routes: Array<Route> = [];
+	const routes: Array<RouteObject> = [];
 
 	// Get information about the layout and the path
 	const Layout = router.layout;
 
-	const route: Route = {
+	const route: RouteObject = {
 		path: !isRoot
 			? router.useParentLayout
 				? parentLayout.path + Layout.path
@@ -203,35 +252,7 @@ export const generateStaticRoutes = (
 			return <Layout {...finalProps} />;
 		},
 		loader: async ({ params, request }: any) => {
-			try {
-				// Check if the loader is defined
-				if (!Layout.loader) {
-					throw new Error("Missing loader function");
-				}
-
-				// Get the response from the loader
-				const response = await Layout.loader({ params, request });
-
-				// Handle redirection
-				if (response.redirect) {
-					const formData = new FormData();
-
-					formData.append("redirect", response.redirect);
-
-					return new Response(formData, {
-						status: 302,
-						headers: {
-							Location: response.redirect,
-						},
-					});
-				}
-
-				return response;
-			} catch (error) {
-				return {
-					props: {},
-				};
-			}
+			return createLoaderFunction(Layout.loader)({ params, request });
 		},
 		children: [],
 		nested: router.useParentLayout,
@@ -267,35 +288,7 @@ export const generateStaticRoutes = (
 		return {
 			path,
 			async loader({ params, request }: any) {
-				try {
-					// Check if the loader is defined
-					if (!Page.loader) {
-						throw new Error("Missing loader function");
-					}
-
-					// Get the response from the loader
-					const response = await Page.loader({ params, request });
-
-					// Handle redirection
-					if (response.redirect) {
-						const formData = new FormData();
-
-						formData.append("redirect", response.redirect);
-
-						return new Response(formData, {
-							status: 302,
-							headers: {
-								Location: response.redirect,
-							},
-						});
-					}
-
-					return response;
-				} catch (error) {
-					return {
-						props: {},
-					};
-				}
+				return createLoaderFunction(Layout.loader)({ params, request });
 			},
 			Component() {
 				return (

@@ -29,9 +29,7 @@ export const Component = ({
 
 	return (
 		<H.HelmetProvider>
-			<ErrorBoundary>
-				<Router />
-			</ErrorBoundary>
+			<Router />
 		</H.HelmetProvider>
 	);
 };
@@ -76,62 +74,6 @@ export const PageToRender = ({
 
 			<Page {...finalProps} />
 		</React.Fragment>
-	);
-};
-
-/**
- * Error fallback component that will be displayed if an error occurs
- */
-export class ErrorBoundary extends React.Component {
-	state = { hasError: false, error: null, info: null };
-
-	componentDidCatch(error: any, info: any) {
-		this.setState({ hasError: true, error, info });
-	}
-
-	render() {
-		const { error, info } = this.state;
-
-		if (this.state.hasError) {
-			return <ErrorFallbackComponent error={error} info={info} />;
-		}
-
-		// @ts-ignore
-		return this.props.children;
-	}
-}
-
-/**
- * Error fallback component that will be displayed if an error occurs
- */
-const ErrorFallbackComponent = ({ error, info }: any) => {
-	return (
-		<div
-			style={{
-				width: "calc(100% - 80px)",
-				height: "calc(100vh - 80px)",
-				padding: "40px",
-				backgroundColor: "#fff",
-			}}
-		>
-			<div>
-				<h1 style={{ fontSize: "2rem" }}>Something went wrong</h1>
-				<p>{error.toString()}</p>
-
-				<div
-					style={{
-						width: "100%",
-						height: "auto",
-						borderRadius: 10,
-						padding: "20px",
-						marginTop: "10px",
-						backgroundColor: "#f0f0f0",
-					}}
-				>
-					<p>{info.componentStack}</p>
-				</div>
-			</div>
-		</div>
 	);
 };
 

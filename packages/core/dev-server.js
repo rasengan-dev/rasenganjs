@@ -47,10 +47,12 @@ async function createServer({
 		configFile: `${__dirname}/vite.config.ts`,
 	});
 
+	// Apply middlewares
 	app.use(viteDevServer.middlewares);
+	app.use(loggerMiddleware);
 
 	// Create the request handler
-	app.use("*", loggerMiddleware, async (req, res, next) => {
+	app.use("*", async (req, res, next) => {
 		try {
 			const url = req.url || req.originalUrl;
 
@@ -86,7 +88,7 @@ async function createServer({
 			}
 
 			// Handle redirects from loader functions
-			const status = context.status;
+			const status = context.statusCode;
 
 			if (status === 302 || status === 301) {
 				const redirect = context.headers.get("Location");
@@ -103,6 +105,24 @@ async function createServer({
 
 			// Create static router
 			let router = createStaticRouter(handler.dataRoutes, context);
+
+			// Setup headers from action and loaders from deepest match
+			let leaf = context.matches[context.matches.length - 1];
+			let actionHeaders = context.actionHeaders[leaf.route.id];
+			let loaderHeaders = context.loaderHeaders[leaf.route.id];
+			let headers = new Headers(actionHeaders);
+			if (loaderHeaders) {
+				for (let [key, value] of loaderHeaders.entries()) {
+					headers.append(key, value);
+				}
+			}
+
+			headers.set("Content-Type", "text/html; charset=utf-8");
+
+			// Set headers
+			res.writeHead(context.statusCode, {
+				...Object.fromEntries(headers),
+			});
 
 			// If stream mode enabled, render the page as a plain text
 			return await render(router, context, helmetContext, res);
