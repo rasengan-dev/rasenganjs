@@ -22,10 +22,8 @@ export const Component = ({
 	// Return children if they exist
 	if (children) return children;
 
-	let Router: any = null;
-
 	// Otherwise, get the router and return it
-	Router = getRouter(AppRouter);
+	let Router = getRouter(AppRouter);
 
 	return (
 		<H.HelmetProvider>

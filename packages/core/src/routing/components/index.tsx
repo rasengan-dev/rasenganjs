@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import {
+	isRouteErrorResponse,
 	Link,
 	LinkProps,
 	useLoaderData,
@@ -20,9 +21,85 @@ import {
 export function ErrorBoundary() {
 	let error = useRouteError();
 
-	console.error({error});
+	console.error({ error });
 
-	return <div>Dang!</div>;
+	if (isRouteErrorResponse(error)) {
+		return (
+			<>
+				<p>Hello Error</p>
+				<h1>
+					{error.status} {error.statusText}
+				</h1>
+				<p>{error.data}</p>
+			</>
+		);
+	} else if (error instanceof Error) {
+		return (
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "start",
+					alignItems: "start",
+					height: "100vh",
+					width: "100vw",
+					padding: 20,
+				}}
+			>
+				<h1
+					style={{
+						fontSize: "2rem",
+						fontWeight: "bold",
+						marginBottom: 5,
+					}}
+				>
+					Application Error
+				</h1>
+				<p
+					style={{
+						fontSize: "1.2rem",
+						marginBottom: 10,
+					}}
+				>
+					{error.message}
+				</p>
+
+				<div
+					style={{
+						marginTop: 20,
+						overflow: "auto",
+						width: "calc(100% - 80px)",
+						maxHeight: "calc(100vh - 100px)",
+						padding: "10px 20px",
+						borderRadius: 10,
+						backgroundColor: "#eee",
+					}}
+				>
+					<p
+						style={{
+							fontWeight: "bold",
+							fontSize: "1.2rem",
+							color: "#000",
+						}}
+					>
+						The stack trace is:
+					</p>
+					<pre
+						style={{
+							whiteSpace: "pre-wrap",
+							wordWrap: "break-word",
+							fontSize: "1rem",
+							color: "#ff000088",
+						}}
+					>
+						{error.stack}
+					</pre>
+				</div>
+			</div>
+		);
+	} else {
+		return <h1>Unknown Error</h1>;
+	}
 }
 
 /**
@@ -140,7 +217,7 @@ export const NotFoundComponentContainer = ({
 	content,
 }: NotFoundComponentContainerProps) => {
 	// return <>{content({})}</>;
-	return <></>
+	return <></>;
 };
 
 /**

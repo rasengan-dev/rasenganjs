@@ -88,7 +88,7 @@ async function createServer({
 			}
 
 			// Handle redirects from loader functions
-			const status = context.statusCode;
+			const status = context.status; // "status" is only available when redirecting from loader, normally it's statusCode
 
 			if (status === 302 || status === 301) {
 				const redirect = context.headers.get("Location");

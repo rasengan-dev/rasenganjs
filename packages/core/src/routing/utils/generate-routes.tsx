@@ -115,12 +115,12 @@ const generateBrowserRoutes = (
 			// get params
 			const params = useParams();
 
-			const finalProps = {
+			const layoutProps = {
 				...props,
 				params,
 			};
 
-			return <Layout {...finalProps} />;
+			return <Layout {...layoutProps} />;
 		},
 		hydrateFallbackElement: <>Loading</>,
 		children: [],
@@ -157,7 +157,7 @@ const generateBrowserRoutes = (
 		return {
 			path,
 			loader: async ({ params, request }) => {
-				return createLoaderFunction(Layout.loader)({ params, request });
+				return createLoaderFunction(Page.loader)({ params, request });
 			},
 			Component() {
 				return (
@@ -288,7 +288,7 @@ export const generateStaticRoutes = (
 		return {
 			path,
 			async loader({ params, request }: any) {
-				return createLoaderFunction(Layout.loader)({ params, request });
+				return createLoaderFunction(Page.loader)({ params, request });
 			},
 			Component() {
 				return (
