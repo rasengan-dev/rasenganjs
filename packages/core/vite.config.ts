@@ -85,7 +85,8 @@ export default defineConfig(async ({ mode }: any) => {
 				},
 				external: [...vite?.build?.external],
 			},
-			chunkSizeWarningLimit: 1000,
+			chunkSizeWarningLimit: 500,
+			emptyOutDir: true
 		},
 
 		// Server options

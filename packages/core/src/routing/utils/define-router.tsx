@@ -1,7 +1,6 @@
 import { PageComponent, MDXPageComponent } from "../../core/index.js";
 import { DefaultLayout } from "../../core/components/index.js";
 import { RouterProps } from "../types.js";
-import { NotFoundPageComponent } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 
 /**

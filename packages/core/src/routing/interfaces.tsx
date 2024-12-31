@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import { LayoutComponent, PageComponent } from "../core/types.js";
 
 /**
@@ -28,7 +28,7 @@ export class RouterComponent {
 	/**
 	 * Defines the not found component to display when pages aren't available
 	 */
-	private _notFoundComponent!: FunctionComponent | undefined;
+	private _notFoundComponent!: React.ReactNode | undefined;
 
 	/**
 	 * Defines if the layout of the parent router must be used
@@ -68,7 +68,7 @@ export class RouterComponent {
 	/**
 	 * Get the not found component
 	 */
-	get notFoundComponent() {
+	get notFoundComponent(): React.ReactNode | undefined {
 		return this._notFoundComponent;
 	}
 
@@ -105,15 +105,17 @@ export class RouterComponent {
 	/**
 	 * Set the loader component
 	 */
-	set loaderComponent(loaderComponent: React.FC) {
+	set loaderComponent(loaderComponent: FunctionComponent) {
 		this._loaderComponent = loaderComponent;
 	}
 
 	/**
 	 * Set the not found component
 	 */
-	set notFoundComponent(notFoundComponent: React.FC) {
-		this._notFoundComponent = notFoundComponent;
+	set notFoundComponent(NotFoundComponent: FunctionComponent | undefined) {
+		this._notFoundComponent = NotFoundComponent ? (
+			<NotFoundComponent />
+		) : undefined;
 	}
 
 	/**

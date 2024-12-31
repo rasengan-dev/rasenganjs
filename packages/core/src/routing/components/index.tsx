@@ -1,18 +1,9 @@
-import { Suspense } from "react";
 import {
 	isRouteErrorResponse,
 	Link,
 	LinkProps,
-	useLoaderData,
 	useRouteError,
 } from "react-router";
-import { PageToRender } from "../../core/components/index.js";
-import { PageComponent } from "../../core/types.js";
-import { LoaderResponse } from "../../core/types.js";
-import {
-	MetadataWithoutTitleAndDescription,
-	NotFoundComponentContainerProps,
-} from "../types.js";
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
@@ -20,8 +11,6 @@ import {
  */
 export function ErrorBoundary() {
 	let error = useRouteError();
-
-	console.error({ error });
 
 	if (isRouteErrorResponse(error)) {
 		return (
@@ -42,13 +31,13 @@ export function ErrorBoundary() {
 					justifyContent: "start",
 					alignItems: "start",
 					height: "100vh",
-					width: "100vw",
+					width: "calc(100vw - 40px)",
 					padding: 20,
 				}}
 			>
 				<h1
 					style={{
-						fontSize: "2rem",
+						fontSize: "1.4rem",
 						fontWeight: "bold",
 						marginBottom: 5,
 					}}
@@ -57,7 +46,7 @@ export function ErrorBoundary() {
 				</h1>
 				<p
 					style={{
-						fontSize: "1.2rem",
+						fontSize: "1rem",
 						marginBottom: 10,
 					}}
 				>
@@ -72,7 +61,7 @@ export function ErrorBoundary() {
 						maxHeight: "calc(100vh - 100px)",
 						padding: "10px 20px",
 						borderRadius: 10,
-						backgroundColor: "#eee",
+						backgroundColor: "#f5f5f5",
 					}}
 				>
 					<p
@@ -89,7 +78,7 @@ export function ErrorBoundary() {
 							whiteSpace: "pre-wrap",
 							wordWrap: "break-word",
 							fontSize: "1rem",
-							color: "#ff000088",
+							color: "#ff000055",
 						}}
 					>
 						{error.stack}
@@ -101,64 +90,6 @@ export function ErrorBoundary() {
 		return <h1>Unknown Error</h1>;
 	}
 }
-
-/**
- * Component that will be displayed during a routing on the server side
- * @returns React.ReactNode
- */
-export const ServerComponent = ({
-	page,
-	layoutMetadata,
-	loader,
-}: {
-	page: PageComponent;
-	loader: React.ReactNode;
-	layoutMetadata?: MetadataWithoutTitleAndDescription;
-}) => {
-	// Default data
-	const defaultData = {
-		props: {
-			params: {},
-		},
-	};
-
-	const data = (useLoaderData() as LoaderResponse) || defaultData;
-
-	return (
-		<Suspense fallback={loader}>
-			<PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
-		</Suspense>
-	);
-};
-
-/**
- * Component that will be displayed during a routing on the client side
- * @returns React.ReactNode
- */
-export const ClientComponent = ({
-	page,
-	layoutMetadata,
-	loader,
-}: {
-	page: PageComponent;
-	loader: React.ReactNode;
-	layoutMetadata?: MetadataWithoutTitleAndDescription;
-}) => {
-	// Default data
-	const defaultData = {
-		props: {
-			params: {},
-		},
-	};
-
-	const data = (useLoaderData() as LoaderResponse) || defaultData;
-
-	return (
-		<Suspense fallback={loader}>
-			<PageToRender page={page} data={data} layoutMetadata={layoutMetadata} />
-		</Suspense>
-	);
-};
 
 /**
  * Component that will be displayed when a page is not found
@@ -208,16 +139,6 @@ export const NotFoundPageComponent = () => {
 			</Link>
 		</section>
 	);
-};
-
-/**
- * Component that will be displayed when a page is not found
- */
-export const NotFoundComponentContainer = ({
-	content,
-}: NotFoundComponentContainerProps) => {
-	// return <>{content({})}</>;
-	return <></>;
 };
 
 /**

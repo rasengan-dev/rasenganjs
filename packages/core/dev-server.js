@@ -14,7 +14,7 @@ import {
 	logServerInfo,
 } from "./lib/esm/server/utils/index.js";
 import { getDirname, loadModuleSSR } from "./lib/esm/config/utils/index.js";
-import { generateStaticRoutes } from "./lib/esm/routing/utils/index.js";
+import { generateRoutes } from "./lib/esm/routing/utils/index.js";
 
 /**
  * This function is responsible for creating a server for the development environment.
@@ -68,7 +68,7 @@ async function createServer({
 			).default;
 
 			// Get static routes
-			const staticRoutes = generateStaticRoutes(AppRouter);
+			const staticRoutes = generateRoutes(AppRouter);
 
 			// Create static handler
 			let handler = createStaticHandler(staticRoutes);

@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { FunctionComponent } from "react";
 import {
 	LayoutComponent,
 	LoaderResponse,
@@ -10,7 +10,7 @@ import { RouterComponent } from "./interfaces.js";
 import { RouteObject as RRRouteObject } from "react-router";
 
 export type NotFoundComponentContainerProps = {
-	content: React.FC;
+	content: React.ReactNode;
 };
 
 export type MetadataLink = {
@@ -99,17 +99,17 @@ export type RouterProps = {
 	/**
 	 * Usefull to render MDX pages
 	 */
-	MDXRenderer?: React.FC<MDXRendererProps>;
+	MDXRenderer?: FunctionComponent<MDXRendererProps>;
 
 	/**
 	 * Usefull to display a screen that let know to the user that the page is loading.
 	 */
-	loaderComponent?: React.FC;
+	loaderComponent?: FunctionComponent;
 
 	/**
 	 * Usefull to display a screen that let know to the user that the page is not found.
 	 */
-	notFoundComponent?: React.FC;
+	notFoundComponent?: FunctionComponent;
 
 	/**
 	 * Determines whether the current page should use the parent layout, or render its own layout.

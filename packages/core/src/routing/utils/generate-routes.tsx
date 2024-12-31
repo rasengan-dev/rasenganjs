@@ -7,38 +7,22 @@ import {
 import { LayoutComponent, LoaderResponse } from "../../core/index.js";
 import {
 	ErrorBoundary,
-	NotFoundComponentContainer,
-	ClientComponent,
-	ServerComponent,
 	NotFoundPageComponent,
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 import { LoaderFunction, RouteObject } from "../types.js";
 import { RouteLoaderFunction } from "../../core/types.js";
-
-declare global {
-	interface Window {
-		__staticRouterHydrationData: any;
-	}
-}
+import { PageToRender } from "../../core/components/index.js";
+import { Suspense } from "react";
 
 /**
  * This function receives a router component and get a formated router first
  * and then return a router.
  */
 export const getRouter = (routerInstance: RouterComponent) => {
-	const routes = generateBrowserRoutes(routerInstance);
+	const routes = generateRoutes(routerInstance);
 
-	let router = createBrowserRouter(routes, {
-		hydrationData: window.__staticRouterHydrationData,
-		future: {
-			v7_relativeSplatPath: true,
-			v7_fetcherPersist: true,
-			v7_normalizeFormMethod: true,
-			v7_partialHydration: true,
-			v7_skipActionErrorRevalidation: true,
-		},
-	});
+	let router = createBrowserRouter(routes);
 
 	return () => <RouterProvider router={router} />;
 };
@@ -81,140 +65,11 @@ const createLoaderFunction = (loader?: RouteLoaderFunction): LoaderFunction => {
 };
 
 /**
- * This function receives a router component and return a formated router.
- */
-const generateBrowserRoutes = (
-	router: RouterComponent,
-	isRoot = true,
-	parentLayout: LayoutComponent | undefined = undefined
-) => {
-	// Initialization of the list of routes
-	const routes: Array<RouteObject> = [];
-
-	// Get information about the layout and the path
-	const Layout = router.layout;
-
-	const route: RouteObject = {
-		path: !isRoot
-			? router.useParentLayout
-				? parentLayout.path + Layout.path
-				: Layout.path
-			: Layout.path,
-		errorElement: <ErrorBoundary />,
-		loader: async ({ params, request }) => {
-			return createLoaderFunction(Layout.loader)({ params, request });
-		},
-		Component() {
-			// Default data
-			const defaultData = {
-				props: {},
-			};
-
-			let { props } = (useLoaderData() as LoaderResponse) || defaultData;
-
-			// get params
-			const params = useParams();
-
-			const layoutProps = {
-				...props,
-				params,
-			};
-
-			return <Layout {...layoutProps} />;
-		},
-		hydrateFallbackElement: <>Loading</>,
-		children: [],
-		nested: router.useParentLayout,
-	};
-
-	// Defining the page not found route
-	if (isRoot || router.notFoundComponent) {
-		route.children.push({
-			path: "*",
-			element: (
-				<NotFoundComponentContainer
-					content={router.notFoundComponent ?? NotFoundPageComponent}
-				/>
-			),
-		});
-	}
-
-	// Get informations about pages
-	const pages = router.pages.map((Page) => {
-		const pagePathFormated =
-			Page.path[0] === "/" && Page.path !== "/"
-				? Page.path.slice(1)
-				: Page.path;
-
-		// Get the path of the page
-		const path =
-			Page.path === "/"
-				? Layout.path
-				: Layout.path.length > 1
-				? pagePathFormated
-				: Page.path;
-
-		return {
-			path,
-			loader: async ({ params, request }) => {
-				return createLoaderFunction(Page.loader)({ params, request });
-			},
-			Component() {
-				return (
-					<ClientComponent
-						page={Page}
-						// loader={router.loaderComponent({})}
-						loader={<>Loading</>}
-						layoutMetadata={Layout.metadata}
-					/>
-				);
-			},
-			errorElement: <ErrorBoundary />,
-			hydrateFallbackElement: <>Loading</>,
-		};
-	});
-
-	// Add pages into children of the current route
-	pages.forEach((page) => {
-		route.children.unshift(page);
-	});
-
-	// Loop throug sub routers in order to apply the same thing.
-	// for (const SubRouter of router.routers) {
-	//   const subRouter = new SubRouter();
-
-	//   const subRoutes = generateBrowserRoutes(subRouter);
-
-	//   // Add sub routes into the lists of route
-	//   route.children.push(subRoutes);
-	// }
-
-	// Loop throug besides routers in order to apply the same thing.
-	for (const besideRouter of router.routers) {
-		const besidesRoutes = generateBrowserRoutes(besideRouter, false, Layout);
-
-		// Add besides routes into the lists of route
-		besidesRoutes.forEach((r) => {
-			if (r.nested) {
-				route.children.unshift(r);
-			} else {
-				routes.push(r);
-			}
-		});
-	}
-
-	routes.unshift(route);
-
-	// Return the formated router
-	return routes;
-};
-
-/**
  * This function receives a router component and return a formated router for static routing
  * @param router Represents the router component
  * @returns
  */
-export const generateStaticRoutes = (
+export const generateRoutes = (
 	router: RouterComponent,
 	isRoot = true,
 	parentLayout: LayoutComponent | undefined = undefined
@@ -244,15 +99,15 @@ export const generateStaticRoutes = (
 			// get params
 			const params = useParams();
 
-			const finalProps = {
+			const layoutProps = {
 				...props,
 				params,
 			};
 
-			return <Layout {...finalProps} />;
+			return <Layout {...layoutProps} />;
 		},
-		loader: async ({ params, request }: any) => {
-			return createLoaderFunction(Layout.loader)({ params, request });
+		async loader({ params, request }) {
+			return await createLoaderFunction(Layout.loader)({ params, request });
 		},
 		children: [],
 		nested: router.useParentLayout,
@@ -262,18 +117,14 @@ export const generateStaticRoutes = (
 	if (isRoot || router.notFoundComponent) {
 		route.children.push({
 			path: "*",
-			element: (
-				<NotFoundComponentContainer
-					content={router.notFoundComponent ?? NotFoundPageComponent}
-				/>
-			),
+			element: router.notFoundComponent ?? <NotFoundPageComponent />,
 		});
 	}
 
 	// Get informations about pages
-	const pages = router.pages.map((Page) => {
+	const pages: Array<RouteObject> = router.pages.map((Page) => {
 		const pagePathFormated =
-			Page.path[0] === "/" && Page.path !== "/"
+			Page.path.startsWith("/") && Page.path !== "/"
 				? Page.path.slice(1)
 				: Page.path;
 
@@ -287,20 +138,31 @@ export const generateStaticRoutes = (
 
 		return {
 			path,
-			async loader({ params, request }: any) {
-				return createLoaderFunction(Page.loader)({ params, request });
+			async loader({ params, request }) {
+				return await createLoaderFunction(Page.loader)({ params, request });
 			},
 			Component() {
+				// Default data
+				const defaultData = {
+					props: {
+						params: {},
+					},
+				};
+
+				const data = (useLoaderData() as LoaderResponse) || defaultData;
+
 				return (
-					<ServerComponent
-						page={Page}
-						// loader={router.loaderComponent({})}
-						loader={<>Loading</>}
-						layoutMetadata={Layout.metadata}
-					/>
+					<Suspense fallback={<>Loading</>}>
+						<PageToRender
+							page={Page}
+							data={data}
+							layoutMetadata={Layout.metadata}
+						/>
+					</Suspense>
 				);
 			},
 			errorElement: <ErrorBoundary />,
+			hydrateFallbackElement: <>Loading</>,
 		};
 	});
 
@@ -309,24 +171,15 @@ export const generateStaticRoutes = (
 		route.children.push(page);
 	});
 
-	// Loop throug sub routers in order to apply the same thing.
-	// for (const SubRouter of router.routers) {
-	//   const subRouter = new SubRouter();
-	//   const subRoutes = generateStaticRoutes(subRouter);
+	// Loop throug imported routers in order to apply the same thing.
+	for (const importedRouter of router.routers) {
+		const importedRoutes = generateRoutes(importedRouter, false, Layout);
 
-	//   // Add sub routes into the lists of route
-	//   route.children.push(subRoutes);
-	// }
-
-	// Loop throug besides routers in order to apply the same thing.
-	for (const besideRouter of router.routers) {
-		const besidesRoutes = generateStaticRoutes(besideRouter, false, Layout);
-
-		besidesRoutes.forEach((r) => {
-			if (r.nested) {
-				route.children.push(r);
+		importedRoutes.forEach((route) => {
+			if (route.nested) {
+				route.children.push(route);
 			} else {
-				routes.push(r);
+				routes.push(route);
 			}
 		});
 	}
