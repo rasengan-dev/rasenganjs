@@ -74,8 +74,6 @@ export const defineConfig = async (
 
 				optimizeDeps: {
 					exclude: [
-						// "node:http",
-						// "node-fetch",
 						...defaultViteConfig.optimizeDeps.exclude,
 					],
 					include: [
@@ -92,16 +90,11 @@ export const defineConfig = async (
 				},
 
 				resolve: {
-					// concat two arrays
 					alias: [
 						{
 							find: defaultViteConfig.resolve.symbole,
 							replacement: "./src",
 						},
-						// {
-						// 	find: "path",
-						// 	replacement: "node_modules/path-browserify",
-						// },
 						...defaultViteConfig.resolve.alias,
 					],
 				},
@@ -115,10 +108,6 @@ export const defineConfig = async (
 	} catch (error) {
 		return {
 			vite: {
-				optimizeDeps: {
-					exclude: [],
-					include: [],
-				},
 				appType: "custom",
 				resolve: {
 					alias: [

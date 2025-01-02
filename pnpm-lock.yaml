@@ -54,9 +54,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@remix-run/router':
-        specifier: ^1.21.0
-        version: 1.21.0
       '@vitejs/plugin-react':
         specifier: ^4.2.1
         version: 4.3.4(vite@6.0.6(@types/node@20.17.10)(less@4.2.1)(sass@1.82.0)(stylus@0.64.0)(tsx@4.19.2))
@@ -69,9 +66,6 @@ importers:
       compression:
         specifier: ^1.7.4
         version: 1.7.5
-      cross-spawn:
-        specifier: ^7.0.3
-        version: 7.0.6
       execa:
         specifier: ^8.0.1
         version: 8.0.1
@@ -99,9 +93,6 @@ importers:
       ora:
         specifier: ^7.0.1
         version: 7.0.1
-      path-browserify:
-        specifier: ^1.0.1
-        version: 1.0.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -130,9 +121,6 @@ importers:
       '@types/compression':
         specifier: ^1.7.4
         version: 1.7.5
-      '@types/cross-spawn':
-        specifier: ^6.0.4
-        version: 6.0.6
       '@types/express':
         specifier: ^4.17.19
         version: 4.17.21
@@ -189,14 +177,14 @@ importers:
   packages/image:
     dependencies:
       react:
-        specifier: ^18.3.*
+        specifier: ^18.3.* || ^19.*
         version: 18.3.1
     devDependencies:
       '@types/react':
-        specifier: ^18.3.11
+        specifier: ^18.3.11 || ^19.0.0
         version: 18.3.16
       '@types/react-dom':
-        specifier: ^18.3.1
+        specifier: ^18.3.1 || ^19.0.0
         version: 18.3.5(@types/react@18.3.16)
 
   packages/mdx:
@@ -799,10 +787,6 @@ packages:
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
 
-  '@remix-run/router@1.21.0':
-    resolution: {integrity: sha512-xfSkCAchbdG5PnbrKqFWwia4Bi61nH+wm8wLEqfHDyp7Y3dZzgqS2itV8i4gAq9pC2HsTpwyBC6Ds8VHZ96JlA==}
-    engines: {node: '>=14.0.0'}
-
   '@rollup/pluginutils@5.1.3':
     resolution: {integrity: sha512-Pnsb6f32CD2W3uCaLZIzDmeFyQ2b8UWMFI7xtwUezpcGBDVDW6y9XgAWIlARiGAo6eNF5FK5aQTr0LFyNyqq5A==}
     engines: {node: '>=14.0.0'}
@@ -960,9 +944,6 @@ packages:
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
-
-  '@types/cross-spawn@6.0.6':
-    resolution: {integrity: sha512-fXRhhUkG4H3TQk5dBhQ7m/JDdSNHKwR2BBia62lhwEIq9xGiQKLxd6LymNhn47SjXhsUEPmxi+PKw2OkW4LLjA==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -3135,8 +3116,6 @@ snapshots:
 
   '@polka/url@1.0.0-next.28': {}
 
-  '@remix-run/router@1.21.0': {}
-
   '@rollup/pluginutils@5.1.3(rollup@4.28.1)':
     dependencies:
       '@types/estree': 1.0.6
@@ -3279,10 +3258,6 @@ snapshots:
       '@types/node': 22.10.2
 
   '@types/cookie@0.6.0': {}
-
-  '@types/cross-spawn@6.0.6':
-    dependencies:
-      '@types/node': 22.10.2
 
   '@types/debug@4.1.12':
     dependencies:

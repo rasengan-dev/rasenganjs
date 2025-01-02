@@ -5,7 +5,7 @@ import { execa } from "execa";
 
 // @ts-ignore
 import path from "node:path";
-import { resolvePath } from "../config/index.js";
+import { resolvePath } from "../core/config/index.js";
 
 const program = new Command();
 
@@ -34,7 +34,7 @@ program
 			process.exit(1);
 		}
 
-		execa("node", ["node_modules/rasengan/dev-server"], {
+		execa("node", ["node_modules/rasengan/lib/esm/server/dev/server"], {
 			stdio: "inherit",
 			env: {
 				...process.env,

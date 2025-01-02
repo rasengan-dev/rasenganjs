@@ -1,13 +1,11 @@
 import React from "react";
 import {
 	ComponentProps,
-	HelmetContext,
-	LayoutComponent,
-	PageToRenderProps,
 } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import { Outlet, useParams } from "react-router";
 import * as HelmetAsync from "react-helmet-async";
+import { PageToRenderProps, HelmetContext, LayoutComponent } from "../../routing/types.js";
 
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
@@ -15,7 +13,7 @@ const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 /**
  * App component that represent the entry point of the application
  */
-export const Component = ({
+export const RootComponent = ({
 	router: AppRouter,
 	children = undefined,
 }: ComponentProps) => {

@@ -1,19 +1,23 @@
 import React, { FunctionComponent } from "react";
 import { renderToPipeableStream } from "react-dom/server";
 import {
-	Component,
+	RootComponent,
 	Heads,
 	Body,
 	Scripts,
 } from "../../core/components/index.js";
-import type { AppProps, TemplateProps } from "../../core/types.js";
+import type { AppProps } from "../../core/types.js";
 
 import { Response } from "express";
 import { StaticHandlerContext, StaticRouterProvider } from "react-router";
 import * as HelmetAsync from "react-helmet-async";
 
 import refreshScript from "../../scripts/refresh-hack.js?raw";
-import { findModulePath, loadModuleSSR } from "../../config/utils/index.js";
+import {
+	findModulePath,
+	loadModuleSSR,
+} from "../../core/config/utils/index.js";
+import type { TemplateProps } from "../../routing/types.js";
 
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
@@ -61,7 +65,7 @@ const RenderApp = ({
 					<Body
 						asChild
 						AppContent={
-							<App Component={Component}>
+							<App Component={RootComponent}>
 								<StaticRouterProvider router={router} context={context} />
 							</App>
 						}

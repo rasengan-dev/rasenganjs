@@ -23,7 +23,6 @@
   },
   "include": [
     "vite.config.ts",
-    "src/entries/entry-server.tsx",
     "types/client.d.ts"
   ]
 }

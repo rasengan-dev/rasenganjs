@@ -1,7 +1,7 @@
 import { hydrateRoot } from "react-dom/client";
 import { StrictMode, FunctionComponent } from "react";
 import { type AppProps } from "../../core/index.js";
-import { Component } from "../../core/components/index.js";
+import { RootComponent } from "../../core/components/index.js";
 
 export default function renderApp(
 	App: FunctionComponent<AppProps>,
@@ -19,10 +19,10 @@ export default function renderApp(
 		hydrateRoot(
 			root,
 			<StrictMode>
-				<App Component={Component} />
+				<App Component={RootComponent} />
 			</StrictMode>
 		);
 	} else {
-		hydrateRoot(root, <App Component={Component} />);
+		hydrateRoot(root, <App Component={RootComponent} />);
 	}
 }

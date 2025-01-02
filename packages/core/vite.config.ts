@@ -1,7 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { loadModuleSSR, getDirname } from "./lib/esm/config/utils/index.js";
 import { join } from "node:path";
+import {
+	loadModuleSSR,
+	getDirname,
+} from "./lib/esm/core/config/utils/index.js";
+import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
 
 /**
  * Configures the Vite build for the Rasengan.js application.
@@ -32,7 +36,7 @@ export default defineConfig(async ({ mode }: any) => {
 	const configPath = join(`${rootPath}/rasengan.config.js`);
 
 	// Get config
-	const config = await(await loadModuleSSR(configPath)).default;
+	const config = await (await loadModuleSSR(configPath)).default;
 
 	// Extract vite config
 	const { vite } = await config;
@@ -55,7 +59,8 @@ export default defineConfig(async ({ mode }: any) => {
 
 		// Build options
 		build: {
-			sourcemap: mode === "development",
+			sourcemap:
+				(isServerMode(mode) && mode === ServerMode.Development) ?? false,
 			minify: "esbuild",
 			outDir: "./dist/client",
 			rollupOptions: {
@@ -86,7 +91,7 @@ export default defineConfig(async ({ mode }: any) => {
 				external: [...vite?.build?.external],
 			},
 			chunkSizeWarningLimit: 500,
-			emptyOutDir: true
+			emptyOutDir: true,
 		},
 
 		// Server options

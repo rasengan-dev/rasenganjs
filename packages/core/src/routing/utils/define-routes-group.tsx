@@ -1,5 +1,4 @@
-import { PageComponent, MDXPageComponent } from "../../core/types.js";
-import { RoutesGroupProps } from "../types.js";
+import { RoutesGroupProps, PageComponent, MDXPageComponent } from "../types.js";
 
 /**
  * Recursively loops through an array of `PageComponent`, `MDXPageComponent`, or `RoutesGroupProps` and extracts all the pages into a single array.

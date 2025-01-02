@@ -1,6 +1,5 @@
-import { PageComponent, MDXPageComponent } from "../../core/index.js";
 import { DefaultLayout } from "../../core/components/index.js";
-import { RouterProps } from "../types.js";
+import { RouterProps, PageComponent, MDXPageComponent } from "../types.js";
 import { RouterComponent } from "../interfaces.js";
 
 /**

@@ -4,14 +4,18 @@ import {
 	useLoaderData,
 	useParams,
 } from "react-router";
-import { LayoutComponent, LoaderResponse } from "../../core/index.js";
 import {
 	ErrorBoundary,
 	NotFoundPageComponent,
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
-import { LoaderFunction, RouteObject } from "../types.js";
-import { RouteLoaderFunction } from "../../core/types.js";
+import {
+	LoaderFunction,
+	RouteLoaderFunction,
+	RouteObject,
+	LayoutComponent,
+	LoaderResponse,
+} from "../types.js";
 import { PageToRender } from "../../core/components/index.js";
 import { Suspense } from "react";
 

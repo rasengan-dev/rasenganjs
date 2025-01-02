@@ -1,6 +1,15 @@
 import { CustomLink } from "./components/index.js";
 
-export type { Metadata } from "./types.js";
+export type {
+	Metadata,
+	LayoutComponent,
+	PageComponent,
+	MDXPageComponent,
+	LoaderOptions,
+	LoaderResponse,
+	ReactComponentProps,
+	TemplateProps,
+} from "./types.js";
 export { defineRouter, defineRoutesGroup } from "./utils/index.js";
 export { RouterComponent } from "./interfaces.js";
 export {

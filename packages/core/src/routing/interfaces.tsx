@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { LayoutComponent, PageComponent } from "../core/types.js";
+import { LayoutComponent, PageComponent } from "./types.js";
 
 /**
  * Router component that define a routing system
