@@ -111,7 +111,7 @@ export const generateRoutes = (
 			return <Layout {...layoutProps} />;
 		},
 		async loader({ params, request }) {
-			return await createLoaderFunction(Layout.loader)({ params, request });
+			return createLoaderFunction(Layout.loader)({ params, request });
 		},
 		children: [],
 		nested: router.useParentLayout,
@@ -143,7 +143,7 @@ export const generateRoutes = (
 		return {
 			path,
 			async loader({ params, request }) {
-				return await createLoaderFunction(Page.loader)({ params, request });
+				return createLoaderFunction(Page.loader)({ params, request });
 			},
 			Component() {
 				// Default data
@@ -188,6 +188,7 @@ export const generateRoutes = (
 		});
 	}
 
+	// Make sure to add the route at the beginning of the list
 	routes.unshift(route);
 
 	// Return the formated router

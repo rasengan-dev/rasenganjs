@@ -44,7 +44,7 @@ export const PageToRender = ({
 	// get params
 	const params = useParams();
 
-	const finalProps = {
+	const pageProps = {
 		...props,
 		params,
 	};
@@ -68,7 +68,7 @@ export const PageToRender = ({
 				<title>{Page.metadata?.title || Page.name}</title>
 			</H.Helmet>
 
-			<Page {...finalProps} />
+			<Page {...pageProps} />
 		</React.Fragment>
 	);
 };

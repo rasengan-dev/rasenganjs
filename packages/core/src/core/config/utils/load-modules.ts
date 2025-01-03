@@ -1,6 +1,14 @@
 import { resolvePath } from "./path.js";
 
-export const extensions = [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"];
+export const extensions = [
+	".mjs",
+	".js",
+	".mts",
+	".ts",
+	".jsx",
+	".tsx",
+	".json",
+];
 
 /**
  * Asynchronously loads a module from a file path only in the server-side environment.

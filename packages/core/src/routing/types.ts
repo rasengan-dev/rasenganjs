@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
-import { RouterComponent } from "./interfaces.js";
 import { RouteObject as RRRouteObject } from "react-router";
+import { RouterComponent } from "./interfaces.js";
+import { R } from "react-router/dist/development/route-data-aSUFWnQ6.js";
 
 export type MetadataLink = {
 	rel: string;
@@ -162,7 +163,6 @@ export type RoutesGroupProps = {
 	>;
 };
 
-
 export type PageToRenderProps = {
 	page: PageComponent;
 	data: LoaderResponse;
@@ -184,7 +184,7 @@ export type ReactComponentProps =
 /**
  * Layout component that represents a layout
  */
-export type LayoutComponent = React.FC<ReactComponentProps> & {
+export type LayoutComponent<T = ReactComponentProps> = FunctionComponent<T> & {
 	/**
 	 * Base path for the page
 	 */
@@ -204,7 +204,7 @@ export type LayoutComponent = React.FC<ReactComponentProps> & {
 /**
  * Page component that extends LayoutComponent and represents a page
  */
-export type PageComponent = LayoutComponent & {
+export type PageComponent<T = ReactComponentProps> = LayoutComponent<T> & {
 	/**
 	 * Metadata for the page omit title
 	 */
@@ -214,11 +214,13 @@ export type PageComponent = LayoutComponent & {
 /**
  * A React functional component that represents an MDX page.
  *
- * The `MDXPageComponent` type extends the `React.FC<ReactComponentProps>` type, which means it is a React functional component that accepts the standard props for a React component.
+ * The `MDXPageComponent` type extends the `React.FC<ReactComponentProps>` type,
+ * which means it is a React functional component that accepts the standard props for a React component.
  *
- * The `MDXPageComponent` type also has an optional `metadata` property of type `Metadata`, which can be used to store metadata about the page.
+ * The `MDXPageComponent` type also has an optional `metadata` property of type `Metadata`,
+ * which can be used to store metadata about the page.
  */
-export type MDXPageComponent = React.FC<any> & {
+export type MDXPageComponent = FunctionComponent & {
 	metadata?: {
 		path: string;
 		metadata: Metadata;
@@ -285,7 +287,7 @@ export type HelmetContext = {
  * Template props
  */
 export type TemplateProps = {
-	Head: React.FC<{ children: React.ReactNode }>;
-	Body: React.FC<{ children: React.ReactNode }>;
-	Script: React.FC<{ children?: React.ReactNode }>;
+	Head: FunctionComponent<{ children: React.ReactNode }>;
+	Body: FunctionComponent<{ children: React.ReactNode }>;
+	Script: FunctionComponent<{ children?: React.ReactNode }>;
 };

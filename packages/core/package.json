@@ -24,7 +24,12 @@
 		"./types/client": {
 			"types": "./types/client.d.ts"
 		},
-		"./package.json": "./package.json"
+		"./package.json": "./package.json",
+		"./dynamic": {
+			"import": "./lib/esm/core/dynamic/index.js",
+			"require": "./lib/esm/core/dynamic/index.js",
+			"types": "./lib/types/core/dynamic/index.d.ts"
+		}
 	},
 	"author": {
 		"name": "dilane3",
