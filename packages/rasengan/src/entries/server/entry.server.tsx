@@ -8,7 +8,7 @@ import {
 } from "../../core/components/index.js";
 import type { AppProps } from "../../core/types.js";
 
-import { Response } from "express";
+import { type Response } from "express";
 import { StaticHandlerContext, StaticRouterProvider } from "react-router";
 import * as HelmetAsync from "react-helmet-async";
 
@@ -18,11 +18,12 @@ import {
 	loadModuleSSR,
 } from "../../core/config/utils/index.js";
 import type { TemplateProps } from "../../routing/types.js";
+import { isServerMode, ServerMode } from "../../server/runtime/mode.js";
 
 // @ts-ignore
 const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
 
-const ABORT_DELAY = 5_000;
+const ABORT_DELAY = 10_000;
 
 const RenderApp = ({
 	router,
@@ -40,7 +41,10 @@ const RenderApp = ({
 	// inject vite refresh script to avoid "React refresh preamble was not loaded"
 	let viteScripts = <React.Fragment></React.Fragment>;
 
-	if (process.env.NODE_ENV !== "production") {
+	if (
+		isServerMode(process.env.NODE_ENV) &&
+		process.env.NODE_ENV === ServerMode.Development
+	) {
 		viteScripts = (
 			<React.Fragment>
 				<script type='module' src='/@vite/client' />
@@ -98,7 +102,6 @@ export async function render(
 
 	return new Promise(async (resolve, reject) => {
 		let shellRendered = false;
-		let responseStatusCode = 200;
 
 		const { extension } = await findModulePath(`${rootPath}/src/index`);
 
@@ -115,10 +118,18 @@ export async function render(
 				onShellReady() {
 					shellRendered = true;
 
-					// res
-					// 	.status(responseStatusCode)
-					// 	.setHeader("Content-Type", "text/html")
-					// 	.setHeader("Cache-Control", "max-age=31536000");
+					// Handle Server-Sent Events (SSE)
+					if (
+						// res.headers
+						// 	.get("Content-Type")
+						// 	?.match(/text\/event-stream/i)
+
+						(res.getHeader("Content-Type") as string | null)?.match(
+							/text\/event-stream/i
+						)
+					) {
+						res.flushHeaders();
+					}
 
 					resolve(res);
 
@@ -129,7 +140,6 @@ export async function render(
 					reject(error);
 				},
 				onError(error: unknown) {
-					responseStatusCode = 500;
 					// Log streaming rendering errors from inside the shell.  Don't log
 					// errors encountered during initial shell rendering since they'll
 					// reject and get logged in handleDocumentRequest.

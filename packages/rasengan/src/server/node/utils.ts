@@ -1,10 +1,11 @@
-import { type Request, Response } from "express";
+import type * as Express from "express";
+import { createReadableStreamFromReadable, writeReadableStreamToWritable } from "./stream.js";
 
 /**
  * This function is used to create a Rasengan request from an Express request.
  * Reference: https://github.com/remix-run/react-router/blob/main/packages/react-router-express/server.ts#L86
  */
-export default function createRasenganRequest(req: Request, res: Response) {
+export default function createRasenganRequest(req: Express.Request, res: Express.Response) {
 	// req.hostname doesn't include port information so grab that from
 	// `X-Forwarded-Host` or `Host`
 	let [, hostnamePort] = req.get("X-Forwarded-Host")?.split(":") ?? [];
@@ -32,13 +33,63 @@ export default function createRasenganRequest(req: Request, res: Response) {
 	};
 
 	if (req.method !== "GET" && req.method !== "HEAD") {
-		init.body = req.body;
+		init.body = createReadableStreamFromReadable(req);
 		(init as { duplex: "half" }).duplex = "half";
 	}
 
 	return new Request(url.href, init);
 }
 
+/**
+ * This function is used to send a Rasengan response to an Express response.
+ * @param res 
+ * @param nodeResponse 
+ */
+export async function sendRasenganResponse(
+	res: Express.Response,
+	nodeResponse: Response
+): Promise<void> {
+	try {
+		// Set status and status message
+		res.statusMessage = nodeResponse.statusText;
+		res.status(nodeResponse.status);
+
+		// Set headers
+		for (let [key, value] of nodeResponse.headers.entries()) {
+			res.append(key, value);
+		}
+
+		// Handle Server-Sent Events (SSE)
+		if (
+			nodeResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)
+		) {
+			res.flushHeaders();
+		}
+
+		// Write the response body if available
+		if (nodeResponse.body) {
+			await writeReadableStreamToWritable(nodeResponse.body, res);
+		} else {
+			res.end();
+		}
+	} catch (error) {
+		// Log the error (optional)
+		console.error("Error while sending response:", error);
+
+		// Send a 500 Internal Server Error response with error details
+		res.status(500).send({
+			message: "An error occurred while processing the response.",
+			error: error instanceof Error ? error.message : String(error),
+		});
+	}
+}
+
+
+/**
+ * This function is used to create a Rasengan headers from Express request headers.
+ * @param requestHeaders 
+ * @returns 
+ */
 export function createRasenganHeaders(
 	requestHeaders: Record<string, string | string[]>
 ) {

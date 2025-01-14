@@ -21,19 +21,28 @@ import { loggerMiddleware } from "../../core/middlewares/index.js";
 import { logServerInfo } from "./utils.js";
 import { getDirname, loadModuleSSR } from "../../core/config/utils/index.js";
 import { generateRoutes } from "../../routing/utils/index.js";
-import createRasenganRequest from "../node/utils.js";
+import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
 
 import { type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
 
 type ServerError = Error & { code: string };
 
+/**
+ * Handle the request for the development environment
+ * @param req
+ * @param res
+ * @param viteDevServer
+ * @param options
+ */
 function createHeadersFromRRContext(context: StaticHandlerContext) {
 	// Setup headers from action and loaders from deepest match
 	let leaf = context.matches[context.matches.length - 1];
 	let actionHeaders = context.actionHeaders[leaf.route.id];
 	let loaderHeaders = context.loaderHeaders[leaf.route.id];
+
 	let headers = new Headers(actionHeaders);
+
 	if (loaderHeaders) {
 		for (let [key, value] of loaderHeaders.entries()) {
 			headers.append(key, value);
@@ -45,6 +54,13 @@ function createHeadersFromRRContext(context: StaticHandlerContext) {
 	return headers;
 }
 
+/**
+ * Handle the request for the development environment
+ * @param req
+ * @param res
+ * @param viteDevServer
+ * @param options
+ */
 async function devRequestHandler(
 	req: Express.Request,
 	res: Express.Response,
@@ -89,16 +105,17 @@ async function devRequestHandler(
 		const status = context.status; // "status" is only available when redirecting from loader, normally it's statusCode
 
 		if (status === 302 || status === 301) {
-			const redirect = context.headers.get("Location");
+			const redirectURL = context.headers.get("Location");
 
 			// Set redirect status
 			res.status(status);
 
 			// Redirect
-			return res.redirect(redirect);
+			return res.redirect(redirectURL);
 		}
 
-		return res.status(status).send(context.body);
+		// TODO: Check this line again
+		return await sendRasenganResponse(res, context);
 	}
 
 	// Helmet context
@@ -118,6 +135,12 @@ async function devRequestHandler(
 	return await render(router, context, helmetContext, res);
 }
 
+/**
+ * Handle server errors
+ * @param err 
+ * @param options 
+ * @returns 
+ */
 async function errorHandler(
 	err: ServerError,
 	options: {
