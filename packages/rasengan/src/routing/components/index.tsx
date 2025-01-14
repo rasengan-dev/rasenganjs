@@ -2,8 +2,10 @@ import {
 	isRouteErrorResponse,
 	Link,
 	LinkProps,
+	useParams,
 	useRouteError,
 } from "react-router";
+import { RasenganPageComponentProps } from "../types.js";
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
@@ -90,6 +92,27 @@ export function ErrorBoundary() {
 		return <h1>Unknown Error</h1>;
 	}
 }
+
+/**
+ * Page component that defines title and description to a page
+ */
+export const RasenganPageComponent = ({
+	page: Page,
+	data,
+}: RasenganPageComponentProps) => {
+	// Get the page props
+	const props = data.props ?? {};
+
+	// get params
+	const params = useParams();
+
+	const pageProps = {
+		...props,
+		params,
+	};
+
+	return <Page {...pageProps} />;
+};
 
 /**
  * Component that will be displayed when a page is not found

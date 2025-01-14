@@ -263,6 +263,88 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
+  packages/rasengan:
+    dependencies:
+      '@vitejs/plugin-react':
+        specifier: ^4.2.1
+        version: 4.3.4(vite@6.0.6(@types/node@20.17.10)(less@4.2.1)(sass@1.82.0)(stylus@0.64.0)(tsx@4.19.2))
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      commander:
+        specifier: ^11.1.0
+        version: 11.1.0
+      compression:
+        specifier: ^1.7.4
+        version: 1.7.5
+      execa:
+        specifier: ^8.0.1
+        version: 8.0.1
+      express:
+        specifier: ^4.18.2
+        version: 4.21.2
+      file-type:
+        specifier: ^19.0.0
+        version: 19.6.0
+      inquirer:
+        specifier: ^9.2.12
+        version: 9.3.7
+      keypress:
+        specifier: ^0.2.1
+        version: 0.2.1
+      less:
+        specifier: '*'
+        version: 4.2.1
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
+      open:
+        specifier: ^10.1.0
+        version: 10.1.0
+      ora:
+        specifier: ^7.0.1
+        version: 7.0.1
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-router:
+        specifier: ^7.0.0
+        version: 7.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      sass:
+        specifier: '*'
+        version: 1.82.0
+      sirv:
+        specifier: ^2.0.3
+        version: 2.0.4
+      stylus:
+        specifier: '*'
+        version: 0.64.0
+      vite:
+        specifier: ^6.0.0
+        version: 6.0.6(@types/node@20.17.10)(less@4.2.1)(sass@1.82.0)(stylus@0.64.0)(tsx@4.19.2)
+    devDependencies:
+      '@types/compression':
+        specifier: ^1.7.4
+        version: 1.7.5
+      '@types/express':
+        specifier: ^4.17.19
+        version: 4.17.21
+      '@types/node':
+        specifier: ^20.8.6
+        version: 20.17.10
+      '@types/react':
+        specifier: ^19.0.1
+        version: 19.0.2
+      '@types/react-dom':
+        specifier: ^19.0.1
+        version: 19.0.2(@types/react@19.0.2)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+
   packages/theme:
     dependencies:
       react:
@@ -3240,7 +3322,7 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 22.10.2
+      '@types/node': 20.17.10
 
   '@types/braces@3.0.4': {}
 
@@ -3255,7 +3337,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 22.10.2
+      '@types/node': 20.17.10
 
   '@types/cookie@0.6.0': {}
 
@@ -3271,7 +3353,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.6':
     dependencies:
-      '@types/node': 22.10.2
+      '@types/node': 20.17.10
       '@types/qs': 6.9.17
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -3348,12 +3430,12 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 22.10.2
+      '@types/node': 20.17.10
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 22.10.2
+      '@types/node': 20.17.10
       '@types/send': 0.17.4
 
   '@types/through@0.0.33':

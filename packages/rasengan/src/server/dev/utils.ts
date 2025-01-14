@@ -6,6 +6,8 @@ import keypress from "keypress";
 import openBrowser from "open";
 import os from "node:os";
 import { ServerMode } from "../runtime/mode.js";
+import { StaticHandlerContext } from "react-router";
+import { Metadata } from "../../routing/types.js";
 
 // Get local IP
 export default function getIPAddress() {
@@ -155,4 +157,56 @@ export async function logServerInfo(
 
 	// Set a higher limit for the number of listeners
 	process.stdin.setMaxListeners(100);
+}
+
+/**
+ * This function extracts the meta data from the React Router context
+ * @param context React Router context
+ */
+export function extractMetaFromRRContext(context: StaticHandlerContext) {
+	const leaf = context.matches[context.matches.length - 1]; // the last match is the leaf (the actual page requested)
+
+	// Get the loader id
+	const pageLoaderId = leaf.route.id; // The id follows the pattern "[layoutIndex]-[pageIndex]", eg. 0-1, 1-2, etc.
+	const layoutLoaderId = pageLoaderId.split("-")[0];
+
+	// Get the meta from the loader based on the loader id
+	const pageLoaderData: { meta: Metadata } = context.loaderData[
+		pageLoaderId
+	] ?? { meta: {} }; // This is the loader data specific to the page
+	const layoutLoaderData: { meta: Metadata } = context.loaderData[
+		layoutLoaderId
+	] ?? { meta: {} }; // This is the loader data specific to the layout
+
+	// Get the meta from the loaders data
+	const pageMeta = pageLoaderData.meta;
+	const layoutMeta = layoutLoaderData.meta;
+
+	return {
+		page: pageMeta,
+		layout: layoutMeta,
+	};
+}
+
+/**
+ * This function extracts the headers from the React Router context
+ * @param context React Router context
+ */
+export function extractHeadersFromRRContext(context: StaticHandlerContext) {
+	// Setup headers from action and loaders from deepest match
+	let leaf = context.matches[context.matches.length - 1];
+	let actionHeaders = context.actionHeaders[leaf.route.id];
+	let loaderHeaders = context.loaderHeaders[leaf.route.id];
+
+	let headers = new Headers(actionHeaders);
+
+	if (loaderHeaders) {
+		for (let [key, value] of loaderHeaders.entries()) {
+			headers.append(key, value);
+		}
+	}
+
+	headers.set("Content-Type", "text/html; charset=utf-8");
+
+	return headers;
 }

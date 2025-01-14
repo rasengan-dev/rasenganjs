@@ -1,14 +1,12 @@
-import React from "react";
-import {
-	ComponentProps,
-} from "../types.js";
+import React, { useMemo } from "react";
+import { ComponentProps } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
-import { Outlet, useParams } from "react-router";
-import * as HelmetAsync from "react-helmet-async";
-import { PageToRenderProps, HelmetContext, LayoutComponent } from "../../routing/types.js";
-
-// @ts-ignore
-const H = HelmetAsync.default ? HelmetAsync.default : HelmetAsync;
+import { Outlet } from "react-router";
+import {
+	LayoutComponent,
+	Metadata,
+	MetadataWithoutTitleAndDescription,
+} from "../../routing/types.js";
 
 /**
  * App component that represent the entry point of the application
@@ -23,54 +21,7 @@ export const RootComponent = ({
 	// Otherwise, get the router and return it
 	let Router = getRouter(AppRouter);
 
-	return (
-		<H.HelmetProvider>
-			<Router />
-		</H.HelmetProvider>
-	);
-};
-
-/**
- * Page component that defines title and description to a page
- */
-export const PageToRender = ({
-	page: Page,
-	data,
-	layoutMetadata,
-}: PageToRenderProps) => {
-	// Get the page props
-	const props = data.props || {};
-
-	// get params
-	const params = useParams();
-
-	const pageProps = {
-		...props,
-		params,
-	};
-
-	// Generate meta tags
-	const metaTags = React.useMemo(() => {
-		const metadatas = [];
-
-		if (Page.metadata) metadatas.push(Page.metadata);
-		if (layoutMetadata) metadatas.push(layoutMetadata);
-
-		return generateMetadata(metadatas);
-	}, []);
-
-	return (
-		<React.Fragment>
-			<H.Helmet>
-				{metaTags.map((meta) => meta)}
-
-				<meta name='description' content={Page.metadata?.description || ""} />
-				<title>{Page.metadata?.title || Page.name}</title>
-			</H.Helmet>
-
-			<Page {...pageProps} />
-		</React.Fragment>
-	);
+	return <Router />;
 };
 
 /**
@@ -78,33 +29,43 @@ export const PageToRender = ({
  * @params data - Helmet context
  * @returns
  */
-export const Heads = ({
-	data,
+export const HeadComponent = ({
+	metadata,
 	children = undefined,
-	bootstrap = "",
-	styles = "",
 }: {
-	data: HelmetContext;
+	metadata: {
+		page: Metadata;
+		layout: MetadataWithoutTitleAndDescription;
+	};
 	children?: React.ReactNode;
 	bootstrap?: string;
 	styles?: string;
 }) => {
-	if (!data) return null;
+	// Generate meta tags
+	const metaTags = React.useMemo(() => {
+		const metadatas = [];
+
+		if (metadata.page) metadatas.push(metadata.page);
+		if (metadata.layout) metadatas.push(metadata.layout);
+
+		return generateMetadata(metadatas);
+	}, [metadata]);
+
+	const { title, description } = useMemo(() => {
+		const title = metadata.page.title;
+		const description = metadata.page.description;
+
+		return { title, description };
+	}, [metadata]);
 
 	return (
 		<head>
+			{metaTags}
+
+			<title>{title}</title>
+			<meta name='description' content={description} data-rg='true' />
+
 			{children}
-
-			{/* {data.helmet && data.helmet.meta.toComponent({})}
-			{data.helmet && data.helmet.title.toComponent({})} */}
-
-			{bootstrap && (
-				<script type='module' src={bootstrap} defer={true}></script>
-			)}
-
-			{styles && (
-				<link rel='stylesheet' crossOrigin='' type='text/css' href={styles} />
-			)}
 		</head>
 	);
 };
@@ -112,7 +73,7 @@ export const Heads = ({
 /**
  * Body component
  */
-export const Body = ({
+export const BodyComponent = ({
 	children = undefined,
 	asChild = false,
 	AppContent = undefined,
@@ -143,25 +104,12 @@ export const Body = ({
 /**
  * Scripts component
  */
-export const Scripts = ({
+export const ScriptComponent = ({
 	children = undefined,
-	bootstrap = "",
 }: {
 	children?: React.ReactNode;
-	bootstrap?: string;
 }) => {
-	return (
-		<React.Fragment>
-			{/* {bootstrap === "" && (
-				<script
-					type='module'
-					src={`/src/index.js`}
-					defer={true}
-				></script>
-			)} */}
-			{children}
-		</React.Fragment>
-	);
+	return <React.Fragment>{children}</React.Fragment>;
 };
 
 /**

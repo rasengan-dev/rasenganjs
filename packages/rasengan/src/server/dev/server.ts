@@ -6,11 +6,7 @@ import {
 	createServer as createViteServer,
 	createServerModuleRunner,
 } from "vite";
-import {
-	createStaticHandler,
-	createStaticRouter,
-	type StaticHandlerContext,
-} from "react-router";
+import { createStaticHandler, createStaticRouter } from "react-router";
 import chalk from "chalk";
 import inquirer from "inquirer";
 
@@ -18,7 +14,11 @@ import inquirer from "inquirer";
 import { loggerMiddleware } from "../../core/middlewares/index.js";
 
 // Load utilities functions
-import { logServerInfo } from "./utils.js";
+import {
+	extractHeadersFromRRContext,
+	extractMetaFromRRContext,
+	logServerInfo,
+} from "./utils.js";
 import { getDirname, loadModuleSSR } from "../../core/config/utils/index.js";
 import { generateRoutes } from "../../routing/utils/index.js";
 import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
@@ -27,32 +27,6 @@ import { type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
 
 type ServerError = Error & { code: string };
-
-/**
- * Handle the request for the development environment
- * @param req
- * @param res
- * @param viteDevServer
- * @param options
- */
-function createHeadersFromRRContext(context: StaticHandlerContext) {
-	// Setup headers from action and loaders from deepest match
-	let leaf = context.matches[context.matches.length - 1];
-	let actionHeaders = context.actionHeaders[leaf.route.id];
-	let loaderHeaders = context.loaderHeaders[leaf.route.id];
-
-	let headers = new Headers(actionHeaders);
-
-	if (loaderHeaders) {
-		for (let [key, value] of loaderHeaders.entries()) {
-			headers.append(key, value);
-		}
-	}
-
-	headers.set("Content-Type", "text/html; charset=utf-8");
-
-	return headers;
-}
 
 /**
  * Handle the request for the development environment
@@ -118,13 +92,13 @@ async function devRequestHandler(
 		return await sendRasenganResponse(res, context);
 	}
 
-	// Helmet context
-	const helmetContext = {};
+	// Extract meta from context
+	const metadata = extractMetaFromRRContext(context);
 
 	// Create static router
 	let router = createStaticRouter(handler.dataRoutes, context);
 
-	const headers = createHeadersFromRRContext(context);
+	const headers = extractHeadersFromRRContext(context);
 
 	// Set headers
 	res.writeHead(context.statusCode, {
@@ -132,14 +106,14 @@ async function devRequestHandler(
 	});
 
 	// If stream mode enabled, render the page as a plain text
-	return await render(router, context, helmetContext, res);
+	return await render(router, res, { context, metadata });
 }
 
 /**
  * Handle server errors
- * @param err 
- * @param options 
- * @returns 
+ * @param err
+ * @param options
+ * @returns
  */
 async function errorHandler(
 	err: ServerError,

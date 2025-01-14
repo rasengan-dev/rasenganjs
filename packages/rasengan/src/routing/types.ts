@@ -1,7 +1,6 @@
 import { FunctionComponent } from "react";
 import { RouteObject as RRRouteObject } from "react-router";
 import { RouterComponent } from "./interfaces.js";
-import { R } from "react-router/dist/development/route-data-aSUFWnQ6.js";
 
 export type MetadataLink = {
 	rel: string;
@@ -121,6 +120,7 @@ export type LoaderOptions = {
 export type LoaderResponse = {
 	props?: { [key: string]: any };
 	redirect?: string;
+	meta?: Metadata | MetadataWithoutTitleAndDescription;
 };
 
 export type RouteLoaderFunction = (
@@ -163,10 +163,9 @@ export type RoutesGroupProps = {
 	>;
 };
 
-export type PageToRenderProps = {
+export type RasenganPageComponentProps = {
 	page: PageComponent;
 	data: LoaderResponse;
-	layoutMetadata?: MetadataWithoutTitleAndDescription;
 };
 
 /**

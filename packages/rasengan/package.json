@@ -65,7 +65,6 @@
 		"node-fetch": "^3.3.2",
 		"open": "^10.1.0",
 		"ora": "^7.0.1",
-		"react-helmet-async": "^2.0.4",
 		"react-router": "^7.0.0",
 		"sirv": "^2.0.3"
 	},

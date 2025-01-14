@@ -7,6 +7,7 @@ import {
 import {
 	ErrorBoundary,
 	NotFoundPageComponent,
+	RasenganPageComponent,
 } from "../components/index.js";
 import { RouterComponent } from "../interfaces.js";
 import {
@@ -15,8 +16,9 @@ import {
 	RouteObject,
 	LayoutComponent,
 	LoaderResponse,
+	Metadata,
+	MetadataWithoutTitleAndDescription,
 } from "../types.js";
-import { PageToRender } from "../../core/components/index.js";
 import { Suspense } from "react";
 
 /**
@@ -34,7 +36,13 @@ export const getRouter = (routerInstance: RouterComponent) => {
 /**
  * This function create a loader function
  */
-const createLoaderFunction = (loader?: RouteLoaderFunction): LoaderFunction => {
+const createLoaderFunction = ({
+	loader,
+	metadata,
+}: {
+	loader?: RouteLoaderFunction;
+	metadata?: Metadata | MetadataWithoutTitleAndDescription;
+}): LoaderFunction => {
 	return async ({ params, request }) => {
 		try {
 			// Check if the loader is defined
@@ -59,10 +67,14 @@ const createLoaderFunction = (loader?: RouteLoaderFunction): LoaderFunction => {
 				});
 			}
 
-			return response;
+			return {
+				...response,
+				meta: metadata,
+			};
 		} catch (error) {
 			return {
 				props: {},
+				meta: {},
 			};
 		}
 	};
@@ -111,7 +123,13 @@ export const generateRoutes = (
 			return <Layout {...layoutProps} />;
 		},
 		async loader({ params, request }) {
-			return createLoaderFunction(Layout.loader)({ params, request });
+			// Extract metadata from the layout
+			const metadata = Layout.metadata;
+
+			return createLoaderFunction({ loader: Layout.loader, metadata })({
+				params,
+				request,
+			});
 		},
 		children: [],
 		nested: router.useParentLayout,
@@ -143,7 +161,13 @@ export const generateRoutes = (
 		return {
 			path,
 			async loader({ params, request }) {
-				return createLoaderFunction(Page.loader)({ params, request });
+				// Extracting metadata from the page
+				const metadata = Page.metadata;
+
+				return createLoaderFunction({ loader: Page.loader, metadata })({
+					params,
+					request,
+				});
 			},
 			Component() {
 				// Default data
@@ -153,15 +177,11 @@ export const generateRoutes = (
 					},
 				};
 
-				const data = (useLoaderData() as LoaderResponse) || defaultData;
+				const loaderData = (useLoaderData() as LoaderResponse) || defaultData;
 
 				return (
 					<Suspense fallback={<>Loading</>}>
-						<PageToRender
-							page={Page}
-							data={data}
-							layoutMetadata={Layout.metadata}
-						/>
+						<RasenganPageComponent page={Page} data={loaderData} />
 					</Suspense>
 				);
 			},
