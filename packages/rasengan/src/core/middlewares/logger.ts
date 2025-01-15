@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import chalk from "chalk";
+import type { Request, Response, NextFunction } from "express";
+import { logGetRequest as log } from "../utils/log.js";
 
 export const loggerMiddleware = (
 	req: Request,
@@ -10,11 +10,7 @@ export const loggerMiddleware = (
 
 	const time = new Date().toLocaleTimeString();
 
-	console.log(
-		`${chalk.grey(time)} ${chalk.blue("[Rasengan]")} ${chalk.green(
-			"GET"
-		)}: ${chalk.grey(url)}`
-	);
+	log(url);
 
 	next();
 };

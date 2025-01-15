@@ -6,7 +6,11 @@ import {
 	createServer as createViteServer,
 	createServerModuleRunner,
 } from "vite";
-import { createStaticHandler, createStaticRouter } from "react-router";
+import {
+	createStaticHandler,
+	createStaticRouter,
+	StaticHandlerContext,
+} from "react-router";
 import chalk from "chalk";
 import inquirer from "inquirer";
 
@@ -17,6 +21,9 @@ import { loggerMiddleware } from "../../core/middlewares/index.js";
 import {
 	extractHeadersFromRRContext,
 	extractMetaFromRRContext,
+	isDocumentRequest,
+	isRedirectResponse,
+	isStaticRedirectFromConfig,
 	logServerInfo,
 } from "./utils.js";
 import { getDirname, loadModuleSSR } from "../../core/config/utils/index.js";
@@ -25,6 +32,7 @@ import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
 
 import { type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
+import { logRedirection as log } from "../../core/utils/log.js";
 
 type ServerError = Error & { code: string };
 
@@ -41,34 +49,36 @@ async function devRequestHandler(
 	viteDevServer: Vite.ViteDevServer,
 	options: { rootPath: string; __dirname: string; config: AppConfig }
 ) {
-	const { rootPath, __dirname, config } = options;
+	if (isDocumentRequest(req)) {
+		return await handleDocumentRequest(req, res, viteDevServer, options);
+	}
 
-	// Get the module runner through ssr environment
-	const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+	return res.status(404).send("Not found");
+}
 
-	// Get the render function and app router
-	const { render } = await runner.import(
-		join(`${__dirname}./../../entries/server/entry.server.js`)
-	);
-	const AppRouter = (
-		await runner.import(join(`${rootPath}/src/app/app.router`))
-	).default;
-
-	// Get static routes
-	const staticRoutes = generateRoutes(AppRouter);
-
-	// Create static handler
-	let handler = createStaticHandler(staticRoutes);
-
-	// Create rasengan request for static routing
-	let request = createRasenganRequest(req, res);
-	let context = await handler.query(request);
-
+/**
+ * Handle redirect request
+ * @param req
+ * @param res
+ * @param param2
+ * @returns
+ */
+async function handleRedirectRequest(
+	req: Express.Request,
+	res: Express.Response,
+	{
+		context,
+		config,
+	}: { context: StaticHandlerContext | Response; config: AppConfig }
+) {
 	// Handle redirects from config file
 	const redirects = await config.redirects();
 
 	for (let redirect of redirects) {
 		if (redirect.source === req.originalUrl) {
+			// Log redirect
+			log(redirect.source, redirect.destination);
+
 			res.status(redirect.permanent ? 301 : 302);
 			return res.redirect(redirect.destination);
 		}
@@ -84,6 +94,9 @@ async function devRequestHandler(
 			// Set redirect status
 			res.status(status);
 
+			// Log redirect
+			log(req.originalUrl, redirectURL);
+
 			// Redirect
 			return res.redirect(redirectURL);
 		}
@@ -91,22 +104,65 @@ async function devRequestHandler(
 		// TODO: Check this line again
 		return await sendRasenganResponse(res, context);
 	}
+}
 
-	// Extract meta from context
-	const metadata = extractMetaFromRRContext(context);
+async function handleDocumentRequest(
+	req: Express.Request,
+	res: Express.Response,
+	viteDevServer: Vite.ViteDevServer,
+	options: { rootPath: string; __dirname: string; config: AppConfig }
+) {
+	try {
+		const { rootPath, __dirname, config } = options;
 
-	// Create static router
-	let router = createStaticRouter(handler.dataRoutes, context);
+		// Get the module runner through ssr environment
+		const runner = createServerModuleRunner(viteDevServer.environments.ssr);
 
-	const headers = extractHeadersFromRRContext(context);
+		// Get the render function and app router
+		const { render } = await runner.import(
+			join(`${__dirname}./../../entries/server/entry.server.js`)
+		);
+		const AppRouter = (
+			await runner.import(join(`${rootPath}/src/app/app.router`))
+		).default;
 
-	// Set headers
-	res.writeHead(context.statusCode, {
-		...Object.fromEntries(headers),
-	});
+		// Get static routes
+		const staticRoutes = generateRoutes(AppRouter);
 
-	// If stream mode enabled, render the page as a plain text
-	return await render(router, res, { context, metadata });
+		// Create static handler
+		let handler = createStaticHandler(staticRoutes);
+
+		// Create rasengan request for static routing
+		let request = createRasenganRequest(req, res);
+		let context = await handler.query(request);
+
+		const redirectFound = await isStaticRedirectFromConfig(req, config);
+
+		if (isRedirectResponse(context as Response) || redirectFound) {
+			return await handleRedirectRequest(req, res, { context, config });
+		}
+
+		if (!(context instanceof Response)) {
+			// Extract meta from context
+			const metadata = extractMetaFromRRContext(context);
+
+			// Create static router
+			let router = createStaticRouter(handler.dataRoutes, context);
+
+			const headers = extractHeadersFromRRContext(context);
+
+			// Set headers
+			res.writeHead(context.statusCode, {
+				...Object.fromEntries(headers),
+			});
+
+			// If stream mode enabled, render the page as a plain text
+			return await render(router, res, { context, metadata });
+		}
+	} catch (error) {
+		// Just log the error for now
+		console.error(error);
+	}
 }
 
 /**
@@ -212,8 +268,8 @@ async function createDevNodeServer({
 	app.disable("x-powered-by");
 
 	// Apply middlewares
-	app.use(viteDevServer.middlewares);
 	app.use(loggerMiddleware);
+	app.use(viteDevServer.middlewares);
 
 	// Create the request handler
 	app.use("*", async (req, res, next) => {

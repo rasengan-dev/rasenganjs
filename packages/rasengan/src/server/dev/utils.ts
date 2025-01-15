@@ -8,6 +8,8 @@ import os from "node:os";
 import { ServerMode } from "../runtime/mode.js";
 import { StaticHandlerContext } from "react-router";
 import { Metadata } from "../../routing/types.js";
+import type * as Express from "express";
+import { AppConfig } from "../../core/config/type.js";
 
 // Get local IP
 export default function getIPAddress() {
@@ -209,4 +211,72 @@ export function extractHeadersFromRRContext(context: StaticHandlerContext) {
 	headers.set("Content-Type", "text/html; charset=utf-8");
 
 	return headers;
+}
+
+/**
+ * Check if the request is a document request
+ * @param request Express request object
+ */
+export function isDocumentRequest(request: Express.Request) {
+	// Check if the request accepts HTML in header
+	const accept = request.headers["accept"] || "";
+	return accept.includes("text/html");
+}
+
+export function isResourceRequest(request: Express.Request) {
+	const accept = request.headers["accept"] || "";
+
+	console.log({ accept, url: request.originalUrl });
+
+	// Check common resource-related MIME types in the Accept header
+	if (
+		accept.includes("image/") || // Images
+		accept.includes("font/") || // Fonts
+		accept.includes("text/css") || // Stylesheets
+		accept.includes("application/javascript") || // JavaScript
+		accept.includes("application/json") // JSON (if resources include it)
+	) {
+		return true;
+	}
+
+	// Check if the URL includes common resource path segments
+	const url = request.originalUrl || "";
+	if (
+		url.includes("/assets/") ||
+		url.includes("/static/") ||
+		url.includes("/public/")
+	) {
+		return true;
+	}
+
+	// Exclude cases that are clearly document or API requests
+	if (isDocumentRequest(request)) {
+		return false;
+	}
+
+	// Fallback: Treat unknown requests as resource requests
+	return true;
+}
+
+/**
+ * Check if the request is an Redirect request
+ * @param context Response context
+ */
+export function isRedirectResponse(context: Response) {
+	return context.status === 302 || context.status === 301;
+}
+
+export async function isStaticRedirectFromConfig(req: Express.Request, config: AppConfig) {
+	// Handle redirects from config file
+	const redirects = await config.redirects();
+	let redirectFound = false;
+
+	for (let redirect of redirects) {
+		if (redirect.source === req.originalUrl) {
+			redirectFound = true;
+			break;
+		}
+	}
+
+	return redirectFound;
 }
