@@ -1,83 +1,17 @@
-import React, { FunctionComponent } from "react";
-import {
-	RootComponent,
-	HeadComponent,
-	BodyComponent,
-	ScriptComponent,
-} from "../../core/components/index.js";
+import { FunctionComponent } from "react";
 import type { AppProps } from "../../core/types.js";
 
 import { type Response } from "express";
-import { StaticHandlerContext, StaticRouterProvider } from "react-router";
+import { StaticHandlerContext } from "react-router";
 
-import refreshScript from "../../scripts/refresh-hack.js?raw";
 import { loadModuleSSR } from "../../core/config/utils/index.js";
 import type {
 	Metadata,
 	MetadataWithoutTitleAndDescription,
 	TemplateProps,
 } from "../../routing/types.js";
-import { isServerMode, ServerMode } from "../../server/runtime/mode.js";
 import { renderToStream } from "./utils.js";
-
-const RenderApp = ({
-	router,
-	context,
-	metadata,
-	App,
-	Template,
-}: {
-	router: any;
-	context: StaticHandlerContext;
-	metadata: {
-		page: Metadata;
-		layout: MetadataWithoutTitleAndDescription;
-	};
-	App: FunctionComponent<AppProps>;
-	Template: FunctionComponent<TemplateProps>;
-}) => {
-	// inject vite refresh script to avoid "React refresh preamble was not loaded"
-	let viteScripts = <React.Fragment></React.Fragment>;
-
-	if (
-		isServerMode(process.env.NODE_ENV) &&
-		process.env.NODE_ENV === ServerMode.Development
-	) {
-		viteScripts = (
-			<React.Fragment>
-				<script type='module' src='/@vite/client' />
-				<script
-					type='module'
-					dangerouslySetInnerHTML={{ __html: refreshScript }}
-				/>
-			</React.Fragment>
-		);
-	}
-
-	return (
-		<Template
-			Head={({ children }) => (
-				<HeadComponent metadata={metadata}>
-					{viteScripts}
-					{children}
-				</HeadComponent>
-			)}
-			Body={({ children }) => (
-				<BodyComponent
-					asChild
-					AppContent={
-						<App Component={RootComponent}>
-							<StaticRouterProvider router={router} context={context} />
-						</App>
-					}
-				>
-					{children}
-				</BodyComponent>
-			)}
-			Script={({ children }) => <ScriptComponent>{children}</ScriptComponent>}
-		/>
-	);
-};
+import { TemplateLayout } from "./index.js";
 
 /**
  * Render the app to a stream
@@ -112,7 +46,7 @@ export async function render(
 		.default as FunctionComponent<TemplateProps>;
 
 	return await renderToStream(
-		<RenderApp
+		<TemplateLayout
 			router={router}
 			context={context}
 			metadata={metadata}

@@ -1,11 +1,7 @@
 import { defineConfig, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { join } from "node:path";
-import {
-	loadModuleSSR,
-	getDirname,
-} from "./lib/esm/core/config/utils/index.js";
-import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
+import { loadModuleSSR } from "../utils/load-modules.js";
+import { isServerMode, ServerMode } from "../../../server/runtime/mode.js";
 
 /**
  * Configures the Vite build for the Rasengan.js application.
@@ -29,6 +25,11 @@ import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
  * @returns {object} The Vite configuration object.
  */
 export default defineConfig(async ({ mode }): Promise<UserConfig> => {
+	// Load getDirname function and join function
+	const { getDirname } = await import("../utils/index.js");
+	const { join } = await import("node:path");
+
+	// Get root path
 	const rootPath = process.cwd();
 	const __dirname = await getDirname(import.meta.url);
 
@@ -67,33 +68,25 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 				input: "./src/index.ts",
 				output: {
 					manualChunks(id: string) {
-						const isNodeModule = id.includes("node_modules");
-						const isSharedComponent = id.includes("src/components");
-						const isAppPage = id.includes("src/app") && id.includes(".page.");
-
-						if (isNodeModule) {
+						if (id.includes("node_modules")) {
 							return "vendor"; // All third-party dependencies in one chunk
 						}
-
-						if (isSharedComponent) {
+						if (id.includes("src/components")) {
 							return "shared-components"; // Shared UI components
 						}
+						if (id.includes("src/app")) {
+							// Check if the file contains follow the [name].page.[ext] pattern
+							if (id.includes(".page.")) {
+								const pageFileName = id.split("src/app")[1].split("/").pop();
 
-						if (isAppPage) {
-							try {
-								const pageFileName = id.split("src/app")[1]?.split("/").pop();
 								if (pageFileName) {
 									const pageName = pageFileName.split(".")[0];
 									return `page-${pageName}`; // One chunk per page
 								}
-							} catch {
-								console.warn(
-									`Could not process app page chunk for file: ${id}`
-								);
 							}
 						}
 
-						return undefined; // Default behavior for unclassified chunks
+						return undefined;
 					},
 				},
 				external: [...vite?.build?.external],

@@ -122,6 +122,8 @@ async function handleDocumentRequest(
 		const { render } = await runner.import(
 			join(`${__dirname}./../../entries/server/entry.server.js`)
 		);
+
+		// Load app-router
 		const AppRouter = (
 			await runner.import(join(`${rootPath}/src/app/app.router`))
 		).default;
@@ -261,7 +263,7 @@ async function createDevNodeServer({
 	const viteDevServer = await createViteServer({
 		server: { middlewareMode: true, hmr: true },
 		base,
-		configFile: `${__dirname}./../../../../vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
+		configFile: `${rootPath}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
 	});
 
 	// Disable x-powered-by

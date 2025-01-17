@@ -2,6 +2,7 @@ import { CustomLink } from "./components/index.js";
 
 export type {
 	Metadata,
+	MetadataWithoutTitleAndDescription,
 	LayoutComponent,
 	PageComponent,
 	MDXPageComponent,

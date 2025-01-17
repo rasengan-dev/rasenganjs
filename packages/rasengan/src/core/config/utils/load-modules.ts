@@ -1,4 +1,5 @@
 import { resolvePath } from "./path.js";
+import fs from "fs/promises";
 
 export const extensions = [
 	".mjs",
@@ -18,7 +19,16 @@ export const extensions = [
  */
 export const loadModuleSSR = async (path: string) => {
 	try {
-		const { path: modulePath } = await findModulePath(path);
+		let modulePath = path;
+
+		
+		// Check if the module path has an extension
+		const moduleExtension = path.split(".").pop(); // eg: js or ts
+
+		if (!moduleExtension || !extensions.includes(`.${moduleExtension}`)) {
+			const { path: newPath } = await findModulePath(path);
+			modulePath = newPath;
+		}
 
 		const module = await import(resolvePath(modulePath));
 		return module;
@@ -35,8 +45,6 @@ export const loadModuleSSR = async (path: string) => {
  */
 export const findModulePath = async (path: string) => {
 	try {
-		const fs = (await import("node:fs/promises")).default;
-
 		let modulePath = path;
 		let rightExtension = "";
 

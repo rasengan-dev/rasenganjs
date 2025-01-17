@@ -8,8 +8,6 @@ export const loggerMiddleware = (
 ) => {
 	const url = req.originalUrl;
 
-	const time = new Date().toLocaleTimeString();
-
 	log(url);
 
 	next();

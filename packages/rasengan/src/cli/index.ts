@@ -6,6 +6,7 @@ import { execa } from "execa";
 // @ts-ignore
 import path from "node:path";
 import { resolvePath } from "../core/config/index.js";
+import { build } from "vite";
 
 const program = new Command();
 
@@ -47,7 +48,7 @@ program
 program
 	.command("build")
 	.description("Build the project")
-	.action(() => {
+	.action(async () => {
 		execa("node", ["node_modules/rasengan/lib/esm/scripts/build-command"], {
 			stdio: "inherit",
 		});
