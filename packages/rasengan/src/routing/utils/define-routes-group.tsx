@@ -9,7 +9,7 @@ export const defineRoutesGroup = (option: RoutesGroupProps) => {
 	const { path, children } = option;
 
 	// Loop through all the children and extract the pages into a single array
-	return loop(path, children);
+	return generateRoutesGroup(path, children);
 };
 
 /**
@@ -17,7 +17,7 @@ export const defineRoutesGroup = (option: RoutesGroupProps) => {
  * @param children - An array of `PageComponent`, `MDXPageComponent`, or `RoutesGroupProps` objects.
  * @returns An array of `PageComponent` or `MDXPageComponent` objects.
  */
-const loop = (
+const generateRoutesGroup = (
 	path: string,
 	children: Array<
 		PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
@@ -34,7 +34,7 @@ const loop = (
 			>;
 
 			// Recursively loop through the children and extract the pages
-			const childrenPages = loop(path, children);
+			const childrenPages = generateRoutesGroup(path, children);
 
 			pages.push(...childrenPages);
 		} else {

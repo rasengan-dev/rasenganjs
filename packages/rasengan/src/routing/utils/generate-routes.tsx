@@ -47,7 +47,10 @@ const createLoaderFunction = ({
 		try {
 			// Check if the loader is defined
 			if (!loader) {
-				throw new Error("Missing loader function");
+				return {
+					props: {},
+					meta: metadata,
+				};
 			}
 
 			// Get the response from the loader
@@ -195,7 +198,7 @@ export const generateRoutes = (
 		route.children.push(page);
 	});
 
-	// Loop throug imported routers in order to apply the same thing.
+	// Loop through imported routers in order to apply the same thing.
 	for (const importedRouter of router.routers) {
 		const importedRoutes = generateRoutes(importedRouter, false, Layout);
 

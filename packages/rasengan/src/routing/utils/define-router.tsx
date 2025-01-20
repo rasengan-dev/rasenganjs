@@ -1,5 +1,10 @@
 import { DefaultLayout } from "../../core/components/index.js";
-import { RouterProps, PageComponent, MDXPageComponent } from "../types.js";
+import {
+	RouterProps,
+	PageComponent,
+	MDXPageComponent,
+	MDXRendererProps,
+} from "../types.js";
 import { RouterComponent } from "../interfaces.js";
 
 /**
@@ -18,44 +23,32 @@ export const defineRouter = (option: RouterProps) => {
 		useParentLayout,
 	} = option;
 
-	return (Component: new () => RouterComponent) => {
+	return (Router: new () => RouterComponent) => {
 		// Handle errors
 		if (!option.pages)
 			throw new Error(
-				"You must provide a list of pages in the router decorator"
+				"You must provide a list of pages in the router option object"
 			);
 
 		// Create router
-		const router = new Component();
+		const router = new Router();
 
-		// Normalize pages
-		const normalizedPages: PageComponent[] = [];
+		// List of pages component
+		const pageComponentList: PageComponent[] = [];
 
 		for (let p of pages ?? []) {
 			// Check if p is an array
 			if (Array.isArray(p)) {
 				for (let page of p) {
-					if (!page["path"]) {
-						if (!MDXRenderer) {
-							throw new Error(
-								"You must provide a MDXRenderer component to render MDX pages"
-							);
-						}
+					if (isMDXPage(page, MDXRenderer)) {
+						const Page = convertMDXPageToPageComponent(
+							page as MDXPageComponent,
+							MDXRenderer
+						);
 
-						const MDXPage = page as MDXPageComponent;
-
-						const Page: PageComponent = () => {
-							return (
-								<MDXRenderer className={""}>{MDXPage}</MDXRenderer>
-							);
-						};
-
-						Page.path = MDXPage.metadata.path;
-						Page.metadata = MDXPage.metadata.metadata;
-
-						normalizedPages.push(Page);
+						pageComponentList.push(Page);
 					} else {
-						normalizedPages.push(page as PageComponent);
+						pageComponentList.push(page as PageComponent);
 					}
 				}
 
@@ -63,36 +56,58 @@ export const defineRouter = (option: RouterProps) => {
 			}
 
 			// When p is a MDXPageComponent
-			if (!p["path"]) {
-				if (!MDXRenderer) {
-					throw new Error(
-						"You must provide a MDXRenderer component to render MDX pages"
-					);
-				}
+			if (isMDXPage(p, MDXRenderer)) {
+				const Page = convertMDXPageToPageComponent(
+					p as MDXPageComponent,
+					MDXRenderer
+				);
 
-				const MDXPage = p as MDXPageComponent;
-
-				const Page: PageComponent = () => {
-					return <MDXRenderer className={""}>{MDXPage}</MDXRenderer>;
-				};
-
-				Page.path = MDXPage.metadata.path;
-				Page.metadata = MDXPage.metadata.metadata;
-
-				normalizedPages.push(Page);
+				pageComponentList.push(Page);
 			} else {
-				normalizedPages.push(p as PageComponent);
+				pageComponentList.push(p as PageComponent);
 			}
 		}
 
 		// Set properties
 		router.routers = imports || [];
 		router.layout = layout || DefaultLayout;
-		router.pages = normalizedPages;
+		router.pages = pageComponentList;
 		router.loaderComponent = loaderComponent || (() => null);
 		router.notFoundComponent = notFoundComponent;
 		router.useParentLayout = useParentLayout ?? true;
 
 		return router;
 	};
+};
+
+const convertMDXPageToPageComponent = (
+	MDXPage: MDXPageComponent,
+	MDXRenderer: React.FunctionComponent<MDXRendererProps>
+) => {
+	const Page: PageComponent = () => {
+		return <MDXRenderer className={""}>{MDXPage}</MDXRenderer>;
+	};
+
+	Page.path = MDXPage.metadata.path;
+	Page.metadata = MDXPage.metadata.metadata;
+
+	return Page;
+};
+
+const isMDXPage = (
+	page: MDXPageComponent | PageComponent<any>,
+	MDXRenderer: React.FunctionComponent<MDXRendererProps>
+) => {
+	// Check if page is a MDX Page Component or not
+	if (!page["path"]) {
+		if (!MDXRenderer) {
+			throw new Error(
+				"You must provide a MDXRenderer component to render MDX pages"
+			);
+		}
+
+		return true;
+	}
+
+	return false;
 };

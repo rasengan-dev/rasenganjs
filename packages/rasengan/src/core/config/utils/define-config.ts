@@ -111,11 +111,7 @@ export const defineConfig = async (
 						{
 							find: "@",
 							replacement: "./src",
-						},
-						{
-							find: "path",
-							replacement: "node_modules/path-browserify",
-						},
+						}
 					],
 				},
 				css: {

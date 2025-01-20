@@ -161,10 +161,12 @@ const generateMetaTags = (metaTags: MetaTag[]) => {
 	return metaTags.map((metaTag) => {
 		const { content, name, property } = metaTag;
 
-		if (property) {
-			return <meta key={property} property={property} content={content} />;
-		}
-
-		return <meta key={name} name={name} content={content} />;
+		return (
+			<meta
+				key={property ?? name}
+				property={property ?? name}
+				content={content}
+			/>
+		);
 	});
 };
