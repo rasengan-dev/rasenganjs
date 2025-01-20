@@ -61,7 +61,7 @@ export const CodeBlock = ({
   * @param htmlString - The HTML string to extract text from.
   * @returns The plain text content of the HTML string.
   */
- const extractTextFromHTML = (htmlString: string) => {
+  const extractTextFromHTML = (htmlString: string) => {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(htmlString, "text/html");
 		return doc.body.textContent || "";

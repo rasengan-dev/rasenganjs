@@ -188,6 +188,7 @@
 	position: relative;
 	border-radius: 8px;
 	border: none;
+	margin: 0;
 }
 
 .rasengan-markdown-body pre[data-language] code {

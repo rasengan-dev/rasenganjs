@@ -18,125 +18,6 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
-  packages/cli:
-    dependencies:
-      chalk:
-        specifier: ^5.3.0
-        version: 5.3.0
-      child_process:
-        specifier: ^1.0.2
-        version: 1.0.2
-      commander:
-        specifier: ^11.1.0
-        version: 11.1.0
-      inquirer:
-        specifier: ^9.2.11
-        version: 9.3.7
-      ncp:
-        specifier: ^2.0.0
-        version: 2.0.0
-      ora:
-        specifier: ^7.0.1
-        version: 7.0.1
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-    devDependencies:
-      '@types/inquirer':
-        specifier: ^9.0.4
-        version: 9.0.7
-      '@types/ncp':
-        specifier: ^2.0.6
-        version: 2.0.8
-      '@types/node':
-        specifier: ^20.8.6
-        version: 20.17.10
-
-  packages/core:
-    dependencies:
-      '@vitejs/plugin-react':
-        specifier: ^4.2.1
-        version: 4.3.4(vite@6.0.6(@types/node@20.17.10)(less@4.2.1)(sass@1.82.0)(stylus@0.64.0)(tsx@4.19.2))
-      chalk:
-        specifier: ^5.3.0
-        version: 5.3.0
-      commander:
-        specifier: ^11.1.0
-        version: 11.1.0
-      compression:
-        specifier: ^1.7.4
-        version: 1.7.5
-      execa:
-        specifier: ^8.0.1
-        version: 8.0.1
-      express:
-        specifier: ^4.18.2
-        version: 4.21.2
-      file-type:
-        specifier: ^19.0.0
-        version: 19.6.0
-      inquirer:
-        specifier: ^9.2.12
-        version: 9.3.7
-      keypress:
-        specifier: ^0.2.1
-        version: 0.2.1
-      less:
-        specifier: '*'
-        version: 4.2.1
-      node-fetch:
-        specifier: ^3.3.2
-        version: 3.3.2
-      open:
-        specifier: ^10.1.0
-        version: 10.1.0
-      ora:
-        specifier: ^7.0.1
-        version: 7.0.1
-      react:
-        specifier: ^19.0.0
-        version: 19.0.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.0.0(react@19.0.0)
-      react-helmet-async:
-        specifier: ^2.0.4
-        version: 2.0.5(react@19.0.0)
-      react-router:
-        specifier: ^7.0.0
-        version: 7.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      sass:
-        specifier: '*'
-        version: 1.82.0
-      sirv:
-        specifier: ^2.0.3
-        version: 2.0.4
-      stylus:
-        specifier: '*'
-        version: 0.64.0
-      vite:
-        specifier: ^6.0.0
-        version: 6.0.6(@types/node@20.17.10)(less@4.2.1)(sass@1.82.0)(stylus@0.64.0)(tsx@4.19.2)
-    devDependencies:
-      '@types/compression':
-        specifier: ^1.7.4
-        version: 1.7.5
-      '@types/express':
-        specifier: ^4.17.19
-        version: 4.17.21
-      '@types/node':
-        specifier: ^20.8.6
-        version: 20.17.10
-      '@types/react':
-        specifier: ^19.0.1
-        version: 19.0.2
-      '@types/react-dom':
-        specifier: ^19.0.1
-        version: 19.0.2(@types/react@19.0.2)
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
-
   packages/create-rasengan:
     dependencies:
       chalk:
@@ -173,95 +54,6 @@ importers:
       '@types/node':
         specifier: ^20.8.6
         version: 20.17.10
-
-  packages/image:
-    dependencies:
-      react:
-        specifier: ^18.3.* || ^19.*
-        version: 18.3.1
-    devDependencies:
-      '@types/react':
-        specifier: ^18.3.11 || ^19.0.0
-        version: 18.3.16
-      '@types/react-dom':
-        specifier: ^18.3.1 || ^19.0.0
-        version: 18.3.5(@types/react@18.3.16)
-
-  packages/mdx:
-    dependencies:
-      '@mdx-js/rollup':
-        specifier: ^3.0.1
-        version: 3.1.0(acorn@8.14.0)(rollup@4.28.1)
-      gray-matter:
-        specifier: ^4.0.3
-        version: 4.0.3
-      micromatch:
-        specifier: ^4.0.7
-        version: 4.0.8
-      path-browserify:
-        specifier: ^1.0.1
-        version: 1.0.1
-      prism-react-renderer:
-        specifier: ^2.4.0
-        version: 2.4.1(react@18.3.1)
-      rasengan:
-        specifier: workspace:*
-        version: link:../core
-      react:
-        specifier: ^18.3.*
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.*
-        version: 18.3.1(react@18.3.1)
-      react-markdown:
-        specifier: ^9.0.1
-        version: 9.0.1(@types/react@18.3.16)(react@18.3.1)
-      rehype-pretty-code:
-        specifier: ^0.14.0
-        version: 0.14.0(shiki@1.24.2)
-      rehype-stringify:
-        specifier: ^10.0.1
-        version: 10.0.1
-      remark:
-        specifier: ^15.0.1
-        version: 15.0.1
-      remark-gfm:
-        specifier: ^4.0.0
-        version: 4.0.0
-      remark-parse:
-        specifier: ^11.0.0
-        version: 11.0.0
-      remark-rehype:
-        specifier: ^11.1.1
-        version: 11.1.1
-      remark-toc:
-        specifier: ^9.0.0
-        version: 9.0.0
-      shiki:
-        specifier: ^1.24.2
-        version: 1.24.2
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-    devDependencies:
-      '@types/clean-css':
-        specifier: ^4.2.11
-        version: 4.2.11
-      '@types/micromatch':
-        specifier: ^4.0.7
-        version: 4.0.9
-      '@types/node':
-        specifier: ^22.7.4
-        version: 22.10.2
-      '@types/react':
-        specifier: ^18.3.11
-        version: 18.3.16
-      '@types/react-dom':
-        specifier: ^18.3.1
-        version: 18.3.5(@types/react@18.3.16)
-      clean-css:
-        specifier: ^5.3.3
-        version: 5.3.3
 
   packages/rasengan:
     dependencies:
@@ -345,7 +137,130 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
 
-  packages/theme:
+  packages/rasengan-cli:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      child_process:
+        specifier: ^1.0.2
+        version: 1.0.2
+      commander:
+        specifier: ^11.1.0
+        version: 11.1.0
+      inquirer:
+        specifier: ^9.2.11
+        version: 9.3.7
+      ncp:
+        specifier: ^2.0.0
+        version: 2.0.0
+      ora:
+        specifier: ^7.0.1
+        version: 7.0.1
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+    devDependencies:
+      '@types/inquirer':
+        specifier: ^9.0.4
+        version: 9.0.7
+      '@types/ncp':
+        specifier: ^2.0.6
+        version: 2.0.8
+      '@types/node':
+        specifier: ^20.8.6
+        version: 20.17.10
+
+  packages/rasengan-image:
+    dependencies:
+      react:
+        specifier: ^18.3.* || ^19.*
+        version: 19.0.0
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.11 || ^19.0.0
+        version: 19.0.2
+      '@types/react-dom':
+        specifier: ^18.3.1 || ^19.0.0
+        version: 19.0.2(@types/react@19.0.2)
+
+  packages/rasengan-mdx:
+    dependencies:
+      '@mdx-js/rollup':
+        specifier: ^3.0.1
+        version: 3.1.0(acorn@8.14.0)(rollup@4.28.1)
+      gray-matter:
+        specifier: ^4.0.3
+        version: 4.0.3
+      micromatch:
+        specifier: ^4.0.7
+        version: 4.0.8
+      path-browserify:
+        specifier: ^1.0.1
+        version: 1.0.1
+      prism-react-renderer:
+        specifier: ^2.4.0
+        version: 2.4.1(react@19.0.0)
+      rasengan:
+        specifier: workspace:*
+        version: link:../rasengan
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-markdown:
+        specifier: ^9.0.1
+        version: 9.0.1(@types/react@19.0.2)(react@19.0.0)
+      rehype-pretty-code:
+        specifier: ^0.14.0
+        version: 0.14.0(shiki@1.24.2)
+      rehype-stringify:
+        specifier: ^10.0.1
+        version: 10.0.1
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.0
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-rehype:
+        specifier: ^11.1.1
+        version: 11.1.1
+      remark-toc:
+        specifier: ^9.0.0
+        version: 9.0.0
+      shiki:
+        specifier: ^1.24.2
+        version: 1.24.2
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+    devDependencies:
+      '@types/clean-css':
+        specifier: ^4.2.11
+        version: 4.2.11
+      '@types/micromatch':
+        specifier: ^4.0.7
+        version: 4.0.9
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.10.2
+      '@types/react':
+        specifier: ^19.0.1
+        version: 19.0.2
+      '@types/react-dom':
+        specifier: ^19.0.1
+        version: 19.0.2(@types/react@19.0.2)
+      clean-css:
+        specifier: ^5.3.3
+        version: 5.3.3
+
+  packages/rasengan-theme:
     dependencies:
       react:
         specifier: ^18.3.*
@@ -1726,9 +1641,6 @@ packages:
     resolution: {integrity: sha512-LJKFHCSeIRq9hanN14IlOtPSTe3lNES7TYDTE2xxdAy1LS5rYphajK1qtwvj3YmQXvvk0U2Vbmcni8P9EIQW9w==}
     engines: {node: '>=18'}
 
-  invariant@2.2.4:
-    resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
-
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
@@ -2285,23 +2197,10 @@ packages:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
 
-  react-dom@18.3.1:
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
-    peerDependencies:
-      react: ^18.3.1
-
   react-dom@19.0.0:
     resolution: {integrity: sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==}
     peerDependencies:
       react: ^19.0.0
-
-  react-fast-compare@3.2.2:
-    resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
-
-  react-helmet-async@2.0.5:
-    resolution: {integrity: sha512-rYUYHeus+i27MvFE+Jaa4WsyBKGkL6qVgbJvSBoX8mbsWoABJXdEO0bZyi0F6i+4f0NuIb8AvqPMj3iXFHkMwg==}
-    peerDependencies:
-      react: ^16.6.0 || ^17.0.0 || ^18.0.0
 
   react-markdown@9.0.1:
     resolution: {integrity: sha512-186Gw/vF1uRkydbsOIkcGXw7aHq0sZOCRFFjGrr7b9+nVZg4UfA4enXCaxm4fUzecU38sWfrNDitGhshuU7rdg==}
@@ -2442,9 +2341,6 @@ packages:
   sax@1.4.1:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
 
-  scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-
   scheduler@0.25.0:
     resolution: {integrity: sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==}
 
@@ -2477,9 +2373,6 @@ packages:
 
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
-
-  shallowequal@1.1.0:
-    resolution: {integrity: sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==}
 
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
@@ -3322,7 +3215,7 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.17.10
+      '@types/node': 22.10.2
 
   '@types/braces@3.0.4': {}
 
@@ -3337,7 +3230,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.17.10
+      '@types/node': 22.10.2
 
   '@types/cookie@0.6.0': {}
 
@@ -3353,7 +3246,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.6':
     dependencies:
-      '@types/node': 20.17.10
+      '@types/node': 22.10.2
       '@types/qs': 6.9.17
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -3430,12 +3323,12 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.17.10
+      '@types/node': 22.10.2
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 20.17.10
+      '@types/node': 22.10.2
       '@types/send': 0.17.4
 
   '@types/through@0.0.33':
@@ -4205,10 +4098,6 @@ snapshots:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
 
-  invariant@2.2.4:
-    dependencies:
-      loose-envify: 1.4.0
-
   ipaddr.js@1.9.1: {}
 
   is-alphabetical@2.0.1: {}
@@ -4967,11 +4856,11 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prism-react-renderer@2.4.1(react@18.3.1):
+  prism-react-renderer@2.4.1(react@19.0.0):
     dependencies:
       '@types/prismjs': 1.26.5
       clsx: 2.1.1
-      react: 18.3.1
+      react: 19.0.0
 
   property-information@6.5.0: {}
 
@@ -4996,35 +4885,20 @@ snapshots:
       iconv-lite: 0.4.24
       unpipe: 1.0.0
 
-  react-dom@18.3.1(react@18.3.1):
-    dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
-
   react-dom@19.0.0(react@19.0.0):
     dependencies:
       react: 19.0.0
       scheduler: 0.25.0
 
-  react-fast-compare@3.2.2: {}
-
-  react-helmet-async@2.0.5(react@19.0.0):
-    dependencies:
-      invariant: 2.2.4
-      react: 19.0.0
-      react-fast-compare: 3.2.2
-      shallowequal: 1.1.0
-
-  react-markdown@9.0.1(@types/react@18.3.16)(react@18.3.1):
+  react-markdown@9.0.1(@types/react@19.0.2)(react@19.0.0):
     dependencies:
       '@types/hast': 3.0.4
-      '@types/react': 18.3.16
+      '@types/react': 19.0.2
       devlop: 1.1.0
       hast-util-to-jsx-runtime: 2.3.2
       html-url-attributes: 3.0.1
       mdast-util-to-hast: 13.2.0
-      react: 18.3.1
+      react: 19.0.0
       remark-parse: 11.0.0
       remark-rehype: 11.1.1
       unified: 11.0.5
@@ -5248,10 +5122,6 @@ snapshots:
 
   sax@1.4.1: {}
 
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
-
   scheduler@0.25.0: {}
 
   section-matter@1.0.0:
@@ -5303,8 +5173,6 @@ snapshots:
       has-property-descriptors: 1.0.2
 
   setprototypeof@1.2.0: {}
-
-  shallowequal@1.1.0: {}
 
   shebang-command@2.0.0:
     dependencies:
