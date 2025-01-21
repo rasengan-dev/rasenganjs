@@ -11,7 +11,12 @@
 			"require": "./lib/index.js",
 			"types": "./lib/types/index.d.ts"
 		},
-		"./styles/rasengan-mdx.min.css": "./lib/styles/rasengan-mdx.min.css"
+		"./styles/rasengan-mdx.min.css": "./lib/styles/rasengan-mdx.min.css",
+		"./plugin": {
+			"import": "./lib/utils/plugin.js",
+			"require": "./lib/utils/plugin.js",
+			"types": "./lib/utils/plugin.d.ts"
+		}
 	},
 	"author": {
 		"name": "dilane3",

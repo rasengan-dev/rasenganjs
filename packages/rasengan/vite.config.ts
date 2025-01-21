@@ -98,7 +98,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 				},
 				external: [...vite?.build?.external],
 			},
-			chunkSizeWarningLimit: 500,
+			chunkSizeWarningLimit: 1000,
 			emptyOutDir: true,
 		},
 

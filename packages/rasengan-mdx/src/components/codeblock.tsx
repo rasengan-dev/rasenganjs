@@ -23,7 +23,6 @@ export const CodeBlock = ({
 }: CodeBlockProps): React.ReactElement => {
 	const language = rest["data-language"] || "";
 	const numbers = rest["data-line-numbers"];
-	// const theme = rest["data-theme"] || "github-dark-dimmed";
 	const [hover, setHover] = React.useState(false);
 	const [copied, setCopied] = React.useState(false);
 
