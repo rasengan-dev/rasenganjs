@@ -7,7 +7,7 @@
  */
 
 // Import statements
-import { MDXRenderer } from "./components/renderer.js";
+import { MDXRenderer } from "./components/index.js";
 import Markdown from "react-markdown";
 
 // Export statements
