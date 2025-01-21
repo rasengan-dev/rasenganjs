@@ -6,10 +6,6 @@
  * This package is inspired by @mdx-js/rollup to provide a custom implement of the MDX plugin for RasenganJs.
  */
 
-// Import statements
-import { MDXRenderer } from "./components/index.js";
-import Markdown from "react-markdown";
-
 // Export statements
 export * from "./types/index.js";
-export { Markdown, MDXRenderer };
+export * from "./components/index.js";
