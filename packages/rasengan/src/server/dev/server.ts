@@ -26,7 +26,7 @@ import {
 	isStaticRedirectFromConfig,
 	logServerInfo,
 } from "./utils.js";
-import { getDirname, loadModuleSSR } from "../../core/config/utils/index.js";
+import { getDirname, loadModuleSSR } from "../../core/config/utils/load-modules.js";
 import { generateRoutes } from "../../routing/utils/index.js";
 import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
 

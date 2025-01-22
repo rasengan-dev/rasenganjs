@@ -1,11 +1,10 @@
 // Imports
 import renderApp from "./entries/client/render.js";
-import { defineConfig, resolvePath } from "./core/index.js";
+import { defineConfig } from "./core/config/utils/define-config.js";
 
 // Exports
 export * from "./routing/index.js";
-export * from "./entries/server/index.js";
-export { renderApp, defineConfig, resolvePath };
+export { defineConfig, renderApp };
 
 // Export types
 export type {

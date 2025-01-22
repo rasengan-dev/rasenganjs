@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import { findModulePath } from "../../core/config/utils/index.js";
+import { findModulePath } from "../../core/config/utils/load-modules.js";
 import type * as Express from "express";
 
 /**
  * Render a React component to a stream.
- * @param Component 
- * @param res 
- * @returns 
+ * @param Component
+ * @param res
+ * @returns
  */
 export const renderToStream = async (
 	Component: React.ReactNode,

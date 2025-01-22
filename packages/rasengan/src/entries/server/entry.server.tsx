@@ -4,7 +4,7 @@ import type { AppProps } from "../../core/types.js";
 import { type Response } from "express";
 import { StaticHandlerContext } from "react-router";
 
-import { loadModuleSSR } from "../../core/config/utils/index.js";
+import { loadModuleSSR } from "../../core/config/utils/load-modules.js";
 import type {
 	Metadata,
 	MetadataWithoutTitleAndDescription,

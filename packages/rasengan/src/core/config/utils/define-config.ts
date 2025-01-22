@@ -1,4 +1,3 @@
-import rasenganServerEntryPlugin from "../../../entries/server/virtual/entry.server.js";
 import type {
 	AppConfig,
 	AppConfigFunction,
@@ -71,7 +70,7 @@ export const defineConfig = async (
 		const config: AppConfig = {
 			server: defaultServerConfig,
 			vite: {
-				plugins: [...defaultViteConfig.plugins, rasenganServerEntryPlugin()],
+				plugins: [...defaultViteConfig.plugins],
 
 				optimizeDeps: {
 					exclude: [...defaultViteConfig.optimizeDeps.exclude],

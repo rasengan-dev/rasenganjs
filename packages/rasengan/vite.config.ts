@@ -4,7 +4,7 @@ import { join } from "node:path";
 import {
 	loadModuleSSR,
 	getDirname,
-} from "./lib/esm/core/config/utils/index.js";
+} from "./lib/esm/core/config/utils/load-modules.js";
 import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
 
 /**

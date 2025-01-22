@@ -26,7 +26,7 @@ import { isServerMode, ServerMode } from "../../../server/runtime/mode.js";
  */
 export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 	// Load getDirname function and join function
-	const { getDirname } = await import("../utils/index.js");
+	const { getDirname } = await import("../utils/load-modules.js");
 	const { join } = await import("node:path");
 
 	// Get root path

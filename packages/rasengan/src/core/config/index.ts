@@ -1,3 +1,4 @@
-import { defineConfig, resolvePath, loadModuleSSR } from "./utils/index.js";
+import { defineConfig } from "./utils/define-config.js";
+import { resolvePath } from "./utils/path.js";
 
-export { defineConfig, resolvePath, loadModuleSSR };
+export { defineConfig, resolvePath };
