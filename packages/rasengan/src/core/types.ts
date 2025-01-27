@@ -20,6 +20,6 @@ export type AppProps = {
  * Props for the base Component that takes the app router
  */
 export type ComponentProps = {
-	router: RouterComponent;
+	Router: RouterComponent;
 	children: React.ReactNode;
 };

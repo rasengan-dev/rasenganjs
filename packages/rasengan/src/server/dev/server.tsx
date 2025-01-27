@@ -10,6 +10,7 @@ import {
 	createStaticHandler,
 	createStaticRouter,
 	StaticHandlerContext,
+	StaticRouterProvider,
 } from "react-router";
 import chalk from "chalk";
 import inquirer from "inquirer";
@@ -26,11 +27,14 @@ import {
 	isStaticRedirectFromConfig,
 	logServerInfo,
 } from "./utils.js";
-import { getDirname, loadModuleSSR } from "../../core/config/utils/load-modules.js";
+import {
+	getDirname,
+	loadModuleSSR,
+} from "../../core/config/utils/load-modules.js";
 import { generateRoutes } from "../../routing/utils/index.js";
 import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
 
-import { type AppConfig } from "../../index.js";
+import { RouterComponent, type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
 import { logRedirection as log } from "../../core/utils/log.js";
 
@@ -63,7 +67,7 @@ async function devRequestHandler(
  * @param param2
  * @returns
  */
-async function handleRedirectRequest(
+export async function handleRedirectRequest(
 	req: Express.Request,
 	res: Express.Response,
 	{
@@ -124,7 +128,7 @@ async function handleDocumentRequest(
 		);
 
 		// Load app-router
-		const AppRouter = (
+		const AppRouter: RouterComponent = (
 			await runner.import(join(`${rootPath}/src/app/app.router`))
 		).default;
 
@@ -158,9 +162,15 @@ async function handleDocumentRequest(
 				...Object.fromEntries(headers),
 			});
 
+			const Router = <StaticRouterProvider router={router} context={context} />;
+
 			// If stream mode enabled, render the page as a plain text
-			return await render(router, res, { context, metadata });
+			return await render(Router, res, {
+				metadata,
+			});
 		}
+
+		return context;
 	} catch (error) {
 		// Just log the error for now
 		console.error(error);

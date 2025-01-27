@@ -27,7 +27,6 @@ import { Suspense } from "react";
  */
 export const getRouter = (routerInstance: RouterComponent) => {
 	const routes = generateRoutes(routerInstance);
-
 	let router = createBrowserRouter(routes);
 
 	return () => <RouterProvider router={router} />;

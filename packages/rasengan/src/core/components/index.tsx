@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { JSX, useMemo } from "react";
 import { ComponentProps } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import { Outlet } from "react-router";
@@ -12,7 +12,7 @@ import {
  * App component that represent the entry point of the application
  */
 export const RootComponent = ({
-	router: AppRouter,
+	Router: AppRouter,
 	children = undefined,
 }: ComponentProps) => {
 	// Return children if they exist
@@ -31,12 +31,14 @@ export const RootComponent = ({
  */
 export const HeadComponent = ({
 	metadata,
+	assets = [],
 	children = undefined,
 }: {
 	metadata: {
 		page: Metadata;
 		layout: MetadataWithoutTitleAndDescription;
 	};
+	assets?: JSX.Element[];
 	children?: React.ReactNode;
 	bootstrap?: string;
 	styles?: string;
@@ -61,6 +63,8 @@ export const HeadComponent = ({
 	return (
 		<head>
 			{metaTags}
+
+			{assets}
 
 			<title>{title}</title>
 			<meta name='description' content={description} data-rg='true' />

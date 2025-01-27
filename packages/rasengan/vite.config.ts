@@ -64,7 +64,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 			minify: "esbuild",
 			outDir: "./dist/client",
 			rollupOptions: {
-				input: "./src/index.ts",
+				input: "./src/index", // Handle extension properly
 				output: {
 					manualChunks(id: string) {
 						const isNodeModule = id.includes("node_modules");
@@ -131,10 +131,15 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 
 					// Rollup options
 					rollupOptions: {
-						input: `${join(
-							__dirname,
-							"./lib/esm/entries/server/entry.server.js"
-						)}`,
+						input: {
+							"entry.server": `${join(
+								__dirname,
+								"./lib/esm/entries/server/entry.server.js"
+							)}`,
+							"app.router": `./src/app/app.router`,
+							main: `./src/main`,
+							template: `./src/template`,
+						},
 					},
 
 					// Enable SSR

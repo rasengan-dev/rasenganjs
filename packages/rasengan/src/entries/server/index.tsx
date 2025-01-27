@@ -1,5 +1,4 @@
-import React, { FunctionComponent } from "react";
-import { StaticHandlerContext, StaticRouterProvider } from "react-router";
+import React, { FunctionComponent, JSX } from "react";
 import {
 	BodyComponent,
 	HeadComponent,
@@ -13,21 +12,20 @@ import {
 	TemplateProps,
 } from "../../routing/types.js";
 import { isServerMode, ServerMode } from "../../server/runtime/mode.js";
-import { renderToStream, renderToString } from "./utils.js";
 
 export const TemplateLayout = ({
-	router,
-	context,
+	StaticRouterComponent,
 	metadata,
+	assets,
 	App,
 	Template,
 }: {
-	router: any;
-	context: StaticHandlerContext;
+	StaticRouterComponent: React.ReactNode;
 	metadata: {
 		page: Metadata;
 		layout: MetadataWithoutTitleAndDescription;
 	};
+	assets?: JSX.Element[];
 	App: FunctionComponent<AppProps>;
 	Template: FunctionComponent<TemplateProps>;
 }) => {
@@ -38,14 +36,14 @@ export const TemplateLayout = ({
 		isServerMode(process.env.NODE_ENV) &&
 		process.env.NODE_ENV === ServerMode.Development
 	) {
-    const refreshScript = `
+		const refreshScript = `
       import RefreshRuntime from "/@react-refresh"
       RefreshRuntime.injectIntoGlobalHook(window)
       window.$RefreshReg$ = () => {}
       window.$RefreshSig$ = () => (type) => type
       window.__vite_plugin_react_preamble_installed__ = true
     `;
-    
+
 		viteScripts = (
 			<React.Fragment>
 				<script type='module' src='/@vite/client' />
@@ -60,7 +58,7 @@ export const TemplateLayout = ({
 	return (
 		<Template
 			Head={({ children }) => (
-				<HeadComponent metadata={metadata}>
+				<HeadComponent metadata={metadata} assets={assets}>
 					{viteScripts}
 					{children}
 				</HeadComponent>
@@ -69,9 +67,7 @@ export const TemplateLayout = ({
 				<BodyComponent
 					asChild
 					AppContent={
-						<App Component={RootComponent}>
-							<StaticRouterProvider router={router} context={context} />
-						</App>
+						<App Component={RootComponent}>{StaticRouterComponent}</App>
 					}
 				>
 					{children}
@@ -81,5 +77,3 @@ export const TemplateLayout = ({
 		/>
 	);
 };
-
-export { renderToString, renderToStream };

@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 /// <reference types="../lib/types/index.d.ts" />
 
+import { RouteObject } from "../lib/esm/routing/types";
+
 // Markdown files
 
 declare module "*.mdx" {
@@ -58,3 +60,11 @@ declare module "virtual:entry-server" {
 		}
 	): Promise<unknown>;
 }
+
+// Add new properties to window global object
+declare global {
+	interface Window {
+		__RASENGAN_DATA_ROUTE__?: RouteObject[]; // Replace `any` with the specific type of your data
+	}
+}
+

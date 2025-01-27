@@ -29,6 +29,16 @@
 			"import": "./lib/esm/core/dynamic/index.js",
 			"require": "./lib/esm/core/dynamic/index.js",
 			"types": "./lib/types/core/dynamic/index.d.ts"
+		},
+		"./server": {
+			"import": "./lib/esm/server.js",
+			"require": "./lib/esm/server.js",
+			"types": "./lib/types/server.d.ts"
+		},
+		"./client": {
+			"import": "./lib/esm/client.js",
+			"require": "./lib/esm/client.js",
+			"types": "./lib/types/client.d.ts"
 		}
 	},
 	"author": {

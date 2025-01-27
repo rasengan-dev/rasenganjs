@@ -1,8 +1,7 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, JSX } from "react";
 import type { AppProps } from "../../core/types.js";
 
 import { type Response } from "express";
-import { StaticHandlerContext } from "react-router";
 
 import { loadModuleSSR } from "../../core/config/utils/load-modules.js";
 import type {
@@ -12,47 +11,66 @@ import type {
 } from "../../routing/types.js";
 import { renderToStream } from "./utils.js";
 import { TemplateLayout } from "./index.js";
+import { BuildOptions } from "../../server/node/index.js";
+import { join } from "path/posix";
 
-/**
- * Render the app to a stream
- * @param router
- * @param context
- * @param helmetContext
- * @param res
- * @returns
- */
-export async function render(
-	router: any,
+export type RenderStreamFunction = (
+	StaticRouterComponent: React.ReactNode,
 	res: Response,
 	options: {
-		context: StaticHandlerContext;
 		metadata: {
 			page: Metadata;
 			layout: MetadataWithoutTitleAndDescription;
 		};
+		assets?: JSX.Element[]; // Usefull for the production build
+		buildOptions?: BuildOptions;
 	}
-) {
-	const { context, metadata } = options;
+) => Promise<void>;
+
+/**
+ * Render the app to a stream
+ * @param StaticRouterComponent
+ * @param helmetContext
+ * @param res
+ * @returns
+ */
+export const render: RenderStreamFunction = async (
+	StaticRouterComponent,
+	res,
+	options
+) => {
+	const { metadata, assets, buildOptions } = options;
 
 	// Root path
 	const rootPath = process.cwd();
 
-	// Import Main App Component
-	const App = (await loadModuleSSR(`${rootPath}/src/main`))
-		.default as FunctionComponent<AppProps>;
+	let App: FunctionComponent<AppProps>;
+	let Template: FunctionComponent<TemplateProps>;
 
-	// Import Template
-	const Template = (await loadModuleSSR(`${rootPath}/src/template`))
-		.default as FunctionComponent<TemplateProps>;
+	if (buildOptions) {
+		App = (
+			await loadModuleSSR(join(buildOptions.buildDirectory, "server/main.js"))
+		).default;
+		Template = (
+			await loadModuleSSR(
+				join(buildOptions.buildDirectory, "server/template.js")
+			)
+		).default;
+	} else {
+		// Import Main App Component
+		App = (await loadModuleSSR(`${rootPath}/src/main`)).default;
+		// Import Template
+		Template = (await loadModuleSSR(`${rootPath}/src/template`)).default;
+	}
 
-	return await renderToStream(
+	await renderToStream(
 		<TemplateLayout
-			router={router}
-			context={context}
+			StaticRouterComponent={StaticRouterComponent}
 			metadata={metadata}
+			assets={assets}
 			App={App}
 			Template={Template}
 		/>,
 		res
 	);
-}
+};

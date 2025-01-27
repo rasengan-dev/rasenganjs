@@ -21,7 +21,6 @@ export const loadModuleSSR = async (path: string) => {
 	try {
 		let modulePath = path;
 
-		
 		// Check if the module path has an extension
 		const moduleExtension = path.split(".").pop(); // eg: js or ts
 

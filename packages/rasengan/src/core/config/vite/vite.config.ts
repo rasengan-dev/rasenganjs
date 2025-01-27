@@ -65,7 +65,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 			minify: "esbuild",
 			outDir: "./dist/client",
 			rollupOptions: {
-				input: "./src/index.ts",
+				input: "./src/index",
 				output: {
 					manualChunks(id: string) {
 						if (id.includes("node_modules")) {

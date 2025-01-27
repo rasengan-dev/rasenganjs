@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import { findModulePath } from "../../core/config/utils/load-modules.js";
 import type * as Express from "express";
+import { isServerMode, ServerMode } from "../../server/runtime/mode.js";
 
 /**
  * Render a React component to a stream.
@@ -15,15 +15,20 @@ export const renderToStream = async (
 ) => {
 	const ABORT_DELAY = 10_000;
 
+	let bootstrap = [];
+
+	if (
+		isServerMode(process.env.NODE_ENV) &&
+		process.env.NODE_ENV === ServerMode.Development
+	) {
+		bootstrap.push("/src/index");
+	}
+
 	return new Promise(async (resolve, reject) => {
 		let shellRendered = false;
 
-		const rootPath = process.cwd();
-
-		const { extension } = await findModulePath(`${rootPath}/src/index`);
-
 		const { pipe, abort } = renderToPipeableStream(Component, {
-			bootstrapModules: [`/src/index${extension}`],
+			bootstrapModules: bootstrap,
 			onShellReady() {
 				shellRendered = true;
 
@@ -32,7 +37,6 @@ export const renderToStream = async (
 				pipe(res);
 			},
 			onShellError(error: unknown) {
-				console.log({ error });
 				reject(error);
 			},
 			onError(error: unknown) {
