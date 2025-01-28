@@ -1,8 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="../lib/types/index.d.ts" />
 
-import { RouteObject } from "../lib/esm/routing/types";
-
 // Markdown files
 
 declare module "*.mdx" {
@@ -35,7 +33,7 @@ declare module "*.js?raw" {
  **/
 declare module "virtual:entry-server" {
 	import { type Response } from "express";
-	import { StaticHandlerContext } from "react-router";
+	import { redirect, StaticHandlerContext } from "react-router";
 	import {
 		Metadata,
 		MetadataWithoutTitleAndDescription,
@@ -61,10 +59,8 @@ declare module "virtual:entry-server" {
 	): Promise<unknown>;
 }
 
-// Add new properties to window global object
-declare global {
-	interface Window {
-		__RASENGAN_DATA_ROUTE__?: RouteObject[]; // Replace `any` with the specific type of your data
-	}
-}
+// declare module "virtual:rasengan-config" {
+// 	import { type ProductionAppConfig } from "../lib/esm/core/config/types.js";
 
+// 	export const __RASENGAN_CONFIG__: ProductionAppConfig;
+// }

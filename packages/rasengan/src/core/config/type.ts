@@ -1,12 +1,4 @@
-export type AppConfig = {
-	/**
-	 * Enable strict mode
-	 * @default true
-	 * @deprecated
-	 * This option will be removed in the future, prefer using the "StrictMode" component from your App component props or from "react"
-	 */
-	reactStrictMode?: boolean;
-
+export type PartialAppConfig = {
 	/**
 	 * Configure server both in development and production
 	 */
@@ -40,6 +32,13 @@ export type AppConfig = {
 		};
 	};
 
+	/**
+	 * Configure the app
+	 */
+	redirects?: () => Promise<Redirect[]>;
+};
+
+export type AppConfig = PartialAppConfig & {
 	/**
 	 * Configure Vite
 	 */
@@ -101,23 +100,10 @@ export type AppConfig = {
 
 		appType: "custom" | "mpa";
 	};
+};
 
-	/**
-	 * List of experimental features
-	 */
-	// experimental?: {
-	// 	/**
-	// 	 * Enable stream mode in order to use suspense feature of react
-	// 	 */
-	// 	stream?: boolean;
-	// };
-
-	/**
-	 * Configure the app
-	 */
-	redirects?: () => Promise<Redirect[]>;
-
-	// More config options...
+export type ProductionAppConfig = Omit<PartialAppConfig, "redirects"> & {
+	redirects: Redirect[];
 };
 
 export type AppConfigFunction = () => AppConfig;
@@ -147,4 +133,4 @@ export type Redirect = {
 	 * Permanent redirect
 	 */
 	permanent?: boolean;
-}
+};

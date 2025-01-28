@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import chalk from "chalk";
 import { Command } from "commander";
 import { execa } from "execa";
@@ -6,7 +5,6 @@ import { execa } from "execa";
 // @ts-ignore
 import path from "node:path";
 import { resolvePath } from "../core/config/index.js";
-import { build } from "vite";
 
 const program = new Command();
 

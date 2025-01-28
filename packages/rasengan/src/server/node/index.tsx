@@ -15,15 +15,15 @@ import {
 	isRedirectResponse,
 	isStaticRedirectFromConfig,
 } from "../dev/utils.js";
-import { handleRedirectRequest } from "../dev/server.js";
-import { AppConfig } from "../../index.js";
+import { handleRedirectRequest } from "../dev/handlers.js";
+import { AppConfig } from "../../core/config/type.js";
+import { loadModuleSSR } from "../../core/config/utils/load-modules.js";
 
 export interface BuildOptions {
 	buildDirectory: string;
 	manifestPathDirectory: string;
 	assetPathDirectory: string;
 	entryServerPath: string;
-	// config: AppConfig;
 }
 
 export function createRequestHandler(buildOptions: BuildOptions) {
@@ -47,9 +47,16 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 					buildOptions.entryServerPath
 				)
 			);
+			// Get AppRouter
 			const AppRouter = (
 				await import(
 					path.posix.join(buildOptions.buildDirectory, "server/app.router.js")
+				)
+			).default;
+			// Get Config
+			const config: AppConfig = await (
+				await loadModuleSSR(
+					path.posix.join(buildOptions.buildDirectory, "server/config.js")
 				)
 			).default;
 
@@ -70,14 +77,15 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 			let request = createRasenganRequest(req, res);
 			let context = await handler.query(request);
 
-			// const redirectFound = await isStaticRedirectFromConfig(
-			// 	req,
-			// 	buildOptions.config
-			// );
+			const redirects = await config.redirects();
+			const redirectFound = await isStaticRedirectFromConfig(req, redirects);
 
-			// if (isRedirectResponse(context as Response) || redirectFound) {
-			// 	return await handleRedirectRequest(req, res, { context, config: buildOptions.config });
-			// }
+			if (isRedirectResponse(context as Response) || redirectFound) {
+				return await handleRedirectRequest(req, res, {
+					context,
+					redirects,
+				});
+			}
 
 			if (!(context instanceof Response)) {
 				// Extract meta from context
@@ -97,7 +105,8 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 				});
 
 				const Router = (
-					<StaticRouterProvider router={router} context={context} hydrate />
+					<StaticRouterProvider router={router} context={context} />
+					// StaticRouterProvider({ router, context })
 				);
 
 				// If stream mode enabled, render the page as a plain text

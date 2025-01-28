@@ -6,6 +6,7 @@ import {
 	getDirname,
 } from "./lib/esm/core/config/utils/load-modules.js";
 import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
+import { plugins } from "./lib/esm/core/plugins/index.js";
 
 /**
  * Configures the Vite build for the Rasengan.js application.
@@ -48,7 +49,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 		},
 
 		// Vite Plugins
-		plugins: [react(), ...vite?.plugins],
+		plugins: [react({ jsxRuntime: "automatic" }), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
 
 		// define index.html location
 		root: rootPath,
@@ -139,6 +140,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 							"app.router": `./src/app/app.router`,
 							main: `./src/main`,
 							template: `./src/template`,
+							config: `./rasengan.config.js`,
 						},
 					},
 

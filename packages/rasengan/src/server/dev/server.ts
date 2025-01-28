@@ -4,14 +4,7 @@ import type * as Express from "express";
 import type * as Vite from "vite";
 import {
 	createServer as createViteServer,
-	createServerModuleRunner,
 } from "vite";
-import {
-	createStaticHandler,
-	createStaticRouter,
-	StaticHandlerContext,
-	StaticRouterProvider,
-} from "react-router";
 import chalk from "chalk";
 import inquirer from "inquirer";
 
@@ -20,23 +13,17 @@ import { loggerMiddleware } from "../../core/middlewares/index.js";
 
 // Load utilities functions
 import {
-	extractHeadersFromRRContext,
-	extractMetaFromRRContext,
 	isDocumentRequest,
-	isRedirectResponse,
-	isStaticRedirectFromConfig,
 	logServerInfo,
 } from "./utils.js";
 import {
 	getDirname,
 	loadModuleSSR,
 } from "../../core/config/utils/load-modules.js";
-import { generateRoutes } from "../../routing/utils/index.js";
-import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
 
-import { RouterComponent, type AppConfig } from "../../index.js";
+import { type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
-import { logRedirection as log } from "../../core/utils/log.js";
+import { handleDocumentRequest } from "./handlers.js";
 
 type ServerError = Error & { code: string };
 
@@ -58,123 +45,6 @@ async function devRequestHandler(
 	}
 
 	return res.status(404).send("Not found");
-}
-
-/**
- * Handle redirect request
- * @param req
- * @param res
- * @param param2
- * @returns
- */
-export async function handleRedirectRequest(
-	req: Express.Request,
-	res: Express.Response,
-	{
-		context,
-		config,
-	}: { context: StaticHandlerContext | Response; config: AppConfig }
-) {
-	// Handle redirects from config file
-	const redirects = await config.redirects();
-
-	for (let redirect of redirects) {
-		if (redirect.source === req.originalUrl) {
-			// Log redirect
-			log(redirect.source, redirect.destination);
-
-			res.status(redirect.permanent ? 301 : 302);
-			return res.redirect(redirect.destination);
-		}
-	}
-
-	// Handle redirects from loader functions
-	if (context instanceof Response) {
-		const status = context.status; // "status" is only available when redirecting from loader, normally it's statusCode
-
-		if (status === 302 || status === 301) {
-			const redirectURL = context.headers.get("Location");
-
-			// Set redirect status
-			res.status(status);
-
-			// Log redirect
-			log(req.originalUrl, redirectURL);
-
-			// Redirect
-			return res.redirect(redirectURL);
-		}
-
-		// TODO: Check this line again
-		return await sendRasenganResponse(res, context);
-	}
-}
-
-async function handleDocumentRequest(
-	req: Express.Request,
-	res: Express.Response,
-	viteDevServer: Vite.ViteDevServer,
-	options: { rootPath: string; __dirname: string; config: AppConfig }
-) {
-	try {
-		const { rootPath, __dirname, config } = options;
-
-		// Get the module runner through ssr environment
-		const runner = createServerModuleRunner(viteDevServer.environments.ssr);
-
-		// Get the render function and app router
-		const { render } = await runner.import(
-			join(`${__dirname}./../../entries/server/entry.server.js`)
-		);
-
-		// Load app-router
-		const AppRouter: RouterComponent = (
-			await runner.import(join(`${rootPath}/src/app/app.router`))
-		).default;
-
-		// Get static routes
-		const staticRoutes = generateRoutes(AppRouter);
-
-		// Create static handler
-		let handler = createStaticHandler(staticRoutes);
-
-		// Create rasengan request for static routing
-		let request = createRasenganRequest(req, res);
-		let context = await handler.query(request);
-
-		const redirectFound = await isStaticRedirectFromConfig(req, config);
-
-		if (isRedirectResponse(context as Response) || redirectFound) {
-			return await handleRedirectRequest(req, res, { context, config });
-		}
-
-		if (!(context instanceof Response)) {
-			// Extract meta from context
-			const metadata = extractMetaFromRRContext(context);
-
-			// Create static router
-			let router = createStaticRouter(handler.dataRoutes, context);
-
-			const headers = extractHeadersFromRRContext(context);
-
-			// Set headers
-			res.writeHead(context.statusCode, {
-				...Object.fromEntries(headers),
-			});
-
-			const Router = <StaticRouterProvider router={router} context={context} />;
-
-			// If stream mode enabled, render the page as a plain text
-			return await render(Router, res, {
-				metadata,
-			});
-		}
-
-		return context;
-	} catch (error) {
-		// Just log the error for now
-		console.error(error);
-	}
 }
 
 /**

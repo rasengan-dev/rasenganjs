@@ -6,7 +6,7 @@
 	"type": "module",
 	"main": "lib/esm/index.js",
 	"bin": {
-		"rasengan": "./lib/esm/cli/index.js"
+		"rasengan": "bin.js"
 	},
 	"exports": {
 		".": {

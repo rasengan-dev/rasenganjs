@@ -9,7 +9,9 @@ import { ServerMode } from "../runtime/mode.js";
 import { StaticHandlerContext } from "react-router";
 import { Metadata } from "../../routing/types.js";
 import type * as Express from "express";
-import { AppConfig } from "../../core/config/type.js";
+import { Redirect } from "../../core/config/type.js";
+import { logRedirection as log } from "../../core/utils/log.js";
+import { sendRasenganResponse } from "../node/utils.js";
 
 // Get local IP
 export default function getIPAddress() {
@@ -266,9 +268,10 @@ export function isRedirectResponse(context: Response) {
 	return context.status === 302 || context.status === 301;
 }
 
-export async function isStaticRedirectFromConfig(req: Express.Request, config: AppConfig) {
-	// Handle redirects from config file
-	const redirects = await config.redirects();
+export async function isStaticRedirectFromConfig(
+	req: Express.Request,
+	redirects: Redirect[]
+) {
 	let redirectFound = false;
 
 	for (let redirect of redirects) {
@@ -280,3 +283,4 @@ export async function isStaticRedirectFromConfig(req: Express.Request, config: A
 
 	return redirectFound;
 }
+
