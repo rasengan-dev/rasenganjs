@@ -12,7 +12,7 @@ import {
  * App component that represent the entry point of the application
  */
 export const RootComponent = ({
-	Router: AppRouter,
+	router: AppRouter,
 	children = undefined,
 }: ComponentProps) => {
 	// Return children if they exist

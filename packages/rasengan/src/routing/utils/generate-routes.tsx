@@ -21,6 +21,11 @@ import {
 } from "../types.js";
 import { Suspense } from "react";
 
+const defaultMetadata: Metadata = {
+	title: "Not Found",
+	description: "Page not found",
+}
+
 /**
  * This function receives a router component and get a formated router first
  * and then return a router.
@@ -142,6 +147,12 @@ export const generateRoutes = (
 		route.children.push({
 			path: "*",
 			element: router.notFoundComponent ?? <NotFoundPageComponent />,
+			loader: async () => {
+				return {
+					props: {},
+					meta: defaultMetadata,
+				};
+			}
 		});
 	}
 
