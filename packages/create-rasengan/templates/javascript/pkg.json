@@ -5,18 +5,17 @@
 	"type": "module",
 	"scripts": {
 		"dev": "rasengan dev",
-		"build": "rasengan build",
-		"build:prepare": "rasengan prepare",
-		"start": "rasengan start"
+		"build": "rasengan build"
 	},
 	"dependencies": {
 		"rasengan": "^1.0.0",
 		"@rasenganjs/image": "^1.0.0",
-		"react": "^18.3.0",
-		"react-dom": "^18.3.0"
+		"@rasenganjs/serve": "^1.0.0",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3",
-		"vite": "^5.2.0"
+		"vite": "^6.0.0"
 	}
 }

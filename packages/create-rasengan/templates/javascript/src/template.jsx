@@ -1,5 +1,4 @@
 export default function Template({
-  children,
   Head,
   Body,
   Script
@@ -13,8 +12,6 @@ export default function Template({
       </Head>
 
       <Body>
-        {children}
-
         <Script />
       </Body>
     </html>

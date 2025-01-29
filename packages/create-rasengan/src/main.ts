@@ -435,3 +435,12 @@ program
   });
 
 program.parse(process.argv);
+
+["SIGTERM", "SIGINT"].forEach((signal) => {
+	process.once(signal, () => {
+    console.log("\n");
+    console.log(chalk.red("❌ The process was interrupted!"));
+  });
+});
+
+
