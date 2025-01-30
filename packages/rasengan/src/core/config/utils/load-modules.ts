@@ -29,7 +29,7 @@ export const loadModuleSSR = async (path: string) => {
 			modulePath = newPath;
 		}
 
-		const module = await import(resolvePath(modulePath));
+		const module = await import(/* @vite-ignore */ resolvePath(modulePath));
 		return module;
 	} catch (error) {
 		throw new Error(error);

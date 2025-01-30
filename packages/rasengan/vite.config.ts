@@ -44,12 +44,12 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 
 	return {
 		// Define env
-		define: {
-			"process.env": process.env,
-		},
+		// define: {
+		// 	"process.env": process.env,
+		// },
 
 		// Vite Plugins
-		plugins: [react({ jsxRuntime: "automatic" }), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
+		plugins: [react(), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
 
 		// define index.html location
 		root: rootPath,
@@ -65,39 +65,25 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 			minify: "esbuild",
 			outDir: "./dist/client",
 			rollupOptions: {
-				input: "./src/index", // Handle extension properly
 				output: {
 					manualChunks(id: string) {
-						const isNodeModule = id.includes("node_modules");
-						const isSharedComponent = id.includes("src/components");
-						const isAppPage = id.includes("src/app") && id.includes(".page.");
+						if (id.includes("node_modules")) return "vendor";
+						if (id.includes("src/components")) return "shared-components";
 
-						if (isNodeModule) {
-							return "vendor"; // All third-party dependencies in one chunk
-						}
-
-						if (isSharedComponent) {
-							return "shared-components"; // Shared UI components
-						}
-
-						if (isAppPage) {
-							try {
-								const pageFileName = id.split("src/app")[1]?.split("/").pop();
-								if (pageFileName) {
-									const pageName = pageFileName.split(".")[0];
-									return `page-${pageName}`; // One chunk per page
-								}
-							} catch {
-								console.warn(
-									`Could not process app page chunk for file: ${id}`
-								);
+						if (id.includes("src/app") && id.includes(".page.")) {
+							const parts = id.split("src/app")[1]?.split("/");
+							if (parts?.length) {
+								const pageName = parts.pop()?.split(".")[0];
+								return pageName ? `page-${pageName}` : undefined;
 							}
 						}
 
-						return undefined; // Default behavior for unclassified chunks
+						return undefined;
 					},
 				},
-				external: [...vite?.build?.external],
+				external: Array.isArray(vite?.build?.external)
+					? [...vite.build.external]
+					: [],
 			},
 			chunkSizeWarningLimit: 1000,
 			emptyOutDir: true,
@@ -118,6 +104,10 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 				build: {
 					// Emit manifest
 					manifest: true,
+
+					rollupOptions: {
+						input: "./src/index", // Handle extension properly
+					},
 				},
 			},
 			ssr: {
@@ -148,23 +138,24 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 					ssr: true,
 
 					// Emit assets
-					ssrEmitAssets: true,
+					ssrEmitAssets: false,
 				},
 			},
 		},
 
 		// Aliases
 		resolve: {
-			alias: vite?.resolve?.alias.map(
-				(alias: { find: string; replacement: string }) => ({
-					find: alias.find,
-					replacement: join(rootPath, alias.replacement),
-				})
-			),
+			alias: Array.isArray(vite?.resolve?.alias)
+				? vite.resolve.alias.map(({ find, replacement }) => ({
+						find,
+						replacement: join(rootPath, replacement),
+				  }))
+				: [],
 		},
 
 		// Cache directory
-		cacheDir: ".rasengan/",
+		// cacheDir: ".rasengan/",
+		cacheDir: undefined, // Uses Vite default
 
 		// Environment variable prefix
 		envPrefix: "RASENGAN_",

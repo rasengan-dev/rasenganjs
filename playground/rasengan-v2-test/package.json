@@ -5,12 +5,14 @@
 	"type": "module",
 	"scripts": {
 		"dev": "rasengan dev",
-		"build": "rasengan build"
+		"build": "rasengan build",
+		"serve": "rasengan-serve ./dist"
 	},
 	"dependencies": {
 		"rasengan": "workspace:*",
 		"@rasenganjs/image": "workspace:*",
 		"@rasenganjs/serve": "workspace:*",
+		"@rasenganjs/mdx": "workspace:*",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0"
 	},
@@ -22,6 +24,6 @@
 		"postcss": "^8.4.31",
 		"cross-env": "^7.0.3",
 		"typescript": "^5.1.3",
-		"vite": "^6.0.0"
+		"vite": "^6.0.11"
 	}
 }

@@ -24,7 +24,7 @@ import { Suspense } from "react";
 const defaultMetadata: Metadata = {
 	title: "Not Found",
 	description: "Page not found",
-}
+};
 
 /**
  * This function receives a router component and get a formated router first
@@ -32,7 +32,9 @@ const defaultMetadata: Metadata = {
  */
 export const getRouter = (routerInstance: RouterComponent) => {
 	const routes = generateRoutes(routerInstance);
-	let router = createBrowserRouter(routes);
+	let router = createBrowserRouter(routes, {
+		hydrationData: window.__staticRouterHydrationData,
+	});
 
 	return () => <RouterProvider router={router} />;
 };
@@ -152,7 +154,7 @@ export const generateRoutes = (
 					props: {},
 					meta: defaultMetadata,
 				};
-			}
+			},
 		});
 	}
 

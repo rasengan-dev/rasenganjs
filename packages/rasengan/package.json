@@ -10,6 +10,7 @@
 	},
 	"exports": {
 		".": {
+			"types": "./lib/types/index.d.ts",
 			"import": {
 				"types": "./lib/types/index.d.ts",
 				"default": "./lib/esm/index.js"
@@ -18,7 +19,6 @@
 				"types": "./lib/types/index.d.ts",
 				"default": "./lib/esm/index.js"
 			},
-			"types": "./lib/types/index.d.ts",
 			"default": "./lib/esm/index.js"
 		},
 		"./types/client": {
@@ -26,19 +26,19 @@
 		},
 		"./package.json": "./package.json",
 		"./dynamic": {
+			"types": "./lib/types/core/dynamic/index.d.ts",
 			"import": "./lib/esm/core/dynamic/index.js",
-			"require": "./lib/esm/core/dynamic/index.js",
-			"types": "./lib/types/core/dynamic/index.d.ts"
+			"require": "./lib/esm/core/dynamic/index.js"
 		},
 		"./server": {
+			"types": "./lib/types/server.d.ts",
 			"import": "./lib/esm/server.js",
-			"require": "./lib/esm/server.js",
-			"types": "./lib/types/server.d.ts"
+			"require": "./lib/esm/server.js"
 		},
 		"./client": {
+			"types": "./lib/types/client.d.ts",
 			"import": "./lib/esm/client.js",
-			"require": "./lib/esm/client.js",
-			"types": "./lib/types/client.d.ts"
+			"require": "./lib/esm/client.js"
 		}
 	},
 	"author": {
@@ -113,6 +113,18 @@
 	"engines": {
 		"node": ">=20.13.1"
 	},
+	"files": [
+		"lib/",
+		"types/",
+		"bin.js",
+		"CHANGELOG.md",
+		"LICENSE.md",
+		"README.md",
+		"tsconfig.esm.json",
+		"tsconfig.types.json",
+		"tsconfig.base.json",
+		"vite.config.ts"
+	],
 	"keywords": [
 		"rasengan",
 		"frontend",

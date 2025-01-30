@@ -121,7 +121,8 @@ export async function handleDocumentRequest(
 				...Object.fromEntries(headers),
 			});
 
-			const Router = StaticRouterProvider({ router, context });
+			const Router = <StaticRouterProvider router={router} context={context} />;
+			// const Router = StaticRouterProvider({ router, context });
 
 			// If stream mode enabled, render the page as a plain text
 			return await render(Router, res, {

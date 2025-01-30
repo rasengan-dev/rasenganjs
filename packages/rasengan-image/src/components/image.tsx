@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { ImageProps, LoadingFallbackProps } from "../types/index.js";
+import { ImageProps } from "../types/index.js";
 
 export default ({
   src,
@@ -152,14 +152,3 @@ export default ({
     </>
   );
 };
-
-// Fallback component to show while the image is loading
-export const LoadingFallback = ({ width, height }: LoadingFallbackProps) => (
-  <div
-    style={{
-      width,
-      height,
-      backgroundColor: "#e5e5e5",
-    }}
-  ></div>
-);

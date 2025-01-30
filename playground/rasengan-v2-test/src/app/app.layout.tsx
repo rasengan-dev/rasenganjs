@@ -3,10 +3,12 @@ import { Outlet, LayoutComponent } from "rasengan";
 
 const AppLayout: LayoutComponent = () => {
   return (
-    <React.Fragment>
-      <Outlet />
-    </React.Fragment>
-  );
+		<section className='w-full bg-white'>
+			<main className="w-full max-w-[1000px] mx-auto p-4">
+				<Outlet />
+			</main>
+		</section>
+	);
 };
 
 AppLayout.path = "/";

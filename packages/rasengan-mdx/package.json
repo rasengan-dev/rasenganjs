@@ -11,7 +11,7 @@
 			"require": "./lib/index.js",
 			"types": "./lib/types/index.d.ts"
 		},
-		"./styles/rasengan-mdx.min.css": "./lib/styles/rasengan-mdx.min.css",
+		"./css": "./lib/styles/rasengan-mdx.min.css",
 		"./plugin": {
 			"import": "./lib/utils/plugin.js",
 			"require": "./lib/utils/plugin.js",

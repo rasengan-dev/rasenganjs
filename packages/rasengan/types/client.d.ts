@@ -64,3 +64,7 @@ declare module "virtual:entry-server" {
 
 // 	export const __RASENGAN_CONFIG__: ProductionAppConfig;
 // }
+
+interface Window {
+	__staticRouterHydrationData: any;
+}

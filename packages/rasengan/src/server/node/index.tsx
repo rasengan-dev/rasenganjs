@@ -104,8 +104,11 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 					...Object.fromEntries(headers),
 				});
 
+				// const Router = (
+				// 	StaticRouterProvider({ router, context, hydrate: true })
+				// );
 				const Router = (
-					StaticRouterProvider({ router, context })
+					<StaticRouterProvider router={router} context={context} />
 				);
 
 				// If stream mode enabled, render the page as a plain text
