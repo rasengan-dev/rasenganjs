@@ -1,4 +1,4 @@
-import React, { JSX, useMemo } from "react";
+import React, { JSX, use, useMemo } from "react";
 import { ComponentProps } from "../types.js";
 import { generateMetadata, getRouter } from "../../routing/utils/index.js";
 import { Outlet } from "react-router";
@@ -12,11 +12,13 @@ import {
  * App component that represent the entry point of the application
  */
 export const RootComponent = ({
-	router: AppRouter,
+	router: AppRouterPromise,
 	children = undefined,
 }: ComponentProps) => {
 	// Return children if they exist
 	if (children) return children;
+
+	const AppRouter = use(AppRouterPromise);
 
 	// Otherwise, get the router and return it
 	let Router = getRouter(AppRouter);

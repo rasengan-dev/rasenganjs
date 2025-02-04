@@ -81,8 +81,8 @@ export const CodeBlock = ({
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							viewBox='0 0 24 24'
-							width='20'
-							height='20'
+							width='16'
+							height='16'
 							color='#f0f0f0'
 							fill='none'
 						>
@@ -103,8 +103,8 @@ export const CodeBlock = ({
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							viewBox='0 0 24 24'
-							width='20'
-							height='20'
+							width='16'
+							height='16'
 							color='#f0f0f0'
 							fill='none'
 						>

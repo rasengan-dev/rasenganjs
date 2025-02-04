@@ -225,6 +225,18 @@ export function isDocumentRequest(request: Express.Request) {
 	return accept.includes("text/html");
 }
 
+export function isDataRequest(request: Express.Request) {
+	// Check if the request accepts JSON (React Router's fetch requests)
+	const acceptsJson = request.headers.accept?.includes("application/json");
+
+	// Check if the URL path follows the `.data` pattern
+	const isDataPath = request.path.endsWith(".data");
+	console.log({ acceptsJson, isDataPath, request });
+
+	return acceptsJson || isDataPath;
+}
+
+
 export function isResourceRequest(request: Express.Request) {
 	const accept = request.headers["accept"] || "";
 

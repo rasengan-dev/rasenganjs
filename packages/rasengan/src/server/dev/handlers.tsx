@@ -1,11 +1,15 @@
 import {
 	createStaticHandler,
 	createStaticRouter,
+	StaticHandler,
 	StaticHandlerContext,
 	StaticRouterProvider,
 } from "react-router";
 import { logRedirection as log } from "../../core/utils/log.js";
-import createRasenganRequest, { sendRasenganResponse } from "../node/utils.js";
+import createRasenganRequest, {
+	createRasenganHeaders,
+	sendRasenganResponse,
+} from "../node/utils.js";
 import { AppConfig, Redirect } from "../../core/config/type.js";
 import type * as Express from "express";
 import type * as Vite from "vite";
@@ -19,6 +23,7 @@ import {
 	extractMetaFromRRContext,
 	extractHeadersFromRRContext,
 } from "./utils.js";
+import { ModuleRunner } from "vite/module-runner";
 
 /**
  * Handle redirect request
@@ -70,30 +75,21 @@ export async function handleRedirectRequest(
 export async function handleDocumentRequest(
 	req: Express.Request,
 	res: Express.Response,
-	viteDevServer: Vite.ViteDevServer,
-	options: { rootPath: string; __dirname: string; config: AppConfig }
+	runner: ModuleRunner,
+	options: {
+		rootPath: string;
+		__dirname: string;
+		config: AppConfig;
+		handler: StaticHandler;
+	}
 ) {
 	try {
-		const { rootPath, __dirname, config } = options;
-
-		// Get the module runner through ssr environment
-		const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+		const { __dirname, config, handler } = options;
 
 		// Get the render function and app router
 		const { render } = await runner.import(
 			join(`${__dirname}./../../entries/server/entry.server.js`)
 		);
-
-		// Load app-router
-		const AppRouter: RouterComponent = (
-			await runner.import(join(`${rootPath}/src/app/app.router`))
-		).default;
-
-		// Get static routes
-		const staticRoutes = generateRoutes(AppRouter);
-
-		// Create static handler
-		let handler = createStaticHandler(staticRoutes);
 
 		// Create rasengan request for static routing
 		let request = createRasenganRequest(req, res);
@@ -135,4 +131,32 @@ export async function handleDocumentRequest(
 		// Just log the error for now
 		console.error(error);
 	}
+}
+
+export async function handleDataRequest(
+	request: Express.Request,
+	handler: StaticHandler
+) {
+	// 1. we don't want to proxy the browser request directly to our router, so we
+	// make a new one.
+	let newRequest =
+		request.method === "POST"
+			? new Request(request.url, {
+					method: request.method,
+					headers: createRasenganHeaders(request.headers),
+					// @ts-expect-error this is valid, types are wrong
+					body: new URLSearchParams(await request.formData()),
+			  })
+			: new Request(request.url, {
+					headers: createRasenganHeaders(request.headers),
+			  });
+
+	// 2. get data from our router, queryRoute knows to call the action or loader
+	// of the leaf route that matches
+	let data = await handler.queryRoute(newRequest);
+
+	// 3. send the response
+	return new Response(JSON.stringify(data), {
+		headers: { "Content-Type": "application/json" },
+	});
 }

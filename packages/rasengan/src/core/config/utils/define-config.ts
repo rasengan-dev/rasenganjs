@@ -39,7 +39,7 @@ export const defineConfig = async (
 			include: vite?.optimizeDeps?.include || [],
 		},
 		css: {
-			postcss: vite?.css?.postcss || "./postcss.config.js",
+			postcss: vite?.css?.postcss || undefined,
 		},
 		build: {
 			external: vite?.build?.external || [],

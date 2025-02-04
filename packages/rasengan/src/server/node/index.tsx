@@ -48,7 +48,7 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 				)
 			);
 			// Get AppRouter
-			const AppRouter = (
+			const AppRouter = await (
 				await import(
 					path.posix.join(buildOptions.buildDirectory, "server/app.router.js")
 				)

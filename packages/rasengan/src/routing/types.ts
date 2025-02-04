@@ -86,11 +86,6 @@ export type RouterProps = {
 	>;
 
 	/**
-	 * Usefull to render MDX pages
-	 */
-	MDXRenderer?: FunctionComponent<MDXRendererProps>;
-
-	/**
 	 * Usefull to display a screen that let know to the user that the page is loading.
 	 */
 	loaderComponent?: FunctionComponent;
@@ -232,54 +227,6 @@ export type MDXPageComponent = FunctionComponent & {
 export type MDXRendererProps = {
 	children: MDXPageComponent;
 	className?: string;
-};
-
-/**
- * Helmet context type
- */
-export type HelmetContext = {
-	helmet: {
-		priority: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		base: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		bodyAttributes: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		htmlAttributes: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		link: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		meta: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		noscript: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		script: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		style: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-		title: {
-			toComponent: React.FC;
-			toString: () => string;
-		};
-	};
 };
 
 /**

@@ -85,7 +85,8 @@
 		"react-dom": "^19.0.0",
 		"sass": "*",
 		"stylus": "*",
-		"vite": "^6.0.0"
+		"vite": "^6.0.0",
+		"@rasenganjs/mdx": "workspace:*"
 	},
 	"peerDependenciesMeta": {
 		"@types/node": {
@@ -98,6 +99,9 @@
 			"optional": true
 		},
 		"less": {
+			"optional": true
+		},
+		"@rasenganjs/mdx": {
 			"optional": true
 		}
 	},

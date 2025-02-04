@@ -19,11 +19,10 @@ export const defineRouter = (option: RouterProps) => {
 		pages,
 		loaderComponent,
 		notFoundComponent,
-		MDXRenderer,
 		useParentLayout,
 	} = option;
 
-	return (Router: new () => RouterComponent) => {
+	return async (Router: new () => RouterComponent) => {
 		// Handle errors
 		if (!option.pages)
 			throw new Error(
@@ -40,7 +39,10 @@ export const defineRouter = (option: RouterProps) => {
 			// Check if p is an array
 			if (Array.isArray(p)) {
 				for (let page of p) {
-					if (isMDXPage(page, MDXRenderer)) {
+					if (isMDXPage(page)) {
+						// Load MDXRenderer from @rasenganjs/mdx
+						const MDXRenderer = await loadMDXRenderer();
+
 						const Page = convertMDXPageToPageComponent(
 							page as MDXPageComponent,
 							MDXRenderer
@@ -56,7 +58,10 @@ export const defineRouter = (option: RouterProps) => {
 			}
 
 			// When p is a MDXPageComponent
-			if (isMDXPage(p, MDXRenderer)) {
+			if (isMDXPage(p)) {
+				// Load MDXRenderer from @rasenganjs/mdx
+				const MDXRenderer = await loadMDXRenderer();
+
 				const Page = convertMDXPageToPageComponent(
 					p as MDXPageComponent,
 					MDXRenderer
@@ -94,20 +99,26 @@ const convertMDXPageToPageComponent = (
 	return Page;
 };
 
-const isMDXPage = (
-	page: MDXPageComponent | PageComponent<any>,
-	MDXRenderer: React.FunctionComponent<MDXRendererProps>
-) => {
+const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
 	// Check if page is a MDX Page Component or not
 	if (!page["path"]) {
-		if (!MDXRenderer) {
-			throw new Error(
-				"You must provide a MDXRenderer component to render MDX pages"
-			);
-		}
-
 		return true;
 	}
 
 	return false;
+};
+
+const loadMDXRenderer = async (): Promise<
+	React.FunctionComponent<MDXRendererProps>
+> => {
+	try {
+		// @ts-ignore
+		const { MDXRenderer } = await import("@rasenganjs/mdx");
+
+		return MDXRenderer;
+	} catch (e) {
+		throw new Error(
+			"Failed to load MDXRenderer component from @rasenganjs/mdx, make sure you have installed the package"
+		);
+	}
 };

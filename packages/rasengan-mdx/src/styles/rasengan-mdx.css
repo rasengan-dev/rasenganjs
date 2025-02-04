@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+/* @import "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"; */
 
 :root {
 	--bg: transparent;
@@ -152,6 +152,13 @@
 	text-decoration: underline;
 }
 
+/* Divider */
+
+.rasengan-markdown-body hr {
+	color: var(--border);
+	margin: 1em 0;
+}
+
 /* Code blocks */
 
 .rasengan-markdown-body code.simple-block {
@@ -273,8 +280,8 @@
 .rasengan-markdown-body pre[data-language] button {
 	opacity: 0.6;
 	cursor: pointer;
-	width: 30px;
-	height: 30px;
+	width: 24px;
+	height: 24px;
 	border-radius: 5px;
 	border: 1px solid var(--border-dark);
 	background-color: var(--bg-code-highlight);

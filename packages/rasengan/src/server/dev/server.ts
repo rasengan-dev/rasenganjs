@@ -3,6 +3,7 @@ import express from "express";
 import type * as Express from "express";
 import type * as Vite from "vite";
 import {
+	createServerModuleRunner,
 	createServer as createViteServer,
 } from "vite";
 import chalk from "chalk";
@@ -12,18 +13,17 @@ import inquirer from "inquirer";
 import { loggerMiddleware } from "../../core/middlewares/index.js";
 
 // Load utilities functions
-import {
-	isDocumentRequest,
-	logServerInfo,
-} from "./utils.js";
+import { isDataRequest, isDocumentRequest, logServerInfo } from "./utils.js";
 import {
 	getDirname,
 	loadModuleSSR,
 } from "../../core/config/utils/load-modules.js";
 
-import { type AppConfig } from "../../index.js";
+import { RouterComponent, type AppConfig } from "../../index.js";
 import { ServerMode } from "../runtime/mode.js";
-import { handleDocumentRequest } from "./handlers.js";
+import { handleDataRequest, handleDocumentRequest } from "./handlers.js";
+import { createStaticHandler } from "react-router";
+import { generateRoutes } from "../../routing/utils/generate-routes.js";
 
 type ServerError = Error & { code: string };
 
@@ -40,11 +40,38 @@ async function devRequestHandler(
 	viteDevServer: Vite.ViteDevServer,
 	options: { rootPath: string; __dirname: string; config: AppConfig }
 ) {
-	if (isDocumentRequest(req)) {
-		return await handleDocumentRequest(req, res, viteDevServer, options);
-	}
+	try {
+		// Get the module runner through ssr environment
+		const runner = createServerModuleRunner(viteDevServer.environments.ssr);
 
-	return res.status(404).send("Not found");
+		// Load app-router
+		const AppRouter: RouterComponent = await (
+			await runner.import(join(`${options.rootPath}/src/app/app.router`))
+		).default;
+
+		// Get static routes
+		const staticRoutes = generateRoutes(AppRouter);
+
+		// Create static handler
+		let handler = createStaticHandler(staticRoutes);
+
+		if (isDataRequest(req)) {
+			// Handle data request
+			return await handleDataRequest(req, handler);
+		}
+
+		if (isDocumentRequest(req)) {
+			return await handleDocumentRequest(req, res, runner, {
+				...options,
+				handler,
+			});
+		}
+
+		return res.status(404).send("Not found");
+	} catch (error) {
+		// Just log the error for now
+		console.error(error);
+	}
 }
 
 /**

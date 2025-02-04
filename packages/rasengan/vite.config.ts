@@ -43,11 +43,6 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 	const { vite } = await config;
 
 	return {
-		// Define env
-		// define: {
-		// 	"process.env": process.env,
-		// },
-
 		// Vite Plugins
 		plugins: [react(), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
 
@@ -62,9 +57,12 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 		build: {
 			sourcemap:
 				(isServerMode(mode) && mode === ServerMode.Development) ?? false,
-			minify: "esbuild",
-			outDir: "./dist/client",
 			rollupOptions: {
+				external: Array.isArray(vite?.build?.external)
+					? [...vite.build.external]
+					: [],
+
+				input: "./src/index",
 				output: {
 					manualChunks(id: string) {
 						if (id.includes("node_modules")) return "vendor";
@@ -81,12 +79,9 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 						return undefined;
 					},
 				},
-				external: Array.isArray(vite?.build?.external)
-					? [...vite.build.external]
-					: [],
 			},
+			outDir: "dist",
 			chunkSizeWarningLimit: 1000,
-			emptyOutDir: true,
 		},
 
 		// Server options
@@ -105,20 +100,20 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 					// Emit manifest
 					manifest: true,
 
+					outDir: "dist/client",
+
 					rollupOptions: {
 						input: "./src/index", // Handle extension properly
 					},
 				},
 			},
 			ssr: {
-				dev: {},
-
 				/**
 				 * Server-side rendering build options.
 				 */
 				build: {
 					// Output directory
-					outDir: "./dist/server",
+					outDir: "dist/server",
 
 					// Rollup options
 					rollupOptions: {
@@ -133,9 +128,6 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 							config: `./rasengan.config.js`,
 						},
 					},
-
-					// Enable SSR
-					ssr: true,
 
 					// Emit assets
 					ssrEmitAssets: false,
@@ -153,9 +145,15 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
 				: [],
 		},
 
+		builder: {
+			buildApp: async (builder) => {
+				await builder.build(builder.environments.ssr);
+				await builder.build(builder.environments.client);
+			},
+		},
+
 		// Cache directory
-		// cacheDir: ".rasengan/",
-		cacheDir: undefined, // Uses Vite default
+		cacheDir: ".rasengan/",
 
 		// Environment variable prefix
 		envPrefix: "RASENGAN_",
