@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { use } from "react";
 import ThemeContext from "../contexts/themes.js";
 
 /**
@@ -10,7 +10,7 @@ import ThemeContext from "../contexts/themes.js";
  * - `setTheme`: A function to set the current theme.
  */
 export default function useTheme() {
-	const { theme, actualTheme, setTheme, isDark } = useContext(ThemeContext);
+	const { theme, actualTheme, setTheme, isDark } = use(ThemeContext);
 
   return {
     theme,
