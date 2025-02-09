@@ -1,0 +1,10 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Get the current branch
+current_branch=$(git symbolic-ref --short HEAD)
+
+if [ "$current_branch" = "main" ]; then
+    echo "Error: You are not allowed to push to main branch"
+  exit 1
+fi
