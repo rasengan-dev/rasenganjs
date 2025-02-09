@@ -1,0 +1,45 @@
+{
+	"name": "@rasenganjs/cli",
+	"version": "1.0.0",
+	"description": "The Rasengan.js CLI tool to automate basic development tasks like generating pages, routers, layouts or resources",
+	"main": "/dist/main.js",
+	"type": "module",
+	"author": {
+		"name": "dilane3",
+		"email": "komboudilane125@gmail.com",
+		"url": "https://dilane3.com",
+		"twitter": "https://twitter.com/dilanekombou",
+		"github": "https://github.com/dilane3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rasengan-dev/create-rasengan",
+		"issues": "https://github.com/rasengan-dev/create-rasengan/issues"
+	},
+	"homepage": "https://rasengan.dev",
+	"license": "MIT",
+	"bin": {
+		"rasengan": "./dist/main.js"
+	},
+	"scripts": {
+		"build:clean": "rm -rf ./dist",
+		"build": "pnpm run build:clean && tsc",
+		"deploy": "pnpm publish --access public",
+		"deploy:beta": "pnpm run deploy --tag beta",
+		"pack": "pnpm pack --pack-destination ./release"
+	},
+	"dependencies": {
+		"chalk": "^5.3.0",
+		"child_process": "^1.0.2",
+		"commander": "^11.1.0",
+		"inquirer": "^9.2.11",
+		"ncp": "^2.0.0",
+		"ora": "^7.0.1",
+		"rimraf": "^6.0.1"
+	},
+	"devDependencies": {
+		"@types/inquirer": "^9.0.4",
+		"@types/ncp": "^2.0.6",
+		"@types/node": "^20.8.6"
+	}
+}

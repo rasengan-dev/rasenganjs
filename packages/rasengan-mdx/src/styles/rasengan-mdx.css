@@ -1,0 +1,381 @@
+/* @import "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"; */
+
+:root {
+	--bg: transparent;
+	--bg-light: #f5f5f5;
+	--bg-code: #282c34;
+	--bg-code-highlight: #30313e;
+	--bg-code-highlight-2: #494c54;
+	--fg: #333;
+	--fg-code: #adbac7;
+	--fg-light: #666;
+	--fg-dark: #000;
+	--fg-accent: #007bff;
+	--border: #eee;
+	--border-dark: #494c54;
+	--table-border: #d1d5dc;
+}
+
+.dark {
+	--bg: #212121;
+	--bg-light: #30313e55;
+	--bg-code: #282c34;
+	--bg-code-highlight: #30313e;
+	--fg: #eee;
+	--fg-code: #abb2bf;
+	--fg-light: #ccc;
+	--fg-dark: #fff;
+	--fg-accent: #007bff;
+	--border: #2f2f2f;
+	--border-dark: #494c54;
+	--table-border: #4b5563;
+}
+
+.rasengan-markdown-body {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-weight: 400;
+}
+
+/* Headings */
+
+.rasengan-markdown-body .ra-heading-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: start;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h2) {
+	border-bottom: 1px solid var(--border);
+	margin: 2rem 0;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper a {
+	margin: 0.67em 0;
+	margin-left: 0.5em;
+	color: var(--border);
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper a > svg {
+	color: var(--fg);
+}
+
+.rasengan-markdown-body .ra-heading-wrapper a:hover > svg {
+	color: var(--fg-accent);
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h2) a {
+	font-size: 2em;
+	text-decoration: none;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h3) a {
+	font-size: 1.5em;
+	text-decoration: none;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h4) a {
+	font-size: 1em;
+	text-decoration: none;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:hover a {
+	opacity: 1;
+	cursor: pointer;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:hover a:hover {
+	transform: scale(1.1);
+}
+
+.rasengan-markdown-body h1 {
+	font-size: 2.5em;
+	color: var(--fg);
+	font-weight: 700;
+	margin: 1em 0;
+}
+
+.rasengan-markdown-body h2 {
+	font-size: 2em;
+	color: var(--fg);
+	font-weight: 700;
+}
+
+.rasengan-markdown-body h3 {
+	font-size: 1.5em;
+	color: var(--fg);
+	font-weight: 700;
+}
+
+.rasengan-markdown-body h4 {
+	font-size: 1.17em;
+	color: var(--fg);
+	font-weight: 700;
+}
+
+.rasengan-markdown-body h5 {
+	font-size: 1em;
+	color: var(--fg);
+	font-weight: 700;
+	margin: 0.67em 0;
+}
+
+.rasengan-markdown-body h6 {
+	font-size: 0.83em;
+	color: var(--fg);
+	font-weight: 700;
+	margin: 0.67em 0;
+}
+
+.rasengan-markdown-body h2:hover::after,
+.rasengan-markdown-body h3:hover::after,
+.rasengan-markdown-body h4:hover::after {
+	opacity: 1;
+	cursor: pointer;
+}
+
+.rasengan-markdown-body p {
+	font-size: 1em;
+	color: var(--fg);
+	margin: 1em 0;
+}
+
+.rasengan-markdown-body a {
+	color: var(--fg-accent);
+	text-decoration: none;
+}
+
+.rasengan-markdown-body a:hover {
+	text-decoration: underline;
+}
+
+/* Divider */
+
+.rasengan-markdown-body hr {
+	color: var(--border);
+	margin: 1em 0;
+}
+
+/* Code blocks */
+
+.rasengan-markdown-body code.simple-block {
+	font-size: 0.8em;
+	font-family: "JetBrains Mono", monospace;
+	border-radius: 5px;
+	padding: 2px 3.6px;
+	margin: auto 0;
+	background-color: var(--bg-light);
+	border: 1px solid var(--border);
+}
+
+.rasengan-markdown-body figure:has(pre[data-language]) {
+	background-color: var(--bg-code);
+	border-radius: 8px;
+	margin: 10px 0;
+	color: var(--fg-code);
+	border: 1px solid var(--border);
+	overflow: hidden;
+}
+
+.rasengan-markdown-body figure:has(pre[data-language]) figcaption {
+	padding: 10px 20px;
+	font-size: 14px;
+	font-weight: 400;
+	background-color: var(--bg-code-highlight);
+	border-bottom: 1px solid var(--border-dark);
+}
+
+.rasengan-markdown-body code[data-line-numbers] {
+	counter-reset: line;
+}
+.rasengan-markdown-body pre[data-language] {
+	position: relative;
+	border-radius: 8px;
+	border: none;
+	margin: 0;
+}
+
+.rasengan-markdown-body pre[data-language] code {
+	font-family: "JetBrains Mono", monospace;
+	font-size: 14px;
+	overflow-x: auto;
+}
+
+.rasengan-markdown-body pre[data-language] > div code {
+	display: grid;
+	grid-template-columns: 1fr;
+	line-height: 1.6;
+	word-wrap: break-word;
+	padding: 16px 0;
+}
+
+.rasengan-markdown-body pre[data-language] code > span {
+	padding: 0 16px;
+	border-left: 4px solid transparent;
+}
+
+.rasengan-markdown-body pre[data-language] code[data-line-numbers] > span {
+	padding: 0 5px;
+}
+
+.rasengan-markdown-body pre[data-language] mark[data-highlighted-chars] {
+	background-color: var(
+		--bg-code-highlight-2
+	); /* Highlight for specific lines */
+	border-radius: 5px;
+	padding: 0 5px;
+}
+
+.rasengan-markdown-body pre[data-language] span[data-highlighted-line] {
+	background-color: var(--bg-code-highlight); /* Highlight for specific lines */
+	border-left: 4px solid var(--fg-accent);
+}
+
+.rasengan-markdown-body code[data-line-numbers] span[data-line]:before {
+	counter-increment: line;
+	content: counter(line);
+	display: inline-block;
+	width: 2ch;
+	color: #6a737d;
+	text-align: right;
+	margin-right: 16px;
+	opacity: 0.9;
+}
+
+.rasengan-markdown-body code.code-block {
+	position: relative;
+	display: block;
+	padding: 20px 0;
+	font-size: 14px;
+	max-height: 800px;
+	overflow: auto;
+}
+
+.rasengan-markdown-body pre[data-language] button,
+.rasengan-markdown-body pre[data-language] span.lang {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	transition: all 0.2s;
+	z-index: 10;
+}
+
+.rasengan-markdown-body pre[data-language] span.lang {
+	font-size: 12px;
+	opacity: 0.8;
+	color: var(--fg-code);
+	padding: 2px 5px;
+	border-radius: 5px;
+	background-color: var(--bg-code-highlight);
+	border: 1px solid var(--border-dark);
+}
+
+.rasengan-markdown-body pre[data-language] code {
+	font-family: "JetBrains Mono", monospace;
+}
+
+.rasengan-markdown-body pre[data-language] button {
+	opacity: 0.6;
+	cursor: pointer;
+	width: 24px;
+	height: 24px;
+	border-radius: 5px;
+	border: 1px solid var(--border-dark);
+	background-color: var(--bg-code-highlight);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rasengan-markdown-body pre[data-language]:hover > div button:hover {
+	opacity: 1;
+}
+
+/* Tables */
+
+.rasengan-markdown-body .ra-table-wrapper {
+	overflow-x: auto;
+}
+
+.rasengan-markdown-body table {
+	border-collapse: collapse;
+	color: var(--fg);
+	margin: 0.67em 0;
+	width: 100%;
+	min-width: 600px;
+	overflow-x: auto;
+}
+
+.rasengan-markdown-body th {
+	background-color: transparent;
+	color: var(--fg);
+	font-weight: 700;
+}
+
+.rasengan-markdown-body th,
+.rasengan-markdown-body td {
+	padding: 10px 20px;
+	border: 1px solid var(--border);
+	transition: all 0.3s;
+	cursor: pointer;
+}
+
+.rasengan-markdown-body tr:nth-child(even) {
+	background-color: var(--bg-light);
+}
+
+.rasengan-markdown-body tr:nth-child(odd) {
+	background-color: transparent;
+}
+
+.rasengan-markdown-body tr:hover {
+	background-color: var(--bg-light);
+}
+
+/* Lists */
+
+.rasengan-markdown-body ul,
+.rasengan-markdown-body ol {
+	margin: 0.67em 0;
+	color: var(--fg);
+	padding-left: 15px;
+}
+
+.rasengan-markdown-body ul {
+	list-style: disc;
+}
+
+.rasengan-markdown-body ul:has(li > input) {
+	list-style: none;
+}
+
+.rasengan-markdown-body ul li,
+.rasengan-markdown-body ol li {
+	margin: 0.67em 0;
+	color: var(--fg);
+}
+
+.rasengan-markdown-body ul li input,
+.rasengan-markdown-body ol li input {
+	margin-right: 0.3em;
+}
+
+.rasengan-markdown-body ul li input,
+.rasengan-markdown-body ol li input:checked {
+	background-color: var(--fg-accent);
+	color: var(--bg);
+}
+
+/* Blockquotes */
+
+.rasengan-markdown-body blockquote {
+	border-left: 4px solid var(--border);
+	padding-left: 1em;
+	margin: 1em 0;
+}
+.rasengan-markdown-body blockquote p {
+	margin: 0;
+}
