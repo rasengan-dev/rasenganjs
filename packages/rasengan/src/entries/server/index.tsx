@@ -4,7 +4,7 @@ import {
 	HeadComponent,
 	RootComponent,
 	ScriptComponent,
-} from "../../core/components/index.js";
+} from "../../routing/components/template.js";
 import { AppProps } from "../../core/types.js";
 import {
 	Metadata,

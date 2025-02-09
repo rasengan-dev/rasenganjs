@@ -1,5 +1,5 @@
 import React from "react";
-import { RouterComponent } from "../routing/interfaces.js";
+import { RootComponentProps } from "../routing/types.js";
 
 /**
  * Props for App component
@@ -8,18 +8,10 @@ export type AppProps = {
 	/**
 	 * Represents the component that will be rendered
 	 */
-	Component: React.FC<ComponentProps>;
+	Component: React.FC<RootComponentProps>;
 
 	/**
 	 * Represents the children of the component
 	 */
 	children?: React.ReactNode;
-};
-
-/**
- * Props for the base Component that takes the app router
- */
-export type ComponentProps = {
-	router: Promise<RouterComponent>;
-	children: React.ReactNode;
 };

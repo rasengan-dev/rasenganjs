@@ -237,3 +237,12 @@ export type TemplateProps = {
 	Body: FunctionComponent<{ children: React.ReactNode }>;
 	Script: FunctionComponent<{ children?: React.ReactNode }>;
 };
+
+
+/**
+ * Props for the base Component that takes the app router
+ */
+export type RootComponentProps = {
+	router: Promise<RouterComponent>;
+	children: React.ReactNode;
+};

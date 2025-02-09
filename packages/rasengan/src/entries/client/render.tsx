@@ -1,7 +1,7 @@
 import { hydrateRoot } from "react-dom/client";
 import { StrictMode, FunctionComponent } from "react";
 import { type AppProps } from "../../core/index.js";
-import { RootComponent } from "../../core/components/index.js";
+import { RootComponent } from "../../routing/components/template.js";
 
 export default function renderApp(
 	App: FunctionComponent<AppProps>,

@@ -71,6 +71,7 @@ async function run() {
 	let app = express();
 	app.disable("x-powered-by");
 	app.use(compression());
+	app.use(morgan("tiny"));
 	app.use(
 		path.posix.join("/assets"),
 		express.static(path.join("dist/client/assets"), {
@@ -80,7 +81,6 @@ async function run() {
 	);
 	app.use("/", express.static("dist/client", { maxAge: "1h" }));
 	app.use(express.static("public", { maxAge: "1h" }));
-	app.use(morgan("tiny"));
 
 	app.all(
 		"*",

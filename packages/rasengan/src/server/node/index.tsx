@@ -92,7 +92,7 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 				const metadata = extractMetaFromRRContext(context);
 
 				// Get assets tags
-				const assets = manifest.generateMetaTags("");
+				const assets = manifest.generateMetaTags(""); // TODO: Add the correct path
 
 				// Create static router
 				let router = createStaticRouter(handler.dataRoutes, context);
@@ -104,9 +104,6 @@ export function createRequestHandler(buildOptions: BuildOptions) {
 					...Object.fromEntries(headers),
 				});
 
-				// const Router = (
-				// 	StaticRouterProvider({ router, context, hydrate: true })
-				// );
 				const Router = (
 					<StaticRouterProvider router={router} context={context} />
 				);

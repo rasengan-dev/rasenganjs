@@ -227,20 +227,16 @@ export function isDocumentRequest(request: Express.Request) {
 
 export function isDataRequest(request: Express.Request) {
 	// Check if the request accepts JSON (React Router's fetch requests)
-	const acceptsJson = request.headers.accept?.includes("application/json");
+	const acceptsJson = request.headers["accept"]?.includes("application/json");
 
 	// Check if the URL path follows the `.data` pattern
-	const isDataPath = request.path.endsWith(".data");
-	console.log({ acceptsJson, isDataPath, request });
+	const isDataPath = request.url?.endsWith(".data");
 
 	return acceptsJson || isDataPath;
 }
 
-
 export function isResourceRequest(request: Express.Request) {
 	const accept = request.headers["accept"] || "";
-
-	console.log({ accept, url: request.originalUrl });
 
 	// Check common resource-related MIME types in the Accept header
 	if (
@@ -295,4 +291,3 @@ export async function isStaticRedirectFromConfig(
 
 	return redirectFound;
 }
-

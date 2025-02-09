@@ -1,12 +1,12 @@
 import React, { JSX, use, useMemo } from "react";
-import { ComponentProps } from "../types.js";
-import { generateMetadata, getRouter } from "../../routing/utils/index.js";
+import { RootComponentProps } from "../types.js";
+import { generateMetadata, getRouter } from "../utils/index.js";
 import { Outlet } from "react-router";
 import {
 	LayoutComponent,
 	Metadata,
 	MetadataWithoutTitleAndDescription,
-} from "../../routing/types.js";
+} from "../types.js";
 
 /**
  * App component that represent the entry point of the application
@@ -14,7 +14,7 @@ import {
 export const RootComponent = ({
 	router: AppRouterPromise,
 	children = undefined,
-}: ComponentProps) => {
+}: RootComponentProps) => {
 	// Return children if they exist
 	if (children) return children;
 
