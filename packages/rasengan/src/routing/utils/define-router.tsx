@@ -1,4 +1,4 @@
-import { DefaultLayout } from "../../core/components/index.js";
+import { DefaultLayout } from "../components/template.js";
 import {
 	RouterProps,
 	PageComponent,
@@ -40,12 +40,8 @@ export const defineRouter = (option: RouterProps) => {
 			if (Array.isArray(p)) {
 				for (let page of p) {
 					if (isMDXPage(page)) {
-						// Load MDXRenderer from @rasenganjs/mdx
-						const MDXRenderer = await loadMDXRenderer();
-
-						const Page = convertMDXPageToPageComponent(
-							page as MDXPageComponent,
-							MDXRenderer
+						const Page = await convertMDXPageToPageComponent(
+							page as MDXPageComponent
 						);
 
 						pageComponentList.push(Page);
@@ -59,13 +55,7 @@ export const defineRouter = (option: RouterProps) => {
 
 			// When p is a MDXPageComponent
 			if (isMDXPage(p)) {
-				// Load MDXRenderer from @rasenganjs/mdx
-				const MDXRenderer = await loadMDXRenderer();
-
-				const Page = convertMDXPageToPageComponent(
-					p as MDXPageComponent,
-					MDXRenderer
-				);
+				const Page = await convertMDXPageToPageComponent(p as MDXPageComponent);
 
 				pageComponentList.push(Page);
 			} else {
@@ -85,10 +75,10 @@ export const defineRouter = (option: RouterProps) => {
 	};
 };
 
-const convertMDXPageToPageComponent = (
-	MDXPage: MDXPageComponent,
-	MDXRenderer: React.FunctionComponent<MDXRendererProps>
-) => {
+const convertMDXPageToPageComponent = async (MDXPage: MDXPageComponent) => {
+	// Load MDXRenderer from @rasenganjs/mdx
+	const MDXRenderer = await loadMDXRenderer();
+
 	const Page: PageComponent = () => {
 		return <MDXRenderer className={""}>{MDXPage}</MDXRenderer>;
 	};

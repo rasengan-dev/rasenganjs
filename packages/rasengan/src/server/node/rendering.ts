@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import type * as Express from "express";
-import { isServerMode, ServerMode } from "../../server/runtime/mode.js";
+import { isServerMode, ServerMode } from "../runtime/mode.js";
 
 /**
  * Render a React component to a stream.

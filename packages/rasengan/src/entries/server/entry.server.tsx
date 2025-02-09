@@ -1,18 +1,16 @@
 import { FunctionComponent, JSX } from "react";
 import type { AppProps } from "../../core/types.js";
-
 import { type Response } from "express";
-
 import { loadModuleSSR } from "../../core/config/utils/load-modules.js";
 import type {
 	Metadata,
 	MetadataWithoutTitleAndDescription,
 	TemplateProps,
 } from "../../routing/types.js";
-import { renderToStream } from "./utils.js";
 import { TemplateLayout } from "./index.js";
 import { BuildOptions } from "../../server/node/index.js";
 import { join } from "path/posix";
+import { renderToStream } from "../../server/node/rendering.js";
 
 export type RenderStreamFunction = (
 	StaticRouterComponent: React.ReactNode,

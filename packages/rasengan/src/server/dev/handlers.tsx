@@ -22,6 +22,7 @@ import {
 	isRedirectResponse,
 	extractMetaFromRRContext,
 	extractHeadersFromRRContext,
+	isDataRequest,
 } from "./utils.js";
 import { ModuleRunner } from "vite/module-runner";
 
@@ -118,7 +119,6 @@ export async function handleDocumentRequest(
 			});
 
 			const Router = <StaticRouterProvider router={router} context={context} />;
-			// const Router = StaticRouterProvider({ router, context });
 
 			// If stream mode enabled, render the page as a plain text
 			return await render(Router, res, {
