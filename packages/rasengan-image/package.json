@@ -1,0 +1,42 @@
+{
+	"name": "@rasenganjs/image",
+	"private": false,
+	"version": "1.1.2",
+	"description": "Image component provided by RasenganJS to display images with ease",
+	"type": "module",
+	"main": "lib/index.js",
+	"exports": {
+		".": {
+			"types": "./lib/index.d.ts",
+			"import": "./lib/index.js",
+			"require": "./lib/index.js"
+		},
+		"./css": "./lib/styles/index.css"
+	},
+	"author": {
+		"name": "dilane3",
+		"email": "komboudilane125@gmail.com",
+		"url": "https://dilane3.com",
+		"twitter": "https://twitter.com/dilanekombou",
+		"github": "https://github.com/dilane3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rasengan-dev/rasengan-image.git",
+		"issues": "https://github.com/rasengan-dev/rasengan-image/issues"
+	},
+	"license": "MIT",
+	"scripts": {
+		"build:clean": "rm -rf ./lib",
+		"build": "pnpm run build:clean && tsc && cp -r src/styles lib/",
+		"pack": "pnpm pack --pack-destination ./release",
+		"deploy": "pnpm publish --access public"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "^19.0.1",
+		"@types/react-dom": "^19.0.1"
+	}
+}

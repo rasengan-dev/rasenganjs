@@ -1,0 +1,71 @@
+{
+	"name": "@rasenganjs/mdx",
+	"private": false,
+	"version": "1.0.5",
+	"description": "RasenganJS plugin for MDX support",
+	"type": "module",
+	"main": "lib/index.js",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"require": "./lib/index.js",
+			"types": "./lib/types/index.d.ts"
+		},
+		"./css": "./lib/styles/rasengan-mdx.min.css",
+		"./plugin": {
+			"import": "./lib/utils/plugin.js",
+			"require": "./lib/utils/plugin.js",
+			"types": "./lib/utils/plugin.d.ts"
+		}
+	},
+	"author": {
+		"name": "dilane3",
+		"email": "komboudilane125@gmail.com",
+		"url": "https://dilane3.com",
+		"twitter": "https://twitter.com/dilanekombou",
+		"github": "https://github.com/dilane3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rasengan-dev/rasengan-mdx-plugin.git",
+		"issues": "https://github.com/rasengan-dev/rasengan-mdx-plugin/issues"
+	},
+	"license": "MIT",
+	"scripts": {
+		"build:clean": "rm -rf ./lib",
+		"build:css": "node ./src/scripts/compile-css.js",
+		"build": "pnpm run build:clean && tsc && npm run build:css",
+		"pack": "pnpm pack --pack-destination ./release",
+		"deploy": "pnpm publish --access public"
+	},
+	"devDependencies": {
+		"@types/clean-css": "^4.2.11",
+		"@types/micromatch": "^4.0.7",
+		"@types/node": "^22.7.4",
+		"@types/react": "^19.0.1",
+		"@types/react-dom": "^19.0.1",
+		"clean-css": "^5.3.3"
+	},
+	"dependencies": {
+		"@mdx-js/rollup": "^3.0.1",
+		"gray-matter": "^4.0.3",
+		"micromatch": "^4.0.7",
+		"path-browserify": "^1.0.1",
+		"prism-react-renderer": "^2.4.0",
+		"react-markdown": "^9.0.1",
+		"rehype-pretty-code": "^0.14.0",
+		"rehype-stringify": "^10.0.1",
+		"remark": "^15.0.1",
+		"remark-gfm": "^4.0.0",
+		"remark-parse": "^11.0.0",
+		"remark-rehype": "^11.1.1",
+		"remark-toc": "^9.0.0",
+		"shiki": "^1.24.2",
+		"unified": "^11.0.5"
+	},
+	"peerDependencies": {
+		"rasengan": "workspace:*",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	}
+}

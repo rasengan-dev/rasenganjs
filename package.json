@@ -12,7 +12,9 @@
     "pack": "pnpm -r --filter='./packages/*' run pack"
 	},
 	"resolutions": {
-		"@vitejs/plugin-react": "^4.2.1"
+		"@vitejs/plugin-react": "^4.2.1",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
 	},
 	"devDependencies": {
 		"tsx": "^4.19.2",
