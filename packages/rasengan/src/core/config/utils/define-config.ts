@@ -55,11 +55,7 @@ export const defineConfig = async (
 		development: {
 			port: server?.development?.port || undefined,
 			open: server?.development?.open || false,
-		},
-
-		production: {
-			hosting: server?.production?.hosting || "custom",
-		},
+		}
 	};
 
 	// Define default values for redirects config coming from loadedConfig.redirects

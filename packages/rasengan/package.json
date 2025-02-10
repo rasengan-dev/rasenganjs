@@ -39,6 +39,11 @@
 			"types": "./lib/types/client.d.ts",
 			"import": "./lib/esm/client.js",
 			"require": "./lib/esm/client.js"
+		},
+		"./plugin": {
+			"types": "./lib/types/plugin.d.ts",
+			"import": "./lib/esm/plugin.js",
+			"require": "./lib/esm/plugin.js"
 		}
 	},
 	"author": {

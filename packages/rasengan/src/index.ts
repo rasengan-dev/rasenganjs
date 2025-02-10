@@ -11,5 +11,5 @@ export type {
 	AppConfigFunction,
 	AppConfigFunctionAsync,
 } from "./core/config/type.js";
-export type { AppProps, ComponentProps } from "./core/index.js";
+export type { AppProps } from "./core/index.js";
 export type * from "./server/build/manifest.js";

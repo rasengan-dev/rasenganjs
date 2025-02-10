@@ -1,3 +1,5 @@
+import type * as Vite from "vite";
+
 export type PartialAppConfig = {
 	/**
 	 * Configure server both in development and production
@@ -19,17 +21,6 @@ export type PartialAppConfig = {
 			 */
 			open?: boolean;
 		};
-
-		/**
-		 * Configure server in production
-		 */
-		production?: {
-			/**
-			 * Set the hosting strategy
-			 * @default "custom"
-			 */
-			hosting?: HostingStrategy;
-		};
 	};
 
 	/**
@@ -46,7 +37,7 @@ export type AppConfig = PartialAppConfig & {
 		/**
 		 * Configure Vite plugins
 		 */
-		plugins?: any[];
+		plugins?: Vite.Plugin[];
 
 		/**
 		 * Optimize dependencies
