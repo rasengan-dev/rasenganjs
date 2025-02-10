@@ -1,13 +1,13 @@
-import { execa } from "execa";
-import chalk from "chalk";
-import { checkOsPlateform } from "./utils/check-os.js";
-import { generateCopyExecaArray } from "./utils/copy.js";
+import { execa } from 'execa';
+import chalk from 'chalk';
+import { checkOsPlateform } from './utils/check-os.js';
+import { generateCopyExecaArray } from './utils/copy.js';
 
-const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
+const hostingStrategy = process.env.HOSTING_STRATEGY || 'custom';
 
 (function () {
-  const copyCommand = checkOsPlateform("win32") ? "xcopy" : "cp";
-  if (hostingStrategy === "vercel") {
+  const copyCommand = checkOsPlateform('win32') ? 'xcopy' : 'cp';
+  if (hostingStrategy === 'vercel') {
     // Displaying the message
     console.log(
       `Your project is configured to be hosted on ${chalk.bold.blue(
@@ -19,15 +19,15 @@ const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
     execa(
       copyCommand,
       generateCopyExecaArray(
-        "node_modules/rasengan/lib/esm/server/functions/vercel",
-        "."
+        'node_modules/rasengan/lib/esm/server/functions/vercel',
+        '.'
       ),
       {
-        stdio: "inherit",
+        stdio: 'inherit',
         shell: true,
       }
     );
-  } else if (hostingStrategy === "netlify") {
+  } else if (hostingStrategy === 'netlify') {
     // Displaying the message
     console.log(
       `Your project is configured to be hosted on ${chalk.bold.blue(
@@ -38,11 +38,11 @@ const hostingStrategy = process.env.HOSTING_STRATEGY || "custom";
     execa(
       copyCommand,
       generateCopyExecaArray(
-        "node_modules/rasengan/lib/esm/server/functions/netlify",
-        "."
+        'node_modules/rasengan/lib/esm/server/functions/netlify',
+        '.'
       ),
       {
-        stdio: "inherit",
+        stdio: 'inherit',
         shell: true,
       }
     );

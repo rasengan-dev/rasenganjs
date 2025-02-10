@@ -1,4 +1,4 @@
-import { LazyImage as Image } from "./components/index.js";
+import { LazyImage as Image } from './components/index.js';
 
 // Path: src/components/index.ts
 

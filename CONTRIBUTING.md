@@ -25,6 +25,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 ## Getting Started
 
 1. **Fork and Clone the Repository**
+
    - Fork the repository on GitHub.
    - Clone your fork locally:
      ```bash
@@ -33,6 +34,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
      ```
 
 2. **Install Dependencies**
+
    - Since we use pnpm workspaces, run:
      ```bash
      pnpm install
@@ -45,17 +47,19 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 ## Branching and Workflow
 
 - **Branching Strategy**
+
   - For new features or fixes, please create a branch from the `main` branch (or the default branch if otherwise noted).
   - Use descriptive branch names, e.g., `feature/new-component` or `bugfix/fix-issue-123`.
 
 - **Creating a Branch**
+
   ```bash
   git checkout -b feature/your-feature-name
   ```
 
 - **Commit Guidelines**
   - Write clear, concise commit messages.
-  - Follow the commit message convention:  
+  - Follow the commit message convention:
     ```
     [type]: short description
     ```
@@ -68,6 +72,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 ## Coding Standards and Commit Messages
 
 - **Code Style**
+
   - Follow the established coding conventions in the repository.
   - Please check for any linting or style configuration files (e.g., `.eslintrc`) to ensure consistency.
 
@@ -78,6 +83,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 ## Running Tests
 
 - **Unit and Integration Tests**
+
   - Before submitting your pull request, make sure all tests pass.
   - Run tests from the root of the repository using:
     ```bash
@@ -91,12 +97,13 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 
 1. **Submit a Pull Request**
    - Once your changes are complete and all tests pass, open a pull request (PR) against the `dev` branch (or as specified).
-   
 2. **PR Description**
+
    - Provide a clear description of your changes.
    - Link any related issues and explain your rationale.
 
 3. **Review and Feedback**
+
    - Your PR will be reviewed by the maintainers.
    - Be prepared to address feedback or make further changes.
 
@@ -118,7 +125,6 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 
 - **Documentation**
   - Refer to the project README and other documentation for more details.
-  
 - **Questions or Help**
   - If you have any questions or need additional help, feel free to open an issue or reach out via our community channels.
 

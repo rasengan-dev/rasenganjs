@@ -5,13 +5,13 @@
  * @returns The adapted file path in a valid URL format.
  */
 export const resolvePath = (path: string) => {
-	// Check the OS
-	const isWindows = process.platform === "win32";
+  // Check the OS
+  const isWindows = process.platform === 'win32';
 
-	// Adapt the path
-	if (isWindows) {
-		return `file:///${path}`;
-	}
+  // Adapt the path
+  if (isWindows) {
+    return `file:///${path}`;
+  }
 
-	return path;
+  return path;
 };

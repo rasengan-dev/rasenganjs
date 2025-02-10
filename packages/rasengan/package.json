@@ -1,143 +1,143 @@
 {
-	"name": "rasengan",
-	"private": false,
-	"version": "1.0.0-beta.51",
-	"description": "The modern React Framework",
-	"type": "module",
-	"main": "lib/esm/index.js",
-	"bin": {
-		"rasengan": "bin.js"
-	},
-	"exports": {
-		".": {
-			"types": "./lib/types/index.d.ts",
-			"import": {
-				"types": "./lib/types/index.d.ts",
-				"default": "./lib/esm/index.js"
-			},
-			"require": {
-				"types": "./lib/types/index.d.ts",
-				"default": "./lib/esm/index.js"
-			},
-			"default": "./lib/esm/index.js"
-		},
-		"./types/client": {
-			"types": "./types/client.d.ts"
-		},
-		"./package.json": "./package.json",
-		"./dynamic": {
-			"types": "./lib/types/core/dynamic/index.d.ts",
-			"import": "./lib/esm/core/dynamic/index.js",
-			"require": "./lib/esm/core/dynamic/index.js"
-		},
-		"./server": {
-			"types": "./lib/types/server.d.ts",
-			"import": "./lib/esm/server.js",
-			"require": "./lib/esm/server.js"
-		},
-		"./client": {
-			"types": "./lib/types/client.d.ts",
-			"import": "./lib/esm/client.js",
-			"require": "./lib/esm/client.js"
-		}
-	},
-	"author": {
-		"name": "dilane3",
-		"email": "komboudilane125@gmail.com",
-		"url": "https://dilane3.com",
-		"twitter": "https://twitter.com/dilanekombou",
-		"github": "https://github.com/dilane3"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/rasengan-dev/rasenganjs.git",
-		"issues": "https://github.com/rasengan-dev/rasenganjs/issues"
-	},
-	"homepage": "https://rasengan.dev",
-	"scripts": {
-		"build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
-		"build:clean": "rm -rf ./lib",
-		"build": "pnpm run build:clean & pnpm run build:compile && node ./src/scripts/copy-extra-files.js",
-		"deploy": "pnpm publish --access public",
-		"deploy:beta": "pnpm run deploy --tag beta",
-		"pack": "pnpm pack --pack-destination ./release/"
-	},
-	"dependencies": {
-		"@vitejs/plugin-react": "^4.2.1",
-		"chalk": "^5.3.0",
-		"commander": "^11.1.0",
-		"compression": "^1.7.4",
-		"execa": "^8.0.1",
-		"express": "^4.18.2",
-		"file-type": "^19.0.0",
-		"inquirer": "^9.2.12",
-		"keypress": "^0.2.1",
-		"node-fetch": "^3.3.2",
-		"open": "^10.1.0",
-		"ora": "^7.0.1",
-		"react-router": "^7.0.0",
-		"sirv": "^2.0.3"
-	},
-	"peerDependencies": {
-		"@types/node": "^18.0.0 || >=20.0.0",
-		"less": "*",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"sass": "*",
-		"stylus": "*",
-		"vite": "^6.0.0",
-		"@rasenganjs/mdx": "workspace:*"
-	},
-	"peerDependenciesMeta": {
-		"@types/node": {
-			"optional": true
-		},
-		"sass": {
-			"optional": true
-		},
-		"stylus": {
-			"optional": true
-		},
-		"less": {
-			"optional": true
-		},
-		"@rasenganjs/mdx": {
-			"optional": true
-		}
-	},
-	"devDependencies": {
-		"@types/compression": "^1.7.4",
-		"@types/express": "^4.17.19",
-		"@types/node": "^20.8.6",
-		"@types/react": "^19.0.1",
-		"@types/react-dom": "^19.0.1",
-		"cross-env": "^7.0.3"
-	},
-	"license": "MIT",
-	"engines": {
-		"node": ">=20.13.1"
-	},
-	"files": [
-		"lib/",
-		"types/",
-		"bin.js",
-		"CHANGELOG.md",
-		"LICENSE.md",
-		"README.md",
-		"tsconfig.esm.json",
-		"tsconfig.types.json",
-		"tsconfig.base.json",
-		"vite.config.ts"
-	],
-	"keywords": [
-		"rasengan",
-		"frontend",
-		"framework",
-		"react framework",
-		"react",
-		"vite",
-		"ssr",
-		"ssg",
-		"spa"
-	]
+  "name": "rasengan",
+  "private": false,
+  "version": "1.0.0-beta.51",
+  "description": "The modern React Framework",
+  "type": "module",
+  "main": "lib/esm/index.js",
+  "bin": {
+    "rasengan": "bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "import": {
+        "types": "./lib/types/index.d.ts",
+        "default": "./lib/esm/index.js"
+      },
+      "require": {
+        "types": "./lib/types/index.d.ts",
+        "default": "./lib/esm/index.js"
+      },
+      "default": "./lib/esm/index.js"
+    },
+    "./types/client": {
+      "types": "./types/client.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./dynamic": {
+      "types": "./lib/types/core/dynamic/index.d.ts",
+      "import": "./lib/esm/core/dynamic/index.js",
+      "require": "./lib/esm/core/dynamic/index.js"
+    },
+    "./server": {
+      "types": "./lib/types/server.d.ts",
+      "import": "./lib/esm/server.js",
+      "require": "./lib/esm/server.js"
+    },
+    "./client": {
+      "types": "./lib/types/client.d.ts",
+      "import": "./lib/esm/client.js",
+      "require": "./lib/esm/client.js"
+    }
+  },
+  "author": {
+    "name": "dilane3",
+    "email": "komboudilane125@gmail.com",
+    "url": "https://dilane3.com",
+    "twitter": "https://twitter.com/dilanekombou",
+    "github": "https://github.com/dilane3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues"
+  },
+  "homepage": "https://rasengan.dev",
+  "scripts": {
+    "build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
+    "build:clean": "rm -rf ./lib",
+    "build": "pnpm run build:clean & pnpm run build:compile && node ./src/scripts/copy-extra-files.js",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta",
+    "pack": "pnpm pack --pack-destination ./release/"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "compression": "^1.7.4",
+    "execa": "^8.0.1",
+    "express": "^4.18.2",
+    "file-type": "^19.0.0",
+    "inquirer": "^9.2.12",
+    "keypress": "^0.2.1",
+    "node-fetch": "^3.3.2",
+    "open": "^10.1.0",
+    "ora": "^7.0.1",
+    "react-router": "^7.0.0",
+    "sirv": "^2.0.3"
+  },
+  "peerDependencies": {
+    "@types/node": "^18.0.0 || >=20.0.0",
+    "less": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sass": "*",
+    "stylus": "*",
+    "vite": "^6.0.0",
+    "@rasenganjs/mdx": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    },
+    "sass": {
+      "optional": true
+    },
+    "stylus": {
+      "optional": true
+    },
+    "less": {
+      "optional": true
+    },
+    "@rasenganjs/mdx": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.4",
+    "@types/express": "^4.17.19",
+    "@types/node": "^20.8.6",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "cross-env": "^7.0.3"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.13.1"
+  },
+  "files": [
+    "lib/",
+    "types/",
+    "bin.js",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md",
+    "tsconfig.esm.json",
+    "tsconfig.types.json",
+    "tsconfig.base.json",
+    "vite.config.ts"
+  ],
+  "keywords": [
+    "rasengan",
+    "frontend",
+    "framework",
+    "react framework",
+    "react",
+    "vite",
+    "ssr",
+    "ssg",
+    "spa"
+  ]
 }

@@ -33,14 +33,7 @@ import Image from '@rasenganjs/image';
 import logo from './logo.svg';
 
 const App = () => {
-  return (
-    <Image
-      src={logo}
-      alt="Image"
-      width={400}
-      height={300}
-    />
-  );
+  return <Image src={logo} alt="Image" width={400} height={300} />;
 };
 ```
 
@@ -52,7 +45,7 @@ import Image from '@rasenganjs/image';
 const App = () => {
   return (
     <Image
-      src={{ uri: "https://example.com/image.jpg" }}
+      src={{ uri: 'https://example.com/image.jpg' }}
       alt="Image"
       width={400}
       height={300}

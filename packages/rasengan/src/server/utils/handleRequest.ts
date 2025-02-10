@@ -1,36 +1,43 @@
-import fs from "node:fs/promises";
-import fsSync from "node:fs";
-import path, { join } from "node:path";
+import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
+import path, { join } from 'node:path';
 import {
   StaticHandlerContext,
   createStaticHandler,
   createStaticRouter,
-} from "react-router";
+} from 'react-router';
 // @ts-ignore
-import { createFetchRequest } from "rasengan";
+import { createFetchRequest } from 'rasengan';
 // Create server for production only
 export async function handleRequest(req: any, res?: any) {
   try {
     // Get URL
     const url = req.url;
-    const host = req.headers.host ? req.headers.host : req.headers.get("host") || "";
+    const host = req.headers.host
+      ? req.headers.host
+      : req.headers.get('host') || '';
 
     // Get app path
     const appPath = process.cwd();
 
     // ! Robots Fix
-    if (url === "/robots.txt") {
+    if (url === '/robots.txt') {
       // Check if robots.txt exists using fs
       // If it does, return it
       try {
-        await fs.access(path.resolve(join(appPath, "dist/client/robots.txt")));
+        await fs.access(path.resolve(join(appPath, 'dist/client/robots.txt')));
 
         if (res)
-          return res.send(path.resolve(join(appPath, "dist/client/robots.txt")));
+          return res.send(
+            path.resolve(join(appPath, 'dist/client/robots.txt'))
+          );
 
-        return new Response(path.resolve(join(appPath, "dist/client/robots.txt")), {
-          status: 200
-        });
+        return new Response(
+          path.resolve(join(appPath, 'dist/client/robots.txt')),
+          {
+            status: 200,
+          }
+        );
       } catch (err: any) {
         if (res)
           return res.send(`
@@ -43,7 +50,8 @@ export async function handleRequest(req: any, res?: any) {
             disallow: /uploads/
           `);
 
-          return new Response(`
+        return new Response(
+          `
             user-agent: *
             disallow: /downloads/
             disallow: /private/
@@ -51,41 +59,51 @@ export async function handleRequest(req: any, res?: any) {
             
             user-agent: magicsearchbot
             disallow: /uploads/
-          `, {
-            status: 200
-          });
+          `,
+          {
+            status: 200,
+          }
+        );
       }
     }
 
     // ! Sitemap Fix
-    if (url === "/sitemap.xml") {
+    if (url === '/sitemap.xml') {
       if (res)
-        return res.send(path.resolve(join(appPath, "dist/client/sitemap.xml")));
+        return res.send(path.resolve(join(appPath, 'dist/client/sitemap.xml')));
 
-      return new Response(path.resolve(join(appPath, "dist/client/sitemap.xml")), {
-        status: 200
-      });
+      return new Response(
+        path.resolve(join(appPath, 'dist/client/sitemap.xml')),
+        {
+          status: 200,
+        }
+      );
     }
 
     // ! Manifest Fix
-    if (url === "/manifest.json") {
+    if (url === '/manifest.json') {
       if (res)
-        return res.send(path.resolve(join(appPath, "dist/client/manifest.json")));
+        return res.send(
+          path.resolve(join(appPath, 'dist/client/manifest.json'))
+        );
 
-      return new Response(path.resolve(join(appPath, "dist/client/manifest.json")), {
-        status: 200
-      });
+      return new Response(
+        path.resolve(join(appPath, 'dist/client/manifest.json')),
+        {
+          status: 200,
+        }
+      );
     }
 
     // ! Handle assets
-    if (url.includes("/assets")) {
+    if (url.includes('/assets')) {
       // get segments from /assets to the end
-      const segments = url.split("/");
+      const segments = url.split('/');
 
       const segmentsWithoutOrigin = [...segments];
 
       for (let segment of segments) {
-        if (segment === "assets") {
+        if (segment === 'assets') {
           break;
         }
 
@@ -93,68 +111,78 @@ export async function handleRequest(req: any, res?: any) {
       }
 
       // replace assets by client/assets
-      const filePath = join(appPath, "dist/client", segmentsWithoutOrigin.join("/"));
-      const file = await fs.readFile(filePath, "utf-8");
+      const filePath = join(
+        appPath,
+        'dist/client',
+        segmentsWithoutOrigin.join('/')
+      );
+      const file = await fs.readFile(filePath, 'utf-8');
 
       if (res) {
         return res
-        .status(200)
-        .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
-        .setHeader("Cache-Control", "max-age=31536000")
-        .end(file);
+          .status(200)
+          .setHeader(
+            'Content-Type',
+            url.endsWith('.js') ? 'text/javascript' : 'text/css'
+          )
+          .setHeader('Cache-Control', 'max-age=31536000')
+          .end(file);
       }
 
       return new Response(file, {
         headers: {
-          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
-          "Cache-Control": "max-age=31536000",
+          'Content-Type': url.endsWith('.js') ? 'text/javascript' : 'text/css',
+          'Cache-Control': 'max-age=31536000',
         },
       });
     }
 
     // Handle js and css files
-    if (url.endsWith(".js") || url.endsWith(".css")) {
-      const file = await fs.readFile(url, "utf-8");
+    if (url.endsWith('.js') || url.endsWith('.css')) {
+      const file = await fs.readFile(url, 'utf-8');
 
       if (res) {
         return res
-        .status(200)
-        .setHeader("Content-Type", url.endsWith(".js") ? "text/javascript" : "text/css")
-        .setHeader("Cache-Control", "max-age=31536000")
-        .end(file);
+          .status(200)
+          .setHeader(
+            'Content-Type',
+            url.endsWith('.js') ? 'text/javascript' : 'text/css'
+          )
+          .setHeader('Cache-Control', 'max-age=31536000')
+          .end(file);
       }
 
       return new Response(file, {
         headers: {
-          "Content-Type": url.endsWith(".js") ? "text/javascript" : "text/css",
-          "Cache-Control": "max-age=31536000",
+          'Content-Type': url.endsWith('.js') ? 'text/javascript' : 'text/css',
+          'Cache-Control': 'max-age=31536000',
         },
       });
     }
 
     // Template html
-    let templateHtml = "";
+    let templateHtml = '';
 
     // Always read fresh template in development
-    const serverFilePath = join(appPath, "dist/server/entry-server.js");
-    const bootstrapDirPath = join(appPath, "dist/client/assets")
+    const serverFilePath = join(appPath, 'dist/server/entry-server.js');
+    const bootstrapDirPath = join(appPath, 'dist/client/assets');
 
     // Read the entry sever file
     let entry = await import(serverFilePath);
 
     // replace bootstrap script with compiled scripts
     let bootstrap =
-      "/assets/" +
+      '/assets/' +
       fsSync
         .readdirSync(bootstrapDirPath)
-        .filter((fn) => fn.includes("entry-client") && fn.endsWith(".js"))[0];
+        .filter((fn) => fn.includes('entry-client') && fn.endsWith('.js'))[0];
 
     // replace styles with compiled styles
     let styles =
-      "/assets/" +
+      '/assets/' +
       fsSync
-        .readdirSync(join(appPath, "dist/client/assets"))
-        .filter((fn) => fn.includes("entry-client") && fn.endsWith(".css"))[0];
+        .readdirSync(join(appPath, 'dist/client/assets'))
+        .filter((fn) => fn.includes('entry-client') && fn.endsWith('.css'))[0];
 
     // Extract render and staticRoutes from entry
     const { render, staticRoutes, loadTemplateHtml } = entry;
@@ -171,7 +199,7 @@ export async function handleRequest(req: any, res?: any) {
     const status = (context as Response).status;
 
     if (status === 302) {
-      const redirect = (context as Response).headers.get("Location");
+      const redirect = (context as Response).headers.get('Location');
 
       if (redirect) {
         if (res) return res.redirect(redirect);
@@ -197,22 +225,22 @@ export async function handleRequest(req: any, res?: any) {
     }
 
     // Replacing the app-html placeholder with the rendered html
-    let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? "");
+    let html = templateHtml.replace(`rasengan-body-app`, rendered.html ?? '');
 
     // Send the rendered html page
     if (res) {
       return res
-      .status(200)
-      .setHeader("Content-Type", "text/html")
-        .setHeader("Cache-Control", "max-age=31536000")
+        .status(200)
+        .setHeader('Content-Type', 'text/html')
+        .setHeader('Cache-Control', 'max-age=31536000')
         .end(html);
     }
 
     return new Response(html, {
       status: 200,
       headers: {
-        "Content-Type": "text/html",
-        "Cache-Control": "max-age=31536000",
+        'Content-Type': 'text/html',
+        'Cache-Control': 'max-age=31536000',
       },
     });
   } catch (e: any) {

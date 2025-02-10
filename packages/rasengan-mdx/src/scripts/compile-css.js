@@ -24,13 +24,13 @@ export const compileCss = async () => {
     const output = new CleanCSS({}).minify(fileContent);
 
     if (output.errors.length > 0) {
-			console.error("Erreur(s) lors de la minification:", output.errors);
-			return;
-		}
+      console.error('Erreur(s) lors de la minification:', output.errors);
+      return;
+    }
 
-    const cssPath = path.join(destination, file.replace(".css", ".min.css"));
+    const cssPath = path.join(destination, file.replace('.css', '.min.css'));
     fs.writeFileSync(cssPath, output.styles);
   }
-}
+};
 
 compileCss();

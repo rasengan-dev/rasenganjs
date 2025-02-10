@@ -1,7 +1,7 @@
-import React from "react";
-import { Link } from "rasengan";
-import logo from "@/assets/logo.svg";
-import Image from "@rasenganjs/image";
+import React from 'react';
+import { Link } from 'rasengan';
+import logo from '@/assets/logo.svg';
+import Image from '@rasenganjs/image';
 
 const Home = () => {
   return (
@@ -44,7 +44,10 @@ const Home = () => {
         <div className="card">
           <h2 className="title">Examples</h2>
           <p>Discover and deploy boilerplate example Rasengan projects.</p>
-          <Link to="https://github.com/rasengan-dev/rasenganjs-examples" target="_blank">
+          <Link
+            to="https://github.com/rasengan-dev/rasenganjs-examples"
+            target="_blank"
+          >
             View Examples
           </Link>
         </div>
@@ -52,7 +55,10 @@ const Home = () => {
         <div className="card">
           <h2 className="title">Community</h2>
           <p>Join an active community of Rasengan users on GitHub.</p>
-          <Link to="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank">
+          <Link
+            to="https://github.com/rasengan-dev/rasenganjs/discussions"
+            target="_blank"
+          >
             Join Github Discussions
           </Link>
         </div>
@@ -61,10 +67,10 @@ const Home = () => {
   );
 };
 
-Home.path = "/";
+Home.path = '/';
 Home.metadata = {
-  title: "Home",
-  description: "Home page",
+  title: 'Home',
+  description: 'Home page',
 };
 
 export default Home;
