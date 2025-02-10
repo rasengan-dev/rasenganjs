@@ -27,41 +27,37 @@ Here is an example of how you can use the `@rasenganjs/theme` package:
 ### Wrap your application with `ThemeProvider`
 
 ```tsx
-import { type AppProps } from "rasengan";
-import AppRouter from "@app/app.router";
-import ThemeProvider from "@rasenganjs/theme";
+import { type AppProps } from 'rasengan';
+import AppRouter from '@app/app.router';
+import ThemeProvider from '@rasenganjs/theme';
 
 export default function App({ Component, children }: AppProps) {
   return (
-		<ThemeProvider>
-			<Component router={AppRouter}>{children}</Component>
-		</ThemeProvider>
-	);
+    <ThemeProvider>
+      <Component router={AppRouter}>{children}</Component>
+    </ThemeProvider>
+  );
 }
-
 ```
 
 ### Use the `useTheme` hook to get the current theme
 
-```tsx 
-import { useTheme } from "@rasenganjs/theme";
+```tsx
+import { useTheme } from '@rasenganjs/theme';
 
 const Card = () => {
   const { theme, actualTheme, setTheme, isDark } = useTheme();
 
-  return (
-    <div>{/* Code here */}</div>
-  );
+  return <div>{/* Code here */}</div>;
 };
 ```
 
-| Property | Type | Description | Values |
-| --- | --- | --- | --- |
-| `theme` | `string` | The current theme | `light` or `dark` or `system` |
-| `actualTheme` | `string` | The actual theme | `light` or `dark` |
-| `setTheme` | `(theme: string) => void` | A function to set the theme | - |
-| `isDark` | `boolean` | A boolean that indicates if the current theme is dark | `true` or `false` |
-
+| Property      | Type                      | Description                                           | Values                        |
+| ------------- | ------------------------- | ----------------------------------------------------- | ----------------------------- |
+| `theme`       | `string`                  | The current theme                                     | `light` or `dark` or `system` |
+| `actualTheme` | `string`                  | The actual theme                                      | `light` or `dark`             |
+| `setTheme`    | `(theme: string) => void` | A function to set the theme                           | -                             |
+| `isDark`      | `boolean`                 | A boolean that indicates if the current theme is dark | `true` or `false`             |
 
 ## Community
 

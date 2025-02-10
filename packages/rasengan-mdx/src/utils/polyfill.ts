@@ -1,16 +1,16 @@
 export default function polyfill() {
-	return {
-		name: "vite-plugin-rasengan-mdx-polyfill",
+  return {
+    name: 'vite-plugin-rasengan-mdx-polyfill',
 
-		config: () => {
-			return {
-				define: {
-					"process": process,
-				},
-			};
-		},
+    config: () => {
+      return {
+        define: {
+          process: process,
+        },
+      };
+    },
 
-		enforce: "pre",
-		apply: "build",
-	};
+    enforce: 'pre',
+    apply: 'build',
+  };
 }

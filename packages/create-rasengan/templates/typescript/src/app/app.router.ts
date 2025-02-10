@@ -1,6 +1,6 @@
-import { RouterComponent, defineRouter } from "rasengan";
-import Home from "@/app/home.page";
-import AppLayout from "@/app/app.layout";
+import { RouterComponent, defineRouter } from 'rasengan';
+import Home from '@/app/home.page';
+import AppLayout from '@/app/app.layout';
 
 class AppRouter extends RouterComponent {}
 

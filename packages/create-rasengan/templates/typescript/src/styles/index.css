@@ -1,12 +1,12 @@
 /* Load Urbanist and Comfortaa font */
-@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap');
 
 :root {
   font-family: var(--font-mono);
 
   /* Fonts */
-  --font-sans: "Urbanist", sans-serif;
-  --font-mono: "Comfortaa", monospace;
+  --font-sans: 'Urbanist', sans-serif;
+  --font-mono: 'Comfortaa', monospace;
 
   /* Colors */
   --primary: #2a7fff;

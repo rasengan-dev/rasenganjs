@@ -1,8 +1,4 @@
-export default function Template({
-  Head,
-  Body,
-  Script
-}) {
+export default function Template({ Head, Body, Script }) {
   return (
     <html lang="en">
       <Head>

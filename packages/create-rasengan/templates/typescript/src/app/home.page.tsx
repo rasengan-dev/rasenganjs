@@ -1,6 +1,6 @@
-import { PageComponent, Link } from "rasengan";
-import logo from "@/assets/logo.svg";
-import Image from "@rasenganjs/image";
+import { PageComponent, Link } from 'rasengan';
+import logo from '@/assets/logo.svg';
+import Image from '@rasenganjs/image';
 
 const Home: PageComponent = () => {
   return (
@@ -43,7 +43,10 @@ const Home: PageComponent = () => {
         <div className="card">
           <h2 className="title">Examples</h2>
           <p>Discover and deploy boilerplate example Rasengan projects.</p>
-          <Link to="https://github.com/rasengan-dev/rasenganjs-examples" target="_blank">
+          <Link
+            to="https://github.com/rasengan-dev/rasenganjs-examples"
+            target="_blank"
+          >
             View Examples
           </Link>
         </div>
@@ -51,7 +54,10 @@ const Home: PageComponent = () => {
         <div className="card">
           <h2 className="title">Community</h2>
           <p>Join an active community of Rasengan users on GitHub.</p>
-          <Link to="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank">
+          <Link
+            to="https://github.com/rasengan-dev/rasenganjs/discussions"
+            target="_blank"
+          >
             Join Github Discussions
           </Link>
         </div>
@@ -60,11 +66,11 @@ const Home: PageComponent = () => {
   );
 };
 
-Home.path = "/";
+Home.path = '/';
 Home.metadata = {
-  title: "Rasengan",
-  description: "Rasengan is a modern web framework for building web applications with React."
+  title: 'Rasengan',
+  description:
+    'Rasengan is a modern web framework for building web applications with React.',
 };
 
 export default Home;
-

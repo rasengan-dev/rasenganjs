@@ -21,8 +21,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "vite.config.ts",
-    "types/client.d.ts"
-  ]
+  "include": ["vite.config.ts", "types/client.d.ts"]
 }

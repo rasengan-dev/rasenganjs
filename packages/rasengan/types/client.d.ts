@@ -3,27 +3,27 @@
 
 // Markdown files
 
-declare module "*.mdx" {
-	import { type MDXPageComponent } from "../lib/esm/index.js";
+declare module '*.mdx' {
+  import { type MDXPageComponent } from '../lib/esm/index.js';
 
-	let MDXComponent: MDXPageComponent;
+  let MDXComponent: MDXPageComponent;
 
-	export default MDXComponent;
+  export default MDXComponent;
 }
 
-declare module "*.md" {
-	import { type MDXPageComponent } from "../lib/esm/index.js";
+declare module '*.md' {
+  import { type MDXPageComponent } from '../lib/esm/index.js';
 
-	let MDXComponent: MDXPageComponent;
+  let MDXComponent: MDXPageComponent;
 
-	export default MDXComponent;
+  export default MDXComponent;
 }
 
 // ?raw files
 
-declare module "*.js?raw" {
-	const value: string;
-	export default value;
+declare module '*.js?raw' {
+  const value: string;
+  export default value;
 }
 
 // Virtual modules
@@ -31,32 +31,32 @@ declare module "*.js?raw" {
 /**
  * virtual-entry-server.d.ts
  **/
-declare module "virtual:entry-server" {
-	import { type Response } from "express";
-	import { redirect, StaticHandlerContext } from "react-router";
-	import {
-		Metadata,
-		MetadataWithoutTitleAndDescription,
-	} from "../lib/esm/index.js";
+declare module 'virtual:entry-server' {
+  import { type Response } from 'express';
+  import { redirect, StaticHandlerContext } from 'react-router';
+  import {
+    Metadata,
+    MetadataWithoutTitleAndDescription,
+  } from '../lib/esm/index.js';
 
-	/**
-	 * Render the app to a stream
-	 * @param router
-	 * @param res
-	 * @param options
-	 * @returns
-	 */
-	export async function render(
-		router: any,
-		res: Response,
-		options: {
-			context: StaticHandlerContext;
-			metadata: {
-				page: Metadata;
-				layout: MetadataWithoutTitleAndDescription;
-			};
-		}
-	): Promise<unknown>;
+  /**
+   * Render the app to a stream
+   * @param router
+   * @param res
+   * @param options
+   * @returns
+   */
+  export async function render(
+    router: any,
+    res: Response,
+    options: {
+      context: StaticHandlerContext;
+      metadata: {
+        page: Metadata;
+        layout: MetadataWithoutTitleAndDescription;
+      };
+    }
+  ): Promise<unknown>;
 }
 
 // declare module "virtual:rasengan-config" {
@@ -66,5 +66,5 @@ declare module "virtual:entry-server" {
 // }
 
 interface Window {
-	__staticRouterHydrationData: any;
+  __staticRouterHydrationData: any;
 }

@@ -1,29 +1,29 @@
 {
-	"name": "rasengan-v2-test",
-	"private": true,
-	"version": "1.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "rasengan dev",
-		"build": "rasengan build",
-		"serve": "rasengan-serve ./dist"
-	},
-	"dependencies": {
-		"rasengan": "workspace:*",
-		"@rasenganjs/image": "workspace:*",
-		"@rasenganjs/serve": "workspace:*",
-		"@rasenganjs/mdx": "workspace:*",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
-	},
-	"devDependencies": {
-		"@types/react": "^19.0.0",
-		"@types/react-dom": "^19.0.0",
-		"tailwindcss": "^3.3.5",
-		"autoprefixer": "^10.4.16",
-		"postcss": "^8.4.31",
-		"cross-env": "^7.0.3",
-		"typescript": "^5.1.3",
-		"vite": "^6.0.11"
-	}
+  "name": "rasengan-v2-test",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan dev",
+    "build": "rasengan build",
+    "serve": "rasengan-serve ./dist"
+  },
+  "dependencies": {
+    "rasengan": "workspace:*",
+    "@rasenganjs/image": "workspace:*",
+    "@rasenganjs/serve": "workspace:*",
+    "@rasenganjs/mdx": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^3.3.5",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.1.3",
+    "vite": "^6.0.11"
+  }
 }
