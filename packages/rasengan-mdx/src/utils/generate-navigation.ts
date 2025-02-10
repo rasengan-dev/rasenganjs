@@ -1,5 +1,6 @@
-import { RouterComponent } from "rasengan";
-import { NavigationStructure } from "../types/index.js";
+// @ts-ignore
+import { RouterComponent } from 'rasengan';
+import { NavigationStructure } from '../types/index.js';
 
 export const generateNavigation = (router: RouterComponent) => {
   const navigation: NavigationStructure[] = [];
@@ -11,7 +12,10 @@ export const generateNavigation = (router: RouterComponent) => {
     //   continue;
     // }
 
-    const { exists, isParent, route } = checkIfRouteExists(navigation, page.path);
+    const { exists, isParent, route } = checkIfRouteExists(
+      navigation,
+      page.path
+    );
 
     if (exists) {
       continue;
@@ -31,7 +35,7 @@ export const generateNavigation = (router: RouterComponent) => {
       title: page.metadata.title,
       link: page.path,
       level: 1,
-      children: []
+      children: [],
     });
   }
 
@@ -45,16 +49,19 @@ export const generateNavigation = (router: RouterComponent) => {
   // }
 
   return navigation;
-}
+};
 
-const checkIfRouteExists = (navigation: NavigationStructure[], path: string) => {
+const checkIfRouteExists = (
+  navigation: NavigationStructure[],
+  path: string
+) => {
   for (const route of navigation) {
     if (route.link === path) {
       return {
         exists: true,
         isParent: false,
         route,
-      }
+      };
     }
 
     if (path.startsWith(route.link)) {
@@ -62,7 +69,7 @@ const checkIfRouteExists = (navigation: NavigationStructure[], path: string) => 
         exists: false,
         isParent: true,
         route,
-      }
+      };
     }
 
     if (route.children) {
@@ -79,4 +86,4 @@ const checkIfRouteExists = (navigation: NavigationStructure[], path: string) => 
     isParent: false,
     route: null,
   };
-}
+};

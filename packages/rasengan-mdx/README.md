@@ -31,8 +31,8 @@ Here is an example of how you can use the `@rasenganjs/mdx` package:
 Import the `mdx` plugin into the `rasengan.config.js` file.
 
 ```javascript
-import { defineConfig } from "rasengan";
-import mdx from "@rasenganjs/mdx";
+import { defineConfig } from 'rasengan';
+import mdx from '@rasenganjs/mdx';
 
 export default defineConfig({
   vite: {
@@ -53,7 +53,7 @@ metadata:
   description: Discover our new blog posts
 ---
 
-import Button from "@/components/Button";
+import Button from '@/components/Button';
 
 # Blog page
 
@@ -67,10 +67,10 @@ This is a `blog` page.
 Inside the `app.router.ts` file, import your Markdown Component and the `MDXRenderer` component from `@rasenganjs/mdx` and add it to `defineRouter` option like this:
 
 ```typescript
-import { RouterComponent, defineRouter } from "rasengan";
-import AppLayout from "@app/app.layout";
-import Blog from "@app/blog.page.mdx";
-import { MDXRenderer } from "@rasenganjs/mdx";
+import { RouterComponent, defineRouter } from 'rasengan';
+import AppLayout from '@app/app.layout';
+import Blog from '@app/blog.page.mdx';
+import { MDXRenderer } from '@rasenganjs/mdx';
 
 class AppRouter extends RouterComponent {}
 
@@ -78,7 +78,7 @@ export default defineRouter({
   imports: [],
   layout: AppLayout,
   pages: [Blog],
-  MDXRenderer
+  MDXRenderer,
 })(AppRouter);
 ```
 

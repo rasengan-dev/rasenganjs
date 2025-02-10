@@ -1,5 +1,5 @@
-import React from "react";
-import { Outlet, LayoutComponent } from "rasengan";
+import React from 'react';
+import { Outlet, LayoutComponent } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
   return (
@@ -9,6 +9,6 @@ const AppLayout: LayoutComponent = () => {
   );
 };
 
-AppLayout.path = "/";
+AppLayout.path = '/';
 
 export default AppLayout;

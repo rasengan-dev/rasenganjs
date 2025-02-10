@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { ImageProps } from "../types/index.js";
+import { useEffect, useState, useRef } from 'react';
+import { ImageProps } from '../types/index.js';
 
 export default ({
   src,
@@ -12,7 +12,7 @@ export default ({
   const [loaded, setLoaded] = useState(false);
   const [startLoading, setStartLoading] = useState(false);
   const [imageSrc, setImageSrc] = useState<HTMLImageElement>();
-  
+
   // Reference
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,7 +34,7 @@ export default ({
     // Load image when it is in the viewport only
 
     // Check if IntersectionObserver is supported
-    if (!("IntersectionObserver" in window)) {
+    if (!('IntersectionObserver' in window)) {
       setStartLoading(true);
       return;
     }
@@ -55,7 +55,7 @@ export default ({
       },
       {
         root: null,
-        rootMargin: "0px",
+        rootMargin: '0px',
         threshold: 0.1,
       }
     );
@@ -69,7 +69,7 @@ export default ({
 
     return () => {
       observer.disconnect();
-    }
+    };
   }, []);
 
   /**
@@ -111,27 +111,27 @@ export default ({
         style={{
           width: props.width || imageSrc?.width || 200,
           height: props.height || imageSrc?.height || 200,
-          overflow: "hidden",
-          position: "relative",
+          overflow: 'hidden',
+          position: 'relative',
           ...style,
         }}
         className={props.className}
       >
         {
           // If image is not loaded, show loading fallback
-          props.loading === "lazy" && !loaded && (
+          props.loading === 'lazy' && !loaded && (
             <div
               style={{
-                width: "300%",
+                width: '300%',
                 height: props.height || imageSrc?.height || 200,
-                backgroundColor: "#e5e5e5",
+                backgroundColor: '#e5e5e5',
               }}
               className={`${
-                props.loading === "lazy"
-                  ? props.mode === "blur"
-                    ? "blur-container"
-                    : "wave-container wave"
-                  : ""
+                props.loading === 'lazy'
+                  ? props.mode === 'blur'
+                    ? 'blur-container'
+                    : 'wave-container wave'
+                  : ''
               }`}
             ></div>
           )
@@ -142,11 +142,11 @@ export default ({
           alt={alt}
           {...props}
           style={{
-            objectFit: props.objectfit || "cover",
-            width: "100%",
-            height: "100%",
+            objectFit: props.objectfit || 'cover',
+            width: '100%',
+            height: '100%',
           }}
-          hidden={props.loading === "lazy" ? !loaded : false}
+          hidden={props.loading === 'lazy' ? !loaded : false}
         />
       </div>
     </>

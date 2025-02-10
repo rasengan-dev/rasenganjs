@@ -3,13 +3,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "target": "ESNext",
-    "lib": [
-      "ES2015",
-      "ESNext",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["ES2015", "ESNext", "dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -32,9 +26,6 @@
     /* Types */
     "typeRoots": ["node_modules/@types", "types"]
   },
-  "include": [
-    "src",
-    "types",
-  ],
+  "include": ["src", "types"],
   "exclude": ["node_modules", "lib"]
 }

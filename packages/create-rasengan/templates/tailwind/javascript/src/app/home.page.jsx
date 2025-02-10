@@ -1,6 +1,6 @@
-import { Link } from "rasengan";
-import logo from "@/assets/logo.svg";
-import Image from "@rasenganjs/image";
+import { Link } from 'rasengan';
+import logo from '@/assets/logo.svg';
+import Image from '@rasenganjs/image';
 
 const Home = () => {
   return (
@@ -19,7 +19,7 @@ const Home = () => {
           Welcome to <span className="text-primary">Rasengan</span>
         </h1>
         <p className="text-lg mt-4">
-          To get started, edit the file{" "}
+          To get started, edit the file{' '}
           <code className="text-sm ml-2 font-medium">
             src/app/home.page.jsx
           </code>
@@ -87,10 +87,10 @@ const Home = () => {
   );
 };
 
-Home.path = "/";
+Home.path = '/';
 Home.metadata = {
-  title: "Home",
-  description: "Home page",
+  title: 'Home',
+  description: 'Home page',
 };
 
 export default Home;

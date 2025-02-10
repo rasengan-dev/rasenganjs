@@ -7,13 +7,10 @@ import micromatch from 'micromatch';
  * @param exclude - A string or array of strings representing the patterns to exclude.
  * @returns A function that takes an ID string and returns `true` if the ID should be included, `false` otherwise.
  */
-export default function createFilter(
-	include: string,
-	exclude?: string
-) {
-	return function (id: string) {
-		if (typeof id !== "string") return false;
-		
+export default function createFilter(include: string, exclude?: string) {
+  return function (id: string) {
+    if (typeof id !== 'string') return false;
+
     const matcher = micromatch.matcher(include);
 
     if (exclude) {
@@ -22,5 +19,5 @@ export default function createFilter(
     } else {
       return matcher(id);
     }
-	};
+  };
 }

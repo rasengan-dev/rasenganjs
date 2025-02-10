@@ -1,23 +1,31 @@
 {
-	"name": "rasengan",
-	"private": true,
-	"type": "module",
-	"engines": {
-		"node": ">=20"
-	},
-	"packageManager": "pnpm@9.14.2",
-	"scripts": {
-		"preinstall": "npx only-allow pnpm",
-		"build": "pnpm -r --filter='./packages/*' run build",
-    "pack": "pnpm -r --filter='./packages/*' run pack"
-	},
-	"resolutions": {
-		"@vitejs/plugin-react": "^4.2.1",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
-	},
-	"devDependencies": {
-		"tsx": "^4.19.2",
-		"typescript": "^5.7.2"
-	}
+  "name": "rasengan",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "pnpm -r --filter='./packages/*' run build",
+    "pack": "pnpm -r --filter='./packages/*' run pack",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,scss,md,mdx,json}": "prettier --write"
+  },
+  "resolutions": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.5.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
 }

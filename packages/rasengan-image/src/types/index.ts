@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties } from 'react';
 
 /**
  * Defines the props for an Image component.
@@ -17,13 +17,13 @@ import React, { CSSProperties } from "react";
 export type ImageProps = {
   src: string | { uri: string };
   alt: string;
-  width?: CSSProperties["width"];
-  height?: CSSProperties["height"];
-  className?: React.HTMLProps<HTMLDivElement>["className"];
-  style?: React.HTMLProps<HTMLDivElement>["style"];
-  loading?: "lazy" | "eager";
-  mode?: "blur" | "wave";
-  objectfit?: CSSProperties["objectFit"];
+  width?: CSSProperties['width'];
+  height?: CSSProperties['height'];
+  className?: React.HTMLProps<HTMLDivElement>['className'];
+  style?: React.HTMLProps<HTMLDivElement>['style'];
+  loading?: 'lazy' | 'eager';
+  mode?: 'blur' | 'wave';
+  objectfit?: CSSProperties['objectFit'];
   loadingOnViewport?: boolean;
 };
 
@@ -33,6 +33,6 @@ export type ImageProps = {
  * @property {CSSProperties["height"]} [height] - The height of the loading fallback.
  */
 export type LoadingFallbackProps = {
-  width?: CSSProperties["width"];
-  height?: CSSProperties["height"];
+  width?: CSSProperties['width'];
+  height?: CSSProperties['height'];
 };

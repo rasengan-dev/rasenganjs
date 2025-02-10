@@ -1,6 +1,6 @@
-import { PageComponent, Link } from "rasengan";
-import logo from "@/assets/logo.svg";
-import Image from "@rasenganjs/image";
+import { PageComponent, Link } from 'rasengan';
+import logo from '@/assets/logo.svg';
+import Image from '@rasenganjs/image';
 
 console.log(import.meta.env);
 
@@ -23,7 +23,7 @@ const Home: PageComponent = (props: any) => {
           Welcome to <span className="text-primary">Rasengan</span>
         </h1>
         <p className="text-lg mt-4">
-          To get started, edit the file{" "}
+          To get started, edit the file{' '}
           <code className="text-sm ml-2 font-medium">
             src/app/home.page.tsx
           </code>
@@ -89,21 +89,21 @@ const Home: PageComponent = (props: any) => {
       </div>
     </section>
   );
-}
+};
 
-Home.path = "/";
+Home.path = '/';
 Home.metadata = {
-  title: "Home",
-  description: "Home page",
+  title: 'Home',
+  description: 'Home page',
 };
 
 Home.loader = async () => {
   return {
-    props: { 
-      title: "Home",
-      description: "Home page",
-    }
-  }
-}
+    props: {
+      title: 'Home',
+      description: 'Home page',
+    },
+  };
+};
 
 export default Home;

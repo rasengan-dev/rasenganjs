@@ -1,15 +1,15 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-const buildDir = "./lib";
+const buildDir = './lib';
 function createEsmModulePackageJson() {
   fs.readdir(buildDir, function (err, dirs) {
     if (err) {
       throw err;
     }
     dirs.forEach(function (dir) {
-      if (dir === "esm") {
-        var packageJsonFile = path.join(buildDir, dir, "/package.json");
+      if (dir === 'esm') {
+        var packageJsonFile = path.join(buildDir, dir, '/package.json');
         if (!fs.existsSync(packageJsonFile)) {
           fs.writeFile(
             packageJsonFile,

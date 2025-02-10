@@ -1,5 +1,5 @@
-import { createContext } from "react";
-import { ThemeContext } from "../types";
+import { createContext } from 'react';
+import { ThemeContext } from '../types';
 
 /**
  * Provides a React context for managing the application's theme.

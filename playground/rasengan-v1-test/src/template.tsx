@@ -1,10 +1,6 @@
-import { type TemplateProps } from "rasengan";
+import { type TemplateProps } from 'rasengan';
 
-export default function Template({
-  Head,
-  Body,
-  Script
-}: TemplateProps) {
+export default function Template({ Head, Body, Script }: TemplateProps) {
   return (
     <html lang="en">
       <Head>

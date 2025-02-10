@@ -1,12 +1,12 @@
-import { defineConfig, UserConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { join } from "node:path";
+import { defineConfig, UserConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { join } from 'node:path';
 import {
-	loadModuleSSR,
-	getDirname,
-} from "./lib/esm/core/config/utils/load-modules.js";
-import { isServerMode, ServerMode } from "./lib/esm/server/runtime/mode.js";
-import { plugins } from "./lib/esm/core/plugins/index.js";
+  loadModuleSSR,
+  getDirname,
+} from './lib/esm/core/config/utils/load-modules.js';
+import { isServerMode, ServerMode } from './lib/esm/server/runtime/mode.js';
+import { plugins } from './lib/esm/core/plugins/index.js';
 
 /**
  * Configures the Vite build for the Rasengan.js application.
@@ -30,135 +30,135 @@ import { plugins } from "./lib/esm/core/plugins/index.js";
  * @returns {object} The Vite configuration object.
  */
 export default defineConfig(async ({ mode }): Promise<UserConfig> => {
-	const rootPath = process.cwd();
-	const __dirname = await getDirname(import.meta.url);
+  const rootPath = process.cwd();
+  const __dirname = await getDirname(import.meta.url);
 
-	// Format config path
-	const configPath = join(`${rootPath}/rasengan.config.js`);
+  // Format config path
+  const configPath = join(`${rootPath}/rasengan.config.js`);
 
-	// Get config
-	const config = await (await loadModuleSSR(configPath)).default;
+  // Get config
+  const config = await (await loadModuleSSR(configPath)).default;
 
-	// Extract vite config
-	const { vite } = await config;
+  // Extract vite config
+  const { vite } = await config;
 
-	return {
-		// Vite Plugins
-		plugins: [react(), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
+  return {
+    // Vite Plugins
+    plugins: [react(), ...plugins.map((plugin) => plugin()), ...vite?.plugins],
 
-		// define index.html location
-		root: rootPath,
-		optimizeDeps: {
-			exclude: vite?.optimizeDeps?.exclude,
-			include: vite?.optimizeDeps?.include,
-		},
+    // define index.html location
+    root: rootPath,
+    optimizeDeps: {
+      exclude: vite?.optimizeDeps?.exclude,
+      include: vite?.optimizeDeps?.include,
+    },
 
-		// Build options
-		build: {
-			sourcemap:
-				(isServerMode(mode) && mode === ServerMode.Development) ?? false,
-			rollupOptions: {
-				external: Array.isArray(vite?.build?.external)
-					? [...vite.build.external]
-					: [],
+    // Build options
+    build: {
+      sourcemap:
+        (isServerMode(mode) && mode === ServerMode.Development) ?? false,
+      rollupOptions: {
+        external: Array.isArray(vite?.build?.external)
+          ? [...vite.build.external]
+          : [],
 
-				input: "./src/index",
-				output: {
-					manualChunks(id: string) {
-						if (id.includes("node_modules")) return "vendor";
-						if (id.includes("src/components")) return "shared-components";
+        input: './src/index',
+        output: {
+          manualChunks(id: string) {
+            if (id.includes('node_modules')) return 'vendor';
+            if (id.includes('src/components')) return 'shared-components';
 
-						if (id.includes("src/app") && id.includes(".page.")) {
-							const parts = id.split("src/app")[1]?.split("/");
-							if (parts?.length) {
-								const pageName = parts.pop()?.split(".")[0];
-								return pageName ? `page-${pageName}` : undefined;
-							}
-						}
+            if (id.includes('src/app') && id.includes('.page.')) {
+              const parts = id.split('src/app')[1]?.split('/');
+              if (parts?.length) {
+                const pageName = parts.pop()?.split('.')[0];
+                return pageName ? `page-${pageName}` : undefined;
+              }
+            }
 
-						return undefined;
-					},
-				},
-			},
-			outDir: "dist",
-			chunkSizeWarningLimit: 1000,
-		},
+            return undefined;
+          },
+        },
+      },
+      outDir: 'dist',
+      chunkSizeWarningLimit: 1000,
+    },
 
-		// Server options
-		css: {
-			modules: {
-				localsConvention: "camelCaseOnly",
-			},
+    // Server options
+    css: {
+      modules: {
+        localsConvention: 'camelCaseOnly',
+      },
 
-			postcss: vite?.css?.postcss,
-		},
+      postcss: vite?.css?.postcss,
+    },
 
-		// Environment options
-		environments: {
-			client: {
-				build: {
-					// Emit manifest
-					manifest: true,
+    // Environment options
+    environments: {
+      client: {
+        build: {
+          // Emit manifest
+          manifest: true,
 
-					outDir: "dist/client",
+          outDir: 'dist/client',
 
-					rollupOptions: {
-						input: "./src/index", // Handle extension properly
-					},
-				},
-			},
-			ssr: {
-				/**
-				 * Server-side rendering build options.
-				 */
-				build: {
-					// Output directory
-					outDir: "dist/server",
+          rollupOptions: {
+            input: './src/index', // Handle extension properly
+          },
+        },
+      },
+      ssr: {
+        /**
+         * Server-side rendering build options.
+         */
+        build: {
+          // Output directory
+          outDir: 'dist/server',
 
-					// Rollup options
-					rollupOptions: {
-						input: {
-							"entry.server": `${join(
-								__dirname,
-								"./lib/esm/entries/server/entry.server.js"
-							)}`,
-							"app.router": `./src/app/app.router`,
-							main: `./src/main`,
-							template: `./src/template`,
-							config: `./rasengan.config.js`,
-						},
-					},
+          // Rollup options
+          rollupOptions: {
+            input: {
+              'entry.server': `${join(
+                __dirname,
+                './lib/esm/entries/server/entry.server.js'
+              )}`,
+              'app.router': `./src/app/app.router`,
+              main: `./src/main`,
+              template: `./src/template`,
+              config: `./rasengan.config.js`,
+            },
+          },
 
-					// Emit assets
-					ssrEmitAssets: false,
-				},
-			},
-		},
+          // Emit assets
+          ssrEmitAssets: false,
+        },
+      },
+    },
 
-		// Aliases
-		resolve: {
-			alias: Array.isArray(vite?.resolve?.alias)
-				? vite.resolve.alias.map(({ find, replacement }) => ({
-						find,
-						replacement: join(rootPath, replacement),
-				  }))
-				: [],
-		},
+    // Aliases
+    resolve: {
+      alias: Array.isArray(vite?.resolve?.alias)
+        ? vite.resolve.alias.map(({ find, replacement }) => ({
+            find,
+            replacement: join(rootPath, replacement),
+          }))
+        : [],
+    },
 
-		builder: {
-			buildApp: async (builder) => {
-				await builder.build(builder.environments.ssr);
-				await builder.build(builder.environments.client);
-			},
-		},
+    builder: {
+      buildApp: async (builder) => {
+        await builder.build(builder.environments.ssr);
+        await builder.build(builder.environments.client);
+      },
+    },
 
-		// Cache directory
-		cacheDir: ".rasengan/",
+    // Cache directory
+    cacheDir: '.rasengan/',
 
-		// Environment variable prefix
-		envPrefix: "RASENGAN_",
+    // Environment variable prefix
+    envPrefix: 'RASENGAN_',
 
-		// App type
-		appType: vite.appType,
-	};
+    // App type
+    appType: vite.appType,
+  };
 });

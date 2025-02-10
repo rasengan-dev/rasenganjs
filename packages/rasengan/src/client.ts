@@ -1,3 +1,3 @@
-import renderApp from "./entries/client/render.js";
+import renderApp from './entries/client/render.js';
 
 export { renderApp };

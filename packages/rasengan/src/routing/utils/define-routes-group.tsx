@@ -1,4 +1,4 @@
-import { RoutesGroupProps, PageComponent, MDXPageComponent } from "../types.js";
+import { RoutesGroupProps, PageComponent, MDXPageComponent } from '../types.js';
 
 /**
  * Recursively loops through an array of `PageComponent`, `MDXPageComponent`, or `RoutesGroupProps` and extracts all the pages into a single array.
@@ -6,10 +6,10 @@ import { RoutesGroupProps, PageComponent, MDXPageComponent } from "../types.js";
  * @returns An array of `PageComponent` or `MDXPageComponent` objects.
  */
 export const defineRoutesGroup = (option: RoutesGroupProps) => {
-	const { path, children } = option;
+  const { path, children } = option;
 
-	// Loop through all the children and extract the pages into a single array
-	return generateRoutesGroup(path, children);
+  // Loop through all the children and extract the pages into a single array
+  return generateRoutesGroup(path, children);
 };
 
 /**
@@ -18,48 +18,46 @@ export const defineRoutesGroup = (option: RoutesGroupProps) => {
  * @returns An array of `PageComponent` or `MDXPageComponent` objects.
  */
 const generateRoutesGroup = (
-	path: string,
-	children: Array<
-		PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
-	>
+  path: string,
+  children: Array<
+    PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
+  >
 ) => {
-	const pages: Array<PageComponent | MDXPageComponent> = [];
+  const pages: Array<PageComponent | MDXPageComponent> = [];
 
-	for (const child of children) {
-		const page = child as PageComponent;
+  for (const child of children) {
+    const page = child as PageComponent;
 
-		if (Array.isArray(child)) {
-			const children = child as Array<
-				PageComponent | MDXPageComponent
-			>;
+    if (Array.isArray(child)) {
+      const children = child as Array<PageComponent | MDXPageComponent>;
 
-			// Recursively loop through the children and extract the pages
-			const childrenPages = generateRoutesGroup(path, children);
+      // Recursively loop through the children and extract the pages
+      const childrenPages = generateRoutesGroup(path, children);
 
-			pages.push(...childrenPages);
-		} else {
-			const routePath = path[0] === "/" ? path : `/${path}`;
+      pages.push(...childrenPages);
+    } else {
+      const routePath = path[0] === '/' ? path : `/${path}`;
 
-			// Check if the page is a PageComponent
-			if (page["path"]) {
-				const pagePath =
-					page["path"][0] === "/" ? page["path"].slice(1) : page["path"];
-				page.path = `${routePath}/${pagePath}`;
+      // Check if the page is a PageComponent
+      if (page['path']) {
+        const pagePath =
+          page['path'][0] === '/' ? page['path'].slice(1) : page['path'];
+        page.path = `${routePath}/${pagePath}`;
 
-				pages.push(page);
-			}
-			// Check if the page is a MDXPageComponent
-			else {
-				let pagePath = page.metadata["path"] || page.name;
+        pages.push(page);
+      }
+      // Check if the page is a MDXPageComponent
+      else {
+        let pagePath = page.metadata['path'] || page.name;
 
-				pagePath = pagePath[0] === "/" ? pagePath.slice(1) : pagePath;
+        pagePath = pagePath[0] === '/' ? pagePath.slice(1) : pagePath;
 
-				page.metadata["path"] = `${routePath}/${pagePath}`;
+        page.metadata['path'] = `${routePath}/${pagePath}`;
 
-				pages.push(page);
-			}
-		}
-	}
+        pages.push(page);
+      }
+    }
+  }
 
-	return pages;
+  return pages;
 };

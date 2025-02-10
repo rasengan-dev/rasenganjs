@@ -1,6 +1,6 @@
 // Import section
 
-import { fix404 } from "./handleError.js";
+import { fix404 } from './handleError.js';
 
 // Export section
 
