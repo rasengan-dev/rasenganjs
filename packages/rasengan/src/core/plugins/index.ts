@@ -1,4 +1,4 @@
-import { type Plugin } from 'vite';
+import { UserConfig, type Plugin } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
@@ -91,19 +91,29 @@ type RasenganPluginOptions = {
 export function rasengan({
   adapter = Adapters.DEFAULT,
 }: RasenganPluginOptions): Plugin {
+  let config = {};
+
   return {
-    name: '@rasengan/hosting-plugin',
-    buildEnd() {
-      // Preparing app for deployment
-      switch (adapter) {
-        case Adapters.VERCEL: {
-          break;
+    name: 'vite-plugin-rasengan',
+
+    configResolved(resolvedConfig) {
+      config = resolvedConfig;
+    },
+
+    closeBundle() {
+      if (this.environment.name === 'client') {
+        console.log('Client build done!');
+
+        // Preparing app for deployment
+        switch (adapter) {
+          case Adapters.VERCEL: {
+            console.log('Preparing app for deployment to Vercel');
+            break;
+          }
+
+          default:
+            break;
         }
-        case Adapters.DEFAULT: {
-          break;
-        }
-        default:
-          break;
       }
     },
   };

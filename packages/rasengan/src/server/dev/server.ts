@@ -229,7 +229,11 @@ async function createDevNodeServer({
   const configPath = join(`${rootPath}/rasengan.config.js`);
 
   // Get config
-  const config = await (await loadModuleSSR(configPath)).default;
+  const configHandler = await (await loadModuleSSR(configPath)).default;
+
+  // console.log({ configHandler });
+
+  const config = await configHandler();
 
   const port =
     (process.env.PORT && Number(process.env.PORT)) ||
