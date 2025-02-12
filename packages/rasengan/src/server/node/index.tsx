@@ -54,11 +54,12 @@ export function createRequestHandler(buildOptions: BuildOptions) {
         )
       ).default;
       // Get Config
-      const config: AppConfig = await (
+      const configHandler: () => Promise<AppConfig> = await (
         await loadModuleSSR(
           path.posix.join(buildOptions.buildDirectory, 'server/config.js')
         )
       ).default;
+      const config = await configHandler();
 
       // extract render function
       const {

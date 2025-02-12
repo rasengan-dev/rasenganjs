@@ -39,6 +39,11 @@
       "types": "./lib/types/client.d.ts",
       "import": "./lib/esm/client.js",
       "require": "./lib/esm/client.js"
+    },
+    "./plugin": {
+      "types": "./lib/types/plugin.d.ts",
+      "import": "./lib/esm/plugin.js",
+      "require": "./lib/esm/plugin.js"
     }
   },
   "author": {
@@ -57,7 +62,7 @@
   "scripts": {
     "build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
     "build:clean": "rm -rf ./lib",
-    "build": "pnpm run build:clean & pnpm run build:compile && node ./src/scripts/copy-extra-files.js",
+    "build": "pnpm run build:clean & pnpm run build:compile",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -69,14 +74,11 @@
     "compression": "^1.7.4",
     "execa": "^8.0.1",
     "express": "^4.18.2",
-    "file-type": "^19.0.0",
     "inquirer": "^9.2.12",
     "keypress": "^0.2.1",
-    "node-fetch": "^3.3.2",
     "open": "^10.1.0",
     "ora": "^7.0.1",
-    "react-router": "^7.0.0",
-    "sirv": "^2.0.3"
+    "react-router": "^7.0.0"
   },
   "peerDependencies": {
     "@types/node": "^18.0.0 || >=20.0.0",
@@ -85,8 +87,7 @@
     "react-dom": "^19.0.0",
     "sass": "*",
     "stylus": "*",
-    "vite": "^6.0.0",
-    "@rasenganjs/mdx": "workspace:*"
+    "vite": "^6.0.0"
   },
   "peerDependenciesMeta": {
     "@types/node": {

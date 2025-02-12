@@ -2,10 +2,6 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { execa } from 'execa';
 
-// @ts-ignore
-import path from 'node:path';
-import { resolvePath } from '../core/config/index.js';
-
 const program = new Command();
 
 program
@@ -48,47 +44,6 @@ program
   .description('Build the project')
   .action(async () => {
     execa('node', ['node_modules/rasengan/lib/esm/scripts/build-command'], {
-      stdio: 'inherit',
-    });
-  });
-
-// Handle the prebuild command
-program
-  .command('prepare')
-  .description('Prepare the project')
-  .action(async () => {
-    // Displaying the message
-    console.log('');
-    console.log(chalk.blue('Preparing your project for production...'));
-    console.log('');
-
-    // Importing the config file
-    const configPath = resolvePath(
-      path.join(process.cwd(), 'rasengan.config.js')
-    );
-
-    const appConfig = (await import(configPath)).default;
-
-    // Checking the config file in order to know about hosting strategy
-    const { server } = await appConfig;
-
-    const hostingStrategy = server?.production?.hosting ?? 'custom';
-
-    execa('node', ['node_modules/rasengan/lib/esm/scripts/prepare-command'], {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        HOSTING_STRATEGY: hostingStrategy,
-      },
-    });
-  });
-
-// Handle the start command
-program
-  .command('start')
-  .description('Start the project in production mode')
-  .action(async () => {
-    execa('node', ['node_modules/rasengan/lib/esm/scripts/preview-command'], {
       stdio: 'inherit',
     });
   });
