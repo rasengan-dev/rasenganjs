@@ -130,6 +130,29 @@ const generateServerlessHandler = async () => {
 
   // Default Vercel handler
   const serverlessHandler = `
+  import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+  import path from 'node:path';
+
+  export default function index(req, res) {
+    const buildOptions = resolveBuildOptions({
+      buildDirectory: ".vercel/output",
+      clientPathDirectory: "static",
+      serverPathDirectory: path.posix.join(
+        "functions/index.func",
+        'server'
+      ),
+    });
+
+    const requestHandler = createRequestHandler({
+      build: buildOptions,
+    });
+
+    return requestHandler(req, res);
+  }
+  `;
+
+  /**
+   * const serverlessHandler = `
   const { createRequestHandler, resolveBuildOptions } = require('rasengan/server');
   const path = require('node:path');
 
@@ -150,6 +173,7 @@ const generateServerlessHandler = async () => {
     return requestHandler(req, res);
   } 
   `;
+   */
 
   // Write the handler to the .vercel/output/functions/index.js file
   await fs.writeFile(
@@ -159,6 +183,25 @@ const generateServerlessHandler = async () => {
       vercelBuildOptions.serverlessHandler
     ),
     serverlessHandler
+  );
+};
+
+const generatePackageJson = async () => {
+  const vercelBuildOptions = getVercelBuildOptions();
+
+  // Default Vercel package.json
+  const packageJson = {
+    type: 'module',
+  };
+
+  // Write the package.json to the .vercel/output/package.json file
+  await fs.writeFile(
+    path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory,
+      'package.json'
+    ),
+    JSON.stringify(packageJson, null, 2)
   );
 };
 
@@ -217,6 +260,9 @@ const prepare = async (options: AdapterOptions) => {
 
   // Prepare the serverless handler
   await generateServerlessHandler();
+
+  // Prepare the package.json
+  await generatePackageJson();
 };
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
