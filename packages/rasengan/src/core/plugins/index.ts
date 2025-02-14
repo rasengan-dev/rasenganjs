@@ -77,4 +77,32 @@ function rasenganConfigPlugin(): Plugin {
   };
 }
 
-export const plugins = [];
+function buildOutputInformation(): Plugin {
+  const virtualModuleId = 'virtual:rasengan-build-info';
+  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+
+  return {
+    name: 'vite-plugin-rasengan-build-info',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedVirtualModuleId) {
+        return `
+          export const resolveBuildOptions = (buildPath) => {
+            return {
+              buildDirectory: buildPath,
+              manifestPathDirectory: 'client/.vite',
+              assetPathDirectory: 'client/assets',
+              entryServerPath: 'server/entry.server.js',
+            };
+          };
+        `;
+      }
+    },
+  };
+}
+
+export const plugins = [buildOutputInformation()];
