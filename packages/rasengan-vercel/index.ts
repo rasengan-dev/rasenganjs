@@ -135,7 +135,7 @@ const generateServerlessHandler = async () => {
   import path from 'node:path';
 
   export default function index(req, res) {
-    let buildPath = path.resolve("dist");
+    let buildPath = path.resolve(path.posix.join(process.cwd(), "dist"));
 
     const buildOptions = resolveBuildOptions({
       buildDirectory: buildPath,
