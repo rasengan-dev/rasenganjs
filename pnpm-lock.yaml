@@ -38,12 +38,6 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
-  packages/adapters/rasengan-vercel:
-    dependencies:
-      rasengan:
-        specifier: workspace:*
-        version: link:../../rasengan
-
   packages/create-rasengan:
     dependencies:
       chalk:
@@ -321,6 +315,12 @@ importers:
         specifier: ^19.0.1
         version: 19.0.2(@types/react@19.0.2)
 
+  packages/rasengan-vercel:
+    dependencies:
+      rasengan:
+        specifier: workspace:*
+        version: link:../rasengan
+
   playground/rasengan-v1-test:
     dependencies:
       '@rasenganjs/image':
@@ -334,7 +334,7 @@ importers:
         version: link:../../packages/rasengan-serve
       '@rasenganjs/vercel':
         specifier: workspace:*
-        version: link:../../packages/adapters/rasengan-vercel
+        version: link:../../packages/rasengan-vercel
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.0.6(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(less@4.2.1)(lightningcss@1.29.1)(sass@1.82.0)(stylus@0.64.0)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
