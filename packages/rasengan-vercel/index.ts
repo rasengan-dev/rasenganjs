@@ -1,7 +1,8 @@
-import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+import { resolveBuildOptions } from 'rasengan/server';
 import { AdapterConfig, AdapterOptions, Adapters } from 'rasengan/plugin';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { execa } from 'execa';
 
 interface VercelBuildOptions {
   buildDirectory: string;
@@ -208,6 +209,20 @@ const generatePackageJson = async () => {
   );
 };
 
+const runInstall = async () => {
+  const vercelBuildOptions = getVercelBuildOptions();
+
+  console.log('Running npm install for serverless function');
+
+  // Run npm install in the .vercel/output/functions/index.func directory
+  execa('npm', ['i'], {
+    cwd: path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory
+    ),
+  });
+};
+
 const copyStaticFiles = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
   const buildOptions = resolveBuildOptions({});
@@ -266,6 +281,9 @@ const prepare = async (options: AdapterOptions) => {
 
   // Prepare the package.json
   await generatePackageJson();
+
+  // Run npm install
+  await runInstall();
 };
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
