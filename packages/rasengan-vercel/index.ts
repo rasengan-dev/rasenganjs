@@ -21,7 +21,7 @@ const getVercelBuildOptions = (): VercelBuildOptions => {
     serverDirectory: '/server',
     configFile: 'config.json',
     serverlessConfigFile: '.vc-config.json',
-    serverlessHandler: 'index.js',
+    serverlessHandler: 'index.mjs',
   };
 
   return vercelBuildOptions;
