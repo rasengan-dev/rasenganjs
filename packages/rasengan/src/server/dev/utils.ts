@@ -1,8 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs/promises';
-// @ts-ignore
-import keypress from 'keypress';
 import openBrowser from 'open';
 import os from 'node:os';
 import { ServerMode } from '../runtime/mode.js';
@@ -10,8 +8,6 @@ import { StaticHandlerContext } from 'react-router';
 import { Metadata } from '../../routing/types.js';
 import type * as Express from 'express';
 import { Redirect } from '../../core/config/type.js';
-import { logRedirection as log } from '../../core/utils/log.js';
-import { sendRasenganResponse } from '../node/utils.js';
 
 // Get local IP
 export default function getIPAddress() {
@@ -129,9 +125,6 @@ export async function logServerInfo(
   if (open) {
     openBrowser(`http://localhost:${port}`);
   }
-
-  // Enable keypress events on the process.stdin stream
-  keypress(process.stdin);
 
   // Listen on user keyboard input on the terminal
   process.stdin.on('keypress', (_: string, key: any) => {

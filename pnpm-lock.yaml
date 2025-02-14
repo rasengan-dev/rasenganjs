@@ -29,6 +29,12 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
+  packages/adapters/rasengan-vercel:
+    dependencies:
+      rasengan:
+        specifier: workspace:*
+        version: link:../../rasengan
+
   packages/create-rasengan:
     dependencies:
       chalk:
@@ -92,9 +98,6 @@ importers:
       inquirer:
         specifier: ^9.2.12
         version: 9.3.7
-      keypress:
-        specifier: ^0.2.1
-        version: 0.2.1
       less:
         specifier: '*'
         version: 4.2.1
@@ -320,6 +323,9 @@ importers:
       '@rasenganjs/serve':
         specifier: workspace:*
         version: link:../../packages/rasengan-serve
+      '@rasenganjs/vercel':
+        specifier: workspace:*
+        version: link:../../packages/adapters/rasengan-vercel
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.0.6(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(less@4.2.1)(lightningcss@1.29.1)(sass@1.82.0)(stylus@0.64.0)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
@@ -1966,9 +1972,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-
-  keypress@0.2.1:
-    resolution: {integrity: sha512-HjorDJFNhnM4SicvaUXac0X77NiskggxJdesG72+O5zBKpSqKFCrqmndKVqpu3pFqkla0St6uGk8Ju0sCurrmg==}
 
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
@@ -4618,8 +4621,6 @@ snapshots:
   jsesc@3.1.0: {}
 
   json5@2.2.3: {}
-
-  keypress@0.2.1: {}
 
   kind-of@6.0.3: {}
 
