@@ -133,16 +133,18 @@ const generateServerlessHandler = async () => {
   const serverlessHandler = `
   import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
   import path from 'node:path';
-  import fs from 'node:fs/promises';
+  import fs from 'node:fs';
 
   export default function index(req, res) {
     let buildPath = path.resolve(path.posix.join(process.cwd(), "dist"));
 
-  // read directory
-  const dir = await fs.readdir(process.cwd());
-  console.log({dir});
-  const dir2 = await fs.readdir(path.posix.join(process.cwd(), ".."));
-  console.log({dir2});
+    // read directory
+    const dir1 = fs.readdirSync(process.cwd());
+    console.log({dir1});
+
+    // read directory
+    const dir2 = fs.readdirSync(path.posix.join(process.cwd(), ".."));
+    console.log({dir2});
 
     const buildOptions = resolveBuildOptions({
       buildDirectory: buildPath,
