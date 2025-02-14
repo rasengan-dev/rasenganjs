@@ -1,36 +1,65 @@
-export type PartialAppConfig = {
+import type * as Vite from 'vite';
+
+export interface ServerConfig {
   /**
-   * Configure server both in development and production
+   * Configure server in development
    */
-  server?: {
+  development?: {
     /**
-     * Configure server in development
+     * Port to listen on
+     * @default 5320
      */
-    development?: {
-      /**
-       * Port to listen on
-       * @default 5320
-       */
-      port?: number;
-
-      /**
-       * Automatically open browser
-       * @default false
-       */
-      open?: boolean;
-    };
+    port?: number;
 
     /**
-     * Configure server in production
+     * Automatically open browser
+     * @default false
      */
-    production?: {
-      /**
-       * Set the hosting strategy
-       * @default "custom"
-       */
-      hosting?: HostingStrategy;
-    };
+    open?: boolean;
   };
+}
+
+export interface ViteConfig
+  extends Omit<
+    Vite.UserConfig,
+    | 'plugins'
+    | 'environments'
+    | 'appType'
+    | 'resolve'
+    | 'cacheDir'
+    | 'envPrefix'
+    | 'builder'
+    | 'ssr'
+    | 'server'
+    | 'build'
+    | 'ssrEmitAssets'
+    | 'root'
+    | 'base'
+  > {
+  plugins?: Vite.Plugin[];
+  resolve?: {
+    symbole?: string;
+    alias?: Array<{
+      find: string;
+      replacement: string;
+    }>;
+  };
+  build?: {
+    external?: string[];
+  };
+  appType?: 'spa' | 'mpa' | 'custom';
+}
+
+export type AppConfig = {
+  /**
+   * Configure server
+   */
+  server?: ServerConfig;
+
+  /**
+   * Configure Vite
+   */
+  vite?: ViteConfig;
 
   /**
    * Configure the app
@@ -38,82 +67,9 @@ export type PartialAppConfig = {
   redirects?: () => Promise<Redirect[]>;
 };
 
-export type AppConfig = PartialAppConfig & {
-  /**
-   * Configure Vite
-   */
-  vite?: {
-    /**
-     * Configure Vite plugins
-     */
-    plugins?: any[];
-
-    /**
-     * Optimize dependencies
-     */
-    optimizeDeps?: {
-      /**
-       * Dependencies to exclude from the optimized bundle
-       */
-      exclude?: string[];
-
-      /**
-       * Dependencies to include in the optimized bundle
-       */
-      include?: string[];
-    };
-
-    /**
-     * Configure css options
-     */
-    css?: {
-      postcss?: string;
-    };
-
-    /**
-     * Configure build options
-     */
-    build?: {
-      /**
-       * Configure external dependencies
-       */
-      external?: string[];
-    };
-
-    /**
-     * Configure resolve options
-     */
-    resolve?: {
-      /**
-       * Configure the starting point of the aliases
-       */
-      symbole?: string;
-
-      /**
-       * Configure aliases
-       */
-      alias?: Array<{
-        find: string;
-        replacement: string;
-      }>;
-    };
-
-    appType: 'custom' | 'mpa';
-  };
-};
-
-export type ProductionAppConfig = Omit<PartialAppConfig, 'redirects'> & {
-  redirects: Redirect[];
-};
-
 export type AppConfigFunction = () => AppConfig;
 
 export type AppConfigFunctionAsync = () => Promise<AppConfig>;
-
-/**
- * Hosting strategy
- */
-export type HostingStrategy = 'vercel' | 'custom';
 
 /**
  * Redirect
@@ -134,3 +90,9 @@ export type Redirect = {
    */
   permanent?: boolean;
 };
+
+// export type ConfigOptions = {
+//   mode: 'development' | 'production' | 'test';
+//   command: 'serve' | 'build';
+//   isSsrBuild?: boolean;
+// };

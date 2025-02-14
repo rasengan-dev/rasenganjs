@@ -99,7 +99,7 @@ Home.metadata = {
 
 Home.loader = async () => {
   return {
-    props: {
+    meta: {
       title: 'Home',
       description: 'Home page',
     },

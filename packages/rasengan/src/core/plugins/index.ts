@@ -1,4 +1,4 @@
-import { Plugin } from 'vite';
+import { UserConfig, type Plugin } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
@@ -100,6 +100,48 @@ function buildOutputInformation(): Plugin {
             };
           };
         `;
+      }
+    },
+  };
+}
+
+export const Adapters = {
+  VERCEL: 'vercel',
+  DEFAULT: '',
+} as const;
+
+export type Adapter = (typeof Adapters)[keyof typeof Adapters];
+
+type RasenganPluginOptions = {
+  adapter?: Adapter;
+};
+
+export function rasengan({
+  adapter = Adapters.DEFAULT,
+}: RasenganPluginOptions): Plugin {
+  let config = {};
+
+  return {
+    name: 'vite-plugin-rasengan',
+
+    configResolved(resolvedConfig) {
+      config = resolvedConfig;
+    },
+
+    closeBundle() {
+      if (this.environment.name === 'client') {
+        console.log('Client build done!');
+
+        // Preparing app for deployment
+        switch (adapter) {
+          case Adapters.VERCEL: {
+            console.log('Preparing app for deployment to Vercel');
+            break;
+          }
+
+          default:
+            break;
+        }
       }
     },
   };
