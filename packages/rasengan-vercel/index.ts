@@ -144,12 +144,10 @@ const generateServerlessHandler = async () => {
   // Default Vercel handler
   const serverlessHandler = `
   import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
-  import path from 'node:path';
-  import fs from 'node:fs';
 
   export default function index(req, res) {
     const buildOptions = resolveBuildOptions({
-      buildDirectory: ".",
+      buildDirectory: process.cwd(),
     });
 
     const requestHandler = createRequestHandler({
@@ -159,30 +157,6 @@ const generateServerlessHandler = async () => {
     return requestHandler(req, res);
   }
   `;
-
-  /**
-   * const serverlessHandler = `
-  const { createRequestHandler, resolveBuildOptions } = require('rasengan/server');
-  const path = require('node:path');
-
-  module.exports = (req, res) => {
-    const buildOptions = resolveBuildOptions({
-      buildDirectory: ".vercel/output",
-      clientPathDirectory: "static",
-      serverPathDirectory: path.posix.join(
-        "functions/index.func",
-        'server'
-      ),
-    });
-
-    const requestHandler = createRequestHandler({
-      build: buildOptions,
-    });
-
-    return requestHandler(req, res);
-  } 
-  `;
-   */
 
   // Write the handler to the .vercel/output/functions/index.js file
   await fs.writeFile(
