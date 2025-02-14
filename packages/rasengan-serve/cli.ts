@@ -8,7 +8,7 @@ import express from 'express';
 import morgan from 'morgan';
 import sourceMapSupport from 'source-map-support';
 import getPort from 'get-port';
-import { createRequestHandler } from 'rasengan/server';
+import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
@@ -85,10 +85,7 @@ async function run() {
   app.all(
     '*',
     createRequestHandler({
-      buildDirectory: buildPath,
-      manifestPathDirectory: 'client/.vite',
-      assetPathDirectory: 'client/assets',
-      entryServerPath: 'server/entry.server.js',
+      build: resolveBuildOptions(buildPath),
     })
   );
 

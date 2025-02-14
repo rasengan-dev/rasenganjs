@@ -24,10 +24,6 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   // Merge with user plugins
   return {
     ...baseConfig,
-    plugins: [
-      react(),
-      ...plugins.map((plugin) => plugin()),
-      ...(config.vite?.plugins || []),
-    ],
+    plugins: [react(), ...plugins, ...(config.vite?.plugins || [])],
   };
 });

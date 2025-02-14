@@ -14,12 +14,13 @@
     "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/mdx": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.*",
+    "@tailwindcss/vite": "^4.*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^3.3.5",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.31",
     "cross-env": "^7.0.3",

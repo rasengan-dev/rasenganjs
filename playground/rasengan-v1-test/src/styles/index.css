@@ -1,14 +1,15 @@
 /* Load Urbanist and Comfortaa font */
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap');
 
-/**
- * These directives tell Tailwind to include the base styles for the project,
- * any components that are used, and any utilities that are used.
- * So don't remove them!
- */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #2a7fff;
+  --color-border: #eee;
+
+  --font-urbanist: Urbanist, sans-serif;
+  --font-comfortaa: Comfortaa, sans-serif;
+}
 
 body,
 html {

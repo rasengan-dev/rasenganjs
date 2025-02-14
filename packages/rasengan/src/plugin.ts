@@ -1,3 +1,3 @@
-import { rasengan } from "./core/plugins/index.js";
+import { rasengan } from './core/plugins/index.js';
 
 export { rasengan };
