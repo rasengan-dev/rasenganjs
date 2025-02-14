@@ -195,6 +195,8 @@ const generatePackageJson = async () => {
     type: 'module',
     dependencies: {
       rasengan: '1.0.0-beta.51',
+      react: '^19.0.0',
+      'react-dom': '^19.0.0',
     },
   };
 
