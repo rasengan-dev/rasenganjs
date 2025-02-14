@@ -9,6 +9,7 @@ interface VercelBuildOptions {
   staticDirectory: string;
   functionsDirectory: string;
   serverDirectory: string;
+  clientDirectory: string;
   configFile: string;
   serverlessConfigFile: string;
   serverlessHandler: string;
@@ -20,6 +21,7 @@ const getVercelBuildOptions = (): VercelBuildOptions => {
     staticDirectory: '/static',
     functionsDirectory: '/functions/index.func',
     serverDirectory: '/server',
+    clientDirectory: '/client',
     configFile: 'config.json',
     serverlessConfigFile: '.vc-config.json',
     serverlessHandler: 'index.js',
@@ -75,6 +77,16 @@ const generateVercelDirectory = async () => {
       vercelBuildOptions.buildDirectory,
       vercelBuildOptions.functionsDirectory,
       vercelBuildOptions.serverDirectory
+    ),
+    { recursive: true }
+  );
+
+  // Create a new .vercel/output/functions/index.func/client directory
+  await fs.mkdir(
+    path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory,
+      vercelBuildOptions.clientDirectory
     ),
     { recursive: true }
   );
@@ -136,18 +148,8 @@ const generateServerlessHandler = async () => {
   import fs from 'node:fs';
 
   export default function index(req, res) {
-    let buildPath = path.resolve(path.posix.join(process.cwd(), "dist"));
-
-    // read directory
-    const dir1 = fs.readdirSync(process.cwd());
-    console.log({dir1});
-
-    // read directory
-    const dir2 = fs.readdirSync(path.posix.join(process.cwd(), ".."));
-    console.log({dir2});
-
     const buildOptions = resolveBuildOptions({
-      buildDirectory: buildPath,
+      buildDirectory: ".",
     });
 
     const requestHandler = createRequestHandler({
@@ -262,7 +264,21 @@ const copyServerFiles = async () => {
     path.posix.join(
       vercelBuildOptions.buildDirectory,
       vercelBuildOptions.functionsDirectory,
-      'server'
+      vercelBuildOptions.serverDirectory
+    ),
+    { recursive: true }
+  );
+
+  // Copy folders and files from dist/client to .vercel/output/functions/index.func/client
+  await fs.cp(
+    path.posix.join(
+      buildOptions.buildDirectory,
+      buildOptions.clientPathDirectory
+    ),
+    path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory,
+      vercelBuildOptions.clientDirectory
     ),
     { recursive: true }
   );
