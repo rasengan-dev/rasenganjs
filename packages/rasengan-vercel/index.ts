@@ -21,7 +21,7 @@ const getVercelBuildOptions = (): VercelBuildOptions => {
     serverDirectory: '/server',
     configFile: 'config.json',
     serverlessConfigFile: '.vc-config.json',
-    serverlessHandler: 'index.mjs',
+    serverlessHandler: 'index.js',
   };
 
   return vercelBuildOptions;
@@ -130,10 +130,10 @@ const generateServerlessHandler = async () => {
 
   // Default Vercel handler
   const serverlessHandler = `
-  import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
-  import path from 'node:path';
+  const { createRequestHandler, resolveBuildOptions } = require('rasengan/server');
+  const path = require('node:path');
 
-  export default function index(req, res) {
+  module.exports = (req, res) => {
     const buildOptions = resolveBuildOptions({
       buildDirectory: ".vercel/output",
       clientPathDirectory: "static",
@@ -148,7 +148,7 @@ const generateServerlessHandler = async () => {
     });
 
     return requestHandler(req, res);
-  }
+  } 
   `;
 
   // Write the handler to the .vercel/output/functions/index.js file
