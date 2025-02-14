@@ -2,11 +2,7 @@ import { PageComponent, Link } from 'rasengan';
 import logo from '@/assets/logo.svg';
 import Image from '@rasenganjs/image';
 
-console.log(import.meta.env);
-
 const Home: PageComponent = (props: any) => {
-  console.log(props);
-
   return (
     <section className="w-full h-full bg-white flex flex-col items-center py-8 px-[20px] md:px-[50px] xl:px-[200px] font-comfortaa">
       <header className="flex justify-end items-center w-full">
