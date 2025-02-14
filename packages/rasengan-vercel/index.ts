@@ -135,15 +135,10 @@ const generateServerlessHandler = async () => {
   import path from 'node:path';
 
   export default function index(req, res) {
-    let buildPath = path.resolve(".vercel/output");
+    let buildPath = path.resolve("dist");
 
     const buildOptions = resolveBuildOptions({
       buildDirectory: buildPath,
-      clientPathDirectory: "static",
-      serverPathDirectory: path.posix.join(
-        "functions/index.func",
-        'server'
-      ),
     });
 
     const requestHandler = createRequestHandler({

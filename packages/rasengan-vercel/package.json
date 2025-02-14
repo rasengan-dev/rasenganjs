@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/vercel",
-  "version": "1.0.0-beta.58",
+  "version": "1.0.0-beta.59",
   "type": "module",
   "description": "Vercel adapter to serve Rasengan apps on Vercel",
   "bugs": {
