@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/image",
   "private": false,
-  "version": "1.0.0-beta.51",
+  "version": "1.1.2",
   "description": "Image component provided by RasenganJS to display images with ease",
   "type": "module",
   "main": "lib/index.js",
