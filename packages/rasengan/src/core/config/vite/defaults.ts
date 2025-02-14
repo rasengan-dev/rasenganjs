@@ -5,9 +5,9 @@ import type { AppConfig } from '../type.js';
 
 // Define core external packages
 const CORE_EXTERNALS = [
-  '@rasenganjs/mdx',
-  '@rasenganjs/vercel',
-  '@rasenganjs/netlify',
+  // '@rasenganjs/mdx',
+  // '@rasenganjs/vercel',
+  // '@rasenganjs/netlify',
 ];
 
 export const createDefaultViteConfig = (

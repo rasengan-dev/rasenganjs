@@ -18,15 +18,15 @@ import {
 import { handleRedirectRequest } from '../dev/handlers.js';
 import { AppConfig } from '../../core/config/type.js';
 import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
+import { BuildOptions } from '../build/index.js';
 
-export interface BuildOptions {
-  buildDirectory: string;
-  manifestPathDirectory: string;
-  assetPathDirectory: string;
-  entryServerPath: string;
+interface CreateRequestHandlerOptions {
+  build: BuildOptions;
 }
 
-export function createRequestHandler(buildOptions: BuildOptions) {
+export function createRequestHandler(options: CreateRequestHandlerOptions) {
+  const { build: buildOptions } = options;
+
   const manifest = new ManifestManager(
     path.posix.join(
       buildOptions.buildDirectory,

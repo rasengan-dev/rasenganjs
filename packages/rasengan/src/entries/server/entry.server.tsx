@@ -8,7 +8,7 @@ import type {
   TemplateProps,
 } from '../../routing/types.js';
 import { TemplateLayout } from './index.js';
-import { BuildOptions } from '../../server/node/index.js';
+import { BuildOptions } from '../../server/build/index.js';
 import { join } from 'path/posix';
 import { renderToStream } from '../../server/node/rendering.js';
 

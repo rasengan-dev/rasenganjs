@@ -147,4 +147,4 @@ export function rasengan({
   };
 }
 
-export const plugins = [buildOutputInformation()];
+export const plugins: Plugin[] = [];
