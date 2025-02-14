@@ -192,6 +192,9 @@ const generatePackageJson = async () => {
   // Default Vercel package.json
   const packageJson = {
     type: 'module',
+    dependencies: {
+      rasengan: '1.0.0-beta.51',
+    },
   };
 
   // Write the package.json to the .vercel/output/package.json file
