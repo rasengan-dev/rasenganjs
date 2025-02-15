@@ -174,6 +174,34 @@ const generateServerlessHandler = async () => {
     build: buildOptions,
   });
 
+  app.disable('x-powered-by');
+  app.use(compression());
+  app.use(
+    path.posix.join('/assets'),
+    express.static(
+      path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.clientPathDirectory,
+        buildOptions.assetPathDirectory
+      ),
+      {
+        immutable: true,
+        maxAge: '1y',
+      }
+    )
+  );
+  app.use(
+    '/',
+    express.static(
+      path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.clientPathDirectory
+      ),
+      { maxAge: '1h' }
+    )
+  );
+  app.use(express.static('public', { maxAge: '1h' }));
+
   // Forward all requests to the Rasengan handler
   app.all('*', async (req, res, next) => {
     try {
@@ -185,20 +213,6 @@ const generateServerlessHandler = async () => {
 
   // Export the Express app wrapped as a serverless function
   export default app;
-
-  // import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
-
-  // export default function index(req, res) {
-  //   const buildOptions = resolveBuildOptions({
-  //     buildDirectory: process.cwd(),
-  //   });
-
-  //   const requestHandler = createRequestHandler({
-  //     build: buildOptions,
-  //   });
-
-  //   return requestHandler(req, res);
-  // }
   `;
 
   // Write the handler to the .vercel/output/functions/index.js file
@@ -220,14 +234,13 @@ const generatePackageJson = async () => {
   const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
   const packageJsonData = JSON.parse(packageJsonContent);
 
-  const dir1 = fsSync.readdirSync('.');
-
   // Default Vercel package.json
   const packageJson = {
     type: 'module',
     dependencies: {
       ...packageJsonData.dependencies,
       express: '^4.17.1',
+      compression: '^1.7.5',
     },
   };
 
