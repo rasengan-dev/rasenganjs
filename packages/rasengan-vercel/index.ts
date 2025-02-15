@@ -172,9 +172,17 @@ const generateServerlessHandler = async () => {
 const generatePackageJson = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
+  // Load the package.json from the project root
+  const packageJsonPath = path.resolve('package.json');
+  const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
+  const packageJsonData = JSON.parse(packageJsonContent);
+
   // Default Vercel package.json
   const packageJson = {
     type: 'module',
+    dependencies: {
+      ...packageJsonData.dependencies,
+    },
   };
 
   // Write the package.json to the .vercel/output/package.json file
@@ -253,22 +261,6 @@ const copyServerFiles = async () => {
   );
 };
 
-const copyNodeModules = async () => {
-  const vercelBuildOptions = getVercelBuildOptions();
-  const buildOptions = resolveBuildOptions({});
-
-  // Copy node_modules to .vercel/output/functions/index.func/node_modules
-  await fs.cp(
-    path.posix.join('.', 'node_modules'),
-    path.posix.join(
-      vercelBuildOptions.buildDirectory,
-      vercelBuildOptions.functionsDirectory,
-      'node_modules'
-    ),
-    { recursive: true }
-  );
-};
-
 const prepare = async (options: AdapterOptions) => {
   // Prepare the Vercel directory
   await generateVercelDirectory();
@@ -292,10 +284,7 @@ const prepare = async (options: AdapterOptions) => {
   await generatePackageJson();
 
   // Run npm install
-  // await runInstall();
-
-  // Copy node_modules
-  await copyNodeModules();
+  await runInstall();
 };
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
