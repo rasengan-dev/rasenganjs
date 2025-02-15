@@ -103,6 +103,12 @@ const generateVercelConfigFile = async () => {
       name: 'rasengan',
       version: '1.0.0',
     },
+    routes: [
+      {
+        src: '/(.*)',
+        dest: 'index.js',
+      },
+    ],
   };
 
   // Write the configuration to the .vercel/output/config.json file
@@ -122,7 +128,7 @@ const generateServerlessConfigFile = async () => {
   const serverlessConfig = {
     runtime: 'nodejs22.x',
     handler: 'index.js',
-    maxDuration: 3,
+    maxDuration: 10,
     launcherType: 'Nodejs',
     shouldAddHelpers: true,
     shouldAddSourcemapSupport: true,
