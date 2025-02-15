@@ -208,7 +208,7 @@ const runInstall = async () => {
   console.log('Running npm install for serverless function');
 
   // Run npm install in the .vercel/output/functions/index.func directory
-  execa('npm', ['i'], {
+  execa('npm', ['i', '--force'], {
     cwd: path.posix.join(
       vercelBuildOptions.buildDirectory,
       vercelBuildOptions.functionsDirectory
