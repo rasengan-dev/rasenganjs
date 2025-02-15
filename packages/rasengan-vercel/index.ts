@@ -160,6 +160,7 @@ const generateServerlessHandler = async () => {
   const serverlessHandler = `
   import express from 'express';
   import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+  import compression from 'compression';
 
   // Create an Express app
   const app = express();
