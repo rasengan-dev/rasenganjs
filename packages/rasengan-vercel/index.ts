@@ -175,11 +175,6 @@ const generatePackageJson = async () => {
   // Default Vercel package.json
   const packageJson = {
     type: 'module',
-    dependencies: {
-      rasengan: '1.0.0-beta.51',
-      react: '^19.0.0',
-      'react-dom': '^19.0.0',
-    },
   };
 
   // Write the package.json to the .vercel/output/package.json file
@@ -258,6 +253,22 @@ const copyServerFiles = async () => {
   );
 };
 
+const copyNodeModules = async () => {
+  const vercelBuildOptions = getVercelBuildOptions();
+  const buildOptions = resolveBuildOptions({});
+
+  // Copy node_modules to .vercel/output/functions/index.func/node_modules
+  await fs.cp(
+    path.posix.join('.', 'node_modules'),
+    path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory,
+      'node_modules'
+    ),
+    { recursive: true }
+  );
+};
+
 const prepare = async (options: AdapterOptions) => {
   // Prepare the Vercel directory
   await generateVercelDirectory();
@@ -281,7 +292,10 @@ const prepare = async (options: AdapterOptions) => {
   await generatePackageJson();
 
   // Run npm install
-  await runInstall();
+  // await runInstall();
+
+  // Copy node_modules
+  await copyNodeModules();
 };
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
