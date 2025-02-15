@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/theme",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library that handles themes for Rasengan.JS applications",
   "type": "module",
   "main": "lib/index.js",
