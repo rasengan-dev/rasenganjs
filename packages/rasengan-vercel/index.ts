@@ -151,7 +151,6 @@ const generateServerlessHandler = async () => {
   // Default Vercel handler
   const serverlessHandler = `
   import express from 'express';
-  import serverless from 'serverless-http';
   import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
 
   // Create an Express app
@@ -177,7 +176,7 @@ const generateServerlessHandler = async () => {
   });
 
   // Export the Express app wrapped as a serverless function
-  export default serverless(app);
+  export default app;
 
   // import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
 
@@ -221,7 +220,6 @@ const generatePackageJson = async () => {
     dependencies: {
       ...packageJsonData.dependencies,
       express: '^4.17.1',
-      'serverless-http': '^3.2.0',
     },
   };
 
