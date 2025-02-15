@@ -2,6 +2,7 @@ import { resolveBuildOptions } from 'rasengan/server';
 import { AdapterConfig, AdapterOptions, Adapters } from 'rasengan/plugin';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import { execa } from 'execa';
 
 interface VercelBuildOptions {
@@ -176,6 +177,11 @@ const generatePackageJson = async () => {
   const packageJsonPath = path.resolve('package.json');
   const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
   const packageJsonData = JSON.parse(packageJsonContent);
+
+  const dir1 = fsSync.readdirSync('.');
+
+  console.log({ dir1 });
+  console.log({ packageJsonData });
 
   // Default Vercel package.json
   const packageJson = {
