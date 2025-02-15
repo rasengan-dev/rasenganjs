@@ -105,6 +105,14 @@ const generateVercelConfigFile = async () => {
     },
     routes: [
       {
+        src: '/favicon.ico',
+        dest: '/favicon.ico',
+      },
+      {
+        src: '/assets/(.*)',
+        dest: '/assets/$1',
+      },
+      {
         src: '/(.*)',
         dest: '/',
       },
