@@ -106,7 +106,7 @@ const generateVercelConfigFile = async () => {
     routes: [
       {
         src: '/(.*)',
-        dest: 'index.js',
+        dest: '/',
       },
     ],
   };
@@ -150,19 +150,48 @@ const generateServerlessHandler = async () => {
 
   // Default Vercel handler
   const serverlessHandler = `
+  import express from 'express';
+  import serverless from 'serverless-http';
   import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
 
-  export default function index(req, res) {
-    const buildOptions = resolveBuildOptions({
-      buildDirectory: process.cwd(),
-    });
+  // Create an Express app
+  const app = express();
 
-    const requestHandler = createRequestHandler({
-      build: buildOptions,
-    });
+  // Resolve the build options (e.g., using the current working directory)
+  const buildOptions = resolveBuildOptions({
+    buildDirectory: process.cwd(),
+  });
 
-    return requestHandler(req, res);
-  }
+  // Create the Rasengan request handler with the build options
+  const requestHandler = createRequestHandler({
+    build: buildOptions,
+  });
+
+  // Forward all requests to the Rasengan handler
+  app.all('*', async (req, res, next) => {
+    try {
+      await requestHandler(req, res);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Export the Express app wrapped as a serverless function
+  export default serverless(app);
+
+  // import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+
+  // export default function index(req, res) {
+  //   const buildOptions = resolveBuildOptions({
+  //     buildDirectory: process.cwd(),
+  //   });
+
+  //   const requestHandler = createRequestHandler({
+  //     build: buildOptions,
+  //   });
+
+  //   return requestHandler(req, res);
+  // }
   `;
 
   // Write the handler to the .vercel/output/functions/index.js file
@@ -186,14 +215,13 @@ const generatePackageJson = async () => {
 
   const dir1 = fsSync.readdirSync('.');
 
-  console.log({ dir1 });
-  console.log({ packageJsonData });
-
   // Default Vercel package.json
   const packageJson = {
     type: 'module',
     dependencies: {
       ...packageJsonData.dependencies,
+      express: '^4.17.1',
+      'serverless-http': '^3.2.0',
     },
   };
 
