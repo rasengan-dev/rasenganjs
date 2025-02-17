@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImageProps } from '../types/index.js';
 
 export default ({
@@ -85,6 +85,11 @@ export default ({
   useEffect(() => {
     if (!startLoading) return;
 
+    if (!props.width || !props.height)
+      console.warn(
+        'Add width and height props to Image component for a better UI experience.'
+      );
+
     // Preload image
     const img = new Image();
 
@@ -109,8 +114,8 @@ export default ({
       <div
         ref={imageContainerRef}
         style={{
-          width: props.width || imageSrc?.width || 200,
-          height: props.height || imageSrc?.height || 200,
+          width: props.width || 'auto',
+          height: props.height || 'auto',
           overflow: 'hidden',
           position: 'relative',
           ...style,
@@ -123,7 +128,9 @@ export default ({
             <div
               style={{
                 width: '300%',
-                height: props.height || imageSrc?.height || 200,
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
                 backgroundColor: '#e5e5e5',
               }}
               className={`${
@@ -143,8 +150,8 @@ export default ({
           {...props}
           style={{
             objectFit: props.objectfit || 'cover',
-            width: '100%',
-            height: '100%',
+            width: props.width || '100%',
+            height: props.height || '100%',
           }}
           hidden={props.loading === 'lazy' ? !loaded : false}
         />
