@@ -31,12 +31,16 @@ jobs:
             pkgName="create-rasengan"
           else if [[ $GITHUB_REF_NAME =~ ^@rasenganjs/.+ ]]; then
             # `%@*` truncates @ and version number from the right side.
+            # `#*/` truncates everything from the left side until the last `/`.
             # https://stackoverflow.com/questions/9532654/expression-after-last-specific-character
             pkgNameTmp=${GITHUB_REF_NAME#*/}
             pkgName="rasengan-${pkgNameTmp%@*}"
           fi
 
-          echo "pkgName=$pkgName" >> "$GITHUB_OUTPUT"
+          echo "Package Name: $pkgName"
+          echo "Package Name TMP: $pkgNameTmp"
+
+          echo "pkgName=$pkgName" >> $GITHUB_OUTPUT
 
       - name: Create Release for Tag
         # only run if tag is not alpha
