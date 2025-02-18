@@ -37,9 +37,9 @@ jobs:
         id: tag
         run: |
           if [[ $GITHUB_REF_NAME =~ ^@rasenganjs/.+ ]]; then
-            token = ${ secrets.SECONDARY_NPM_TOKEN }
+            token="${{ secrets.SECONDARY_NPM_TOKEN }}"
           else
-            token = ${ secrets.MAIN_NPM_TOKEN }
+            token="${{ secrets.MAIN_NPM_TOKEN }}"
           fi
 
           echo "npmToken=$token" >> $GITHUB_OUTPUT
