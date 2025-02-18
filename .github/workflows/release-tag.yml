@@ -28,9 +28,9 @@ jobs:
           # matching v1.0.0 / v1.0.0-beta.* etc
           if [[ $GITHUB_REF_NAME =~ ^v.+ ]]; then
             pkgName="rasengan"
-          else if [[ $GITHUB_REF_NAME =~ ^create-rasengan.+ ]]; then
+          elif [[ $GITHUB_REF_NAME =~ ^create-rasengan.+ ]]; then
             pkgName="create-rasengan"
-          else if [[ $GITHUB_REF_NAME =~ ^@rasenganjs/.+ ]]; then
+          elif [[ $GITHUB_REF_NAME =~ ^@rasenganjs/.+ ]]; then
             # `%@*` truncates @ and version number from the right side.
             # `#*/` truncates everything from the left side until the last `/`.
             # https://stackoverflow.com/questions/9532654/expression-after-last-specific-character
