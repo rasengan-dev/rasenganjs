@@ -36,7 +36,7 @@ jobs:
             pkgName="rasengan-${pkgNameTmp%@*}"
           fi
 
-          echo "pkgName=$pkgName" > $GITHUB_OUTPUT
+          echo "pkgName=$pkgName" >> "$GITHUB_OUTPUT"
 
       - name: Create Release for Tag
         # only run if tag is not alpha
