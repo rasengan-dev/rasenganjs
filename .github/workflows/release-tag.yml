@@ -20,7 +20,6 @@ jobs:
         id: tag
         run: |
           # skip if alpha
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
           if [[ $GITHUB_REF_NAME =~ alpha ]]; then
             exit 0
           fi
@@ -37,9 +36,6 @@ jobs:
             pkgNameTmp=${GITHUB_REF_NAME#*/}
             pkgName="rasengan-${pkgNameTmp%@*}"
           fi
-
-          echo "Package Name: $pkgName"
-          echo "Package Name TMP: $pkgNameTmp"
 
           echo "pkgName=$pkgName" >> $GITHUB_OUTPUT
 
