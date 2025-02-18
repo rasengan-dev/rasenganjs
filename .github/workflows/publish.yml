@@ -33,10 +33,10 @@ jobs:
       - name: Install deps
         run: pnpm install
 
-      - name: Get pkgName for tag
+      - name: Get token 
         id: tag
         run: |
-          if [[ $GITHUB_REF_NAME =~ ^@rasenganjs/.+ ]]; then
+          if [[ $GITHUB_REF_NAME =~ ^rasengan-.+ ]]; then
             token="${{ secrets.SECONDARY_NPM_TOKEN }}"
           else
             token="${{ secrets.MAIN_NPM_TOKEN }}"

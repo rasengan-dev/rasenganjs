@@ -14,15 +14,11 @@ release({
     'create-rasengan',
   ],
   toTag: (pkg, version) => {
-    if (pkg === 'create-rasengan') {
-      return `${pkg}@${version}`;
-    }
-
     if (pkg === 'rasengan') {
       return `v${version}`;
     }
 
-    return `@rasenganjs/${pkg.split('-')[1]}@${version}`;
+    return `${pkg}@${version}`;
   },
   logChangelog: async (pkgName) => {
     const changelog = readFileSync(`packages/${pkgName}/CHANGELOG.md`, 'utf-8');
