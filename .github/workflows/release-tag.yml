@@ -20,6 +20,7 @@ jobs:
         id: tag
         run: |
           # skip if alpha
+          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
           if [[ $GITHUB_REF_NAME =~ alpha ]]; then
             exit 0
           fi
