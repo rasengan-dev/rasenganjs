@@ -5,7 +5,7 @@ on:
     tags:
       - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
       - "create-rasengan*" # Push events to matching plugin-*, i.e. create-rasengan@1.0.0
-      - "@rasenganjs/*" # # Push events to matching @rasenganjs/*, i.e. @rasenganjs/serve@1.0.0
+      - "rasengan-*" # # Push events to matching @rasenganjs/*, i.e. @rasenganjs/serve@1.0.0
 
 jobs:
   publish:
