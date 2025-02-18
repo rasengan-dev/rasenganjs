@@ -30,6 +30,7 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
   const manifest = new ManifestManager(
     path.posix.join(
       buildOptions.buildDirectory,
+      buildOptions.clientPathDirectory,
       buildOptions.manifestPathDirectory,
       'manifest.json'
     )
@@ -44,19 +45,28 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       const entry = await import(
         path.posix.join(
           buildOptions.buildDirectory,
+          buildOptions.serverPathDirectory,
           buildOptions.entryServerPath
         )
       );
       // Get AppRouter
       const AppRouter = await (
         await import(
-          path.posix.join(buildOptions.buildDirectory, 'server/app.router.js')
+          path.posix.join(
+            buildOptions.buildDirectory,
+            buildOptions.serverPathDirectory,
+            'app.router.js'
+          )
         )
       ).default;
       // Get Config
       const configHandler: () => Promise<AppConfig> = await (
         await loadModuleSSR(
-          path.posix.join(buildOptions.buildDirectory, 'server/config.js')
+          path.posix.join(
+            buildOptions.buildDirectory,
+            buildOptions.serverPathDirectory,
+            'config.js'
+          )
         )
       ).default;
       const config = await configHandler();

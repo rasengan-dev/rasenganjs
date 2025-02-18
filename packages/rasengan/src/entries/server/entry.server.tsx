@@ -9,7 +9,7 @@ import type {
 } from '../../routing/types.js';
 import { TemplateLayout } from './index.js';
 import { BuildOptions } from '../../server/build/index.js';
-import { join } from 'path/posix';
+import { join, posix } from 'path/posix';
 import { renderToStream } from '../../server/node/rendering.js';
 
 export type RenderStreamFunction = (
@@ -47,11 +47,21 @@ export const render: RenderStreamFunction = async (
 
   if (buildOptions) {
     App = (
-      await loadModuleSSR(join(buildOptions.buildDirectory, 'server/main.js'))
+      await loadModuleSSR(
+        posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.serverPathDirectory,
+          'main.js'
+        )
+      )
     ).default;
     Template = (
       await loadModuleSSR(
-        join(buildOptions.buildDirectory, 'server/template.js')
+        join(
+          buildOptions.buildDirectory,
+          buildOptions.serverPathDirectory,
+          'template.js'
+        )
       )
     ).default;
   } else {

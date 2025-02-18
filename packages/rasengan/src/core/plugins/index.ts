@@ -112,12 +112,19 @@ export const Adapters = {
 
 export type Adapter = (typeof Adapters)[keyof typeof Adapters];
 
+export interface AdapterOptions {}
+
+export interface AdapterConfig {
+  name: Adapter;
+  prepare: () => Promise<void>;
+}
+
 type RasenganPluginOptions = {
-  adapter?: Adapter;
+  adapter?: AdapterConfig;
 };
 
 export function rasengan({
-  adapter = Adapters.DEFAULT,
+  adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
 }: RasenganPluginOptions): Plugin {
   let config = {};
 
@@ -128,14 +135,17 @@ export function rasengan({
       config = resolvedConfig;
     },
 
-    closeBundle() {
+    async closeBundle() {
+      // We check here if the environment is client has been built because it's the
+      // last environment to be built in the Vite build process
       if (this.environment.name === 'client') {
-        console.log('Client build done!');
-
         // Preparing app for deployment
-        switch (adapter) {
+        switch (adapter.name) {
           case Adapters.VERCEL: {
             console.log('Preparing app for deployment to Vercel');
+
+            await adapter.prepare();
+
             break;
           }
 

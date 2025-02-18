@@ -51,6 +51,10 @@ async function run() {
 
   let buildPath = path.resolve(buildPathArg);
 
+  const buildOptions = resolveBuildOptions({
+    buildDirectory: buildPath,
+  });
+
   let onListen = () => {
     let address =
       process.env.HOST ||
@@ -74,18 +78,34 @@ async function run() {
   app.use(morgan('tiny'));
   app.use(
     path.posix.join('/assets'),
-    express.static(path.join('dist/client/assets'), {
-      immutable: true,
-      maxAge: '1y',
-    })
+    express.static(
+      path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.clientPathDirectory,
+        buildOptions.assetPathDirectory
+      ),
+      {
+        immutable: true,
+        maxAge: '1y',
+      }
+    )
   );
-  app.use('/', express.static('dist/client', { maxAge: '1h' }));
+  app.use(
+    '/',
+    express.static(
+      path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.clientPathDirectory
+      ),
+      { maxAge: '1h' }
+    )
+  );
   app.use(express.static('public', { maxAge: '1h' }));
 
   app.all(
     '*',
     createRequestHandler({
-      build: resolveBuildOptions(buildPath),
+      build: buildOptions,
     })
   );
 

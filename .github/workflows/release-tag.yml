@@ -1,0 +1,51 @@
+name: Add GitHub Release Tag
+
+on:
+  push:
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "create-rasengan*" # Push events to matching plugin-*, i.e. create-rasengan@1.0.0
+      - "rasengan-*" # # Push events to matching @rasenganjs/*, i.e. @rasenganjs/serve@1.0.0
+
+# $GITHUB_REF_NAME - https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+
+jobs:
+  release:
+    if: github.repository == 'rasengan-dev/rasenganjs'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get pkgName for tag
+        id: tag
+        run: |
+          # skip if alpha
+          if [[ $GITHUB_REF_NAME =~ alpha ]]; then
+            exit 0
+          fi
+
+          # matching v1.0.0 / v1.0.0-beta.* etc
+          if [[ $GITHUB_REF_NAME =~ ^v.+ ]]; then
+            pkgName="rasengan"
+          elif [[ $GITHUB_REF_NAME =~ ^create-rasengan.+ ]]; then
+            pkgName="create-rasengan"
+          elif [[ $GITHUB_REF_NAME =~ ^rasengan-.+ ]]; then
+            # `%@*` truncates @ and version number from the right side.
+            # `#*/` truncates everything from the left side until the last `/`.
+            # https://stackoverflow.com/questions/9532654/expression-after-last-specific-character
+            pkgName="rasengan-${GITHUB_REF_NAME%@*}"
+          fi
+
+          echo "pkgName=$pkgName" >> $GITHUB_OUTPUT
+
+      - name: Create Release for Tag
+        # only run if tag is not alpha
+        if: steps.tag.outputs.pkgName
+        id: release_tag
+        uses: yyx990803/release-tag@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        with:
+          tag_name: ${{ github.ref }}
+          body: |
+            Please refer to [CHANGELOG.md](https://github.com/rasengan-dev/rasenganjs/blob/${{ github.ref_name }}/packages/${{ steps.tag.outputs.pkgName }}/CHANGELOG.md) for details.

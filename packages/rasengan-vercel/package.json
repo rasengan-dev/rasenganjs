@@ -1,22 +1,24 @@
 {
-  "name": "@rasenganjs/serve",
-  "version": "1.0.0-beta.53",
+  "name": "@rasenganjs/vercel",
+  "version": "1.0.0-beta.86",
   "type": "module",
-  "description": "Production application server for Rasengan",
+  "description": "Vercel adapter to serve Rasengan apps on Vercel",
   "bugs": {
     "url": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-serve"
+    "directory": "packages/adapters/rasengan-vercel"
   },
   "license": "MIT",
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
     "./package.json": "./package.json"
-  },
-  "bin": {
-    "rasengan-serve": "bin.js"
   },
   "scripts": {
     "build:compile": "tsc",
@@ -27,21 +29,12 @@
     "pack": "pnpm pack --pack-destination ./release/"
   },
   "dependencies": {
-    "compression": "^1.7.5",
-    "express": "^4.21.2",
-    "get-port": "^7.1.0",
-    "morgan": "^1.10.0",
-    "source-map-support": "^0.5.21"
+    "execa": "^8.0.1"
   },
   "peerDependencies": {
     "rasengan": "workspace:*"
   },
-  "devDependencies": {
-    "@types/compression": "^1.7.5",
-    "@types/express": "^4.17.21",
-    "@types/morgan": "^1.9.9",
-    "@types/source-map-support": "^0.5.10"
-  },
+  "devDependencies": {},
   "files": [
     "dist/",
     "bin.js",

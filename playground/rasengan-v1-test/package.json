@@ -13,6 +13,7 @@
     "@rasenganjs/image": "workspace:*",
     "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/mdx": "workspace:*",
+    "@rasenganjs/vercel": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.*",
