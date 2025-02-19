@@ -5,6 +5,7 @@ export default ({
   src,
   alt,
   style,
+  fallbackSrc,
   loadingOnViewport = true,
   ...props
 }: ImageProps & React.HTMLProps<HTMLImageElement>) => {
@@ -84,10 +85,10 @@ export default ({
    */
   useEffect(() => {
     if (!startLoading) return;
-
-    if (!props.width || !props.height)
+    const isDev = (import.meta as any).env.DEV;
+    if (isDev && (!props.width || !props.height))
       console.warn(
-        'Add width and height props to Image component for a better UI experience.'
+        '[rasengan]: Add width and height props to Image component for a better UI experience.'
       );
 
     // Preload image
@@ -95,6 +96,20 @@ export default ({
 
     // When image is loaded, update state
     img.onload = () => {
+      setLoaded(true);
+    };
+    /**
+     * Event handler for when an error occurs while loading the image.
+     * If a `fallbackSrc` is provided, it sets the `src` of the image to the fallback
+     * and sets the `onerror` event handler to null so that it is not called again.
+     * Finally, it sets the `loaded` state to `true` to indicate that the image has
+     * finished loading (successfully or not).
+     */
+    img.onerror = () => {
+      if (fallbackSrc) {
+        img.src = fallbackSrc;
+        img.onerror = null;
+      }
       setLoaded(true);
     };
 
@@ -107,7 +122,7 @@ export default ({
     return () => {
       img.onload = null;
     };
-  }, [src, startLoading]);
+  }, [src, startLoading, fallbackSrc]);
 
   return (
     <>

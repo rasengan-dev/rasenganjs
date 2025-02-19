@@ -25,6 +25,7 @@ export type ImageProps = {
   mode?: 'blur' | 'wave';
   objectfit?: CSSProperties['objectFit'];
   loadingOnViewport?: boolean;
+  fallbackSrc?: string;
 };
 
 /**
