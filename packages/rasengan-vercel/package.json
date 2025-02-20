@@ -32,7 +32,7 @@
     "execa": "^8.0.1"
   },
   "peerDependencies": {
-    "rasengan": "workspace:*"
+    "rasengan": "workspace:^"
   },
   "devDependencies": {},
   "files": [
