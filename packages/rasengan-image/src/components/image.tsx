@@ -109,6 +109,12 @@ export default ({
       if (fallbackSrc) {
         img.src = fallbackSrc;
         img.onerror = null;
+      } else {
+        const isDev = (import.meta as any).env.DEV;
+        if (isDev)
+          console.warn(
+            '[rasengan]: Image failed to load. Add a fallbackSrc prop to Image component to handle this.'
+          );
       }
       setLoaded(true);
     };
