@@ -87,7 +87,7 @@
     "sass": "*",
     "stylus": "*",
     "vite": "^6.0.0",
-    "@rasenganjs/mdx": "workspace:*"
+    "@rasenganjs/mdx": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@types/node": {
