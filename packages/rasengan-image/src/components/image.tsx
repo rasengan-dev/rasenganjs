@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImageProps } from '../types/index.js';
 
 export default ({
   src,
   alt,
   style,
+  fallbackSrc,
   loadingOnViewport = true,
   ...props
 }: ImageProps & React.HTMLProps<HTMLImageElement>) => {
@@ -84,12 +85,31 @@ export default ({
    */
   useEffect(() => {
     if (!startLoading) return;
+    const isDev = (import.meta as any).env.DEV;
+    if (isDev && (!props.width || !props.height))
+      console.warn(
+        '[rasengan]: Add width and height props to Image component for a better UI experience.'
+      );
 
     // Preload image
     const img = new Image();
 
     // When image is loaded, update state
     img.onload = () => {
+      setLoaded(true);
+    };
+    /**
+     * Event handler for when an error occurs while loading the image.
+     * If a `fallbackSrc` is provided, it sets the `src` of the image to the fallback
+     * and sets the `onerror` event handler to null so that it is not called again.
+     * Finally, it sets the `loaded` state to `true` to indicate that the image has
+     * finished loading (successfully or not).
+     */
+    img.onerror = () => {
+      if (fallbackSrc) {
+        img.src = fallbackSrc;
+        img.onerror = null;
+      }
       setLoaded(true);
     };
 
@@ -102,15 +122,15 @@ export default ({
     return () => {
       img.onload = null;
     };
-  }, [src, startLoading]);
+  }, [src, startLoading, fallbackSrc]);
 
   return (
     <>
       <div
         ref={imageContainerRef}
         style={{
-          width: props.width || imageSrc?.width || 200,
-          height: props.height || imageSrc?.height || 200,
+          width: props.width || 'auto',
+          height: props.height || 'auto',
           overflow: 'hidden',
           position: 'relative',
           ...style,
@@ -123,7 +143,9 @@ export default ({
             <div
               style={{
                 width: '300%',
-                height: props.height || imageSrc?.height || 200,
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
                 backgroundColor: '#e5e5e5',
               }}
               className={`${
@@ -143,8 +165,8 @@ export default ({
           {...props}
           style={{
             objectFit: props.objectfit || 'cover',
-            width: '100%',
-            height: '100%',
+            width: props.width || '100%',
+            height: props.height || '100%',
           }}
           hidden={props.loading === 'lazy' ? !loaded : false}
         />
