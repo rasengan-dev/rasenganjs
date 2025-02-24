@@ -40,6 +40,46 @@ export const getRouter = (routerInstance: RouterComponent) => {
 };
 
 /**
+ * This function merge the metadata, giving priority to the ones comming from loader
+ */
+
+const mergeMetaData = (
+  responseMeta: Metadata | MetadataWithoutTitleAndDescription,
+  meta: Metadata | MetadataWithoutTitleAndDescription
+) => {
+
+  //je sais que chaque el que ma fonction prend est une metada, qui a des el qui sont soit des objets soit es tableau
+  //etant evident de merge les objets, l'idee serait de first les merges et ensuite merge les tableaux qui sont links et metatag
+
+  let mergedMetaData: Metadata | MetadataWithoutTitleAndDescription = {}
+
+  //merge openGraph data 
+  mergedMetaData.openGraph = {
+    ...meta.openGraph,
+    ...responseMeta.openGraph
+  }
+
+  //merge twitter data 
+  mergedMetaData.twitter = {
+    ...meta.twitter,
+    ...responseMeta.twitter
+  }
+
+  //merge elements of type <array>
+  const metaSet = new Set();
+
+  for (const element of [...responseMeta.metaTags, ...meta.metaTags]) {
+    metaSet.add(element.name || element.property)
+  }
+  for (const element of metaSet) {
+    
+  }
+
+  
+  return mergedMetaData;
+}
+
+/**
  * This function create a loader function
  */
 const createLoaderFunction = ({
@@ -77,8 +117,7 @@ const createLoaderFunction = ({
       }
 
       return {
-        ...response,
-        meta: metadata,
+        ...mergeMetaData(response.meta, metadata)
       };
     } catch (error) {
       return {
