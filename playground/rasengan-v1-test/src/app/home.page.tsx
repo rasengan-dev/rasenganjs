@@ -91,13 +91,52 @@ Home.path = '/';
 Home.metadata = {
   title: 'Home',
   description: 'Home page',
+
+  // Open Graph
+  openGraph: {
+    title: 'Home',
+    description: 'Home page',
+    type: 'website',
+    url: 'https://beta3.rasengan.dev',
+    image: 'https://beta4.rasengan.dev/assets/og-image.png',
+  },
+
+  metaTags: [
+    {
+      name: 'keywords',
+      content: 'rasengan, react, ssr, ssg, static site generator',
+    },
+    {
+      name: 'author',
+      content: 'Rasengan',
+    },
+  ],
 };
 
 Home.loader = async () => {
+  console.log('Home loader');
+
   return {
+    props: {},
     meta: {
-      title: 'Home',
-      description: 'Home page',
+      title: 'D3 Home',
+      description: 'Home Rasengan Hub',
+
+      // Open Graph
+      openGraph: {
+        title: 'Home loader',
+        // description: 'Home page',
+        type: 'website',
+        url: 'https://beta.rasengan.dev',
+        image: 'https://beta.rasengan.dev/assets/og-image.png',
+      },
+
+      // metaTags: [
+      //   {
+      //     name: 'author',
+      //     content: 'Rasengan Labs',
+      //   }
+      // ]
     },
   };
 };
