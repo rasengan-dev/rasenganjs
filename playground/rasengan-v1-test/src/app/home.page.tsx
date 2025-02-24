@@ -91,13 +91,43 @@ Home.path = '/';
 Home.metadata = {
   title: 'Home',
   description: 'Home page',
+
+  // Open Graph
+  openGraph: {
+    title: 'Home',
+    description: 'Home page',
+    type: 'website',
+    url: 'https://beta3.rasengan.dev',
+    image: 'https://beta4.rasengan.dev/assets/og-image.png',
+  },
+
+  metaTags: [
+    {
+      name: 'keywords',
+      content: 'rasengan, react, ssr, ssg, static site generator',
+    },
+    {
+      name: 'author',
+      content: 'Rasengan',
+    },
+  ],
 };
 
 Home.loader = async () => {
+  // Fetch data post here
+
+  const data = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const posts = await data.json();
+
+  const post = posts[0];
+
+  console.log(post);
+
   return {
+    props: {},
     meta: {
-      title: 'Home',
-      description: 'Home page',
+      title: post.title,
+      description: post.body,
     },
   };
 };
