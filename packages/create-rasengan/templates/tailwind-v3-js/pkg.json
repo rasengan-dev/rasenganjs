@@ -1,0 +1,25 @@
+{
+  "name": "rasengan-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan dev",
+    "build": "rasengan build"
+  },
+  "dependencies": {
+    "rasengan": "^1.0.0",
+    "@rasenganjs/image": "^1.0.0",
+    "@rasenganjs/serve": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.5",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.1.3",
+    "vite": "^6.0.0"
+  }
+}

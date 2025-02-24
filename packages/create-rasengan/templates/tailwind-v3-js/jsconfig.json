@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+
+    /* Aliases for intellisence in javascript env */
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
