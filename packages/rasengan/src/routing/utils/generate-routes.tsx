@@ -160,8 +160,6 @@ const createLoaderFunction = ({
       // Get the response from the loader
       const response = await loader({ params, request });
 
-      console.log(response);
-
       // Handle redirection
       if (response.redirect) {
         const formData = new FormData();
@@ -182,6 +180,7 @@ const createLoaderFunction = ({
       };
     } catch (error) {
       console.error(error);
+
       return {
         props: {},
         meta: {},
