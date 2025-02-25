@@ -34,4 +34,4 @@ export const Versions: {
  * @type {string}
  */
 export const TEMPLATE_GITHUB_URL: string =
-  'https://github.com/rasengan-dev/rasenganjs-examples.git';
+  'https://github.com/rasengan-dev/rasenganjs.git';
