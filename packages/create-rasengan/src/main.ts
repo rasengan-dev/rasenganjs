@@ -31,13 +31,7 @@ import ora from 'ora';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ncp from 'ncp';
-import {
-  Languages,
-  StateManagers,
-  Templates,
-  Tools,
-  Versions,
-} from './constants/index.js';
+import { Languages, Templates, Versions } from './constants/index.js';
 import __dirname from './utils/dirname.js';
 import inquirer from 'inquirer';
 import { logInfo } from './scripts/log-info.js';
@@ -129,7 +123,7 @@ program
     } else {
       if (nameOfProject.includes(' ')) {
         console.error(
-          chalk.red("Project name can't include spaces. Please use dashes.")
+          chalk.red("Project's name can't include spaces. Please use dashes.")
         );
         return;
       }
@@ -152,7 +146,7 @@ program
     }
 
     // Checking if the project already exists
-    const projectPath = path.join(currentDirectory, nameOfProject);
+    const projectPath = path.posix.join(currentDirectory, nameOfProject);
 
     // Checking if the project already exists
     try {
@@ -179,13 +173,13 @@ program
       }
     } catch (err) {
       // Check if the developer need to use a template from github or not
-      if (template) {
-        await createProjectFromTemplate(nameOfProject, template, {
-          currentDirectory: nameOfProject === '' ? true : false,
-        });
+      // if (template) {
+      //   await createProjectFromTemplate(nameOfProject, template, {
+      //     currentDirectory: nameOfProject === '' ? true : false,
+      //   });
 
-        return;
-      }
+      //   return;
+      // }
 
       // Getting the version based on the --beta option
       let versionName = '';
@@ -202,6 +196,9 @@ program
       // Get the template name
       let templateName = '';
 
+      // Version of tailwind if the template is tailwind
+      let tailwindVersion = '';
+
       // Prepare question about tools
       // let tools = [];
 
@@ -213,7 +210,7 @@ program
         const languageQuestion = {
           type: 'list',
           name: 'language',
-          message: 'Select a language:',
+          message: 'Select a Language:',
           choices: Languages,
         };
 
@@ -224,7 +221,7 @@ program
         const templateQuestion = {
           type: 'list',
           name: 'template',
-          message: 'Select a template:',
+          message: 'Select a Template:',
           choices: Templates,
         };
 
@@ -232,29 +229,20 @@ program
 
         templateName = templateAnswer.template;
 
-        // // Prepare the question for the tools
-        // const toolsQuestion = {
-        //   type: "checkbox",
-        //   name: "tools",
-        //   message: "Select the tools:",
-        //   choices: Tools,
-        // };
+        // Check if the template is tailwind
+        if (templateName === 'tailwind') {
+          // Prepare the question for the tailwind version
+          const tailwindQuestion = {
+            type: 'list',
+            name: 'tailwind',
+            message: 'Select a Tailwind version:',
+            choices: ['v3', 'v4'],
+          };
 
-        // const toolsAnswer = await inquirer.prompt([toolsQuestion]);
+          const tailwindAnswer = await inquirer.prompt([tailwindQuestion]);
 
-        // tools = toolsAnswer.tools;
-
-        // // Prepare the question for the state manager
-        // const stateManagerQuestion = {
-        //   type: "list",
-        //   name: "stateManager",
-        //   message: "Select a state manager:",
-        //   choices: StateManagers,
-        // };
-
-        // const stateManagerAnswer = await inquirer.prompt([stateManagerQuestion]);
-
-        // stateManager = stateManagerAnswer.stateManager;
+          tailwindVersion = tailwindAnswer.tailwind;
+        }
       } else {
         languageName = 'typescript';
         templateName = 'blank';
@@ -272,7 +260,13 @@ program
       const templatePath = path.join(
         __dirname,
         '../..',
-        `templates/${languageName}`
+        `templates/${templateName}${
+          templateName === 'tailwind'
+            ? tailwindVersion === 'v3'
+              ? '-v3'
+              : '-v4'
+            : ''
+        }-${languageName === 'typescript' ? 'ts' : 'js'}`
       );
 
       // Starting the spinner for creating the project
@@ -291,7 +285,7 @@ program
           return;
         }
 
-        // Copying .gitignore file
+        // Copying content of gitignore to .gitignore file
         await fs.copyFile(
           path.join(templatePath, 'gitignore'),
           path.join(projectPath, '.gitignore')
@@ -301,34 +295,13 @@ program
         await fs.rm(path.join(projectPath, 'gitignore'));
 
         // Updating the package.json file
-        let packageJson = null;
+        let packageJson = await fs.readFile(
+          path.join(projectPath, 'pkg.json'),
+          'utf-8'
+        );
 
-        if (templateName === 'blank') {
-          packageJson = await fs.readFile(
-            path.join(projectPath, 'pkg.json'),
-            'utf-8'
-          );
-
-          // Removing pkg file from the project
-          await fs.rm(path.join(projectPath, 'pkg.json'));
-        } else if (templateName === 'tailwind') {
-          packageJson = await fs.readFile(
-            path.join(
-              __dirname,
-              '../..',
-              `templates/${templateName}/${languageName}`,
-              'pkg.json'
-            ),
-            'utf-8'
-          );
-
-          // Removing gitignore file from the project
-          await fs.rm(path.join(projectPath, 'pkg.json'));
-        } else {
-          console.log(chalk.red('Invalid template name!'));
-
-          return;
-        }
+        // Removing gitignore file from the project
+        await fs.rm(path.join(projectPath, 'pkg.json'));
 
         // Parsing the package.json file
         const parsedPackageJson = JSON.parse(packageJson);
@@ -346,65 +319,6 @@ program
           path.join(projectPath, 'package.json'),
           JSON.stringify(parsedPackageJson, null, 2)
         );
-
-        // Adding more configuration files when the template is tailwind
-        if (templateName === 'tailwind') {
-          // Copying the tailwind.config.js file
-          await fs.copyFile(
-            path.join(
-              __dirname,
-              '../..',
-              `templates/${templateName}/${languageName}`,
-              'tailwind.config.js'
-            ),
-            path.join(projectPath, 'tailwind.config.js')
-          );
-
-          // Copying the postcss.config.js file
-          await fs.copyFile(
-            path.join(
-              __dirname,
-              '../..',
-              `templates/${templateName}/${languageName}`,
-              'postcss.config.js'
-            ),
-            path.join(projectPath, 'postcss.config.js')
-          );
-
-          // Copying the src/styles/index.css file
-          await fs.copyFile(
-            path.join(
-              __dirname,
-              '../..',
-              `templates/${templateName}/${languageName}`,
-              'src/styles/index.css'
-            ),
-            path.join(projectPath, 'src/styles/index.css')
-          );
-
-          // Copying the src/app/home.page.tsx file or src/app/home.page.jsx
-          if (languageName === 'typescript') {
-            await fs.copyFile(
-              path.join(
-                __dirname,
-                '../..',
-                `templates/${templateName}/${languageName}`,
-                'src/app/home.page.tsx'
-              ),
-              path.join(projectPath, 'src/app/home.page.tsx')
-            );
-          } else {
-            await fs.copyFile(
-              path.join(
-                __dirname,
-                '../..',
-                `templates/${templateName}/${languageName}`,
-                'src/app/home.page.jsx'
-              ),
-              path.join(projectPath, 'src/app/home.page.jsx')
-            );
-          }
-        }
 
         if (initGit) {
           // Initialization of git repository

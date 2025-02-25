@@ -27,7 +27,7 @@ const Home = () => {
       </div>
 
       <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <div className="flex flex-col p-4 rounded-md border-[1px] border-[EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
+        <div className="flex flex-col p-4 rounded-md border-[1px] border-[#EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
           <h2 className="text-xl font-urbanist">Documentation</h2>
           <p className="mt-2">
             Find in-depth information about Rasengan features and API.
@@ -41,7 +41,7 @@ const Home = () => {
           </a>
         </div>
 
-        <div className="flex flex-col p-4 rounded-md border-[1px] border-[EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
+        <div className="flex flex-col p-4 rounded-md border-[1px] border-[#EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
           <h2 className="text-xl font-urbanist">Learn</h2>
           <p className="mt-2">
             Learn about Rasengan in an interactive course with quizzes!
@@ -55,7 +55,7 @@ const Home = () => {
           </a>
         </div>
 
-        <div className="flex flex-col p-4 rounded-md border-[1px] border-[EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
+        <div className="flex flex-col p-4 rounded-md border-[1px] border-[#EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
           <h2 className="text-xl font-urbanist">Examples</h2>
           <p className="mt-2">
             Discover and deploy boilerplate example Rasengan projects.
@@ -69,7 +69,7 @@ const Home = () => {
           </a>
         </div>
 
-        <div className="flex flex-col p-4 rounded-md border-[1px] border-[EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
+        <div className="flex flex-col p-4 rounded-md border-[1px] border-[#EFEFEF] max-w-[500px] md:w-[300px] lg:w-[400px]">
           <h2 className="text-xl font-urbanist">Community</h2>
           <p className="mt-2">
             Join an active community of Rasengan users on GitHub.
