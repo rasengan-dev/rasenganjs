@@ -24,7 +24,7 @@
  * pnpm create rasengan <project-name>
  */
 
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+import { simpleGit, SimpleGitOptions } from 'simple-git';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import ora from 'ora';
@@ -54,7 +54,9 @@ program
   .option('--beta, --experimental', 'Consider latest beta version of Rasengan')
   .option('-y, --yes', 'Skip the questions and use the default values')
   .option('--git', 'Initialize a git repository')
-  .option('--template <template-name>', 'Choose a template')
+  // .option('--template <template-name>', 'Choose a template')
+  .option('--language <language-name>', 'Choose a language')
+  .option('--with-shadcn', 'Use shadcn template')
   .action(async (projectName, options) => {
     // Read the package.json file
     const packageJson = await fs.readFile(
@@ -71,7 +73,13 @@ program
     );
 
     // Getting the options
-    const { experimental, yes: skip, template, git: initGit } = options;
+    const {
+      experimental,
+      yes: skip,
+      language,
+      git: initGit,
+      withShadcn,
+    } = options;
 
     if (experimental) {
       if (Versions.beta) {
@@ -96,6 +104,18 @@ program
             'Rasengan.js is only accessible in beta version actually, we are working to improve stability. \n'
           )
         );
+      }
+    }
+
+    // Checking if the language is well provided or not
+    if (language) {
+      if (!Languages.includes(language)) {
+        console.error(
+          chalk.red(
+            `The language ${chalk.bold.blue(`"${language}"`)} is not supported!`
+          )
+        );
+        return;
       }
     }
 
@@ -172,14 +192,23 @@ program
         throw new Error('Folder exist but empty');
       }
     } catch (err) {
-      // Check if the developer need to use a template from github or not
-      // if (template) {
-      //   await createProjectFromTemplate(nameOfProject, template, {
-      //     currentDirectory: nameOfProject === '' ? true : false,
-      //   });
+      // Handling the case when custom template is provided
+      // Shadcn template
+      if (withShadcn) {
+        const languageCode = language
+          ? language === 'typescript'
+            ? 'ts'
+            : 'js'
+          : 'ts';
 
-      //   return;
-      // }
+        await createProjectFromTemplate(projectPath, `shadcn-${languageCode}`, {
+          currentDirectory: nameOfProject === '' ? true : false,
+        });
+
+        return;
+      }
+
+      // TODO: other templates
 
       // Getting the version based on the --beta option
       let versionName = '';
@@ -206,16 +235,20 @@ program
       // let stateManager = "";
 
       if (!skip) {
-        // Prepare the question for the language
-        const languageQuestion = {
-          type: 'list',
-          name: 'language',
-          message: 'Select a Language:',
-          choices: Languages,
-        };
+        if (!language) {
+          // Prepare the question for the language
+          const languageQuestion = {
+            type: 'list',
+            name: 'language',
+            message: 'Select a Language:',
+            choices: Languages,
+          };
 
-        const languageAnswer = await inquirer.prompt([languageQuestion]);
-        languageName = languageAnswer.language;
+          const languageAnswer = await inquirer.prompt([languageQuestion]);
+          languageName = languageAnswer.language;
+        } else {
+          languageName = language;
+        }
 
         // Prepare the question for the template
         const templateQuestion = {
