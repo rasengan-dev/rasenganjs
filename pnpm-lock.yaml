@@ -78,7 +78,7 @@ importers:
   packages/rasengan:
     dependencies:
       '@rasenganjs/mdx':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rasengan-mdx
       '@vitejs/plugin-react':
         specifier: ^4.2.1
@@ -283,7 +283,7 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       rasengan:
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rasengan
       source-map-support:
         specifier: ^0.5.21
@@ -321,7 +321,7 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       rasengan:
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rasengan
 
   playground/rasengan-v1-test:
