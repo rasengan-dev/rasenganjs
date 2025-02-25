@@ -3,11 +3,9 @@ import { Outlet, LayoutComponent } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
   return (
-    <section className="w-full bg-white font-comfortaa">
-      <main className="w-full p-4">
-        <Outlet />
-      </main>
-    </section>
+    <React.Fragment>
+      <Outlet />
+    </React.Fragment>
   );
 };
 
