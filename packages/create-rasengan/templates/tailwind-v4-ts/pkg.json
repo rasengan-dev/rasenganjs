@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "rasengan dev",
-    "build": "rasengan build"
+    "build": "rasengan build",
+    "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
     "rasengan": "^1.0.0",
     "@rasenganjs/image": "^1.0.0",
+    "@rasenganjs/serve": "1.0.0-beta.54",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.*",
