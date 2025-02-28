@@ -31,11 +31,12 @@ import ora from 'ora';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ncp from 'ncp';
+import { consola } from 'consola';
 import { Languages, Templates, Versions } from './constants/index.js';
 import __dirname from './utils/dirname.js';
-import inquirer from 'inquirer';
 import { logInfo } from './scripts/log-info.js';
 import createProjectFromTemplate from './scripts/template.js';
+import logoAsciiCode from './data/logo.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -67,9 +68,13 @@ program
     // Parse the package.json file
     const parsedPackageJson = JSON.parse(packageJson);
 
-    // Showing the welcome message
-    console.log(
-      `\nYou are using ${chalk.bold.blue(`Create Rasengan CLI v${parsedPackageJson.version}`)} 🎉\n`
+    console.log(chalk.blue(logoAsciiCode));
+
+    consola.info(`${chalk.bold.blue('Welcome to Rasengan!')} 🌀`);
+
+    // // Showing the welcome message
+    consola.info(
+      `You are using ${chalk.bold.blue(`Create Rasengan CLI ${chalk.bgBlue(chalk.white(`v${parsedPackageJson.version}`))}`)} 🎉\n`
     );
 
     // Getting the options
@@ -83,26 +88,20 @@ program
 
     if (experimental) {
       if (Versions.beta) {
-        console.log(
-          chalk.yellow(
-            'You are using the latest beta version of Rasengan.js. This version may not be stable.\n'
-          )
+        consola.warn(
+          'You are using the latest beta version of Rasengan.js. Please note that this version may be unstable.'
         );
       } else {
-        console.log(
-          chalk.red(
-            'There is no beta version available for Rasengan at the moment. Please use the stable version.\n'
-          )
+        consola.error(
+          'The Rasengan beta version is not available at the moment. Please use the stable release.'
         );
 
         return;
       }
     } else {
       if (!Versions.stable) {
-        console.log(
-          chalk.yellow(
-            'Rasengan.js is only accessible in beta version actually, we are working to improve stability. \n'
-          )
+        consola.warn(
+          `Rasengan.js is currently in beta. We're actively working to enhance its stability.`
         );
       }
     }
@@ -122,19 +121,19 @@ program
     // Getting the current directory
     const currentDirectory = process.cwd();
 
-    let nameOfProject = projectName || '';
+    let nameOfProject: string = projectName || '';
 
     // Checking if the project name is provided
     if (!projectName) {
-      const question = {
-        type: 'input',
-        name: 'projectName',
-        message: 'Enter the project name:',
-      };
+      const answer = await consola.prompt(
+        'What would you like to name your project?',
+        {
+          type: 'text',
+          default: 'my-rasengan-app',
+        }
+      );
 
-      const answer = await inquirer.prompt([question]);
-
-      nameOfProject = answer.projectName;
+      nameOfProject = answer;
     }
 
     // Checking the format of the project name
@@ -142,25 +141,21 @@ program
       nameOfProject = '';
     } else {
       if (nameOfProject.includes(' ')) {
-        console.error(
-          chalk.red("Project's name can't include spaces. Please use dashes.")
+        consola.error(
+          "Project's name can't include spaces. Please use dashes."
         );
         return;
       }
 
       if (!/^[a-z0-9_-]*$/i.test(nameOfProject)) {
-        console.error(
-          chalk.red(
-            'Project name can only include letters, numbers, underscores and hashes.'
-          )
+        consola.error(
+          'Project name can only include letters, numbers, underscores and hashes.'
         );
         return;
       }
 
       if (nameOfProject !== nameOfProject.toLowerCase()) {
-        console.error(
-          chalk.red('Project name can only be in lowercase letters.')
-        );
+        consola.error('Project name can only be in lowercase letters.');
         return;
       }
     }
@@ -178,14 +173,12 @@ program
 
       if (dir.length > 0) {
         // Returning if the project already exists
-        console.log(
-          chalk.red(
-            `\n❌ The folder with the name ${chalk.bold.blue(`"${projectName}"`)} is not empty!\n`
-          )
+        consola.error(
+          `The folder with the name ${chalk.bold.blue(`"${projectName}"`)} is not empty!`
         );
-        console.log(
+        consola.info(
           chalk.white(
-            `💡 Please use another name or delete the existing folder!\n`
+            `💡 Please use another name or delete the existing folder!`
           )
         );
       } else {
@@ -237,44 +230,42 @@ program
       if (!skip) {
         if (!language) {
           // Prepare the question for the language
-          const languageQuestion = {
-            type: 'list',
-            name: 'language',
-            message: 'Select a Language:',
-            choices: Languages,
-          };
+          const answer = await consola.prompt(
+            'Which language would you like to use for your project?',
+            {
+              type: 'select',
+              options: Languages,
+            }
+          );
 
-          const languageAnswer = await inquirer.prompt([languageQuestion]);
-          languageName = languageAnswer.language;
+          languageName = answer;
         } else {
           languageName = language;
         }
 
         // Prepare the question for the template
-        const templateQuestion = {
-          type: 'list',
-          name: 'template',
-          message: 'Select a Template:',
-          choices: Templates,
-        };
+        const answer = await consola.prompt(
+          'Which template would you like to use?',
+          {
+            type: 'select',
+            options: Templates,
+          }
+        );
 
-        const templateAnswer = await inquirer.prompt([templateQuestion]);
-
-        templateName = templateAnswer.template;
+        templateName = answer;
 
         // Check if the template is tailwind
         if (templateName === 'tailwind') {
           // Prepare the question for the tailwind version
-          const tailwindQuestion = {
-            type: 'list',
-            name: 'tailwind',
-            message: 'Select a Tailwind version:',
-            choices: ['v3', 'v4'],
-          };
+          const answer = await consola.prompt(
+            'Which version of Tailwind would you like to use?',
+            {
+              type: 'select',
+              options: ['v3', 'v4'],
+            }
+          );
 
-          const tailwindAnswer = await inquirer.prompt([tailwindQuestion]);
-
-          tailwindVersion = tailwindAnswer.tailwind;
+          tailwindVersion = answer;
         }
       } else {
         languageName = 'typescript';
