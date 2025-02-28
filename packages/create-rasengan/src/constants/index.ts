@@ -26,7 +26,7 @@ export const Versions: {
   beta: string;
 } = {
   stable: null,
-  beta: '1.0.0-beta.49',
+  beta: '1.0.0-beta.53',
 };
 
 /**
@@ -34,4 +34,4 @@ export const Versions: {
  * @type {string}
  */
 export const TEMPLATE_GITHUB_URL: string =
-  'https://github.com/rasengan-dev/rasenganjs-examples.git';
+  'https://github.com/rasengan-dev/rasenganjs.git';

@@ -6,6 +6,43 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypePrettyCode from 'rehype-pretty-code';
 
+function extractTOC(markdown: string) {
+  const lines = markdown.split('\n');
+  const toc = [];
+
+  lines.forEach((line: string) => {
+    const h2Match = line.match(/^## (.+)/); // Titres H2
+    const h3Match = line.match(/^### (.+)/); // Titres H3
+
+    if (h2Match) {
+      const title = h2Match[1].trim();
+      const anchor = generateAnchor(title);
+      toc.push({
+        title,
+        anchor,
+        level: 2,
+        children: [],
+      });
+    } else if (h3Match && toc.length > 0) {
+      const title = h3Match[1].trim();
+      const anchor = generateAnchor(title);
+      toc[toc.length - 1].children.push({
+        title,
+        anchor,
+        level: 3,
+      });
+    }
+  });
+
+  return toc;
+}
+
+const generateAnchor = (title: string) => {
+  // Used the implementation inside the useMemo hooks in src/components/heading.tsx instead
+
+  return `#${title}`;
+};
+
 /**
  * A Vite plugin that transforms MDX files into a format that can be used in a RasenganJs application.
  *
@@ -72,6 +109,10 @@ export default async function plugin(): Promise<{
       }
 
       const { content, data: frontmatter } = matter(code);
+
+      const toc = extractTOC(content);
+
+      console.log({ toc });
 
       // Apply transformation of the mdx file
       const result = await mdxInstance.transform(content, id);

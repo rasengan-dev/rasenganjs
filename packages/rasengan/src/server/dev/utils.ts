@@ -8,6 +8,7 @@ import { StaticHandlerContext } from 'react-router';
 import { Metadata } from '../../routing/types.js';
 import type * as Express from 'express';
 import { Redirect } from '../../core/config/type.js';
+import readline from 'node:readline';
 
 // Get local IP
 export default function getIPAddress() {
@@ -125,6 +126,8 @@ export async function logServerInfo(
   if (open) {
     openBrowser(`http://localhost:${port}`);
   }
+
+  readline.emitKeypressEvents(process.stdin);
 
   // Listen on user keyboard input on the terminal
   process.stdin.on('keypress', (_: string, key: any) => {

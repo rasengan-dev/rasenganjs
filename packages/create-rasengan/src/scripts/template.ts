@@ -7,6 +7,7 @@ import ora from 'ora';
 import ncp from 'ncp';
 import chalk from 'chalk';
 import { logInfo } from './log-info.js';
+import { sleep } from '../utils/sleep.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -43,10 +44,15 @@ export default async function createProjectFromTemplate(
     // when setting all options in a single object
     const git: SimpleGit = simpleGit(options);
 
+    console.log('');
+
     // Starting the spinner for creating the project
     const createSpinner = spinner('Creating project...');
 
     createSpinner.start();
+
+    await sleep(1000);
+    createSpinner.text = 'Cloning the template...';
 
     try {
       // Clone the template repository
@@ -64,7 +70,7 @@ export default async function createProjectFromTemplate(
       return;
     }
 
-    const srcFolder = path.join(tmpFolder, `templates/${templateName}`);
+    const srcFolder = path.posix.join(tmpFolder, `examples/${templateName}`);
 
     // check if the template exists
     try {
@@ -84,6 +90,9 @@ export default async function createProjectFromTemplate(
       return;
     }
 
+    await sleep(2000);
+    createSpinner.text = 'Copying the template files...';
+
     // Copying the template files to the project directory
     ncp(srcFolder, projectPath, async (err) => {
       if (err) {
@@ -98,7 +107,11 @@ export default async function createProjectFromTemplate(
         return;
       }
 
-      // Updating the package.json file
+      await sleep(2000);
+      createSpinner.text = 'Updating the package.json file...';
+
+      // Read the package.json file
+
       let packageJsonString = await fs.readFile(
         path.join(projectPath, 'package.json'),
         'utf-8'
@@ -122,6 +135,8 @@ export default async function createProjectFromTemplate(
       await git.add('-A');
       await git.commit('Initial commit');
 
+      // Stopping the spinner
+      await sleep(1000);
       createSpinner.succeed(chalk.green('Project created successfully!'));
 
       console.log('');

@@ -18,6 +18,7 @@ import {
   LoaderResponse,
   Metadata,
   MetadataWithoutTitleAndDescription,
+  MetaTag,
 } from '../types.js';
 import { Suspense } from 'react';
 
@@ -37,6 +38,103 @@ export const getRouter = (routerInstance: RouterComponent) => {
   });
 
   return () => <RouterProvider router={router} />;
+};
+
+/**
+ * This function merge the metadata, giving priority to the ones comming from loader
+ */
+const mergeMetaData = (
+  responseMeta: Metadata | MetadataWithoutTitleAndDescription,
+  meta: Metadata | MetadataWithoutTitleAndDescription
+) => {
+  let mergedMetaData: Metadata | MetadataWithoutTitleAndDescription = {
+    metaTags: [],
+    links: [],
+  };
+
+  // merge title and description
+  mergedMetaData['title'] =
+    (responseMeta as Metadata).title ?? (meta as Metadata).title;
+  mergedMetaData['description'] =
+    (responseMeta as Metadata).description ?? (meta as Metadata).description;
+
+  // merge openGraph datas
+  mergedMetaData['openGraph'] = {
+    ...meta.openGraph,
+    ...responseMeta.openGraph,
+  };
+
+  // merge twitter data
+  mergedMetaData['twitter'] = {
+    ...meta.twitter,
+    ...responseMeta.twitter,
+  };
+
+  // merge elements of type <array> eg. metaTags and links
+  const metaSet = new Set<string>();
+  const linkSet = new Set<string>();
+
+  if (meta['metaTags'] && Array.isArray(meta.metaTags)) {
+    // Loop through the metaTags and add every key to the set
+    for (const element of meta.metaTags) {
+      metaSet.add(element.name ?? element.property);
+    }
+
+    if (responseMeta['metaTags'] && Array.isArray(responseMeta.metaTags)) {
+      // Loop through the responseMeta and check if the key is already in the set
+      for (const element of responseMeta.metaTags) {
+        if (metaSet.has(element.name ?? element.property)) {
+          // remove the element from the set
+          metaSet.delete(element.name ?? element.property);
+        }
+
+        mergedMetaData.metaTags.push(element);
+      }
+    }
+
+    // Loop through the remaining elements in the set
+    for (const element of metaSet) {
+      const metaElement = meta.metaTags.find((el) => el.name === element);
+
+      if (metaElement) {
+        mergedMetaData.metaTags.push(metaElement);
+      }
+    }
+  } else {
+    mergedMetaData.metaTags = responseMeta.metaTags ?? [];
+  }
+
+  if (meta['links'] && Array.isArray(meta.links)) {
+    // Loop through the links and add every key to the set
+    for (const element of meta.links) {
+      linkSet.add(element.rel);
+    }
+
+    if (responseMeta['links'] && Array.isArray(responseMeta.links)) {
+      // Loop through the responseMeta and check if the key is already in the set
+      for (const element of responseMeta.links) {
+        if (linkSet.has(element.rel)) {
+          // remove the element from the set
+          linkSet.delete(element.rel);
+        }
+
+        mergedMetaData.links.push(element);
+      }
+    }
+
+    // Loop through the remaining elements in the set
+    for (const element of linkSet) {
+      const linkElement = meta.links.find((el) => el.rel === element);
+
+      if (linkElement) {
+        mergedMetaData.links.push(linkElement);
+      }
+    }
+  } else {
+    mergedMetaData.links = responseMeta.links ?? [];
+  }
+
+  return mergedMetaData;
 };
 
 /**
@@ -77,10 +175,12 @@ const createLoaderFunction = ({
       }
 
       return {
-        ...response,
-        meta: metadata,
+        props: response.props,
+        meta: mergeMetaData(response.meta, metadata),
       };
     } catch (error) {
+      console.error(error);
+
       return {
         props: {},
         meta: {},

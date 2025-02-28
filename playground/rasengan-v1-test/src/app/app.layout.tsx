@@ -3,8 +3,8 @@ import { Outlet, LayoutComponent } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
   return (
-    <section className="w-full bg-white">
-      <main className="w-full max-w-[1000px] mx-auto p-4">
+    <section className="w-full bg-white font-comfortaa">
+      <main className="w-full p-4">
         <Outlet />
       </main>
     </section>
