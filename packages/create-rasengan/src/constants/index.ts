@@ -26,7 +26,7 @@ export const Versions: {
   beta: string;
 } = {
   stable: null,
-  beta: '1.0.0-beta.53',
+  beta: '1.0.0-beta.54',
 };
 
 /**
