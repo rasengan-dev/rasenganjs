@@ -43,15 +43,12 @@ importers:
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
-      child_process:
-        specifier: ^1.0.2
-        version: 1.0.2
       commander:
         specifier: ^11.1.0
         version: 11.1.0
-      inquirer:
-        specifier: ^9.2.11
-        version: 9.3.7
+      consola:
+        specifier: ^3.4.0
+        version: 3.4.0
       ncp:
         specifier: ^2.0.0
         version: 2.0.0
@@ -153,15 +150,9 @@ importers:
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
-      child_process:
-        specifier: ^1.0.2
-        version: 1.0.2
       commander:
         specifier: ^11.1.0
         version: 11.1.0
-      inquirer:
-        specifier: ^9.2.11
-        version: 9.3.7
       ncp:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1385,9 +1376,6 @@ packages:
   chardet@0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
 
-  child_process@1.0.2:
-    resolution: {integrity: sha512-Wmza/JzL0SiWz7kl6MhIKT5ceIlnFPJX+lwUGj7Clhy5MMldsSoJR0+uvRzOS5Kv45Mq7t1PoE8TsOA9bzvb6g==}
-
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
@@ -1462,6 +1450,10 @@ packages:
   compression@1.7.5:
     resolution: {integrity: sha512-bQJ0YRck5ak3LgtnpKkiabX5pNF7tMUh1BSy2ZBOTh0Dim0BUu6aPPwByIns6/A5Prh8PufSPerMDUklpzes2Q==}
     engines: {node: '>= 0.8.0'}
+
+  consola@3.4.0:
+    resolution: {integrity: sha512-EiPU8G6dQG0GFHNR8ljnZFki/8a+cQwEQ+7wpxdChl02Q8HXlwEZWD5lqAF8vC2sEC3Tehr8hy7vErz88LHyUA==}
+    engines: {node: ^14.18.0 || >=16.10.0}
 
   content-disposition@0.5.4:
     resolution: {integrity: sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==}
@@ -3988,8 +3980,6 @@ snapshots:
 
   chardet@0.7.0: {}
 
-  child_process@1.0.2: {}
-
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.1
@@ -4057,6 +4047,8 @@ snapshots:
       vary: 1.1.2
     transitivePeerDependencies:
       - supports-color
+
+  consola@3.4.0: {}
 
   content-disposition@0.5.4:
     dependencies:

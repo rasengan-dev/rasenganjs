@@ -21,7 +21,6 @@ import path from 'node:path';
 import ncp from 'ncp';
 import { Languages, Templates, Versions } from './constants/index.js';
 import __dirname from './utils/dirname.js';
-import inquirer from 'inquirer';
 
 // Spinner
 const spinner = (text: string) =>

@@ -16,6 +16,6 @@
     "declaration": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/data/rasengan.txt"],
   "exclude": ["node_modules", "templates"]
 }
