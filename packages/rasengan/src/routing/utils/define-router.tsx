@@ -63,8 +63,10 @@ export const defineRouter = (option: RouterProps) => {
       }
     }
 
+    let routers = await Promise.all(imports ?? []);
+
     // Set properties
-    router.routers = imports || [];
+    router.routers = routers;
     router.layout = layout || DefaultLayout;
     router.pages = pageComponentList;
     router.loaderComponent = loaderComponent || (() => null);

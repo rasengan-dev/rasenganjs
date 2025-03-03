@@ -208,7 +208,7 @@ export const generateRoutes = (
   const route: RouteObject = {
     path: !isRoot
       ? router.useParentLayout
-        ? parentLayout.path + Layout.path
+        ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
         : Layout.path
       : Layout.path,
     errorElement: <ErrorBoundary />,
@@ -310,17 +310,17 @@ export const generateRoutes = (
     route.children.push(page);
   });
 
-  // Loop through imported routers in order to apply the same thing.
+  // Loop through imported routers in order to apply the same logic like above.
   for (const importedRouter of router.routers) {
     const importedRoutes = generateRoutes(importedRouter, false, Layout);
 
-    importedRoutes.forEach((route) => {
-      if (route.nested) {
-        route.children.push(route);
+    for (const importedRoute of importedRoutes) {
+      if (importedRoute.nested) {
+        route.children.push(importedRoute);
       } else {
-        routes.push(route);
+        routes.push(importedRoute);
       }
-    });
+    }
   }
 
   // Make sure to add the route at the beginning of the list
