@@ -7,3 +7,10 @@ export const About: PageComponent = () => {
     </section>
   );
 };
+
+About.path = '/about';
+
+About.metadata = {
+  title: 'About',
+  description: 'About page',
+};

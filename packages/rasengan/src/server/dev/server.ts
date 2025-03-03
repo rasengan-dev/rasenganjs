@@ -52,6 +52,8 @@ async function devRequestHandler(
     // Get static routes
     const staticRoutes = generateRoutes(AppRouter);
 
+    console.log({ staticRoutes: JSON.stringify(staticRoutes) });
+
     // Create static handler
     let handler = createStaticHandler(staticRoutes);
 

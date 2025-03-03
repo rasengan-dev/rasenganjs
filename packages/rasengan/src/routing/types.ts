@@ -71,7 +71,7 @@ export type RouterProps = {
   /**
    * Usefull to collect sub routers
    */
-  imports?: Array<RouterComponent>;
+  imports?: Array<Promise<RouterComponent>>;
 
   /**
    * Usefull to define a layout
