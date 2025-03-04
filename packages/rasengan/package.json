@@ -61,7 +61,7 @@
   "homepage": "https://rasengan.dev",
   "scripts": {
     "build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
-    "build:clean": "rm -rf ./lib",
+    "build:clean": "rimraf ./lib",
     "build": "pnpm run build:clean & pnpm run build:compile",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",

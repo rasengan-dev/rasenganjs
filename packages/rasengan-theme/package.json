@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build:clean": "rm -rf ./lib",
+    "build:clean": "rimraf ./lib",
     "build": "pnpm run build:clean && tsc",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public"

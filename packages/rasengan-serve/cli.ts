@@ -14,18 +14,25 @@ process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
 sourceMapSupport.install({
   retrieveSourceMap: function (source) {
-    let match = source.startsWith('file://');
-    if (match) {
-      let filePath = url.fileURLToPath(source);
-      let sourceMapPath = `${filePath}.map`;
-      if (fs.existsSync(sourceMapPath)) {
-        return {
-          url: source,
-          map: fs.readFileSync(sourceMapPath, 'utf8'),
-        };
+    try {
+      let match = source.startsWith('file://');
+
+      if (match) {
+        let filePath = url.fileURLToPath(source);
+        let sourceMapPath = `${filePath}.map`;
+        if (fs.existsSync(sourceMapPath)) {
+          return {
+            url: source,
+            map: fs.readFileSync(sourceMapPath, 'utf8'),
+          };
+        }
       }
+      return null;
+    } catch (error) {
+      console.error({ error });
+
+      throw new Error('An error occured');
     }
-    return null;
   },
 });
 
