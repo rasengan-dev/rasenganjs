@@ -27,8 +27,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "build:clean": "rm -rf ./lib",
-    "build": "pnpm run build:clean && tsc && cp -r src/styles lib/",
+    "build:clean": "rimraf ./lib",
+    "copy:styles": "npx ncp src/styles lib/styles",
+    "build": "pnpm run build:clean && tsc && pnpm run copy:styles",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public"
   },
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1"
+    "@types/react-dom": "^19.0.1",
+    "ncp": "^2.0.0"
   }
 }

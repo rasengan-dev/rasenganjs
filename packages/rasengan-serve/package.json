@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build:compile": "tsc",
-    "build:clean": "rm -rf ./dist",
+    "build:clean": "rimraf ./dist",
     "build": "pnpm run build:clean & pnpm run build:compile",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",

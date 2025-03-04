@@ -18,6 +18,7 @@ import {
 import { handleRedirectRequest } from '../dev/handlers.js';
 import { AppConfig } from '../../core/config/type.js';
 import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
+import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
 
 interface CreateRequestHandlerOptions {
@@ -43,19 +44,23 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
     try {
       // Get server entry
       const entry = await import(
-        path.posix.join(
-          buildOptions.buildDirectory,
-          buildOptions.serverPathDirectory,
-          buildOptions.entryServerPath
+        resolvePath(
+          path.posix.join(
+            buildOptions.buildDirectory,
+            buildOptions.serverPathDirectory,
+            buildOptions.entryServerPath
+          )
         )
       );
       // Get AppRouter
       const AppRouter = await (
         await import(
-          path.posix.join(
-            buildOptions.buildDirectory,
-            buildOptions.serverPathDirectory,
-            'app.router.js'
+          resolvePath(
+            path.posix.join(
+              buildOptions.buildDirectory,
+              buildOptions.serverPathDirectory,
+              'app.router.js'
+            )
           )
         )
       ).default;
