@@ -22,7 +22,7 @@
     "rasengan": "./dist/main.js"
   },
   "scripts": {
-    "build:clean": "rm -rf ./dist",
+    "build:clean": "rimraf ./dist",
     "build": "pnpm run build:clean && tsc",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
