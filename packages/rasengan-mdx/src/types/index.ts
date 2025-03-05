@@ -13,6 +13,18 @@ export type MDXPageComponent = React.FC<any> & {
     path: string;
     metadata: Metadata;
   };
+
+  toc?: Array<TOCItem>;
+};
+
+export type TOCItem = {
+  title: string;
+  anchor: {
+    id: string;
+    text: string;
+  };
+  level: 2 | 3;
+  children: Array<Omit<TOCItem, 'children'>>;
 };
 
 /**
