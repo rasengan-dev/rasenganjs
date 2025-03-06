@@ -87,7 +87,7 @@ const Home: PageComponent = (props: any) => {
   );
 };
 
-Home.path = '/';
+Home.path = '/home';
 Home.metadata = {
   title: 'Home',
   description: 'Home page',

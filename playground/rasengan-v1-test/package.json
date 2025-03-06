@@ -9,22 +9,23 @@
     "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
-    "rasengan": "workspace:*",
     "@rasenganjs/image": "workspace:*",
-    "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/mdx": "workspace:*",
+    "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/vercel": "workspace:*",
+    "@tailwindcss/vite": "^4.*",
+    "lucide-react": "^0.477.0",
+    "rasengan": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.*",
-    "@tailwindcss/vite": "^4.*"
+    "tailwindcss": "^4.*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
     "cross-env": "^7.0.3",
+    "postcss": "^8.4.31",
     "typescript": "^5.1.3",
     "vite": "^6.0.11"
   }

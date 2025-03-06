@@ -17,6 +17,25 @@
 
   /* Size */
   --container-2xs: 18rem;
+
+  /* Font size */
+  --text-3xl: 1.875rem; /* 28px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-md: 1rem; /* 16px */
+  --text-sm: 0.875rem; /* 14px */
+
+  /* Spacing */
+  --ra-spacing: 0.25; /* 4px */
+
+  /* Marging */
+  --mb-3xl: calc(var(--text-3xl) * var(--ra-spacing));
+  --mb-2xl: calc(var(--text-2xl) * var(--ra-spacing));
+  --mb-xl: calc(var(--text-xl) * var(--ra-spacing));
+  --mb-lg: calc(var(--text-lg) * var(--ra-spacing));
+  --mb-md: calc(var(--text-md) * var(--ra-spacing));
+  --mb-sm: calc(var(--text-sm) * var(--ra-spacing));
 }
 
 .dark {
@@ -47,11 +66,8 @@
   max-width: 42rem; /* 2xl */
   grid-template-columns: 1fr;
   gap: 2.5rem; /* 40px */
+  padding-left: 2.5rem;
 }
-
-/* .rasengan-wrapper-with-toc > .rasengan-markdown-body {
-  width: 100%;
-} */
 
 .rasengan-markdown-body {
   position: relative;
@@ -107,6 +123,10 @@
   color: var(--fg-accent);
 }
 
+.rasengan-toc > .table-of-contents .toc-item.active .toc-item--title {
+  font-weight: bold;
+}
+
 .rasengan-toc > .table-of-contents .toc-item--title {
   font-size: 0.875rem;
   font-weight: 300;
@@ -130,9 +150,34 @@
   justify-content: start;
 }
 
+.rasengan-markdown-body .ra-heading-wrapper:has(h1) {
+  margin-bottom: 1rem;
+}
+
 .rasengan-markdown-body .ra-heading-wrapper:has(h2) {
   border-bottom: 1px solid var(--border);
-  margin: 2rem 0;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h3) {
+  margin-bottom: var(--mb-xl);
+  margin-top: 2rem;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h4) {
+  margin-bottom: var(--mb-lg);
+  margin-top: 2rem;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h5) {
+  margin-bottom: var(--mb-md);
+  margin-top: 2rem;
+}
+
+.rasengan-markdown-body .ra-heading-wrapper:has(h6) {
+  margin-bottom: var(--mb-sm);
+  margin-top: 2rem;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper a {
@@ -176,42 +221,45 @@
 }
 
 .rasengan-markdown-body h1 {
-  font-size: 2.5em;
+  font-size: var(--text-3xl);
   color: var(--fg);
   font-weight: 700;
-  margin: 1em 0;
+  margin: 0;
 }
 
 .rasengan-markdown-body h2 {
-  font-size: 2em;
+  font-size: var(--text-2xl);
   color: var(--fg);
   font-weight: 700;
+  margin-bottom: var(--mb-2xl);
 }
 
 .rasengan-markdown-body h3 {
-  font-size: 1.5em;
+  font-size: var(--text-xl);
   color: var(--fg);
   font-weight: 700;
+  margin-bottom: var(--mb-xl);
 }
 
 .rasengan-markdown-body h4 {
-  font-size: 1.17em;
+  font-size: var(--text-lg);
   color: var(--fg);
   font-weight: 700;
+  margin-bottom: var(--mb-lg);
 }
 
 .rasengan-markdown-body h5 {
-  font-size: 1em;
+  font-size: var(--text-md);
   color: var(--fg);
   font-weight: 700;
-  margin: 0.67em 0;
+  margin-bottom: var(--mb-md);
 }
 
 .rasengan-markdown-body h6 {
-  font-size: 0.83em;
+  font-size: var(--text-sm);
   color: var(--fg);
   font-weight: 700;
-  margin: 0.67em 0;
+  margin-bottom: var(--mb-sm);
 }
 
 .rasengan-markdown-body h2:hover::after,
@@ -222,9 +270,10 @@
 }
 
 .rasengan-markdown-body p {
-  font-size: 1em;
+  font-size: var(--text-sm);
   color: var(--fg);
-  margin: 1em 0;
+  margin: var(--mb-sm) 0;
+  line-height: 2;
 }
 
 .rasengan-markdown-body a {
@@ -240,7 +289,7 @@
 
 .rasengan-markdown-body hr {
   color: var(--border);
-  margin: 1em 0;
+  margin: var(--mb-sm) 0;
 }
 
 /* Code blocks */
@@ -475,6 +524,8 @@
 
   .rasengan-markdown-body {
     padding-right: 0; /* xl:pr-0 */
+    max-width: 50rem;
+    margin: 0 auto;
   }
 }
 
@@ -486,7 +537,8 @@
 
   .rasengan-wrapper-with-toc {
     display: block;
-    max-width: 80rem;
+    max-width: 60rem;
+    padding-left: 0;
   }
 }
 
