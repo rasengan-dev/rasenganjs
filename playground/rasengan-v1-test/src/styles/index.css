@@ -1,5 +1,7 @@
 /* Load Urbanist and Comfortaa font */
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@200;300;400;500;600&family=Urbanist:wght@100;200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @import 'tailwindcss';
 
@@ -9,6 +11,12 @@
 
   --font-urbanist: Urbanist, sans-serif;
   --font-comfortaa: Comfortaa, sans-serif;
+  --font-inter: Inter, sans-serif;
+  --font-mono: 'Geist Mono', sans-serif;
+}
+
+:root {
+  --main-width: calc(100% - 280px);
 }
 
 body,
@@ -18,5 +26,7 @@ html {
   padding: 0;
   width: 100vw;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
+  font-family: 'Inter';
+  /* font-weight: 100; */
 }

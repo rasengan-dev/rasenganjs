@@ -1,5 +1,6 @@
 // @ts-ignore
 import { type Metadata } from 'rasengan';
+import React from 'react';
 
 /**
  * A React functional component that represents an MDX page.
@@ -13,6 +14,18 @@ export type MDXPageComponent = React.FC<any> & {
     path: string;
     metadata: Metadata;
   };
+
+  toc?: Array<TOCItem>;
+};
+
+export type TOCItem = {
+  title: string;
+  anchor: {
+    id: string;
+    text: string;
+  };
+  level: 2 | 3;
+  children: Array<Omit<TOCItem, 'children'>>;
 };
 
 /**
@@ -28,6 +41,9 @@ export type ComponentWithTextChildrenProps = {
 export type MDXRendererProps = {
   children: MDXPageComponent;
   className?: string;
+
+  // Used to customise the mdx visual aspect
+  config?: MDXConfigProps;
 };
 
 /**
@@ -50,4 +66,21 @@ export type NavigationStructure = {
   link: string;
   level: number;
   children?: NavigationStructure[];
+};
+
+type HeadingConfigProps = { fullText: string; text: string; id: string };
+type TOCConfig = (toc: Array<TOCItem>) => React.ReactNode;
+
+type ComponentConfig = {
+  h1?: (value: HeadingConfigProps) => React.ReactNode;
+  h2?: (value: HeadingConfigProps) => React.ReactNode;
+  h3?: (value: HeadingConfigProps) => React.ReactNode;
+  h4?: (value: HeadingConfigProps) => React.ReactNode;
+  h5?: (value: HeadingConfigProps) => React.ReactNode;
+  h6?: (value: HeadingConfigProps) => React.ReactNode;
+};
+
+export type MDXConfigProps = {
+  components?: ComponentConfig;
+  toc?: TOCConfig;
 };
