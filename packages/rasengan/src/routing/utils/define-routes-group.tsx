@@ -36,7 +36,7 @@ const generateRoutesGroup = (
 
       pages.push(...childrenPages);
     } else {
-      const routePath = path[0] === '/' ? path : `/${path}`;
+      const routePath = path === '/' ? '' : path[0] === '/' ? path : `/${path}`;
 
       // Check if the page is a PageComponent
       if (page['path']) {
