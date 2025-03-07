@@ -28,7 +28,7 @@
 
 @theme {
   --color-background: #fff;
-  --color-foreground: #111;
+  --color-foreground: #0f172a;
   --color-primary: #2b63f5;
   --color-primary-foreground: #fff;
   --color-border: #e1e1e1;
@@ -48,10 +48,10 @@
 
 :root {
   --color-background: #fff;
-  --color-foreground: #111;
+  --color-foreground: #0f172a;
   --color-primary: #2b63f5;
   --color-primary-foreground: #fff;
-  --color-border: #e1e1e1;
+  --color-border: #e1e2e4;
   --color-neutral: #858585;
 
   .dark {
@@ -59,7 +59,7 @@
     --color-primary-foreground: #fff;
     --color-background: #040712;
     --color-foreground: #d1d5dc;
-    --color-border: #282c35;
+    --color-border: #1e202a;
     --color-neutral: #9aa1af;
   }
 }
@@ -86,6 +86,14 @@ html {
 
 .rasengan-markdown-body p {
   font-size: 16px;
+}
+
+.rasengan-markdown-body h1,
+.rasengan-markdown-body h2,
+.rasengan-markdown-body h3,
+.rasengan-markdown-body h4,
+.rasengan-markdown-body h5 {
+  color: var(--color-foreground);
 }
 
 .rasengan-toc h2.title {
