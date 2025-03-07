@@ -1,38 +1,15 @@
 import { createElement, useMemo } from 'react';
 import { HeadingProps, HeadingProps2 } from '../types/index.js';
+import { generateAnchor } from '../utils/extract-toc.js';
 
 export const Heading = ({ variant }: HeadingProps) => {
   return ({ children }: HeadingProps2) => {
     const { text, id } = useMemo(() => {
-      // Regex pattern to match links in the format [#link text]
-      const regex = new RegExp('^\\[#.+\\]');
-
-      // split the children into an array of strings based on space
-      const childrenArray = children.split(' [#');
-      let lastWord = '';
-      let restOfTheWords = '';
-      let link = '';
-
-      // Check if we have more than one word and if the last word is a link
-      if (
-        childrenArray.length > 1 &&
-        childrenArray.at(-1).includes(']') &&
-        regex.test(`[#${childrenArray.at(-1)}`)
-      ) {
-        lastWord = childrenArray.pop();
-      }
-
-      if (lastWord) {
-        link = lastWord.replace(']', '').split(' ').join('-').toLowerCase();
-        restOfTheWords = childrenArray[0];
-      } else {
-        link = children.split(' ').join('-').toLowerCase();
-        restOfTheWords = children;
-      }
+      const { id, text } = generateAnchor(children);
 
       return {
-        id: variant === 'h1' ? undefined : link,
-        text: restOfTheWords,
+        id: variant === 'h1' ? undefined : id,
+        text,
       };
     }, [children]);
 
@@ -42,11 +19,21 @@ export const Heading = ({ variant }: HeadingProps) => {
       children: text,
     });
 
+    const handleClick = (
+      e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      id: string
+    ) => {
+      e.preventDefault();
+
+      const element = document.getElementById(id);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     return (
       <div className="ra-heading-wrapper">
         {heading}
         {id && (
-          <a href={`#${id}`}>
+          <a href={`#${id}`} onClick={(e) => handleClick(e, id)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
