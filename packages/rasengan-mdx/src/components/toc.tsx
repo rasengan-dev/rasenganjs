@@ -19,7 +19,6 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
 
     observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        console.log({ entry });
         if (entry.isIntersecting) {
           const rect = entry.boundingClientRect;
 
@@ -67,15 +66,15 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
 
   const renderTOCItems = useCallback(
     (items: TOCItem[]) => {
-      return items.map((item) => (
-        <>
+      return items.map((item, index) => (
+        <React.Fragment key={index}>
           <Item item={item} activeId={activeId} onActive={setActiveId} />
           {item.children && item.children.length > 0 && (
             <div className="toc-item--children">
               {renderTOCItems(item.children as TOCItem[])}
             </div>
           )}
-        </>
+        </React.Fragment>
       ));
     },
     [items, activeId]

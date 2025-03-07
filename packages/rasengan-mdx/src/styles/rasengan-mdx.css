@@ -110,7 +110,7 @@
   padding-left: 0.5rem;
   border-left: 1px solid var(--border);
   transition: all 0.2s ease;
-  color: var(--fg-light);
+  color: var(--fg);
 }
 
 .rasengan-toc > .table-of-contents .toc-item:hover {
@@ -129,7 +129,7 @@
 
 .rasengan-toc > .table-of-contents .toc-item--title {
   font-size: 0.875rem;
-  font-weight: 300;
+  /* font-weight: 300; */
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
