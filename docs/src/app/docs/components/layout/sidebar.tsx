@@ -67,7 +67,7 @@ export default function SidebarNavigation() {
 
         {NavigationData[activeTab].map((nav) => {
           return (
-            <div className="mt-8">
+            <div key={nav.id} className="mt-8">
               <div className="flex items-center gap-2 text-foreground/60">
                 {nav.icon}
                 <span className="font-mono text-[12px]">{nav.name}</span>
@@ -112,10 +112,10 @@ export const NavItem = ({ item, className, isActive }: NavItemProps) => {
     <Link to={item.link}>
       <div
         className={twMerge(
-          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border  cursor-pointer hover:text-primary hover:border-l-primary/60 transition-all duration-300',
+          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border  cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all duration-300',
           className,
           isActive(item.link)
-            ? 'text-primary border-l-primary/60 font-lexend-medium'
+            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
             : 'text-foreground/90'
         )}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -167,10 +167,10 @@ export const NavItem = ({ item, className, isActive }: NavItemProps) => {
     <div>
       <div
         className={twMerge(
-          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border text-foreground/90 cursor-pointer hover:text-primary hover:border-l-primary/60 transition-all',
+          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border text-foreground/90 cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all',
           className,
           hasActiveChild()
-            ? 'text-primary border-l-primary/60 font-lexend-medium'
+            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
             : 'text-foreground/90'
         )}
         onClick={() => setIsOpen((prev) => !prev)}

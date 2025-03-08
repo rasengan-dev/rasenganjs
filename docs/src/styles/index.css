@@ -88,6 +88,10 @@ html {
   font-size: 16px;
 }
 
+.rasengan-markdown-body strong {
+  font-family: 'Lexend-Medium';
+}
+
 .rasengan-markdown-body h1,
 .rasengan-markdown-body h2,
 .rasengan-markdown-body h3,
@@ -109,14 +113,15 @@ html {
 .rasengan-markdown-body figure:has(pre[data-language]) {
   padding: 4px;
   border-radius: 16px;
+  border: 1px solid #353740;
+  background-color: #10141e;
 }
 
 .rasengan-markdown-body figure pre {
   background-color: transparent !important;
 }
 
-.rasengan-markdown-body figure:has(pre[data-language]) figcaption,
-.rasengan-markdown-body figure:has(pre[data-language]) {
+.rasengan-markdown-body figure:has(pre[data-language]) figcaption {
   background-color: #10141e;
   border: none;
 }

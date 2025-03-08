@@ -1,6 +1,7 @@
 import Image from '@rasenganjs/image';
 import { Link } from 'rasengan';
 import ThemeButton from '../atoms/buttons/theme-button';
+import { NavigationData } from '@/data/docs';
 
 export default function Navbar() {
   return (
@@ -21,11 +22,11 @@ export default function Navbar() {
       <div className="flex items-center gap-6">
         <nav>
           <ul className="flex items-center gap-6">
-            <Link to="/docs/introduction">
-              <li>Docs</li>
-            </Link>
-            <li>Blog</li>
-            <li>Showcase</li>
+            {NavigationData.navbar.map((nav) => (
+              <Link to={nav.link ?? '#'}>
+                <li>{nav.name}</li>
+              </Link>
+            ))}
           </ul>
         </nav>
 

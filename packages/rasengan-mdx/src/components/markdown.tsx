@@ -13,12 +13,16 @@ import { CodeBlock2 } from './codeblock2.js';
 function Markdown({
   content,
   className,
+  overwriteStyle,
 }: {
   content: string;
   className?: React.ComponentProps<'section'>['className'];
+  overwriteStyle?: boolean;
 }) {
   return (
-    <section className={'rasengan-markdown-body ' + className}>
+    <section
+      className={`${className} ${overwriteStyle ? '' : 'rasengan-markdown-body'}`}
+    >
       <MarkdownComponent
         children={content}
         remarkPlugins={[remarkParse, remarkGfm]}

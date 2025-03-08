@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@rasenganjs/image": "^1.0.0",
-    "@rasenganjs/mdx": "1.1.0-beta.0",
+    "@rasenganjs/mdx": "workspace:1.1.0-beta.0",
     "@rasenganjs/serve": "1.0.0-beta.54",
     "@rasenganjs/theme": "^1.0.1",
     "@tailwindcss/vite": "^4.*",
