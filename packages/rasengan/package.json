@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "1.0.0-beta.57",
+  "version": "1.0.0-beta.58",
   "description": "The modern React Framework",
   "type": "module",
   "main": "lib/esm/index.js",
