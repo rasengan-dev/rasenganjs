@@ -64,6 +64,7 @@ export const HeadComponent = ({
 
   return (
     <head>
+      <meta name="generator" content="Rasengan.js"></meta>
       {metaTags}
 
       {assets}

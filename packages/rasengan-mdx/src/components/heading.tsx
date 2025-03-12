@@ -27,6 +27,8 @@ export const Heading = ({ variant }: HeadingProps) => {
 
       const element = document.getElementById(id);
       element?.scrollIntoView({ behavior: 'smooth' });
+
+      history.pushState(null, '', `#${id}`); // Update the URL
     };
 
     return (
