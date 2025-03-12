@@ -88,6 +88,11 @@ html {
   font-size: 16px;
 }
 
+.rasengan-markdown-body .pagination > a {
+  text-decoration: none;
+  color: var(--color-foreground);
+}
+
 .rasengan-markdown-body strong {
   font-family: 'Lexend-Medium';
 }

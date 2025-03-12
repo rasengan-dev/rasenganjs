@@ -19,7 +19,7 @@ export default function StepItem({
 }: Props) {
   return (
     <article
-      className={twMerge('w-full flex flex-col lg:flex-row mb-8', className)}
+      className={twMerge('w-full flex flex-col lg:flex-row my-8', className)}
     >
       <div className="w-full lg:w-[45%] pr-8">
         <div className="flex items-center gap-4 mb-4">
@@ -28,7 +28,8 @@ export default function StepItem({
         </div>
 
         <span className="text-sm">
-          <Markdown content={content} className="p-0" overwriteStyle={true} />
+          <Markdown content={content} overwriteStyle={true} />
+          {/* {content} */}
         </span>
       </div>
       <div className="w-full lg:w-[55%]">{children}</div>

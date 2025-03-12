@@ -67,6 +67,12 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
+              name: 'Router',
+              link: '/docs/routing/router-configuration',
+              level: 3,
+            },
+            {
+              id: randomId(),
               name: 'Routes',
               link: '/docs/routing/routes',
               level: 3,

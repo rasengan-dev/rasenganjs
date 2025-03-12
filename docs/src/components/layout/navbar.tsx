@@ -23,7 +23,7 @@ export default function Navbar() {
         <nav>
           <ul className="flex items-center gap-6">
             {NavigationData.navbar.map((nav) => (
-              <Link to={nav.link ?? '#'}>
+              <Link key={nav.id} to={nav.link ?? '#'}>
                 <li>{nav.name}</li>
               </Link>
             ))}

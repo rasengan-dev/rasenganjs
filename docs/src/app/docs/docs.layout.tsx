@@ -1,7 +1,8 @@
 import Navbar from '@/components/layout/navbar';
-import { Outlet, LayoutComponent } from 'rasengan';
+import { Outlet, LayoutComponent, useNavigation, useLocation } from 'rasengan';
 import SidebarNavigation from './components/layout/sidebar';
 import Footer from '@/components/layout/footer';
+import React from 'react';
 
 const DocsLayout: LayoutComponent = () => {
   return (

@@ -6,7 +6,86 @@ metadata:
 toc: true
 ---
 
+import Pagination from '@/components/molecules/pagination';
+
 <span className="text-[12px] font-mono-regular text-foreground/60">
   GETTING STARTED
 </span>
-# Project Structure
+
+# Rasengan.js Project Structure
+
+Welcome! This guide will walk you through the structure of a **Rasengan.js** project, explaining its core directories, essential files, and conventions. By understanding this structure, you’ll be able to navigate and organize your project with ease.  
+
+
+## Top-Level Directories
+
+A **Rasengan.js** project follows a simple yet powerful structure. At the root of your project, you'll find these key directories:  
+
+| Directory  | Description |
+|------------|------------------------------------------------|
+| `public`   | Stores static assets such as images, icons, and fonts. |
+| `src`      | Contains all the source code for your application. |
+
+
+## Top-Level Files
+
+Alongside the main directories, a **Rasengan.js** project includes important configuration and environment files:  
+
+| File                 | Description |
+|----------------------|------------------------------------------------|
+| `rasengan.config.js` | The main configuration file for your project. |
+| `package.json`       | Manages dependencies, scripts, and project metadata. |
+| `.env`               | Stores environment variables. |
+| `.env.example`       | Provides a template for environment variables. |
+| `.gitignore`         | Specifies files and folders to be ignored by Git. |
+| `README.md`          | Documentation for your project. |
+| `rasengan-env.d.ts`  | TypeScript declarations for Rasengan.js. |
+| `tsconfig.json`      | Configuration file for TypeScript projects. |
+| `jsconfig.json`      | Configuration file for JavaScript projects. |
+
+
+## Inside the src Folder
+
+The **`src`** directory is the heart of your project, where you’ll define your application's logic, components, and pages.  
+
+### Subdirectories
+
+| Directory    | Description  | Requirement |
+|-------------|-------------------------------------------------|-------------|
+| `app`       | Holds all the pages of your project. | **Required** |
+| `components`| Stores reusable UI components. | Optional |
+| `assets`    | Contains images, fonts, and other static assets. | Optional |
+
+### Essential Files
+
+| File       | Extensions    | Description | Requirement |
+|------------|---------------|--------------------------------|-------------|
+| `main`     | `.jsx` `.tsx` | The main file that renders your app. | **Required** |
+| `template` | `.jsx` `.tsx` | Defines the HTML structure of your app. | **Required** |
+| `index`    | `.js` `.ts`   | The entry point of your application. | **Required** |
+
+
+## The app Folder
+
+The **`app`** folder is where your **pages, routers, and layouts** live. It organizes the structure of your application, ensuring smooth navigation and rendering.  
+
+### File Types in app
+
+| File Type       | Extensions               | Purpose | Example |
+|----------------|-------------------------|---------------------|-------------|
+| `[name].page`   | `.js` `.jsx` `.ts` `.tsx` `.md` `.mdx` | Defines a page. | `home.page` |
+| `[name].router` | `.js` `.ts` | Manages routing logic. | `app.router` |
+| `[name].layout` | `.js` `.jsx` `.ts` `.tsx` | Creates a shared layout structure. | `app.layout` |
+
+With this structured approach, **Rasengan.js** keeps your project **clean, scalable, and easy to manage**. Now you’re ready to start building with confidence! 🚀
+
+<Pagination 
+  prev={{
+    href: '/docs/getting-started/installation',
+    label: 'Installation',
+  }}
+  next={{
+    href: '/docs/routing/base-concepts',
+    label: 'Routing - Base Concepts',
+  }}
+/>
