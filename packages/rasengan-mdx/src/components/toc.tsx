@@ -110,6 +110,8 @@ const Item = ({ item, activeId, onActive }: ItemProps) => {
 
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth' });
+
+    history.pushState(null, '', `#${id}`); // Update the URL
   };
 
   return (
