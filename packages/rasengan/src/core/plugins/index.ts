@@ -1,39 +1,39 @@
-import { UserConfig, type Plugin } from 'vite';
+import { type Plugin } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig } from '../config/type.js';
 
-function loadRasenganConfig(): Plugin {
+function loadRasenganGlobal(): Plugin {
   return {
     name: 'vite-plugin-rasengan-config',
     async config(_, { command }) {
       if (command !== 'build') return;
 
-      const configPath = resolve(process.cwd(), 'rasengan.config.js');
+      const packageJsonPath = resolve(process.cwd(), 'package.json');
 
-      if (!fs.existsSync(configPath)) {
-        throw new Error(`Configuration file not found at: ${configPath}`);
+      if (!fs.existsSync(packageJsonPath)) {
+        throw new Error(`Package.json file not found at: ${packageJsonPath}`);
       }
 
-      const rasenganConfig: AppConfig = await (
-        await loadModuleSSR(configPath)
-      ).default;
+      const packageJsonRaw = fs.readFileSync(packageJsonPath, {
+        encoding: 'utf-8',
+      });
+      const packageJson = JSON.parse(packageJsonRaw);
 
-      const partialConfig = {
-        server: rasenganConfig.server ?? {},
-        redirects: rasenganConfig.redirects
-          ? await rasenganConfig.redirects()
-          : [],
+      const rasenganConfig = {
+        version: packageJson.version,
+        ssr: true,
       };
 
       // Inject the configuration as a global constant
       return {
         define: {
-          ['__RASENGAN_CONFIG__']: JSON.stringify(partialConfig),
+          ['Rasengan']: JSON.stringify(rasenganConfig),
         },
       };
     },
+    apply: 'build',
   };
 }
 
@@ -157,4 +157,4 @@ export function rasengan({
   };
 }
 
-export const plugins: Plugin[] = [];
+export const plugins: Plugin[] = [loadRasenganGlobal()];
