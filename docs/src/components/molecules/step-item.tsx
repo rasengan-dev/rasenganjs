@@ -22,8 +22,8 @@ export default function StepItem({
       className={twMerge('w-full flex flex-col lg:flex-row my-8', className)}
     >
       <div className="w-full lg:w-[45%] pr-8">
-        <div className="flex items-center gap-4 mb-4">
-          <span className="font-mono-regular text-[12px]">[{step}]</span>
+        <div className="flex items-start gap-4 mb-4 mt-1">
+          <span className="font-mono-regular text-[12px] mt-1">[{step}]</span>
           <span className="font-lexend-medium">{title}</span>
         </div>
 

@@ -1,4 +1,4 @@
-import { Blocks, Handshake, Unplug } from 'lucide-react';
+import { Blocks, Handshake, Unplug, Package } from 'lucide-react';
 import React from 'react';
 import { randomId } from '@/utils';
 
@@ -283,7 +283,66 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
     },
   ],
 
-  [NavigationGroup.PACKAGES]: [],
+  [NavigationGroup.PACKAGES]: [
+    {
+      id: randomId(),
+      name: 'Packages',
+      icon: <Package size={20} />,
+      level: 1,
+      children: [
+        {
+          id: randomId(),
+          name: 'Image',
+          link: '/packages/image',
+          level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'MDX',
+          link: '/packages/mdx',
+          level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'Theme',
+          link: '/packages/theme',
+          level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'Kurama',
+          link: '/packages/kurama',
+          level: 2,
+          visible: false,
+        },
+        {
+          id: randomId(),
+          name: 'Create Rasengan CLI',
+          link: '/packages/create-rasengan',
+          level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'Adapters',
+          level: 2,
+          children: [
+            {
+              id: randomId(),
+              name: 'Vercel',
+              link: '/packages/vercel',
+              level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'Node',
+              link: '/packages/serve',
+              level: 3,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 
   [NavigationGroup.NAVBAR]: [
     {

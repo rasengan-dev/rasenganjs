@@ -1,0 +1,70 @@
+---
+path: vercel
+metadata:
+  title: Rasengan Vercel Package
+  description: Documentation for the Rasengan Vercel package.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
+  PACKAGES
+</span>
+# Rasengan Vercel
+
+The `@rasenganjs/vercel` package is an adapter that configures Rasengan.js applications for deployment on the Vercel platform. It ensures that the project is properly structured and optimized for Vercel's serverless environment.
+
+## Installation
+
+```bash title="Terminal"
+npm install @rasenganjs/vercel
+```
+
+## Configuration
+
+To configure Rasengan.js for Vercel, you need to import the adapter in your `rasengan.config.js` file and integrate it with the Rasengan.js plugin.
+
+### Example Configuration
+
+```javascript title="rasengan.config.js" showLineNumbers {2,3,8-10}
+import { defineConfig } from "rasengan";
+import { rasengan } from "rasengan/plugin";
+import { configure } from "@rasenganjs/vercel";
+
+export default defineConfig({
+	vite: {
+		plugins: [
+			rasengan({
+				adapter: configure(),
+			}),
+		],
+	},
+});
+```
+
+In the example above, the `configure` function from `@rasenganjs/vercel` is used to set up the Vercel adapter for the Rasengan.js application. The adapter is then passed to the `rasengan` plugin exported from `rasengan/plugin` to enable the necessary features for Vercel deployment.
+
+## Deployment
+
+Once the adapter is configured, you can deploy your Rasengan.js application using Vercel's CLI:
+
+```bash title="Terminal"
+vercel
+```
+
+Alternatively, you can link your GitHub repository to Vercel, and it will automatically detect the configuration and deploy your application.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a href="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> – Ask questions and share ideas.
+{/* - **Discord** – Chat with the community. */}
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">X (Twitter)</a> – Stay updated with the latest news.
+- <a href="https://www.linkedin.com/company/rasenganjs/" target="_blank" rel="noopener noreferrer">Linkedin</a> – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).
+
