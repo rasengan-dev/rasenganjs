@@ -11,6 +11,7 @@ release({
     'rasengan-serve',
     'rasengan-theme',
     'rasengan-vercel',
+    'rasengan-shuriken',
     'create-rasengan',
   ],
   toTag: (pkg, version) => {

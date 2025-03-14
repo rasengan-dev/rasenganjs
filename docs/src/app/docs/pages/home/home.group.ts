@@ -3,6 +3,6 @@ import GettingStartedGroup from './getting-started/getting-started.group';
 import CoreGroup from './core-concepts/core.group';
 
 export default defineRoutesGroup({
-  path: '/',
+  path: '/docs',
   children: [GettingStartedGroup, CoreGroup],
 });
