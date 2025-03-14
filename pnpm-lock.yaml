@@ -129,9 +129,6 @@ importers:
         specifier: ^3.24.0
         version: 3.27.0
     devDependencies:
-      '@types/inquirer':
-        specifier: ^9.0.4
-        version: 9.0.7
       '@types/ncp':
         specifier: ^2.0.6
         version: 2.0.8
@@ -211,34 +208,6 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
-
-  packages/rasengan-cli:
-    dependencies:
-      chalk:
-        specifier: ^5.3.0
-        version: 5.4.1
-      commander:
-        specifier: ^11.1.0
-        version: 11.1.0
-      ncp:
-        specifier: ^2.0.0
-        version: 2.0.0
-      ora:
-        specifier: ^7.0.1
-        version: 7.0.1
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-    devDependencies:
-      '@types/inquirer':
-        specifier: ^9.0.4
-        version: 9.0.7
-      '@types/ncp':
-        specifier: ^2.0.6
-        version: 2.0.8
-      '@types/node':
-        specifier: ^20.8.6
-        version: 20.17.23
 
   packages/rasengan-image:
     dependencies:
@@ -362,6 +331,34 @@ importers:
       '@types/source-map-support':
         specifier: ^0.5.10
         version: 0.5.10
+
+  packages/rasengan-shuriken:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.4.1
+      commander:
+        specifier: ^11.1.0
+        version: 11.1.0
+      ncp:
+        specifier: ^2.0.0
+        version: 2.0.0
+      ora:
+        specifier: ^7.0.1
+        version: 7.0.1
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      simple-git:
+        specifier: ^3.24.0
+        version: 3.27.0
+    devDependencies:
+      '@types/ncp':
+        specifier: ^2.0.6
+        version: 2.0.8
+      '@types/node':
+        specifier: ^20.8.6
+        version: 20.17.23
 
   packages/rasengan-theme:
     dependencies:
@@ -1087,9 +1084,6 @@ packages:
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
 
-  '@types/inquirer@9.0.7':
-    resolution: {integrity: sha512-Q0zyBupO6NxGRZut/JdmqYKOnN95Eg5V8Csg3PGKkP+FnvsUZx1jAyK7fztIszxxMuoBA6E3KXWvdZVXIpx60g==}
-
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
@@ -1142,9 +1136,6 @@ packages:
 
   '@types/source-map-support@0.5.10':
     resolution: {integrity: sha512-tgVP2H469x9zq34Z0m/fgPewGhg/MLClalNOiPIzQlXrSS2YrKu/xCdSCKnEDwkFha51VKEKB6A9wW26/ZNwzA==}
-
-  '@types/through@0.0.33':
-    resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
 
   '@types/ungap__structured-clone@1.2.0':
     resolution: {integrity: sha512-ZoaihZNLeZSxESbk9PUAPZOlSpcKx81I1+4emtULDVmBLkYutTcMlCj2K9VNlf9EWODxdO6gkAqEaLorXwZQVA==}
@@ -3719,11 +3710,6 @@ snapshots:
 
   '@types/http-errors@2.0.4': {}
 
-  '@types/inquirer@9.0.7':
-    dependencies:
-      '@types/through': 0.0.33
-      rxjs: 7.8.2
-
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -3782,10 +3768,6 @@ snapshots:
   '@types/source-map-support@0.5.10':
     dependencies:
       source-map: 0.6.1
-
-  '@types/through@0.0.33':
-    dependencies:
-      '@types/node': 20.17.23
 
   '@types/ungap__structured-clone@1.2.0': {}
 

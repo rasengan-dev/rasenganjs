@@ -14,14 +14,18 @@ export const logInfo = (nameOfProject: string) => {
   // Display the next steps
   if (nameOfProject) {
     console.log(`1. ${chalk.blue(`cd ${nameOfProject}`)}`);
-    console.log(`2. ${chalk.blue('npm install')} or ${chalk.blue('yarn')}`);
+    console.log(
+      `2. ${chalk.blue('npm install')} or ${chalk.blue('yarn')} or ${chalk.blue('pnpm install')}`
+    );
     console.log(
       `3. ${chalk.blue('npm run dev')} or ${chalk.blue(
         'yarn dev'
       )} or ${chalk.blue('pnpm run dev')}`
     );
   } else {
-    console.log(`1. ${chalk.blue('npm install')} or ${chalk.blue('yarn')}`);
+    console.log(
+      `1. ${chalk.blue('npm install')} or ${chalk.blue('yarn')} or ${chalk.blue('pnpm install')}`
+    );
     console.log(
       `2. ${chalk.blue('npm run dev')} or ${chalk.blue(
         'yarn dev'

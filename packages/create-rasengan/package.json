@@ -13,8 +13,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rasengan-dev/create-rasengan",
-    "issues": "https://github.com/rasengan-dev/create-rasengan/issues"
+    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "homepage": "https://rasengan.dev",
   "license": "MIT",
@@ -38,7 +38,6 @@
     "simple-git": "^3.24.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.4",
     "@types/ncp": "^2.0.6",
     "@types/node": "^20.8.6"
   }
