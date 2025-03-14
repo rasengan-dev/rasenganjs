@@ -1,19 +1,9 @@
-import { PageComponent, Link } from 'rasengan';
-import logo from '@/assets/logo.svg';
-import Image from '@rasenganjs/image';
-import { useTheme } from '@rasenganjs/theme';
+import { PageComponent } from 'rasengan';
 
 const Home: PageComponent = () => {
-  const { setTheme, theme, actualTheme } = useTheme();
-
   return (
     <section className="w-full">
-      Home page
-      <button
-        onClick={() => setTheme(actualTheme === 'dark' ? 'light' : 'dark')}
-      >
-        Change theme
-      </button>
+      <div className="mt-20 docs">{/* <Markdown content={content} /> */}</div>
     </section>
   );
 };

@@ -1,7 +1,7 @@
 {
-  "name": "@rasenganjs/cli",
-  "version": "1.0.0-beta.51",
-  "description": "The Rasengan.js CLI tool to automate basic development tasks like generating pages, routers, layouts or resources",
+  "name": "@rasenganjs/shuriken",
+  "version": "1.0.0-beta.0",
+  "description": "The Shuriken CLI is a tool to automate basic development tasks like generating pages, routers, layouts or resources and cloning templates.",
   "main": "/dist/main.js",
   "type": "module",
   "author": {
@@ -13,13 +13,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rasengan-dev/create-rasengan",
-    "issues": "https://github.com/rasengan-dev/create-rasengan/issues"
+    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "homepage": "https://rasengan.dev",
   "license": "MIT",
   "bin": {
-    "rasengan": "./dist/main.js"
+    "shuriken": "bin.js"
   },
   "scripts": {
     "build:clean": "rimraf ./dist",
@@ -33,10 +33,10 @@
     "commander": "^11.1.0",
     "ncp": "^2.0.0",
     "ora": "^7.0.1",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "simple-git": "^3.24.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.4",
     "@types/ncp": "^2.0.6",
     "@types/node": "^20.8.6"
   }

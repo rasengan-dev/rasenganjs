@@ -1,8 +1,13 @@
 import { useTheme } from '@rasenganjs/theme';
 import { Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { twMerge } from 'tailwind-merge';
 
-export default function ThemeButton() {
+type Props = {
+  size?: 'normal' | 'small';
+};
+
+export default function ThemeButton({ size = 'normal' }: Props) {
   const { setTheme, isDark } = useTheme();
 
   const handleThemeChange = () => {
@@ -12,7 +17,10 @@ export default function ThemeButton() {
   return (
     <motion.button
       onClick={handleThemeChange}
-      className="relative size-8 rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center overflow-hidden hover:cursor-pointer"
+      className={twMerge(
+        'relative  rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center overflow-hidden hover:cursor-pointer',
+        size === 'small' ? 'size-7' : 'size-8'
+      )}
       whileHover={{ scale: 1.05 }}
     >
       <AnimatePresence>
