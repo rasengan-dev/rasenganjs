@@ -1,6 +1,6 @@
 import Image from '@rasenganjs/image';
 import LogoWhite from '@/assets/images/logo/logo-text-white.svg';
-import LogoBlack from '@/assets/images/logo/logo-text-black.svg';
+import LogoBlack from '@/assets/images/logo/logo-text.svg';
 import { ThemesType, useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { Link } from 'rasengan';

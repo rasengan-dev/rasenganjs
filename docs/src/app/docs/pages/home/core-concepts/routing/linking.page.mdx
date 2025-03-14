@@ -6,7 +6,176 @@ metadata:
 toc: true
 ---
 
+import Pagination from '@/components/molecules/pagination';
+
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
 </span>
 # Linking and Navigation
+
+There are two ways to navigate between routes in Rasengan.js:
+
+- Using the [`<Link>`](/docs/core/routing/linking#link-component) Component
+- Using the [`useNavigate`](/docs/core/routing/linking#useNavigate) hook
+
+This page will go through how to use each of these options, and dive deeper into how navigation works.
+
+## Using the Link Component
+
+The `<Link>` component is a React component that allows you to navigate between routes in your application.
+It is the recommended way to navigate between routes in Rasengan.js.
+
+### Example
+
+```tsx title="src/app/home.page.tsx" showLineNumbers /Link/ {2,8}
+import React from "react";
+import { PageComponent, Link } from "rasengan";
+
+const Home: PageComponent = () => {
+  return (
+    <div>
+      <h1>Home</h1>
+      <Link to="/dashboard">Go to Dashboard</Link>
+    </div>
+  );
+}
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home Page",
+};
+
+export default Home;
+```
+
+There are other option props available to `<Link />`, see the [`API Reference`](/docs/api-reference/components/link-component) for more details.
+
+### Examples
+
+#### Using dynamic routes
+
+```tsx title="src/components/Posts.tsx" showLineNumbers /Link/ {1,16}
+import { Link } from "rasengan";
+
+type Props = {
+  posts: {
+    id: number;
+    title: string;
+  }[];
+};
+
+export default function PostList({ posts }: Props) {
+  return (
+    <div>
+      {posts.map((post) => (
+        <div key={post.id}>
+          <h2>{post.title}</h2>
+          <Link to={`/post/${post.id}`}>Read More</Link>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+#### Checking active links
+
+```tsx title="src/components/ActiveLink.tsx" showLineNumbers {2,10}
+import React from "react";
+import { Link, useLocation } from "rasengan";
+
+type Props = {
+  to: string;
+  children: React.ReactNode;
+};
+
+export default function ActiveLink({ to, children }: Props) {
+  const { pathname } = useLocation();
+
+  return (
+    <Link to={to} className={`${pathname === to ? "active" : ""}`}>
+      {children}
+    </Link>
+  );
+}
+```
+
+#### Scrolling to an id
+
+```tsx showLineNumbers /#statistics/
+<Link to="/admin/dashboard#statistics">Statistics</Link>
+```
+
+## useNavigate hook
+
+The `useNavigate` hook is used to change the current route in your application.
+It returns a function that you can call to navigate to a different route.
+
+### Example
+
+```tsx title="src/app/home.page.tsx" showLineNumbers /useNavigate/ {2,5,10}
+import React from "react";
+import { PageComponent, useNavigate } from "rasengan";
+
+const Home: PageComponent = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <h1>Home</h1>
+      <button onClick={() => navigate("/dashboard")}>Go to Dashboard</button>
+    </div>
+  );
+}
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home Page",
+};
+
+export default Home;
+```
+
+For a full list of `useNavigate` options, see the [API reference](https://reactrouter.com/en/main/hooks/use-navigate) on the documentation of `React Router`.
+{/* 
+<AlertBox type="tip">
+  `useNavigate` is useful when you want to do something before navigating to the
+  new page.
+</AlertBox> */}
+
+### Example: Logout with navigation
+
+```tsx title="src/components/LogoutButton.tsx" showLineNumbers /useNavigate/ {2,5,10}
+import React from "react";
+import { useNavigate } from "rasengan";
+
+export default function LogoutButton() {
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      // Logout logic Here
+      navigate("/sign-in");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  return (
+    <button onClick={logout}>Logout</button>
+  )
+}
+```
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/layouts',
+    label: 'Layouts',
+  }}
+  next={{
+    href: '/docs/routing/dynamic-routes',
+    label: 'Dynamic Routes',
+  }}
+/>
