@@ -30,7 +30,7 @@ export const defineConfig = async (
       config = loadedConfig;
     }
 
-    const { server, vite, redirects } = config;
+    const { ssr, server, vite, redirects } = config;
 
     // Define default values for vite config coming from loadedConfig.vite
     const defaultViteConfig = {
@@ -55,6 +55,7 @@ export const defineConfig = async (
 
     try {
       const config: AppConfig = {
+        ssr: ssr ?? true,
         server: defaultServerConfig,
         vite: {
           ...defaultViteConfig,
@@ -74,6 +75,7 @@ export const defineConfig = async (
       return config;
     } catch (error) {
       return {
+        ssr: true,
         vite: {
           appType: 'custom',
           resolve: {

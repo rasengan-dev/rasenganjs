@@ -51,6 +51,8 @@ export interface ViteConfig
 }
 
 export type AppConfig = {
+  ssr?: boolean;
+
   /**
    * Configure server
    */
