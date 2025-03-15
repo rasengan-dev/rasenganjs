@@ -53,7 +53,7 @@ export const renderToStream = async (
   });
 };
 
-export const renderToString = async (Component: React.ReactNode) => {
+export const renderToString = (Component: React.ReactNode) => {
   const html = ReactDOM.renderToString(Component);
 
   return html;

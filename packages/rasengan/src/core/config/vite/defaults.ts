@@ -95,7 +95,9 @@ export const createDefaultViteConfig = (
 
     builder: {
       buildApp: async (builder) => {
-        await builder.build(builder.environments.ssr);
+        if (config.ssr) {
+          await builder.build(builder.environments.ssr);
+        }
         await builder.build(builder.environments.client);
       },
     },

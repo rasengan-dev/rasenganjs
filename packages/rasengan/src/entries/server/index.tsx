@@ -20,13 +20,13 @@ export const TemplateLayout = ({
   App,
   Template,
 }: {
-  StaticRouterComponent: React.ReactNode;
-  metadata: {
+  StaticRouterComponent?: React.ReactNode;
+  metadata?: {
     page: Metadata;
     layout: MetadataWithoutTitleAndDescription;
   };
   assets?: JSX.Element[];
-  App: FunctionComponent<AppProps>;
+  App?: FunctionComponent<AppProps>;
   Template: FunctionComponent<TemplateProps>;
 }) => {
   // inject vite refresh script to avoid "React refresh preamble was not loaded"
@@ -65,9 +65,9 @@ export const TemplateLayout = ({
       )}
       Body={({ children }) => (
         <BodyComponent
-          asChild
+          asChild={App ? true : false}
           AppContent={
-            <App Component={RootComponent}>{StaticRouterComponent}</App>
+            App && <App Component={RootComponent}>{StaticRouterComponent}</App>
           }
         >
           {children}

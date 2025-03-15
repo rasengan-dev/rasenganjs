@@ -1,5 +1,4 @@
 import {
-  createStaticHandler,
   createStaticRouter,
   StaticHandler,
   StaticHandlerContext,
@@ -12,19 +11,16 @@ import createRasenganRequest, {
 } from '../node/utils.js';
 import { AppConfig, Redirect } from '../../core/config/type.js';
 import type * as Express from 'express';
-import type * as Vite from 'vite';
 import { join } from 'path';
-import { createServerModuleRunner } from 'vite';
-import { RouterComponent } from '../../routing/interfaces.js';
-import { generateRoutes } from '../../routing/utils/generate-routes.js';
 import {
   isStaticRedirectFromConfig,
   isRedirectResponse,
   extractMetaFromRRContext,
   extractHeadersFromRRContext,
-  isDataRequest,
 } from './utils.js';
 import { ModuleRunner } from 'vite/module-runner';
+import { renderToString } from '../node/rendering.js';
+import { TemplateLayout } from '../../entries/server/index.js';
 
 /**
  * Handle redirect request
@@ -159,4 +155,44 @@ export async function handleDataRequest(
   return new Response(JSON.stringify(data), {
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+export async function handleSpaModeRequest(
+  res: Express.Response,
+  runner: ModuleRunner,
+  options: { rootPath: string; __dirname: string; config: AppConfig }
+) {
+  try {
+    // Import Template
+    const Template = (await runner.import(`${options.rootPath}/src/template`))
+      .default;
+
+    // Convert TemplateLayout to string
+    const html = renderToString(<TemplateLayout Template={Template} />);
+
+    // Set status code
+    res.status(200);
+
+    // Set headers
+    res.setHeader('Content-Type', 'text/html');
+
+    // Send response
+    return res.send(html);
+  } catch (error) {
+    console.error(error);
+
+    // Set status code
+    res.status(500);
+
+    // Set headers
+    res.setHeader('Content-Type', 'text/html');
+
+    // Send response
+    return res.send(
+      `
+        <h1>Internal Server Error</h1>
+        <p>Something went wrong</p>
+      `
+    );
+  }
 }
