@@ -128,7 +128,7 @@ export default async function createProjectFromTemplate(
 
     createSpinner.stopAndPersist({
       symbol: chalk.green('✔'),
-      text: `Project ${chalk.bold.blue(projectKey)} cloned successfully!`,
+      text: `Project '${chalk.bold.blue(projectKey)}' cloned`,
     });
 
     createSpinner.start('Copying the template files');
@@ -151,7 +151,7 @@ export default async function createProjectFromTemplate(
 
       createSpinner.stopAndPersist({
         symbol: chalk.green('✔'),
-        text: `Template files copied successfully!`,
+        text: `Template files copied into '${chalk.bold.blue(projectPath.split('/').pop())}'`,
       });
 
       createSpinner.start('Updating the package.json file');
@@ -182,7 +182,7 @@ export default async function createProjectFromTemplate(
 
       createSpinner.stopAndPersist({
         symbol: chalk.green('✔'),
-        text: `Package.json file updated successfully!`,
+        text: `Package.json file updated`,
       });
 
       createSpinner.start('Initializing the git repository');
