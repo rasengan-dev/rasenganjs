@@ -168,7 +168,9 @@ export async function handleSpaModeRequest(
       .default;
 
     // Convert TemplateLayout to string
-    const html = renderToString(<TemplateLayout Template={Template} />);
+    const html = renderToString(
+      <TemplateLayout Template={Template} isSpaMode={true} />
+    );
 
     // Set status code
     res.status(200);

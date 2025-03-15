@@ -67,4 +67,5 @@ declare module 'virtual:entry-server' {
 
 interface Window {
   __staticRouterHydrationData: any;
+  __RASENGAN_SPA_MODE__: boolean;
 }

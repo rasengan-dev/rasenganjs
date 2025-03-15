@@ -83,6 +83,10 @@ const Home: PageComponent = (props: any) => {
           </a>
         </div>
       </div>
+
+      <Link to="/about" className="mt-8">
+        About
+      </Link>
     </section>
   );
 };

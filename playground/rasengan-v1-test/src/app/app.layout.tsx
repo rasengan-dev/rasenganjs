@@ -111,4 +111,13 @@ const AppLayout: LayoutComponent = () => {
 
 AppLayout.path = '/';
 
+AppLayout.loader = async () => {
+  return {
+    props: {},
+    meta: {
+      title: 'Home',
+    },
+  };
+};
+
 export default AppLayout;
