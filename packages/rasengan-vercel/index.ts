@@ -113,11 +113,11 @@ const generateVercelConfigFile = async (config: { ssr: AppConfig['ssr'] }) => {
       },
       {
         src: '/assets/(.*)',
-        dest: '/assets/$1',
+        dest: config.ssr ? '/assets/$1' : '/client/assets/$1',
       },
       {
         src: '/(.*)',
-        dest: config.ssr ? '/' : '/index.html',
+        dest: config.ssr ? '/' : '/client',
       },
     ],
   };
