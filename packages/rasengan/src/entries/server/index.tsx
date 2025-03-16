@@ -67,7 +67,10 @@ export const TemplateLayout = ({
             __html: `window.__RASENGAN_SPA_MODE__ = true;`,
           }}
         />
-        <script type="module" src="/src/index" async={true}></script>
+
+        {!assets && (
+          <script type="module" src="/src/index" async={true}></script>
+        )}
       </React.Fragment>
     );
   } else {

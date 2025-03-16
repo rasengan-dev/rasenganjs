@@ -109,12 +109,39 @@ async function run() {
   );
   app.use(express.static('public', { maxAge: '1h' }));
 
-  app.all(
-    '*',
-    createRequestHandler({
-      build: buildOptions,
-    })
-  );
+  app.all('*', (req, res) => {
+    // Read the config.json file
+    const configData = fs
+      .readFileSync(
+        path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory,
+          buildOptions.assetPathDirectory,
+          'config.json'
+        ),
+        'utf-8'
+      )
+      .toString();
+
+    // Parse the config.json file
+    const config = JSON.parse(configData);
+
+    if (config.ssr) {
+      const requestHandler = createRequestHandler({
+        build: buildOptions,
+      });
+
+      return requestHandler(req, res);
+    } else {
+      return res.sendFile(
+        path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory,
+          'index.html'
+        )
+      );
+    }
+  });
 
   let server = process.env.HOST
     ? app.listen(port, process.env.HOST, onListen)

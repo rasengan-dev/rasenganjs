@@ -1,8 +1,10 @@
-import { type Plugin } from 'vite';
-import { resolve } from 'path';
+import { ResolvedConfig, type Plugin } from 'vite';
+import path, { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
-import { AppConfig } from '../config/type.js';
+import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
+import { resolveBuildOptions } from '../../server.js';
+import { renderIndexHTML } from '../../server/build/rendering.js';
 
 function loadRasenganGlobal(): Plugin {
   return {
@@ -126,25 +128,112 @@ type RasenganPluginOptions = {
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
 }: RasenganPluginOptions): Plugin {
-  let config = {};
+  let config: AppConfig;
+  let viteConfig: ResolvedConfig;
+
+  const templateFileRegex = /template\.(tsx|jsx)$/;
+  const buildOptions = resolveBuildOptions({});
 
   return {
     name: 'vite-plugin-rasengan',
 
+    async config() {
+      // load rasengan.config.js
+      const configPath = resolve(process.cwd(), 'rasengan.config.js');
+
+      if (!fs.existsSync(configPath)) {
+        throw new Error(`Configuration file not found at: ${configPath}`);
+      }
+
+      const rasenganConfigHandler: AppConfigFunctionAsync = await (
+        await loadModuleSSR(configPath)
+      ).default;
+
+      config = await rasenganConfigHandler();
+    },
+
+    async load(id: string) {
+      if (id === 'virtual:rasengan-config') {
+        return `
+          export const __RASENGAN_CONFIG__ = ${JSON.stringify(config)};
+        `;
+      }
+    },
+
     configResolved(resolvedConfig) {
-      config = resolvedConfig;
+      viteConfig = resolvedConfig;
+    },
+
+    async writeBundle(_) {
+      const modulePaths = ['template.jsx', 'template.tsx'].map((file) => {
+        return path.posix.join(process.cwd(), 'src', file);
+      });
+      const modulePath = modulePaths.find((modulePath) => {
+        return fs.existsSync(modulePath);
+      });
+
+      const module = await this.load({ id: modulePath });
+
+      // Generate the template.js file into the dist/assets
+      fs.writeFileSync(
+        path.posix.join(
+          process.cwd(),
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory,
+          buildOptions.assetPathDirectory,
+          'template.js'
+        ),
+        module.code,
+        'utf-8'
+      );
     },
 
     async closeBundle() {
       // We check here if the environment is client has been built because it's the
       // last environment to be built in the Vite build process
       if (this.environment.name === 'client') {
+        // Check if SPA mode is enabled
+        if (!config.ssr) {
+          // Load the template.js file
+          const templatePath = path.posix.join(
+            process.cwd(),
+            buildOptions.buildDirectory,
+            buildOptions.clientPathDirectory,
+            buildOptions.assetPathDirectory,
+            'template.js'
+          );
+
+          const Template = (await import(templatePath)).default;
+
+          // Render the index.html file
+          await renderIndexHTML(Template, {
+            rootPath: process.cwd(),
+            config,
+          });
+        }
+
+        // Generate a config.json file into the dist/client/assets
+        fs.writeFileSync(
+          path.posix.join(
+            process.cwd(),
+            buildOptions.buildDirectory,
+            buildOptions.clientPathDirectory,
+            buildOptions.assetPathDirectory,
+            'config.json'
+          ),
+          JSON.stringify({
+            buildOptions,
+            ssr: config.ssr,
+          }),
+          'utf-8'
+        );
+
         // Preparing app for deployment
         switch (adapter.name) {
           case Adapters.VERCEL: {
             console.log('Preparing app for deployment to Vercel');
 
-            await adapter.prepare();
+            // await adapter.prepare();
 
             break;
           }
@@ -154,6 +243,8 @@ export function rasengan({
         }
       }
     },
+
+    apply: 'build',
   };
 }
 

@@ -39,11 +39,13 @@ export const createDefaultViteConfig = (
             if (id.includes('node_modules')) return 'vendor';
             if (id.includes('src/components')) return 'shared-components';
 
-            if (id.includes('src/app') && id.includes('.page.')) {
-              const parts = id.split('src/app')[1]?.split('/');
-              if (parts?.length) {
-                const pageName = parts.pop()?.split('.')[0];
-                return pageName ? `page-${pageName}` : undefined;
+            if (config.ssr) {
+              if (id.includes('src/app') && id.includes('.page.')) {
+                const parts = id.split('src/app')[1]?.split('/');
+                if (parts?.length) {
+                  const pageName = parts.pop()?.split('.')[0];
+                  return pageName ? `page-${pageName}` : undefined;
+                }
               }
             }
             return undefined;
