@@ -233,7 +233,7 @@ export function rasengan({
           case Adapters.VERCEL: {
             console.log('Preparing app for deployment to Vercel');
 
-            // await adapter.prepare();
+            await adapter.prepare();
 
             break;
           }
