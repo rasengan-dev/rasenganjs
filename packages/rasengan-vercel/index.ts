@@ -274,15 +274,15 @@ const runInstall = async () => {
   });
 };
 
-const copyStaticFiles = async () => {
+const copyStaticFiles = async (config: { ssr: AppConfig['ssr'] }) => {
   const vercelBuildOptions = getVercelBuildOptions();
   const buildOptions = resolveBuildOptions({});
 
-  // Copy folders and files from dist/client to .vercel/output/static
+  // Copy folders and files from dist/client (or dist in spa mode) to .vercel/output/static
   await fs.cp(
     path.posix.join(
       buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory
+      config.ssr ? buildOptions.clientPathDirectory : ''
     ),
     path.posix.join(
       vercelBuildOptions.buildDirectory,
@@ -328,20 +328,34 @@ const copyServerFiles = async () => {
 const loadRasenganConfig = async () => {
   const buildOptions = resolveBuildOptions({});
 
-  // Load the Rasengan configuration file
-  const configData = await fs.readFile(
-    path.posix.join(
-      buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory,
-      buildOptions.assetPathDirectory,
-      'config.json'
-    ),
-    'utf8'
+  // Check if dist/client/assets/config.json exists or dist/assets/config.json exists
+  const configPathSpa = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
   );
-  const config = JSON.parse(configData);
+  const configPathSsr = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.clientPathDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
+  );
+
+  const configPath = [configPathSpa, configPathSsr].find((path) =>
+    fsSync.existsSync(path)
+  );
+
+  if (!configPath) {
+    throw new Error(
+      'No config.json file found in dist/client/assets or dist/assets'
+    );
+  }
+
+  // Load the Rasengan configuration file
+  const configData = await fs.readFile(configPath, 'utf8');
 
   // Return the configuration
-  return config;
+  return JSON.parse(configData);
 };
 
 const prepare = async (options: AdapterOptions) => {
@@ -355,7 +369,7 @@ const prepare = async (options: AdapterOptions) => {
   await generateVercelConfigFile(config);
 
   // Copy static files to the Vercel directory
-  await copyStaticFiles();
+  await copyStaticFiles(config);
 
   if (config.ssr) {
     // Copy server files to the Vercel directory

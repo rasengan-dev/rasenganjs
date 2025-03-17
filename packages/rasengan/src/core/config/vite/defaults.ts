@@ -60,7 +60,7 @@ export const createDefaultViteConfig = (
       client: {
         build: {
           manifest: true,
-          outDir: 'dist/client',
+          outDir: config.ssr ? 'dist/client' : 'dist',
           rollupOptions: {
             input: './src/index',
           },

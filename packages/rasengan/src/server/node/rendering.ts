@@ -56,5 +56,8 @@ export const renderToStream = async (
 export const renderToString = (Component: React.ReactNode) => {
   const html = ReactDOM.renderToString(Component);
 
-  return html;
+  return `
+    <!DOCTYPE html>
+    ${html}
+  `;
 };

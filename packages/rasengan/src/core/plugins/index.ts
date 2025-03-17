@@ -131,7 +131,6 @@ export function rasengan({
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
 
-  const templateFileRegex = /template\.(tsx|jsx)$/;
   const buildOptions = resolveBuildOptions({});
 
   return {
@@ -179,7 +178,7 @@ export function rasengan({
         path.posix.join(
           process.cwd(),
           buildOptions.buildDirectory,
-          buildOptions.clientPathDirectory,
+          config.ssr ? buildOptions.clientPathDirectory : '',
           buildOptions.assetPathDirectory,
           'template.js'
         ),
@@ -198,7 +197,7 @@ export function rasengan({
           const templatePath = path.posix.join(
             process.cwd(),
             buildOptions.buildDirectory,
-            buildOptions.clientPathDirectory,
+            config.ssr ? buildOptions.clientPathDirectory : '',
             buildOptions.assetPathDirectory,
             'template.js'
           );
@@ -212,12 +211,12 @@ export function rasengan({
           });
         }
 
-        // Generate a config.json file into the dist/client/assets
+        // Generate a config.json file into the dist/client/assets or dist/assets
         fs.writeFileSync(
           path.posix.join(
             process.cwd(),
             buildOptions.buildDirectory,
-            buildOptions.clientPathDirectory,
+            config.ssr ? buildOptions.clientPathDirectory : '',
             buildOptions.assetPathDirectory,
             'config.json'
           ),
@@ -228,24 +227,29 @@ export function rasengan({
           'utf-8'
         );
 
-        // Preparing app for deployment
-        switch (adapter.name) {
-          case Adapters.VERCEL: {
-            console.log('Preparing app for deployment to Vercel');
-
-            await adapter.prepare();
-
-            break;
-          }
-
-          default:
-            break;
-        }
+        // Prepare the app for deployment
+        await prepareToDeploy(adapter);
       }
     },
 
     apply: 'build',
   };
 }
+
+const prepareToDeploy = async (adapter: AdapterConfig): Promise<void> => {
+  // Preparing app for deployment
+  switch (adapter.name) {
+    case Adapters.VERCEL: {
+      console.log('Preparing app for deployment to Vercel');
+
+      await adapter.prepare();
+
+      break;
+    }
+
+    default:
+      break;
+  }
+};
 
 export const plugins: Plugin[] = [loadRasenganGlobal()];
