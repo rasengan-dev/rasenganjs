@@ -160,8 +160,8 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
-              name: 'CSS Processeurs',
-              link: '/docs/styling/preprocesseurs',
+              name: 'CSS Preprocessors',
+              link: '/docs/styling/preprocessors',
               level: 3,
             },
           ],

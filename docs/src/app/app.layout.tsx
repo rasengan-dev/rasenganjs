@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, LayoutComponent, Link } from 'rasengan';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
@@ -21,8 +21,6 @@ const AppLayout: LayoutComponent = () => {
       )}
     >
       <Outlet />
-
-      <Footer />
 
       <AnimatePresence>
         {isOpen && (
