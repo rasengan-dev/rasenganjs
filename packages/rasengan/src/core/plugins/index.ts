@@ -173,18 +173,20 @@ export function rasengan({
 
       const module = await this.load({ id: modulePath });
 
-      // Generate the template.js file into the dist/assets
-      fs.writeFileSync(
-        path.posix.join(
-          process.cwd(),
-          buildOptions.buildDirectory,
-          config.ssr ? buildOptions.clientPathDirectory : '',
-          buildOptions.assetPathDirectory,
-          'template.js'
-        ),
-        module.code,
-        'utf-8'
-      );
+      // SPA mode only
+      if (!config.ssr) {
+        // Generate the template.js file into the dist/assets
+        fs.writeFileSync(
+          path.posix.join(
+            process.cwd(),
+            buildOptions.buildDirectory,
+            buildOptions.assetPathDirectory,
+            'template.js'
+          ),
+          module.code,
+          'utf-8'
+        );
+      }
     },
 
     async closeBundle() {
@@ -197,7 +199,6 @@ export function rasengan({
           const templatePath = path.posix.join(
             process.cwd(),
             buildOptions.buildDirectory,
-            config.ssr ? buildOptions.clientPathDirectory : '',
             buildOptions.assetPathDirectory,
             'template.js'
           );

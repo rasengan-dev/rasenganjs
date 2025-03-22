@@ -7,72 +7,72 @@
 
   .rasengan-markdown-body {
     width: 100%;
-  }
 
-  .rasengan-markdown-body p {
-    font-size: 16px;
-  }
+    & p {
+      font-size: 16px;
+    }
 
-  .rasengan-markdown-body .pagination > a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
+    & .pagination > a {
+      text-decoration: none;
+      color: var(--color-foreground);
+    }
 
-  .rasengan-markdown-body strong {
-    font-family: 'Lexend-Medium';
-  }
+    & strong {
+      font-family: 'Lexend-Medium';
+    }
 
-  .rasengan-markdown-body h1,
-  .rasengan-markdown-body h2,
-  .rasengan-markdown-body h3,
-  .rasengan-markdown-body h4,
-  .rasengan-markdown-body h5 {
-    color: var(--color-foreground);
+    & h1,
+    & h2,
+    & h3,
+    & h4,
+    & h5,
+    & h6 {
+      color: var(--color-foreground);
+    }
+
+    & code.code-block {
+      background-color: #1c202a;
+      border-radius: 12px;
+      border: 1px solid #353740;
+    }
+
+    & figure:has(pre[data-language]) {
+      padding: 4px;
+      border-radius: 16px;
+      border: 1px solid #353740;
+      background-color: #10141e;
+
+      & figcaption {
+        font-size: 12px;
+        height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 10px;
+        display: flex;
+        align-items: center;
+        background-color: #10141e;
+        border: none;
+      }
+    }
+
+    & figure pre {
+      background-color: transparent !important;
+    }
+
+    & pre[data-language] {
+      & span[data-highlighted-line] {
+        background-color: rgba(43, 99, 245, 0.1); /* 50% opacity */
+      }
+
+      & mark[data-highlighted-chars] {
+        background-color: rgba(43, 99, 245, 0.2);
+        border: 1px solid rgba(43, 99, 245, 0.3);
+      }
+    }
   }
 
   .rasengan-toc h2.title {
     font-family: 'GeistMono-Regular';
-  }
-
-  .rasengan-markdown-body code.code-block {
-    background-color: #1c202a;
-    border-radius: 12px;
-    border: 1px solid #353740;
-  }
-
-  .rasengan-markdown-body figure:has(pre[data-language]) {
-    padding: 4px;
-    border-radius: 16px;
-    border: 1px solid #353740;
-    background-color: #10141e;
-  }
-
-  .rasengan-markdown-body figure pre {
-    background-color: transparent !important;
-  }
-
-  .rasengan-markdown-body figure:has(pre[data-language]) figcaption {
-    background-color: #10141e;
-    border: none;
-  }
-
-  .rasengan-markdown-body figure:has(pre[data-language]) figcaption {
-    font-size: 12px;
-    height: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 10px;
-    display: flex;
-    align-items: center;
-  }
-
-  .rasengan-markdown-body pre[data-language] span[data-highlighted-line] {
-    background-color: rgba(43, 99, 245, 0.1); /* 50% opacity */
-  }
-
-  .rasengan-markdown-body pre[data-language] mark[data-highlighted-chars] {
-    background-color: rgba(43, 99, 245, 0.2);
-    border: 1px solid rgba(43, 99, 245, 0.3);
   }
 
   @media (min-width: 1280px) {
