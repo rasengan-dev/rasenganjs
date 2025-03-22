@@ -1,5 +1,6 @@
 import { resolveBuildOptions } from 'rasengan/server';
 import { AdapterConfig, AdapterOptions, Adapters } from 'rasengan/plugin';
+import { AppConfig } from 'rasengan';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
@@ -40,7 +41,7 @@ const checkVercelDirectory = async (vercelBuildOptions: VercelBuildOptions) => {
   }
 };
 
-const generateVercelDirectory = async () => {
+const generateVercelDirectory = async (config: { ssr: AppConfig['ssr'] }) => {
   const vercelBuildOptions = getVercelBuildOptions();
 
   // Check if the .vercel directory exists
@@ -63,37 +64,39 @@ const generateVercelDirectory = async () => {
     { recursive: true }
   );
 
-  // Create a new .vercel/output/functions directory
-  await fs.mkdir(
-    path.posix.join(
-      vercelBuildOptions.buildDirectory,
-      vercelBuildOptions.functionsDirectory
-    ),
-    { recursive: true }
-  );
+  if (config.ssr) {
+    // Create a new .vercel/output/functions directory
+    await fs.mkdir(
+      path.posix.join(
+        vercelBuildOptions.buildDirectory,
+        vercelBuildOptions.functionsDirectory
+      ),
+      { recursive: true }
+    );
 
-  // Create a new .vercel/output/functions/index.func/server directory
-  await fs.mkdir(
-    path.posix.join(
-      vercelBuildOptions.buildDirectory,
-      vercelBuildOptions.functionsDirectory,
-      vercelBuildOptions.serverDirectory
-    ),
-    { recursive: true }
-  );
+    // Create a new .vercel/output/functions/index.func/server directory
+    await fs.mkdir(
+      path.posix.join(
+        vercelBuildOptions.buildDirectory,
+        vercelBuildOptions.functionsDirectory,
+        vercelBuildOptions.serverDirectory
+      ),
+      { recursive: true }
+    );
 
-  // Create a new .vercel/output/functions/index.func/client directory
-  await fs.mkdir(
-    path.posix.join(
-      vercelBuildOptions.buildDirectory,
-      vercelBuildOptions.functionsDirectory,
-      vercelBuildOptions.clientDirectory
-    ),
-    { recursive: true }
-  );
+    // Create a new .vercel/output/functions/index.func/client directory
+    await fs.mkdir(
+      path.posix.join(
+        vercelBuildOptions.buildDirectory,
+        vercelBuildOptions.functionsDirectory,
+        vercelBuildOptions.clientDirectory
+      ),
+      { recursive: true }
+    );
+  }
 };
 
-const generateVercelConfigFile = async () => {
+const generateVercelConfigFile = async (config: { ssr: AppConfig['ssr'] }) => {
   const vercelBuildOptions = getVercelBuildOptions();
 
   // Default Vercel configuration
@@ -114,7 +117,7 @@ const generateVercelConfigFile = async () => {
       },
       {
         src: '/(.*)',
-        dest: '/',
+        dest: config.ssr ? '/' : '/index.html',
       },
     ],
   };
@@ -271,15 +274,15 @@ const runInstall = async () => {
   });
 };
 
-const copyStaticFiles = async () => {
+const copyStaticFiles = async (config: { ssr: AppConfig['ssr'] }) => {
   const vercelBuildOptions = getVercelBuildOptions();
   const buildOptions = resolveBuildOptions({});
 
-  // Copy folders and files from dist/client to .vercel/output/static
+  // Copy folders and files from dist/client (or dist in spa mode) to .vercel/output/static
   await fs.cp(
     path.posix.join(
       buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory
+      config.ssr ? buildOptions.clientPathDirectory : ''
     ),
     path.posix.join(
       vercelBuildOptions.buildDirectory,
@@ -322,30 +325,68 @@ const copyServerFiles = async () => {
   );
 };
 
+const loadRasenganConfig = async () => {
+  const buildOptions = resolveBuildOptions({});
+
+  // Check if dist/client/assets/config.json exists or dist/assets/config.json exists
+  const configPathSpa = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
+  );
+  const configPathSsr = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.clientPathDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
+  );
+
+  const configPath = [configPathSpa, configPathSsr].find((path) =>
+    fsSync.existsSync(path)
+  );
+
+  if (!configPath) {
+    throw new Error(
+      'No config.json file found in dist/client/assets or dist/assets'
+    );
+  }
+
+  // Load the Rasengan configuration file
+  const configData = await fs.readFile(configPath, 'utf8');
+
+  // Return the configuration
+  return JSON.parse(configData);
+};
+
 const prepare = async (options: AdapterOptions) => {
+  // Load the Rasengan configuration file
+  const config = (await loadRasenganConfig()) as { ssr: AppConfig['ssr'] };
+
   // Prepare the Vercel directory
-  await generateVercelDirectory();
+  await generateVercelDirectory(config);
 
   // Prepare the Vercel configuration file
-  await generateVercelConfigFile();
+  await generateVercelConfigFile(config);
 
   // Copy static files to the Vercel directory
-  await copyStaticFiles();
+  await copyStaticFiles(config);
 
-  // Copy server files to the Vercel directory
-  await copyServerFiles();
+  if (config.ssr) {
+    // Copy server files to the Vercel directory
+    await copyServerFiles();
 
-  // Prepare the serverless configuration file
-  await generateServerlessConfigFile();
+    // Prepare the serverless configuration file
+    await generateServerlessConfigFile();
 
-  // Prepare the serverless handler
-  await generateServerlessHandler();
+    // Prepare the serverless handler
+    await generateServerlessHandler();
 
-  // Prepare the package.json
-  await generatePackageJson();
+    // Prepare the package.json
+    await generatePackageJson();
 
-  // Run npm install
-  await runInstall();
+    // Run npm install
+    await runInstall();
+  }
 };
 
 export const configure = (options: AdapterOptions): AdapterConfig => {

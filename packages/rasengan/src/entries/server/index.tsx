@@ -19,18 +19,21 @@ export const TemplateLayout = ({
   assets,
   App,
   Template,
+  isSpaMode = false,
 }: {
-  StaticRouterComponent: React.ReactNode;
-  metadata: {
+  StaticRouterComponent?: React.ReactNode;
+  metadata?: {
     page: Metadata;
     layout: MetadataWithoutTitleAndDescription;
   };
   assets?: JSX.Element[];
-  App: FunctionComponent<AppProps>;
+  App?: FunctionComponent<AppProps>;
   Template: FunctionComponent<TemplateProps>;
+  isSpaMode?: boolean;
 }) => {
   // inject vite refresh script to avoid "React refresh preamble was not loaded"
   let viteScripts = <React.Fragment></React.Fragment>;
+  let otherScripts = <React.Fragment></React.Fragment>;
 
   if (
     isServerMode(process.env.NODE_ENV) &&
@@ -55,19 +58,48 @@ export const TemplateLayout = ({
     );
   }
 
+  if (isSpaMode) {
+    otherScripts = (
+      <React.Fragment>
+        <script
+          type="module"
+          dangerouslySetInnerHTML={{
+            __html: `window.__RASENGAN_SPA_MODE__ = true;`,
+          }}
+        />
+
+        {!assets && (
+          <script type="module" src="/src/index" async={true}></script>
+        )}
+      </React.Fragment>
+    );
+  } else {
+    otherScripts = (
+      <React.Fragment>
+        <script
+          type="module"
+          dangerouslySetInnerHTML={{
+            __html: `window.__RASENGAN_SPA_MODE__ = false;`,
+          }}
+        />
+      </React.Fragment>
+    );
+  }
+
   return (
     <Template
       Head={({ children }) => (
         <HeadComponent metadata={metadata} assets={assets}>
           {viteScripts}
+          {otherScripts}
           {children}
         </HeadComponent>
       )}
       Body={({ children }) => (
         <BodyComponent
-          asChild
+          asChild={App ? true : false}
           AppContent={
-            <App Component={RootComponent}>{StaticRouterComponent}</App>
+            App && <App Component={RootComponent}>{StaticRouterComponent}</App>
           }
         >
           {children}

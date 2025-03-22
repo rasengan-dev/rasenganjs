@@ -1,8 +1,7 @@
 {
   "name": "@rasenganjs/shuriken",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.3",
   "description": "The Shuriken CLI is a tool to automate basic development tasks like generating pages, routers, layouts or resources and cloning templates.",
-  "main": "/dist/main.js",
   "type": "module",
   "author": {
     "name": "dilane3",
@@ -13,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "url": "git+https://github.com/rasengan-dev/rasenganjs.git",
     "issues": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "homepage": "https://rasengan.dev",

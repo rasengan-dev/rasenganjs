@@ -141,7 +141,7 @@ export default function Footer() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button
-                className="bg-primary hover:bg-primary/80 text-primary-foreground"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground text-sm rounded-md"
                 onClick={handleSubscribe}
                 disabled={!email}
               >

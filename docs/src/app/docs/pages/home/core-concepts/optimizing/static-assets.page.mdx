@@ -1,0 +1,65 @@
+---
+path: static-assets
+metadata:
+  title: Static Assets
+  description: Static Assets
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import Tabs from '@/components/molecules/tab';
+import { Link } from "rasengan";
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Static Assets
+
+Rasengan.js allows you to serve static files like images, fonts, and other assets from a special folder called `public`.  
+
+## Using the public Folder  
+
+Any file placed inside the `public` folder is automatically available at the base URL (`/`). This means you don’t need to import assets manually or use special loaders—just reference them directly in your code.  
+
+### Example  
+
+If you have an image located at:  
+
+```txt
+/public/avatars/1.png
+```  
+
+You can access it in your browser at:  
+
+```txt
+/avatars/1.png
+```  
+
+And use it in your code like this:  
+
+```jsx title="src/components/Avatar.jsx" showLineNumbers
+import { Image } from "@rasenganjs/image";
+
+export function Avatar({ id, alt }) {
+  return <Image src={`/avatars/${id}.png`} alt={alt} width={64} height={64} />;
+}
+```  
+
+## Best Practices  
+
+- **Store all static assets inside the `public` folder** to keep them easily accessible.  
+- **Use relative paths (`/your-file.png`)** instead of importing images directly.  
+- **Optimize images** to reduce load times and improve performance.  
+
+This feature makes it easy to serve assets without additional configuration! 🚀
+
+<Pagination 
+  prev={{
+    href: '/docs/optimizing/metadata',
+    label: 'Metadata',
+  }}
+  next={{
+    href: '/docs/configuring/typescript',
+    label: 'Typescript',
+  }}
+/>

@@ -1,0 +1,141 @@
+---
+path: preprocessors
+metadata:
+  title: CSS Preprocessors
+  description: CSS Preprocessors
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# CSS Preprocessors
+
+Rasengan.js supports popular CSS preprocessors like **Sass**, **Less**, and **Stylus**. These tools make writing CSS easier by adding features like variables, nested rules, and functions.  
+
+## Using a Preprocessor  
+
+To use a preprocessor, install the required package and create a stylesheet with the correct file extension. Then, import the file into your components.  
+
+
+## Sass (.scss / .sass)  
+
+Sass adds features like variables and nesting to CSS. Rasengan.js supports it once you install the **sass** package.  
+
+### 1. Install Sass  
+
+```bash title="Terminal"
+npm install --save-dev sass
+```  
+
+### 2. Create a Sass File  
+
+```scss title="MyComponent.scss" showLineNumbers
+$primary-color: #333;
+
+.my-component {
+  color: $primary-color;
+}
+```  
+
+### 3. Import It in a Component  
+
+```jsx title="MyComponent.jsx" showLineNumbers
+import "./MyComponent.scss";
+
+export default function MyComponent() {
+  return <div className="my-component">Hello, world!</div>;
+}
+```  
+
+### Using Sass with CSS Modules  
+
+CSS Modules prevent class name conflicts by scoping styles locally. Use the `.module.scss` extension:  
+
+```scss title="MyComponent.module.scss" showLineNumbers
+$primary-color: #333;
+
+.component {
+  color: $primary-color;
+}
+```  
+
+```jsx title="MyComponent.jsx" showLineNumbers
+import styles from "./MyComponent.module.scss";
+
+export default function MyComponent() {
+  return <div className={styles.component}>Hello, world!</div>;
+}
+```  
+
+## Less (.less)  
+
+Less is another CSS preprocessor similar to Sass but uses `@` for variables.  
+
+### 1. Install Less  
+
+```bash title="Terminal"
+npm install --save-dev less
+```  
+
+### 2. Create a Less File  
+
+```less title="MyComponent.less" showLineNumbers
+@primary-color: #333;
+
+.my-component {
+  color: @primary-color;
+}
+```  
+
+### 3. Import It in a Component  
+
+```jsx title="MyComponent.jsx" showLineNumbers
+import "./MyComponent.less";
+
+export default function MyComponent() {
+  return <div className="my-component">Hello, world!</div>;
+}
+```  
+
+## Stylus (.styl / .stylus)  
+
+Stylus is a flexible preprocessor that allows cleaner, indentation-based syntax.  
+
+### 1. Install Stylus  
+
+```bash title="Terminal"
+npm install --save-dev stylus
+```  
+
+### 2. Create a Stylus File  
+
+```styl title="MyComponent.styl" showLineNumbers
+primary-color = #333
+
+.my-component
+  color primary-color
+```  
+
+### 3. Import It in a Component  
+
+```jsx title="MyComponent.jsx" showLineNumbers
+import "./MyComponent.styl";
+
+export default function MyComponent() {
+  return <div className="my-component">Hello, world!</div>;
+}
+```  
+
+<Pagination 
+  prev={{
+    href: '/docs/styling/tailwindcss',
+    label: 'Tailwind CSS',
+  }}
+  next={{
+    href: '/docs/optimizing/images',
+    label: 'Optimizing Images',
+  }}
+/>

@@ -1,0 +1,87 @@
+---
+path: images
+metadata:
+  title: Optimizing Images
+  description: Optimizing Images
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Optimizing Images
+
+Images are the most important part of a website. They are the first thing that a user sees when they visit a website.
+So, it is important to optimize images to make the website load faster.
+
+Rasengan.js provides an external package called <Link to="/packages/image">`@rasenganjs/image`</Link> to display images on the website with a lazy loading feature.
+The package doesn't compress images but it loads them only when they are in the viewport.
+
+## Installation
+
+By default, when using the <Link to="/docs/api-reference/create-rasengan-cli">`Rasengan CLI`</Link> to create a new project, the `@rasenganjs/image` package is already installed.
+
+If not, you can install it by running the following command:
+
+```bash title="Terminal"
+npm install @rasenganjs/image
+```
+
+## Usage
+
+First of all, you have to import the `css` file in your project. You can do this by adding the following line in your `main.js` file:
+
+```js title="main.js" showLineNumbers
+import "@rasenganjs/image/css";
+```
+
+Then, you can use the `Image` component to display images on your website.
+
+### Local Image
+
+This package supports local images. You can import the image and pass it as a `src` prop to the `Image` component.
+file extensions like `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`, `.svg` are supported.
+
+```jsx title="Avatar.jsx" showLineNumbers
+import React from "react";
+import Image from "@rasenganjs/image";
+import avatar from "@assets/images/avatar.jpg";
+
+export default function Avatar() {
+  return <Image src={avatar} alt="Avatar" width={200} height={200} />;
+}
+```
+
+### External Image
+
+You can also use external images by passing an object with an `uri` property as a `src` prop to the `Image` component.
+
+```jsx title="Avatar.jsx" showLineNumbers copy
+import React from "react";
+import Image from "@rasenganjs/image";
+
+export default function Avatar() {
+  return (
+    <Image
+      src={{ uri: "https://example.com/avatar.jpg" }}
+      alt="Avatar"
+      width={200}
+      height={200}
+    />
+  );
+}
+```
+
+<Pagination 
+  prev={{
+    href: '/docs/styling/preprocessors',
+    label: 'CSS Preprocessors',
+  }}
+  next={{
+    href: '/docs/optimizing/metadata',
+    label: 'Metadata',
+  }}
+/>

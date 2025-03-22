@@ -9,5 +9,5 @@ export default defineRouter({
   imports: [],
   layout: DocsLayout,
   pages: [DocsGroup, PackageGroup],
-  useParentLayout: false,
+  // useParentLayout: false,
 })(DocsRouter);

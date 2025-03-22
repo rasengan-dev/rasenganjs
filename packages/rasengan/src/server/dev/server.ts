@@ -21,7 +21,11 @@ import {
 
 import { RouterComponent, type AppConfig } from '../../index.js';
 import { ServerMode } from '../runtime/mode.js';
-import { handleDataRequest, handleDocumentRequest } from './handlers.js';
+import {
+  handleDataRequest,
+  handleDocumentRequest,
+  handleSpaModeRequest,
+} from './handlers.js';
 import { createStaticHandler } from 'react-router';
 import { generateRoutes } from '../../routing/utils/generate-routes.js';
 
@@ -44,27 +48,32 @@ async function devRequestHandler(
     // Get the module runner through ssr environment
     const runner = createServerModuleRunner(viteDevServer.environments.ssr);
 
-    // Load app-router
-    const AppRouter: RouterComponent = await (
-      await runner.import(join(`${options.rootPath}/src/app/app.router`))
-    ).default;
+    if (options.config.ssr) {
+      // Load app-router
+      const AppRouter: RouterComponent = await (
+        await runner.import(join(`${options.rootPath}/src/app/app.router`))
+      ).default;
 
-    // Get static routes
-    const staticRoutes = generateRoutes(AppRouter);
+      // Get static routes
+      const staticRoutes = generateRoutes(AppRouter);
 
-    // Create static handler
-    let handler = createStaticHandler(staticRoutes);
+      // Create static handler
+      let handler = createStaticHandler(staticRoutes);
 
-    if (isDataRequest(req)) {
-      // Handle data request
-      return await handleDataRequest(req, handler);
-    }
+      if (isDataRequest(req)) {
+        // Handle data request
+        return await handleDataRequest(req, handler);
+      }
 
-    if (isDocumentRequest(req)) {
-      return await handleDocumentRequest(req, res, runner, {
-        ...options,
-        handler,
-      });
+      if (isDocumentRequest(req)) {
+        return await handleDocumentRequest(req, res, runner, {
+          ...options,
+          handler,
+        });
+      }
+    } else {
+      // handling spa mode here
+      return await handleSpaModeRequest(res, runner, options);
     }
 
     return res.status(404).send('Not found');

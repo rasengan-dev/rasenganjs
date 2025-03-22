@@ -45,18 +45,30 @@ export const getRouter = (routerInstance: RouterComponent) => {
  */
 const mergeMetaData = (
   responseMeta: Metadata | MetadataWithoutTitleAndDescription,
-  meta: Metadata | MetadataWithoutTitleAndDescription
+  meta: Metadata | MetadataWithoutTitleAndDescription,
+  isLayout = false
 ) => {
   let mergedMetaData: Metadata | MetadataWithoutTitleAndDescription = {
     metaTags: [],
     links: [],
+    openGraph: {
+      url: '',
+      image: '',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      image: '',
+      title: '',
+    },
   };
 
-  // merge title and description
-  mergedMetaData['title'] =
-    (responseMeta as Metadata).title ?? (meta as Metadata).title;
-  mergedMetaData['description'] =
-    (responseMeta as Metadata).description ?? (meta as Metadata).description;
+  if (!isLayout) {
+    // merge title and description
+    mergedMetaData['title'] =
+      (responseMeta as Metadata).title ?? (meta as Metadata).title;
+    mergedMetaData['description'] =
+      (responseMeta as Metadata).description ?? (meta as Metadata).description;
+  }
 
   // merge openGraph datas
   mergedMetaData['openGraph'] = {
@@ -143,9 +155,11 @@ const mergeMetaData = (
 const createLoaderFunction = ({
   loader,
   metadata,
+  isLayout = false,
 }: {
   loader?: RouteLoaderFunction;
   metadata?: Metadata | MetadataWithoutTitleAndDescription;
+  isLayout?: boolean;
 }): LoaderFunction => {
   return async ({ params, request }) => {
     try {
@@ -176,14 +190,26 @@ const createLoaderFunction = ({
 
       return {
         props: response.props,
-        meta: mergeMetaData(response.meta, metadata),
+        meta: mergeMetaData(response.meta ?? {}, metadata, isLayout),
       };
     } catch (error) {
       console.error(error);
 
       return {
         props: {},
-        meta: {},
+        meta: {
+          openGraph: {
+            url: '',
+            image: '',
+          },
+          twitter: {
+            card: 'summary_large_image',
+            image: '',
+            title: '',
+          },
+          metaTags: [],
+          links: [],
+        },
       };
     }
   };
@@ -233,15 +259,31 @@ export const generateRoutes = (
     },
     async loader({ params, request }) {
       // Extract metadata from the layout
-      const metadata = Layout.metadata;
+      const metadata: MetadataWithoutTitleAndDescription = {
+        openGraph: {
+          url: '',
+          image: '',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          image: '',
+          title: '',
+        },
+        ...Layout.metadata,
+      };
 
-      return createLoaderFunction({ loader: Layout.loader, metadata })({
+      return createLoaderFunction({
+        loader: Layout.loader,
+        metadata,
+        isLayout: true,
+      })({
         params,
         request,
       });
     },
     children: [],
     nested: router.useParentLayout,
+    hydrateFallbackElement: <></>, // TODO: Add hydration fallback
   };
 
   // Defining the page not found route
@@ -277,7 +319,18 @@ export const generateRoutes = (
       path,
       async loader({ params, request }) {
         // Extracting metadata from the page
-        const metadata = Page.metadata;
+        const metadata: Metadata = {
+          openGraph: {
+            url: '',
+            image: '',
+          },
+          twitter: {
+            card: 'summary_large_image',
+            image: '',
+            title: '',
+          },
+          ...Page.metadata,
+        };
 
         return createLoaderFunction({ loader: Page.loader, metadata })({
           params,
@@ -301,7 +354,7 @@ export const generateRoutes = (
         );
       },
       errorElement: <ErrorBoundary />,
-      hydrateFallbackElement: <>Loading</>,
+      hydrateFallbackElement: <></>, // TODO: Add hydration fallback
     };
   });
 

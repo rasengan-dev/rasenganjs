@@ -83,6 +83,7 @@ async function run() {
   app.disable('x-powered-by');
   app.use(compression());
   app.use(morgan('tiny'));
+  // ssr assets
   app.use(
     path.posix.join('/assets'),
     express.static(
@@ -97,6 +98,21 @@ async function run() {
       }
     )
   );
+  // spa assets
+  app.use(
+    path.posix.join('/assets'),
+    express.static(
+      path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.assetPathDirectory
+      ),
+      {
+        immutable: true,
+        maxAge: '1y',
+      }
+    )
+  );
+  // ssr client
   app.use(
     '/',
     express.static(
@@ -107,14 +123,57 @@ async function run() {
       { maxAge: '1h' }
     )
   );
-  app.use(express.static('public', { maxAge: '1h' }));
-
-  app.all(
-    '*',
-    createRequestHandler({
-      build: buildOptions,
+  // spa client
+  app.use(
+    '/',
+    express.static(path.posix.join(buildOptions.buildDirectory), {
+      maxAge: '1h',
     })
   );
+  app.use(express.static('public', { maxAge: '1h' }));
+
+  app.all('*', (req, res) => {
+    // Check if dist/client/assets/config.json exists or dist/assets/config.json exists
+    const configPathSpa = path.posix.join(
+      buildOptions.buildDirectory,
+      buildOptions.assetPathDirectory,
+      'config.json'
+    );
+    const configPathSsr = path.posix.join(
+      buildOptions.buildDirectory,
+      buildOptions.clientPathDirectory,
+      buildOptions.assetPathDirectory,
+      'config.json'
+    );
+
+    const configPath = [configPathSpa, configPathSsr].find((path) =>
+      fs.existsSync(path)
+    );
+
+    if (!configPath) {
+      throw new Error(
+        'No config.json file found in dist/client/assets or dist/assets'
+      );
+    }
+
+    // Read the config.json file
+    const configData = fs.readFileSync(configPath, 'utf-8').toString();
+
+    // Parse the config.json file
+    const config = JSON.parse(configData);
+
+    if (config.ssr) {
+      const requestHandler = createRequestHandler({
+        build: buildOptions,
+      });
+
+      return requestHandler(req, res);
+    } else {
+      return res.sendFile(
+        path.posix.join(buildOptions.buildDirectory, 'index.html')
+      );
+    }
+  });
 
   let server = process.env.HOST
     ? app.listen(port, process.env.HOST, onListen)

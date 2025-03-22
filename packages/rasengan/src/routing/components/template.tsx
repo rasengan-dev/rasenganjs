@@ -49,13 +49,17 @@ export const HeadComponent = ({
   const metaTags = React.useMemo(() => {
     const metadatas = [];
 
-    if (metadata.page) metadatas.push(metadata.page);
-    if (metadata.layout) metadatas.push(metadata.layout);
+    if (metadata) {
+      if (metadata.page) metadatas.push(metadata.page);
+      if (metadata.layout) metadatas.push(metadata.layout);
+    }
 
     return generateMetadata(metadatas);
   }, [metadata]);
 
   const { title, description } = useMemo(() => {
+    if (!metadata) return { title: 'Rasengan', description: '' };
+
     const title = metadata.page.title;
     const description = metadata.page.description;
 
@@ -97,11 +101,7 @@ export const BodyComponent = ({
         }}
       />
 
-      {asChild ? (
-        <div id="root">{AppContent}</div>
-      ) : (
-        <div id="root">{'rasengan-body-app'}</div>
-      )}
+      <div id="root">{asChild && AppContent}</div>
 
       {children}
     </body>

@@ -53,7 +53,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
 
             <div className="flex flex-col gap-1">
               <span>Using stable version</span>
-              <span className="text-[12px] text-foreground/60">v1.2.4</span>
+              <span className="text-[12px] text-foreground/60">v1.0.0</span>
             </div>
           </div>
 

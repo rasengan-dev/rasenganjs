@@ -25,7 +25,7 @@ This page will go through how to use each of these options, and dive deeper into
 The `<Link>` component is a React component that allows you to navigate between routes in your application.
 It is the recommended way to navigate between routes in Rasengan.js.
 
-### Example
+### Example 1: Basic usage
 
 ```tsx title="src/app/home.page.tsx" showLineNumbers /Link/ {2,8}
 import React from "react";
@@ -51,9 +51,7 @@ export default Home;
 
 There are other option props available to `<Link />`, see the [`API Reference`](/docs/api-reference/components/link-component) for more details.
 
-### Examples
-
-#### Using dynamic routes
+### Examples 2: Using dynamic routes
 
 ```tsx title="src/components/Posts.tsx" showLineNumbers /Link/ {1,16}
 import { Link } from "rasengan";
@@ -112,7 +110,7 @@ export default function ActiveLink({ to, children }: Props) {
 The `useNavigate` hook is used to change the current route in your application.
 It returns a function that you can call to navigate to a different route.
 
-### Example
+### Example 1: Basic usage
 
 ```tsx title="src/app/home.page.tsx" showLineNumbers /useNavigate/ {2,5,10}
 import React from "react";
@@ -145,7 +143,7 @@ For a full list of `useNavigate` options, see the [API reference](https://reactr
   new page.
 </AlertBox> */}
 
-### Example: Logout with navigation
+### Example 2: Logout with navigation
 
 ```tsx title="src/components/LogoutButton.tsx" showLineNumbers /useNavigate/ {2,5,10}
 import React from "react";
