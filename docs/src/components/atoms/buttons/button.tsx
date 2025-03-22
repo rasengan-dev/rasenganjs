@@ -15,7 +15,7 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      className={`${className} px-4 py-2 rounded-full hover:cursor-pointer font-lexend-regular transition-all duration-300`}
+      className={`${className} px-4 py-2 rounded-md hover:cursor-pointer font-lexend-regular transition-all duration-300`}
       {...props}
     >
       {children}

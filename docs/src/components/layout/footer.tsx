@@ -152,7 +152,9 @@ export default function Footer() {
         </div>
 
         <div className="h-[60px] flex items-center justify-between mt-12 border-t-[1px] border-t-border">
-          <p>Rasengan.js © {new Date(Date.now()).getFullYear()}</p>
+          <p className="text-sm">
+            Copyright © {new Date(Date.now()).getFullYear()} Rasengan Labs{' '}
+          </p>
 
           <ThemeButton />
         </div>

@@ -1,0 +1,95 @@
+---
+path: page
+metadata:
+  title: Page Convention naming 
+  description: Page Convention naming
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+import Tabs from '@/components/molecules/tab';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Page Convention naming
+
+In Rasengan.js, to create a `page`, you have to create a file that follow the following name pattern: 
+
+```txt title="Page" showLineNumbers
+[name].page.jsx
+```
+
+A `page` is UI that is unique to a route.
+
+## Example
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="home.page.tsx" showLineNumbers
+    import { PageComponent } from "rasengan";
+
+    /*
+     * This Home Page is located inside the home.page.tsx file
+     */
+    const Home: pageComponent = () => {
+      return (
+        <div>
+          <h1>Home Page</h1>
+        </div>
+      )
+    }
+    
+    Home.path = "/";
+    Home.metadata = {
+      title: "Home",
+      description: "This is the home page",
+    }
+
+    export default Home;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="home.page.jsx" showLineNumbers
+    import React from "react";
+
+    /*
+     * This Home Page is located inside the home.page.tsx file
+     */
+    const Home = () => {
+      return (
+        <div>
+          <h1>Home Page</h1>
+        </div>
+      )
+    }
+    
+    Home.path = "/";
+    Home.metadata = {
+      title: "Home",
+      description: "This is the home page",
+    }
+
+    export default Home;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+Based on the convention, we have juste replace the `[name]` by `home` in the convention name and we got `home.page.jsx`.
+
+{/* <AlertBox>
+Following the convention, is not required but, keeping that convention will help you recognizing the purpose of each files you will have.
+</AlertBox> */}
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/conventions/layout',
+    label: '[name].layout.tsx',
+  }}
+  next={{
+    href: '/docs/api-reference/conventions/router',
+    label: '[name].router.tsx',
+  }}
+/>
