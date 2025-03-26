@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -63,6 +64,15 @@ async function run() {
   });
 
   let onListen = () => {
+    // Getting the package.json file
+    const packageJson = fs.readFileSync(
+      'node_modules/rasengan/package.json',
+      'utf-8'
+    );
+
+    // Parsing the package.json file
+    const parsedPackageJson = JSON.parse(packageJson);
+
     let address =
       process.env.HOST ||
       Object.values(os.networkInterfaces())
@@ -71,10 +81,21 @@ async function run() {
         ?.address;
 
     if (!address) {
-      console.log(`[Rasengan] http://localhost:${port}`);
+      console.log(
+        `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}\n`)}`
+      );
+      console.log(
+        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}`)}`
+      );
     } else {
       console.log(
-        `[Rasengan] http://localhost:${port} (http://${address}:${port})`
+        `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}\n`)}`
+      );
+      console.log(
+        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}`)}`
+      );
+      console.log(
+        `${chalk.bold('- Network:')}  ${chalk.blue(`http://${address}:${port}`)}`
       );
     }
   };
