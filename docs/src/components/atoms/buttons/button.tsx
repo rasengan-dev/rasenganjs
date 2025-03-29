@@ -1,4 +1,5 @@
 import { ComponentProps } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -15,7 +16,10 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      className={`${className} px-4 py-2 rounded-md hover:cursor-pointer font-lexend-regular transition-all duration-300`}
+      className={twMerge(
+        'px-4 py-2 rounded-md hover:cursor-pointer font-lexend-regular transition-all duration-300',
+        className
+      )}
       {...props}
     >
       {children}
