@@ -7,6 +7,7 @@ import blueLigthIllustration from '@/assets/images/illustrations/blue-light.svg'
 import lock from '@/assets/images/icons/lock.svg';
 import folder from '@/assets/images/icons/folder.svg';
 import speed from '@/assets/images/icons/speed.svg';
+import CopyButton from '@/components/atoms/buttons/copy-button';
 
 const Home: PageComponent = () => {
   return (
@@ -116,12 +117,21 @@ const Home: PageComponent = () => {
           </p>
 
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4">
-            <Button className="bg-primary text-primary-foreground font-lexend-light h-[48px] px-6 w-full md:w-auto">
+            <Button
+              hover
+              tap
+              className="bg-primary text-primary-foreground font-lexend-light h-[48px] px-6 w-full md:w-auto"
+            >
               Get started
             </Button>
-            <Button className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto">
+            <CopyButton
+              text="npx create-rasengan@latest"
+              textToDisplay="- npx create-rasengan@latest"
+              className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto"
+            ></CopyButton>
+            {/* <Button className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto">
               - npx create-rasengan@latest
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -146,8 +156,11 @@ const Home: PageComponent = () => {
 
           <h3 className="font-lexend-medium text-2xl">Type-safe</h3>
           <p className="font-lexend-light text-foreground/80">
-            We prioritize type safety, seamless IntelliSense, and built-in
-            auto-imports for an exceptional developer experience.
+            We prioritize type safety, seamless{' '}
+            <span className="text-primary font-lexend-regular">
+              IntelliSense
+            </span>
+            , and built-in auto-imports for an exceptional developer experience.
           </p>
         </article>
         <article className="w-full flex flex-col gap-4 p-6 rounded-l-lg rounded-r-lg md:rounded-l-none lg:rounded-r-none border-l-[1px] border-r-[1px] md:border-l-none lg:border-r-none border-y-[1px] border-border bg-gradient-to-br from-[#C657F6]/20 via-background to-background">
@@ -155,8 +168,9 @@ const Home: PageComponent = () => {
 
           <h3 className="font-lexend-medium text-2xl">Easy to Learn</h3>
           <p className="font-lexend-light text-foreground/80">
-            Rasengan.js is designed with simplicity in mind and backed by
-            well-structured documentation.
+            Rasengan.js is designed with{' '}
+            <span className="text-primary font-lexend-regular">Simplicity</span>{' '}
+            in mind and backed by well-structured documentation.
           </p>
         </article>
         <article className="w-full rounded-l-lg lg:rounded-l-none rounded-r-lg flex flex-col gap-4 p-6 border-[1px] border-border bg-gradient-to-br from-[#F7719C]/20 via-background to-background">
@@ -166,8 +180,11 @@ const Home: PageComponent = () => {
             Fast - Wherever it matters
           </h3>
           <p className="font-lexend-light text-foreground/80">
-            Rasengan.js is built with performance in mind. It is designed to be
-            fast and efficient.
+            <span className="text-primary font-lexend-regular">
+              Performance
+            </span>{' '}
+            is the key point of Rasengan.js. It is designed to be fast and
+            efficient.
           </p>
         </article>
       </section>

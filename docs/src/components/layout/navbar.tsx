@@ -9,7 +9,7 @@ export default function Navbar() {
   const { toggle } = useNavigationStore();
 
   return (
-    <header className="fixed top-0 left-0 w-full h-[60px] bg-background border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4">
+    <header className="fixed top-0 left-0 w-full h-[60px] bg-background/70 border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4 backdrop-blur-md">
       <Link to={'/'}>
         <div className="flex items-center gap-0">
           <Image
