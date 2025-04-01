@@ -6,9 +6,11 @@ import Footer from '@/components/layout/footer';
 const AppLayout: LayoutComponent = () => {
   return (
     <section className="w-full h-screen overflow-auto">
-      <Navbar />
+      <Navbar className="max-w-[1500px] left-1/2 -translate-x-1/2" />
 
-      <Outlet />
+      <main className="max-w-[1600px] mx-auto">
+        <Outlet />
+      </main>
 
       <Footer />
     </section>

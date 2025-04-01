@@ -4,12 +4,23 @@ import ThemeButton from '../atoms/buttons/theme-button';
 import { NavigationData } from '@/data/docs';
 import { Ellipsis } from 'lucide-react';
 import { useNavigationStore } from '@/store/navigation';
+import { ComponentProps } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export default function Navbar() {
+type Props = {
+  className?: ComponentProps<'header'>['className'];
+};
+
+export default function Navbar({ className }: Props) {
   const { toggle } = useNavigationStore();
 
   return (
-    <header className="fixed top-0 left-0 w-full h-[60px] bg-background/70 border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4 backdrop-blur-md">
+    <header
+      className={twMerge(
+        'fixed top-0 left-0 w-full h-[60px] bg-background/70 border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4 backdrop-blur-md',
+        className
+      )}
+    >
       <Link to={'/'}>
         <div className="flex items-center gap-0">
           <Image

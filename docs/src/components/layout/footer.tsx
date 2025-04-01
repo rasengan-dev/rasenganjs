@@ -56,7 +56,7 @@ export default function Footer() {
         'w-full px-[20px] md:px-[50px] py-8 pb-16 lg:pb-0 border-t-[1px] border-t-border'
       )}
     >
-      <div className="max-w-full mx-auto">
+      <div className="max-w-[1500px] mx-auto">
         <div className="flex flex-col lg:flex-row items-start justify-between gap-x-2 gap-y-8">
           <div className="w-7/10 flex flex-col lg:flex-row gap-8">
             <div className="w-1/3">
