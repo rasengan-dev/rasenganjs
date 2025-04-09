@@ -5,8 +5,8 @@ import Footer from '@/components/layout/footer';
 
 const AppLayout: LayoutComponent = () => {
   return (
-    <section className="w-full h-screen overflow-auto">
-      <Navbar className="max-w-[1500px] left-1/2 -translate-x-1/2" />
+    <section className="w-full h-screen overflow-autof">
+      <Navbar className="max-w-[1600px] left-1/2 -translate-x-1/2 px-4 xl:px-20" />
 
       <main className="max-w-[1600px] mx-auto">
         <Outlet />

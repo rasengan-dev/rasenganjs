@@ -74,3 +74,98 @@ html {
   min-height: 100vh;
   overflow: hidden;
 }
+
+.showcase-section {
+  position: relative;
+  overflow: hidden;
+  background: none; /* We'll move the image to the pseudo-element */
+}
+
+.showcase-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('@/assets/images/icons/grid.svg') repeat center center;
+  background-size: cover;
+  opacity: 0.2; /* Adjust opacity here */
+  pointer-events: none; /* Let clicks pass through */
+  z-index: 0;
+}
+
+.showcase-section > * {
+  position: relative;
+  z-index: 1; /* Ensure content stays above background */
+}
+
+.showcase-container {
+  display: grid;
+  grid-template-areas:
+    'a a a b b b c c c'
+    'a a a b b b c c c'
+    'd d d d d d e e e'
+    'd d d d d d e e e'
+    'd d d d d d f f f'
+    'd d d d d d f f f';
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 1.5rem;
+}
+
+.showcase-container > .a {
+  grid-area: a;
+}
+
+.showcase-container > .b {
+  grid-area: b;
+}
+
+.showcase-container > .c {
+  grid-area: c;
+}
+
+.showcase-container > .d {
+  grid-area: d;
+}
+
+.showcase-container > .e {
+  grid-area: e;
+}
+
+.showcase-container > .f {
+  grid-area: f;
+}
+
+@media (max-width: 1024px) {
+  .showcase-container {
+    grid-template-areas:
+      'a a a a b b b b'
+      'a a a a b b b b'
+      'c c c c c c c c'
+      'd d d d d d d d'
+      'e e e e f f f f'
+      'e e e e f f f f';
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, auto);
+  }
+}
+
+/* Mobile view (max-width: 640px) */
+@media (max-width: 640px) {
+  .showcase-container {
+    grid-template-areas:
+      'a'
+      'a'
+      'b'
+      'b'
+      'c'
+      'c'
+      'd'
+      'd'
+      'e'
+      'e'
+      'f'
+      'f';
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, auto);
+  }
+}

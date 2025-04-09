@@ -53,7 +53,7 @@ export default function Footer() {
   return (
     <footer
       className={twMerge(
-        'w-full px-[20px] md:px-[50px] py-8 pb-16 lg:pb-0 border-t-[1px] border-t-border'
+        'w-full px-[20px] md:px-[50px] py-8 pb-16 lg:pb-0 border-t-[1px] border-t-border/60'
       )}
     >
       <div className="max-w-[1500px] mx-auto">
