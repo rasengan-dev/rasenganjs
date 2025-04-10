@@ -1,0 +1,79 @@
+---
+path: outlet
+metadata:
+  title: Outlet
+  description: Outlet
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+import Tabs from '@/components/molecules/tab';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Outlet
+
+The `Outlet` React component is a special component that is used to render the content of the current page. It is used in the `Layout` component to render the content of the current page.
+
+## Usage 
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" {10} showLineNumbers copy /Outlet/
+    import { LayoutComponent, Outlet } from "rasengan";
+    
+    const AppLayout: LayoutComponent = () => {
+      return (
+        <div>
+          <header>
+            <h1>Header</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    };
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" {10} showLineNumbers copy /Outlet/
+    import { Outlet } from "rasengan";
+    
+    const AppLayout = () => {
+      return (
+        <div>
+          <header>
+            <h1>Header</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    };
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/components/link',
+    label: 'Link Component',
+  }}
+  next={{
+    href: '/docs/api-reference/components/component',
+    label: 'Component',
+  }}
+/>
