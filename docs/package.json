@@ -18,7 +18,7 @@
     "axios": "^1.8.3",
     "lucide-react": "^0.477.0",
     "motion": "^12.4.10",
-    "rasengan": "workspace:^",
+    "rasengan": "1.0.0-beta.61",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
