@@ -53,7 +53,8 @@ export default function Footer() {
   return (
     <footer
       className={twMerge(
-        'w-full px-[20px] md:px-[50px] py-8 pb-16 lg:pb-0 border-t-[1px] border-t-border/60'
+        'w-full px-[20px] md:px-[50px] py-8 pb-16 lg:pb-0 border-t-[1px] border-t-border/60',
+        isDark ? 'bg-white/2' : 'bg-black/2'
       )}
     >
       <div className="max-w-[1500px] mx-auto">
@@ -153,7 +154,8 @@ export default function Footer() {
 
         <div className="h-[60px] flex items-center justify-between mt-12 border-t-[1px] border-t-border">
           <p className="text-sm">
-            Copyright © {new Date(Date.now()).getFullYear()} Rasengan Labs{' '}
+            © {new Date(Date.now()).getFullYear()} Rasengan Labs, All rights
+            reserved.
           </p>
 
           <ThemeButton />

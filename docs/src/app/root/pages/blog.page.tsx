@@ -14,5 +14,9 @@ const Blog: PageComponent = () => {
 };
 
 Blog.path = '/blog';
+Blog.metadata = {
+  title: 'Rasengan.js - Blog',
+  description: 'Discover the latest news and updates about Rasengan.js.',
+};
 
 export default Blog;

@@ -1,7 +1,7 @@
 import { AnnonceBadge } from '@/components/atoms/badges/badge';
 import Button from '@/components/atoms/buttons/button';
 import Image from '@rasenganjs/image';
-import { PageComponent } from 'rasengan';
+import { Link, PageComponent } from 'rasengan';
 import Editor from '@/components/molecules/editor';
 import blueLigthIllustration from '@/assets/images/illustrations/blue-light.svg';
 import lock from '@/assets/images/icons/lock.svg';
@@ -14,6 +14,7 @@ import rasenganIllustration from '@/assets/images/icons/rasengan-large.svg';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { ShowcaseCard } from '@/components/molecules/showcase-card';
+import CTA from '@/components/molecules/cta';
 
 const Home: PageComponent = () => {
   const { isDark } = useTheme();
@@ -114,7 +115,7 @@ const Home: PageComponent = () => {
             </AnnonceBadge>
           </div>
 
-          <h1 className="text-[45px] leading-[50px] md:text-5xl md:leading-[55px] lg:text-[52px] font-bold text-foreground font-lexend-medium lg:leading-[60px] text-center lg:text-start">
+          <h1 className="text-[45px] leading-[50px] md:text-5xl md:leading-[55px] lg:text-[52px] text-foreground font-lexend-medium lg:leading-[60px] text-center lg:text-start">
             Rasengan.js: A modern,{' '}
             <span className="text-primary">high-performance</span> React
             framework
@@ -386,19 +387,19 @@ const Home: PageComponent = () => {
           />
           <ShowcaseCard
             image="/assets/images/showcase/rasengan.png"
-            title="Enver"
+            title="Rasengan"
             link="#"
             className="d"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
-            title="Enver"
+            title="Hano"
             link="#"
             className="e"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
-            title="Enver"
+            title="Hano"
             link="#"
             className="f"
           />
@@ -415,15 +416,204 @@ const Home: PageComponent = () => {
         </div> */}
       </section>
 
-      <section className="relative px-4 xl:px-20 py-20 pt-20"></section>
+      <section className="relative px-4 xl:px-20 py-20 pt-20">
+        <Heading
+          title="Foundation"
+          description="Built on top of a great foundation."
+          className="text-center items-center"
+        />
+
+        <div className="relative mt-20 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 z-10">
+          <Link
+            to="https://react.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FeatureCard
+              title="ReactJS"
+              description="The Library for web and native UI. Rasengan.js uses the power of React components to create high quality web applications."
+              icon={
+                <svg
+                  width="31"
+                  height="31"
+                  viewBox="0 0 101 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M50.8013 43.804C49.5651 43.804 48.3568 44.1705 47.329 44.8573C46.3012 45.544 45.5001 46.5201 45.027 47.6622C44.554 48.8042 44.4302 50.0609 44.6714 51.2733C44.9125 52.4857 45.5078 53.5993 46.3819 54.4734C47.2559 55.3474 48.3696 55.9427 49.582 56.1839C50.7943 56.425 52.051 56.3013 53.193 55.8282C54.3351 55.3552 55.3112 54.5541 55.998 53.5263C56.6847 52.4985 57.0513 51.2901 57.0513 50.054C57.0513 48.3964 56.3928 46.8066 55.2207 45.6345C54.0486 44.4624 52.4589 43.804 50.8013 43.804Z"
+                    fill="#0288D1"
+                  />
+                  <path
+                    d="M50.8013 37.554C74.0638 37.554 88.3013 45.6477 88.3013 50.054C88.3013 54.4602 74.0638 62.554 50.8013 62.554C27.5388 62.554 13.3013 54.4602 13.3013 50.054C13.3013 45.6477 27.5388 37.554 50.8013 37.554ZM50.8013 31.304C26.6388 31.304 7.05127 39.6977 7.05127 50.054C7.05127 60.4102 26.6388 68.804 50.8013 68.804C74.9638 68.804 94.5513 60.4102 94.5513 50.054C94.5513 39.6977 74.9638 31.304 50.8013 31.304Z"
+                    fill="#0288D1"
+                  />
+                  <path
+                    d="M33.4829 17.2634C39.786 17.2634 52.036 27.1916 61.6266 43.8041C73.2579 63.9509 73.3673 80.3259 69.5516 82.5291C69.1115 82.7573 68.6188 82.8651 68.1235 82.8416C61.8204 82.8416 49.5673 72.9166 39.9766 56.3041C28.3454 36.1572 28.236 19.7822 32.0516 17.5791C32.4927 17.3503 32.9866 17.2393 33.4829 17.2634ZM33.4798 11.0166C31.8871 10.9877 30.3156 11.3836 28.9266 12.1634C19.9579 17.3416 22.4829 38.5041 34.5641 59.4291C44.8266 77.2103 58.6891 89.0947 68.1266 89.0947C69.7188 89.121 71.2892 88.723 72.6766 87.9416C81.6454 82.7666 79.1204 61.6041 67.0391 40.6791C56.7766 22.8978 42.9141 11.0134 33.4766 11.0134L33.4798 11.0166Z"
+                    fill="#0288D1"
+                  />
+                  <path
+                    d="M68.1228 17.2632C68.6181 17.2397 69.1108 17.3475 69.5509 17.5757C73.3666 19.782 73.2572 36.157 61.6259 56.3039C52.0322 72.9164 39.7822 82.8445 33.479 82.8445C32.9838 82.868 32.4911 82.7602 32.0509 82.532C28.2353 80.3226 28.3447 63.9476 39.9759 43.8039C49.5697 27.1914 61.8197 17.2632 68.1228 17.2632ZM68.1228 11.0132C58.6853 11.0132 44.8259 22.9007 34.5603 40.6789C22.4853 61.6039 19.9572 82.7664 28.9259 87.9414C30.3143 88.7234 31.8859 89.1214 33.479 89.0945C42.9165 89.0945 56.7759 77.207 67.0416 59.4289C79.1166 38.5039 81.6447 17.3414 72.6759 12.1664C71.2876 11.3844 69.716 10.9863 68.1228 11.0132Z"
+                    fill="#0288D1"
+                  />
+                </svg>
+              }
+              className="bg-gradient-to-tr from-[#0288D1]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+            />
+          </Link>
+          <Link
+            to="https://vitejs.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FeatureCard
+              title="ViteJS"
+              description="Modern build tool, combines robustness and speed. Rasengan.js takes advantage of its performance to give you a great experience."
+              icon={
+                <svg
+                  width="30"
+                  height="30"
+                  viewBox="0 0 101 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_412_155)">
+                    <path
+                      d="M50.3013 43.804C49.0651 43.804 47.8568 44.1705 46.829 44.8573C45.8012 45.544 45.0001 46.5201 44.527 47.6622C44.054 48.8042 43.9302 50.0609 44.1714 51.2733C44.4125 52.4857 45.0078 53.5993 45.8819 54.4734C46.7559 55.3474 47.8696 55.9427 49.082 56.1839C50.2943 56.425 51.551 56.3013 52.693 55.8282C53.8351 55.3552 54.8112 54.5541 55.498 53.5263C56.1847 52.4985 56.5513 51.2901 56.5513 50.054C56.5513 48.3964 55.8928 46.8066 54.7207 45.6345C53.5486 44.4624 51.9589 43.804 50.3013 43.804Z"
+                      fill="#0288D1"
+                    />
+                    <path
+                      d="M97.7746 15.3039L52.8981 95.5524C51.9707 97.2094 49.5903 97.2188 48.6504 95.5711L2.88323 15.3133C1.85745 13.5149 3.39261 11.3391 5.43089 11.7024L50.3559 19.7313C50.6426 19.7834 50.9364 19.7834 51.2231 19.7313L95.2075 11.7149C97.2371 11.3453 98.7817 13.5031 97.7746 15.3039Z"
+                      fill="url(#paint0_linear_412_155)"
+                    />
+                    <path
+                      d="M71.7543 1.17109L38.5465 7.67734C38.2814 7.72913 38.0411 7.86749 37.8632 8.07069C37.6853 8.27389 37.58 8.53042 37.5637 8.79999L35.5191 43.3062C35.5082 43.4955 35.5414 43.6847 35.6162 43.8588C35.691 44.033 35.8053 44.1874 35.95 44.3097C36.0948 44.4321 36.2661 44.519 36.4503 44.5637C36.6345 44.6084 36.8266 44.6096 37.0113 44.5672L46.2582 42.4305C46.4574 42.3847 46.6648 42.3897 46.8615 42.4449C47.0582 42.5002 47.2379 42.604 47.3841 42.7467C47.5303 42.8895 47.6383 43.0667 47.6982 43.262C47.7581 43.4574 47.768 43.6647 47.727 43.8648L44.9793 57.3172C44.9373 57.5242 44.9498 57.7386 45.0155 57.9394C45.0812 58.1402 45.198 58.3205 45.3543 58.4626C45.5106 58.6047 45.7011 58.7039 45.9072 58.7503C46.1133 58.7967 46.3279 58.7888 46.5301 58.7273L52.2395 56.9906C53.1246 56.7219 53.9762 57.5 53.7902 58.4062L49.423 79.5367C49.1512 80.8586 50.909 81.5789 51.6418 80.4461L52.1301 79.6898L79.1926 25.682C79.6473 24.7758 78.8637 23.7445 77.8723 23.9367L68.3527 25.7742C68.1479 25.814 67.9363 25.8005 67.7382 25.7349C67.54 25.6693 67.3621 25.5539 67.2215 25.3998C67.0808 25.2456 66.9822 25.0579 66.935 24.8547C66.8878 24.6514 66.8936 24.4394 66.952 24.2391L73.1629 2.70624C73.2213 2.50519 73.2269 2.29247 73.1792 2.08862C73.1315 1.88476 73.0321 1.69663 72.8905 1.54236C72.749 1.38809 72.5701 1.27289 72.371 1.20786C72.172 1.14283 71.9596 1.13017 71.7543 1.17109Z"
+                      fill="url(#paint1_linear_412_155)"
+                    />
+                  </g>
+                  <defs>
+                    <linearGradient
+                      id="paint0_linear_412_155"
+                      x1="1.76464"
+                      y1="8.83485"
+                      x2="57.6192"
+                      y2="84.6897"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stop-color="#41D1FF" />
+                      <stop offset="1" stop-color="#BD34FE" />
+                    </linearGradient>
+                    <linearGradient
+                      id="paint1_linear_412_155"
+                      x1="47.7778"
+                      y1="2.9367"
+                      x2="57.8816"
+                      y2="72.2478"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stop-color="#FFEA83" />
+                      <stop offset="0.083" stop-color="#FFDD35" />
+                      <stop offset="1" stop-color="#FFA800" />
+                    </linearGradient>
+                    <clipPath id="clip0_412_155">
+                      <rect
+                        width="100"
+                        height="100"
+                        fill="white"
+                        transform="translate(0.30127 0.0539551)"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+              }
+              className="bg-gradient-to-tr from-[#9C5DFE]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+            />
+          </Link>
+          <Link
+            to="https://reactrouter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FeatureCard
+              title="React Router"
+              description="Best Library for routing in React. It gives the possibility to Rasengan.js to handle the routing system nicely."
+              icon={
+                <svg
+                  width="31"
+                  height="31"
+                  viewBox="0 0 101 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_412_1044)">
+                    <path
+                      d="M50.8013 43.804C49.5651 43.804 48.3568 44.1705 47.329 44.8573C46.3012 45.544 45.5001 46.5201 45.027 47.6622C44.554 48.8042 44.4302 50.0609 44.6714 51.2733C44.9125 52.4857 45.5078 53.5993 46.3819 54.4734C47.2559 55.3474 48.3696 55.9427 49.582 56.1839C50.7943 56.425 52.051 56.3013 53.193 55.8282C54.3351 55.3552 55.3112 54.5541 55.998 53.5263C56.6847 52.4985 57.0513 51.2901 57.0513 50.054C57.0513 48.3964 56.3928 46.8066 55.2207 45.6345C54.0486 44.4624 52.4589 43.804 50.8013 43.804Z"
+                      fill="#0288D1"
+                    />
+                    <g clip-path="url(#clip1_412_1044)">
+                      <path
+                        d="M78.1763 39.3626C75.3279 38.4657 73.8576 38.768 70.8708 38.4407C66.2536 37.9368 64.4138 36.129 63.6333 31.4774C63.1966 28.8805 63.7122 25.0782 62.5974 22.7243C60.4654 18.2352 55.4763 16.2219 50.4646 17.3712C46.2326 18.343 42.7115 22.579 42.5161 26.9274C42.2935 31.8923 45.1177 36.129 49.9669 37.5915C52.2716 38.2868 54.7193 38.6368 57.1255 38.8141C61.5388 39.1368 61.8779 41.5938 63.0708 43.6165C63.824 44.8915 64.5529 46.1477 64.5529 49.9501C64.5529 53.7524 63.8193 55.0079 63.0716 56.2829C61.8779 58.3009 60.4052 59.6227 55.9919 59.9493C53.5857 60.1274 51.1325 60.4774 48.8341 61.1735C43.9841 62.6399 41.1599 66.8712 41.3825 71.8368C41.5779 76.1852 45.099 80.4212 49.331 81.393C54.3427 82.5462 59.3318 80.529 61.4638 76.0399C62.5833 73.686 63.1966 71.0188 63.6333 68.4227C64.4185 63.7704 66.2583 61.9626 70.8708 61.4579C73.8576 61.1313 76.949 61.4579 79.7482 59.8657C82.7052 57.7016 85.3482 54.4516 85.3482 49.9501C85.3482 45.4469 82.5005 40.7266 78.1763 39.3626ZM30.8013 60.5016C24.981 60.5016 20.2326 55.7376 20.2326 49.8962C20.2326 44.0548 24.9802 39.2915 30.8005 39.2915C36.6208 39.2915 41.3693 44.0555 41.3693 49.8962C41.3693 55.7321 36.6169 60.5016 30.8005 60.5016H30.8013ZM11.3326 82.054C5.52005 82.0399 0.787238 77.2571 0.801301 71.411C0.815363 65.5751 5.58177 60.8251 11.4068 60.8438C17.2224 60.8579 21.956 65.6407 21.938 71.486C21.924 77.3173 17.1568 82.068 11.3326 82.054ZM89.8575 82.054C84.0279 82.086 79.2435 77.3548 79.2099 71.5282C79.1779 65.6782 83.8927 60.8766 89.699 60.8438C95.5286 60.811 100.314 65.5423 100.347 71.3688C100.379 77.2141 95.6638 82.0212 89.8575 82.054Z"
+                        fill="#0288D1"
+                      />
+                    </g>
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_412_1044">
+                      <rect
+                        width="100"
+                        height="100"
+                        fill="white"
+                        transform="translate(0.80127 0.0539551)"
+                      />
+                    </clipPath>
+                    <clipPath id="clip1_412_1044">
+                      <rect
+                        width="100"
+                        height="100"
+                        fill="white"
+                        transform="translate(0.80127 0.0539551)"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+              }
+              className="bg-gradient-to-tr from-sky-800/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+            />
+          </Link>
+        </div>
+      </section>
+
+      <section className="relative px-4 xl:px-20 py-20 pt-20">
+        <CTA />
+      </section>
+
+      {/* <iframe
+        src="https://templates.smadmail.com/ui/map.html?private_key=smad2502181548329b219035df&project_id=79afc233-432f-4d57-b8e0-4bc7c2bdd666&map_id=8b764bc7-dc08-45a2-b932-4af2ac3e59d4"
+        scrolling="no"
+      ></iframe> */}
     </section>
   );
 };
 
 Home.path = '/';
 Home.metadata = {
-  title: 'Home',
-  description: 'Home page',
+  title: 'Welcome to Rasengan.js',
+  description:
+    'Rasengan.js is a modern JavaScript framework for building high-quality web applications.',
+  openGraph: {
+    title: 'Welcome to Rasengan.js',
+    description:
+      'Rasengan.js is a modern JavaScript framework for building high-quality web applications.',
+    url: 'https://rasengan.dev',
+    image: 'https://rasengan.dev/assets/images/metadata/home.png',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Welcome to Rasengan.js',
+    description:
+      'Rasengan.js is a modern JavaScript framework for building high-quality web applications.',
+    image: 'https://rasengan.dev/assets/images/metadata/home.png',
+  },
 };
 
 export default Home;

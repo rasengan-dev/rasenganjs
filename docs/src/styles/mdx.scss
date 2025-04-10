@@ -19,6 +19,7 @@
 
     & strong {
       font-family: 'Lexend-Medium';
+      font-weight: 400;
     }
 
     & h1,
@@ -28,6 +29,7 @@
     & h5,
     & h6 {
       color: var(--color-foreground);
+      font-weight: 400;
     }
 
     & code.code-block {
