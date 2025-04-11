@@ -458,7 +458,7 @@ const Home: PageComponent = () => {
                   />
                 </svg>
               }
-              className="bg-gradient-to-tr from-[#0288D1]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-[#0288D1]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
           <Link
@@ -526,7 +526,7 @@ const Home: PageComponent = () => {
                   </defs>
                 </svg>
               }
-              className="bg-gradient-to-tr from-[#9C5DFE]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-[#9C5DFE]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
           <Link
@@ -577,7 +577,7 @@ const Home: PageComponent = () => {
                   </defs>
                 </svg>
               }
-              className="bg-gradient-to-tr from-sky-800/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-sky-800/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
         </div>
@@ -586,11 +586,6 @@ const Home: PageComponent = () => {
       <section className="relative px-4 xl:px-20 py-20 pt-20">
         <CTA />
       </section>
-
-      {/* <iframe
-        src="https://templates.smadmail.com/ui/map.html?private_key=smad2502181548329b219035df&project_id=79afc233-432f-4d57-b8e0-4bc7c2bdd666&map_id=8b764bc7-dc08-45a2-b932-4af2ac3e59d4"
-        scrolling="no"
-      ></iframe> */}
     </section>
   );
 };

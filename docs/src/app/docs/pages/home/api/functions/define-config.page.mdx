@@ -9,6 +9,7 @@ toc: true
 import Pagination from '@/components/molecules/pagination';
 import { Link } from "rasengan";
 import StepItem from '@/components/molecules/step-item';
+import { AlertWithLink } from "@/components/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   API REFERENCE
@@ -57,6 +58,12 @@ export default defineConfig({
   },
 });
 ```
+
+<AlertWithLink 
+  title="See more config options in the rasengan.config.js docs"
+  link="/docs/api-reference/rasengan-config"
+  status='info'
+/>
 
 <Pagination 
   prev={{
