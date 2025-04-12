@@ -116,9 +116,11 @@ const Home: PageComponent = () => {
           </div>
 
           <h1 className="text-[45px] leading-[50px] md:text-5xl md:leading-[55px] lg:text-[52px] text-foreground font-lexend-medium lg:leading-[60px] text-center lg:text-start">
-            Rasengan.js: A modern,{' '}
-            <span className="text-primary">high-performance</span> React
-            framework
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-foregroundj to-foreground">
+              Rasengan.js
+            </span>
+            : A modern, <span className="text-primary">high-performance</span>{' '}
+            React framework
           </h1>
           <p className="text-foreground/80 mt-4 text-lg lg:text-xl text-center lg:text-start max-w-[600px] mx-auto lg:mx-0">
             Based on modern tools, Rasengan.js will help you to create
@@ -360,7 +362,7 @@ const Home: PageComponent = () => {
         </div>
       </section>
 
-      <section className="showcase-section relative px-4 xl:px-20 py-20 pt-20 overflow-hidden">
+      <section className="grid-section relative px-4 xl:px-20 py-20 pt-20 overflow-hidden">
         <Heading
           title="Showcase"
           description="Discover what developers are building with Rasengan.js"

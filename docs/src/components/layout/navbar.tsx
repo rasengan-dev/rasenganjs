@@ -6,6 +6,8 @@ import { Ellipsis } from 'lucide-react';
 import { useNavigationStore } from '@/store/navigation';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { useTheme } from '@rasenganjs/theme';
+import AppLogo from '../atoms/logo';
 
 type Props = {
   className?: ComponentProps<'header'>['className'];
@@ -17,22 +19,11 @@ export default function Navbar({ className }: Props) {
   return (
     <header
       className={twMerge(
-        'fixed top-0 left-0 w-full h-[60px] bg-background/80 border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4 backdrop-blur-3xl',
+        'fixed top-0 left-0 w-full h-[60px] bg-background/50 border-b-[1px] border-b-border/60 z-30 flex items-center justify-between px-2 lg:px-4 backdrop-blur-sm',
         className
       )}
     >
-      <Link to={'/'}>
-        <div className="flex items-center gap-0">
-          <Image
-            src={'/rasengan.svg'}
-            alt="Rasengan Logo"
-            width={50}
-            height={50}
-          />
-
-          <span className="font-lexend-medium text-xl">Rasenganjs</span>
-        </div>
-      </Link>
+      <AppLogo size="lg" />
 
       <div className="hidden md:flex items-center gap-6">
         <nav>

@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { newsletterProvider } from '@/api/newsletter';
 import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle, XCircle } from 'lucide-react';
+import AppLogo from '../atoms/logo';
 // import { checkEmail } from 'utils/check';
 
 export default function Footer() {
@@ -61,14 +62,7 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row items-start justify-between gap-x-2 gap-y-8">
           <div className="w-7/10 flex flex-col lg:flex-row gap-8">
             <div className="w-1/3">
-              <Link to="/">
-                <Image
-                  src={isDark ? LogoWhite : LogoBlack}
-                  alt="Rasengan Logo"
-                  width={130}
-                  height={'auto'}
-                />
-              </Link>
+              <AppLogo />
             </div>
 
             <div className="w-1/3">

@@ -107,24 +107,28 @@ html {
   overflow: hidden;
 }
 
-.showcase-section {
+.grid-section {
   position: relative;
   overflow: hidden;
   background: none; /* We'll move the image to the pseudo-element */
 }
 
-.showcase-section::before {
+.grid-section::before {
   content: '';
   position: absolute;
   inset: 0;
   background: url('@/assets/images/icons/grid.svg') repeat center center;
   background-size: cover;
-  opacity: 0.2; /* Adjust opacity here */
+  opacity: 0.7; /* Adjust opacity here */
   pointer-events: none; /* Let clicks pass through */
   z-index: 0;
 }
 
-.showcase-section > * {
+.dark .grid-section::before {
+  opacity: 0.2;
+}
+
+.grid-section > * {
   position: relative;
   z-index: 1; /* Ensure content stays above background */
 }
