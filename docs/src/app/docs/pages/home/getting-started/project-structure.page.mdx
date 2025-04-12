@@ -7,6 +7,7 @@ toc: true
 ---
 
 import Pagination from '@/components/molecules/pagination';
+import { AlertWithDescription } from "@/components/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   GETTING STARTED
@@ -68,6 +69,13 @@ The **`src`** directory is the heart of your project, where you’ll define your
 ## The app Folder
 
 The **`app`** folder is where your **pages, routers, and layouts** live. It organizes the structure of your application, ensuring smooth navigation and rendering.  
+
+<AlertWithDescription 
+  title="Info"
+  description="The app folder is required for your project to function properly."
+  className="mb-4"
+  status="info"
+/>
 
 ### File Types in app
 

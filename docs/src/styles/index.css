@@ -34,6 +34,22 @@
   --color-border: #e1e1e1;
   --color-neutral: #858585;
 
+  --color-success: #05df72;
+  --color-success-500: #02c464;
+  --color-success-800: #04a857;
+
+  --color-warning: #fdc700;
+  --color-warning-500: #d89e00;
+  --color-warning-800: #b08a00;
+
+  --color-error: #ff6467;
+  --color-error-500: #d84a4d;
+  --color-error-800: #b04043;
+
+  --color-info: #51a2ff;
+  --color-info-500: #3c80c8;
+  --color-info-800: #326fa0;
+
   /* Fonts */
   --font-lexend-bold: 'Lexend-Bold', sans-serif;
   --font-lexend-medium: 'Lexend-Medium', sans-serif;
@@ -55,6 +71,22 @@
   --color-border: #e1e2e4;
   --color-neutral: #858585;
 
+  --color-success: #05df72;
+  --color-success-500: #02c464;
+  --color-success-800: #04a857;
+
+  --color-warning: #fdc700;
+  --color-warning-500: #d89e00;
+  --color-warning-800: #b08a00;
+
+  --color-error: #ff6467;
+  --color-error-500: #d84a4d;
+  --color-error-800: #b04043;
+
+  --color-info: #51a2ff;
+  --color-info-500: #3c80c8;
+  --color-info-800: #326fa0;
+
   .dark {
     --color-primary: #2b63f5;
     --color-primary-foreground: #fff;
@@ -75,24 +107,28 @@ html {
   overflow: hidden;
 }
 
-.showcase-section {
+.grid-section {
   position: relative;
   overflow: hidden;
   background: none; /* We'll move the image to the pseudo-element */
 }
 
-.showcase-section::before {
+.grid-section::before {
   content: '';
   position: absolute;
   inset: 0;
   background: url('@/assets/images/icons/grid.svg') repeat center center;
   background-size: cover;
-  opacity: 0.2; /* Adjust opacity here */
+  opacity: 0.7; /* Adjust opacity here */
   pointer-events: none; /* Let clicks pass through */
   z-index: 0;
 }
 
-.showcase-section > * {
+.dark .grid-section::before {
+  opacity: 0.2;
+}
+
+.grid-section > * {
   position: relative;
   z-index: 1; /* Ensure content stays above background */
 }

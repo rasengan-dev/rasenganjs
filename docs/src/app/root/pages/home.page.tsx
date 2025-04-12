@@ -116,9 +116,11 @@ const Home: PageComponent = () => {
           </div>
 
           <h1 className="text-[45px] leading-[50px] md:text-5xl md:leading-[55px] lg:text-[52px] text-foreground font-lexend-medium lg:leading-[60px] text-center lg:text-start">
-            Rasengan.js: A modern,{' '}
-            <span className="text-primary">high-performance</span> React
-            framework
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-foregroundj to-foreground">
+              Rasengan.js
+            </span>
+            : A modern, <span className="text-primary">high-performance</span>{' '}
+            React framework
           </h1>
           <p className="text-foreground/80 mt-4 text-lg lg:text-xl text-center lg:text-start max-w-[600px] mx-auto lg:mx-0">
             Based on modern tools, Rasengan.js will help you to create
@@ -360,7 +362,7 @@ const Home: PageComponent = () => {
         </div>
       </section>
 
-      <section className="showcase-section relative px-4 xl:px-20 py-20 pt-20 overflow-hidden">
+      <section className="grid-section relative px-4 xl:px-20 py-20 pt-20 overflow-hidden">
         <Heading
           title="Showcase"
           description="Discover what developers are building with Rasengan.js"
@@ -458,7 +460,7 @@ const Home: PageComponent = () => {
                   />
                 </svg>
               }
-              className="bg-gradient-to-tr from-[#0288D1]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-[#0288D1]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
           <Link
@@ -526,7 +528,7 @@ const Home: PageComponent = () => {
                   </defs>
                 </svg>
               }
-              className="bg-gradient-to-tr from-[#9C5DFE]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-[#9C5DFE]/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
           <Link
@@ -577,7 +579,7 @@ const Home: PageComponent = () => {
                   </defs>
                 </svg>
               }
-              className="bg-gradient-to-tr from-sky-800/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300"
+              className="bg-gradient-to-tr from-sky-800/20 via-background to-background border-[1px] border-background hover:border-primary/30 transition-all duration-300 h-full"
             />
           </Link>
         </div>
@@ -586,11 +588,6 @@ const Home: PageComponent = () => {
       <section className="relative px-4 xl:px-20 py-20 pt-20">
         <CTA />
       </section>
-
-      {/* <iframe
-        src="https://templates.smadmail.com/ui/map.html?private_key=smad2502181548329b219035df&project_id=79afc233-432f-4d57-b8e0-4bc7c2bdd666&map_id=8b764bc7-dc08-45a2-b932-4af2ac3e59d4"
-        scrolling="no"
-      ></iframe> */}
     </section>
   );
 };
