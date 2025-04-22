@@ -78,7 +78,6 @@ export const createDefaultViteConfig = (
               'app.router': './src/app/app.router',
               main: './src/main',
               template: './src/template',
-              config: './rasengan.config.js',
             },
           },
           ssrEmitAssets: false,

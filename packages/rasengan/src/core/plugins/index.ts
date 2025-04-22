@@ -213,6 +213,12 @@ export function rasengan({
         }
 
         // Generate a config.json file into the dist/client/assets or dist/assets
+        const minimizedConfig = {
+          buildOptions,
+          ssr: config.ssr,
+          redirects: await config.redirects(),
+        };
+
         fs.writeFileSync(
           path.posix.join(
             process.cwd(),
@@ -221,10 +227,7 @@ export function rasengan({
             buildOptions.assetPathDirectory,
             'config.json'
           ),
-          JSON.stringify({
-            buildOptions,
-            ssr: config.ssr,
-          }),
+          JSON.stringify(minimizedConfig),
           'utf-8'
         );
 

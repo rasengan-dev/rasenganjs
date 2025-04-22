@@ -16,5 +16,14 @@ export default defineConfig(async () => {
         }),
       ],
     },
+
+    redirects: async () => {
+      return [
+        {
+          source: '/',
+          destination: '/docs',
+        },
+      ];
+    },
   };
 });
