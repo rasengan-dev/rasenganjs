@@ -63,7 +63,7 @@ Tab.Item = ({ children }: { children: React.ReactNode }) => {
 const TabMenuItem = ({ title, active, onClick }: TabMenuItemProps) => {
   return (
     <div
-      className={`z-10 cursor-pointer ${active ? 'text-primary border-b-primary hover:border-b-primary hover:text-primary' : 'text-body hover:border-b-primary/70'} font-bold py-4 border-b-[1px] border-b-border transition-all`}
+      className={`z-10 cursor-pointer ${active ? 'text-primary border-b-primary hover:border-b-primary hover:text-primary' : 'text-body hover:border-b-primary/70'} font-lexend-medium py-4 border-b-[1px] border-b-border transition-all`}
       onClick={onClick}
     >
       {title}

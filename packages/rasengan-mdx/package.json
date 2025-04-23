@@ -9,7 +9,7 @@
     ".": {
       "import": "./lib/index.js",
       "require": "./lib/index.js",
-      "types": "./lib/types/index.d.ts"
+      "types": "./lib/index.d.ts"
     },
     "./css": "./lib/styles/rasengan-mdx.min.css",
     "./plugin": {

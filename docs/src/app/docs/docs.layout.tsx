@@ -87,5 +87,21 @@ const DocsLayout: LayoutComponent = () => {
 };
 
 DocsLayout.path = '/';
+DocsLayout.metadata = {
+  openGraph: {
+    title: 'Rasengan.js - Documentation',
+    description:
+      'Learn everything you need to know about Rasengan.js, and build amazing web applications.',
+    url: 'https://rasengan.dev',
+    image: 'https://rasengan.dev/assets/images/metadata/docs.png',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Welcome to Rasengan.js',
+    description:
+      'Learn everything you need to know about Rasengan.js, and build amazing web applications.',
+    image: 'https://rasengan.dev/assets/images/metadata/docs.png',
+  },
+};
 
 export default DocsLayout;

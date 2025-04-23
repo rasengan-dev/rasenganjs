@@ -15,6 +15,7 @@ export { defineRouter, defineRoutesGroup } from './utils/index.js';
 export { RouterComponent } from './interfaces.js';
 export {
   Outlet,
+  ScrollRestoration,
   useLocation,
   useNavigate,
   useNavigation,

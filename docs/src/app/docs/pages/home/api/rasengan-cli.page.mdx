@@ -1,0 +1,90 @@
+---
+path: rasengan-cli
+metadata:
+  title: Rasengan CLI
+  description: Rasengan CLI
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Rasengan CLI
+
+The Rasengan CLI is a command-line interface integrated natively in Rasengan.js. It provides a set of commands to help you with your development workflow.
+
+<br />
+
+To use the CLI, you have to pass through the `scripts` property in your `package.json` file.
+
+## Commands
+
+### rasengan dev 
+
+The `rasengan dev` command starts the development server.
+
+First, you need to set the `dev` script in your `package.json` file.
+
+```json title="package.json" showLineNumbers
+{
+  "scripts": {
+    "dev": "rasengan dev"
+  } 
+}
+```
+
+Then, you can run the following command:
+
+```bash title="Terminal"
+npm run dev
+```
+This will start the application in dev mode. The application will be available at `http://localhost:5320`.
+
+<br />
+The default port can be changed with `-p` option, like follow:
+
+```json title="package.json" showLineNumbers
+{
+  "scripts": {
+    "dev": "rasengan dev -p 3000"
+  } 
+}
+```
+
+or just 
+
+```bash title="Terminal"
+npm run dev -- -p 3000
+```
+
+
+### rasengan build
+
+The `rasengan build` command builds the application for production.
+
+First, you need to set the `build` script in your `package.json` file.
+
+```json title="package.json" showLineNumbers
+{
+  "scripts": {
+    "build": "rasengan build"
+  }
+}
+```
+
+Then, you can run the following command:
+
+```bash title="Terminal"
+npm run build
+```
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/create-rasengan-cli',
+    label: 'Create Rasengan CLI',
+  }}
+/>
