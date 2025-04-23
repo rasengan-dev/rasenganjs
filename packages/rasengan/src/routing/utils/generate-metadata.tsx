@@ -17,7 +17,12 @@ export const generateMetadata = (metadatas: Metadata[]) => {
 
       if (title) {
         metadataElements.push(
-          <meta key="og:title" property="og:title" content={title} />
+          <meta
+            key="og:title"
+            property="og:title"
+            content={title}
+            data-rg="true"
+          />
         );
       }
 
@@ -27,19 +32,25 @@ export const generateMetadata = (metadatas: Metadata[]) => {
             key="og:description"
             property="og:description"
             content={description}
+            data-rg="true"
           />
         );
       }
 
       if (url) {
         metadataElements.push(
-          <meta key="og:url" property="og:url" content={url} />
+          <meta key="og:url" property="og:url" content={url} data-rg="true" />
         );
       }
 
       if (image) {
         metadataElements.push(
-          <meta key="og:image" property="og:image" content={image} />
+          <meta
+            key="og:image"
+            property="og:image"
+            content={image}
+            data-rg="true"
+          />
         );
       }
 
@@ -49,6 +60,7 @@ export const generateMetadata = (metadatas: Metadata[]) => {
             key="og:image:width"
             property="og:image:width"
             content={width}
+            data-rg="true"
           />
         );
       }
@@ -59,12 +71,18 @@ export const generateMetadata = (metadatas: Metadata[]) => {
             key="og:image:height"
             property="og:image:height"
             content={height}
+            data-rg="true"
           />
         );
       }
 
       metadataElements.push(
-        <meta key="og:type" property="og:type" content={type || 'website'} />
+        <meta
+          key="og:type"
+          property="og:type"
+          content={type || 'website'}
+          data-rg="true"
+        />
       );
     }
 
@@ -77,12 +95,18 @@ export const generateMetadata = (metadatas: Metadata[]) => {
           key="twitter:card"
           name="twitter:card"
           content={card || 'summary_large_image'}
+          data-rg="true"
         />
       );
 
       if (site) {
         metadataElements.push(
-          <meta key="twitter:site" name="twitter:site" content={site} />
+          <meta
+            key="twitter:site"
+            name="twitter:site"
+            content={site}
+            data-rg="true"
+          />
         );
       }
 
@@ -92,19 +116,30 @@ export const generateMetadata = (metadatas: Metadata[]) => {
             key="twitter:creator"
             name="twitter:creator"
             content={creator}
+            data-rg="true"
           />
         );
       }
 
       if (image) {
         metadataElements.push(
-          <meta key="twitter:image" name="twitter:image" content={image} />
+          <meta
+            key="twitter:image"
+            name="twitter:image"
+            content={image}
+            data-rg="true"
+          />
         );
       }
 
       if (title) {
         metadataElements.push(
-          <meta key="twitter:title" name="twitter:title" content={title} />
+          <meta
+            key="twitter:title"
+            name="twitter:title"
+            content={title}
+            data-rg="true"
+          />
         );
       }
 
@@ -114,6 +149,7 @@ export const generateMetadata = (metadatas: Metadata[]) => {
             key="twitter:description"
             name="twitter:description"
             content={description}
+            data-rg="true"
           />
         );
       }
@@ -147,6 +183,7 @@ const generateLinks = (links: MetadataLink[]) => {
         sizes={sizes || '32x32'}
         type={type || 'image/png'}
         href={href}
+        data-rg="true"
       />
     );
   });
@@ -166,6 +203,7 @@ const generateMetaTags = (metaTags: MetaTag[]) => {
         key={property ?? name}
         property={property ?? name}
         content={content}
+        data-rg="true"
       />
     );
   });

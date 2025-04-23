@@ -6,7 +6,7 @@ import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig(async () => {
   return {
-    // ssr: false,
+    // ssr: true,
     vite: {
       plugins: [
         mdx(),
