@@ -378,9 +378,6 @@ importers:
 
   packages/rasengan-vercel:
     dependencies:
-      execa:
-        specifier: ^8.0.1
-        version: 8.0.1
       rasengan:
         specifier: workspace:^
         version: link:../rasengan

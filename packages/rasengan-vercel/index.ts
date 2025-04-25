@@ -233,8 +233,6 @@ const generateServerlessHandler = async () => {
 const copyNodeModules = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
-  console.log('Copying node_modules for serverless function');
-
   // Copy the node_modules folder from the project root to .vercel/output/functions/index.func/server/node_modules
   await fs.cp(
     path.posix.join(process.cwd(), 'node_modules'),

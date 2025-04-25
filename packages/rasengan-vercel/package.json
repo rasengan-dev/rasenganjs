@@ -28,9 +28,6 @@
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
   },
-  "dependencies": {
-    "execa": "^8.0.1"
-  },
   "peerDependencies": {
     "rasengan": "workspace:^"
   },
