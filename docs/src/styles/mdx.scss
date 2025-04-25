@@ -8,6 +8,10 @@
   .rasengan-markdown-body {
     width: 100%;
 
+    & .no-underline {
+      text-decoration: none;
+    }
+
     & p {
       font-size: 16px;
     }
@@ -19,6 +23,7 @@
 
     & strong {
       font-family: 'Lexend-Medium';
+      font-weight: 400;
     }
 
     & h1,
@@ -28,6 +33,7 @@
     & h5,
     & h6 {
       color: var(--color-foreground);
+      font-weight: 400;
     }
 
     & code.code-block {
@@ -73,6 +79,63 @@
 
   .rasengan-toc h2.title {
     font-family: 'GeistMono-Regular';
+  }
+
+  @media (min-width: 1280px) {
+    .rasengan-markdown-body {
+      max-width: 60rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .rasengan-wrapper {
+      padding-left: 0rem;
+      padding-right: 0rem;
+    }
+  }
+}
+
+.editor {
+  /* Custom styles for markdown */
+  .rasengan-wrapper {
+    padding-left: 0rem;
+    padding-right: 0rem;
+  }
+
+  .rasengan-markdown-body {
+    width: 100%;
+    // height: 100%;
+    padding: 0;
+
+    // & pre,
+    // & figure,
+    // & div {
+    //   height: 100%;
+    // }
+
+    & code.code-block {
+      // height: 100%;
+      background-color: #1c202a;
+      border-color: transparent;
+    }
+
+    & figure:has(pre[data-language]) {
+      // padding: 4px;
+      // border-radius: 16px;
+      // border: 1px solid #353740;
+      border-color: #1c202a;
+      background-color: #10141e;
+      margin: 0;
+    }
+
+    & figure pre {
+      background-color: transparent !important;
+
+      & .copy-button,
+      & .lang {
+        display: none;
+      }
+    }
   }
 
   @media (min-width: 1280px) {
