@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/vercel",
-  "version": "1.0.0-beta.91",
+  "version": "1.0.0",
   "type": "module",
   "description": "Vercel adapter to serve Rasengan apps on Vercel",
   "bugs": {
@@ -31,12 +31,14 @@
   "peerDependencies": {
     "rasengan": "workspace:^"
   },
-  "devDependencies": {},
   "files": [
     "dist/",
     "bin.js",
     "CHANGELOG.md",
     "LICENSE.md",
     "README.md"
-  ]
+  ],
+  "dependencies": {
+    "execa": "^8.0.1"
+  }
 }
