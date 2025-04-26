@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/shuriken",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Shuriken CLI is a tool to automate basic development tasks like generating pages, routers, layouts or resources and cloning templates.",
   "type": "module",
   "author": {
