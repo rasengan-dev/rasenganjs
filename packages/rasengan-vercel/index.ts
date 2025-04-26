@@ -4,6 +4,7 @@ import { OptimizedAppConfig } from 'rasengan';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
+import { execa } from 'execa';
 
 interface VercelBuildOptions {
   buildDirectory: string;
@@ -155,14 +156,57 @@ const generateServerlessConfigFile = async () => {
   );
 };
 
+const generatePackageJson = async () => {
+  const vercelBuildOptions = getVercelBuildOptions();
+
+  // Load the package.json from the project root
+  const packageJsonPath = path.resolve('package.json');
+  const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
+  const packageJsonData = JSON.parse(packageJsonContent);
+
+  // Default Vercel package.json
+  const packageJson = {
+    type: 'module',
+    dependencies: {
+      ...packageJsonData.dependencies,
+    },
+  };
+
+  // Write the package.json to the .vercel/output/functions/index.func/package.json file
+  await fs.writeFile(
+    path.posix.join(
+      vercelBuildOptions.buildDirectory,
+      vercelBuildOptions.functionsDirectory,
+      'package.json'
+    ),
+    JSON.stringify(packageJson, null, 2)
+  );
+};
+
+const runInstall = async () => {
+  try {
+    const vercelBuildOptions = getVercelBuildOptions();
+
+    console.log('Running npm install for serverless function...');
+
+    // Run npm install in the .vercel/output/functions/index.func directory
+    execa('npm', ['install', '--legacy-peer-deps'], {
+      cwd: path.posix.join(
+        vercelBuildOptions.buildDirectory,
+        vercelBuildOptions.functionsDirectory
+      ),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const generateServerlessHandler = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
   // Default Vercel handler
   const serverlessHandler = `
-  import express from 'express';
-  import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
-  import compression from 'compression';
+  import { createRequestHandler, resolveBuildOptions, express, compression } from 'rasengan/server';
   import path from 'node:path';
 
   // Create an Express app
@@ -239,7 +283,6 @@ const copyNodeModules = async () => {
     path.posix.join(
       vercelBuildOptions.buildDirectory,
       vercelBuildOptions.functionsDirectory,
-      vercelBuildOptions.serverDirectory,
       'node_modules'
     ),
     { recursive: true }
@@ -353,8 +396,14 @@ const prepare = async (options: AdapterOptions) => {
     // Prepare the serverless handler
     await generateServerlessHandler();
 
+    // Generate the package.json
+    await generatePackageJson();
+
+    // Run install
+    await runInstall();
+
     // Copy the node_modules folder to the Vercel directory
-    await copyNodeModules();
+    // await copyNodeModules();
   }
 };
 
