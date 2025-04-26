@@ -303,6 +303,9 @@ importers:
 
   packages/rasengan-serve:
     dependencies:
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
       compression:
         specifier: ^1.7.5
         version: 1.8.0
