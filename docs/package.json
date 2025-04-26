@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@rasenganjs/image": "^1.0.0",
-    "@rasenganjs/mdx": "^1.1.0",
+    "@rasenganjs/mdx": "^1.1.1",
     "@rasenganjs/serve": "^1.0.0",
     "@rasenganjs/theme": "^1.0.1",
     "@rasenganjs/vercel": "^1.0.0",
