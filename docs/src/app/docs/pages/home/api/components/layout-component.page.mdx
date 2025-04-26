@@ -1,0 +1,369 @@
+---
+path: layout-component
+metadata:
+  title: Layout Component - Components | API Reference | Rasengan.js
+  description: The Layout Component is a functional component that defines the structure of a layout component.
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+import Tabs from '@/components/molecules/tab';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Layout Component
+
+`LayoutComponent` is a functional component that defines the structure of a layout component.
+
+## Example
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" showLineNumbers /LayoutComponent/
+    import { LayoutComponent, Outlet } from "rasengan";
+    
+    const AppLayout: LayoutComponent = () => {
+      return (
+        <div>
+          <header>
+            <h1>App Layout</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" showLineNumbers /LayoutComponent/
+    import { Outlet } from "rasengan";
+    
+    const AppLayout = () => {
+      return (
+        <div>
+          <header>
+            <h1>App Layout</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+The `LayoutComponent` function component requires a `path` property to define the route layout that will be considered as the base path of all pages that will use the layout.
+
+Inside the return, the `Outlet` component is used to render the child components of the layout.
+
+## Properties and Methods
+
+The `LayoutComponent` function has the following properties and methods:
+
+### Properties
+
+- `path`: The path of the layout component. This is used to define the route layout that will be considered as the base path of all pages that will use the layout.
+
+### Methods
+
+- `loader()`: Similar to `getServerSideProps()` in Next.js, this method is used to make some operations on the server before the layout is rendered. It should return a promise with the result of the operations.
+
+The `loader()` method is optional. The returned promise has to follow the following structure:
+
+```ts title="JS"
+type LoaderResponse = {
+  props?: { [key: string]: any };
+  redirect?: string
+};
+```
+
+{/* <AlertBox>
+- `props`: The props that will be passed to the layout component.
+- `redirect`: The path to redirect the user.
+
+The `props` and `redirect` are optional. If the `redirect` is defined, the `props` will be ignored.
+</AlertBox> */}
+
+## Example with loader() method [#loader-function]
+
+### return props
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" {25-29} showLineNumbers copy /LayoutComponent/
+    import { LayoutComponent, Outlet } from "rasengan";
+
+    type Props = {
+      title: string;
+    };
+    
+    const AppLayout: LayoutComponent = ({ title }: Props) => {
+       return (
+        <div>
+          <header>
+            <h1>{title}</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    AppLayout.loader = async () => {
+      // You can make some operations here
+
+      return {
+        props: {
+          title: "App Layout"
+        }
+      };
+    };
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" {25-29} showLineNumbers copy /LayoutComponent/
+    import { LayoutComponent, Outlet } from "rasengan";
+
+    type Props = {
+      title: string;
+    };
+    
+    const AppLayout = ({ title }) => {
+       return (
+        <div>
+          <header>
+            <h1>{title}</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    AppLayout.loader = async () => {
+      // You can make some operations here
+
+      return {
+        props: {
+          title: "App Layout"
+        }
+      };
+    };
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+In the example above, the `loader` method is used to make some operations on the server before the layout is rendered. 
+
+The `loader` method returns a promise with the props that will be passed to the layout component.
+
+### redirect
+
+You can also use the `redirect` property to redirect the user to another page.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" {25-29} showLineNumbers /LayoutComponent/
+    import { LayoutComponent, Outlet } from "rasengan";
+
+    type Props = {
+      title: string;
+    };
+    
+    const AppLayout: LayoutComponent = ({ title }: Props) => {
+       return (
+        <div>
+          <header>
+            <h1>{title}</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    AppLayout.loader = async () => {
+      const isAuth = false;
+
+      if (!isAuth) {
+        return {
+          redirect: "/login"
+        };
+      }
+
+      return {
+        props: {
+          title: "App Layout"
+        }
+      };
+    };
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" {21-25} showLineNumbers /LayoutComponent/
+    import { Outlet } from "rasengan";
+
+    const AppLayout = ({ title }) => {
+       return (
+        <div>
+          <header>
+            <h1>{title}</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    }
+
+    AppLayout.path = "/";
+
+    AppLayout.loader = async () => {
+      const isAuth = false;
+
+      if (!isAuth) {
+        return {
+          redirect: "/login"
+        };
+      }
+
+      return {
+        props: {
+          title: "App Layout"
+        }
+      };
+    };
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+### use arguments
+
+You have to possibility to access to some parameters via the loader methods: 
+
+- `params`: Which is an object containing the list of params passed into the URL.
+- `request`: Which is the request object from the server.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" {3} showLineNumbers
+    import { LoaderOptions } from "rasengan"
+
+    AppLayout.loader = async loader({ params, request }: LoaderOptions) {
+      // You can make some operations here
+
+      return {
+        props: {}
+      }
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" {1} showLineNumbers
+    AppLayout.loader = async loader({ params, request }) {
+      // You can make some operations here
+
+      return {
+        props: {}
+      }
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+
+### dynamic metadata
+
+You have to possibility to define `dynamic metadata` via the loader methods. To do so, you have to return an object with the `meta` property.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" {5-17} showLineNumbers
+    import { LoaderOptions } from "rasengan"
+
+    AppLayout.loader = async loader() {
+      return {
+        meta: {
+          openGraph: {
+            // open graph properties here
+          },
+
+          twitter: {
+            // twitter properties here
+          },
+
+          links: {
+            // links properties here
+          }
+        }
+      }
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" {3-15} showLineNumbers
+    AppLayout.loader = async loader() {
+      return {
+        meta: {
+          openGraph: {
+            // open graph properties here
+          },
+
+          twitter: {
+            // twitter properties here
+          },
+
+          links: {
+            // links properties here
+          }
+        }
+      }
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+`dynamic metadata` allows you to define metadata by using data coming from a database or any other source.
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/components/template',
+    label: 'Template',
+  }}
+  next={{
+    href: '/docs/api-reference/components/page-component',
+    label: 'Page Component',
+  }}
+/>

@@ -1,8 +1,8 @@
 ---
 path: base-concepts
 metadata:
-  title: Base Concepts
-  description:
+  title: Base Concepts - Routing | Core concepts | Rasengan.js
+  description: Rasengan.js is a powerful and flexible JavaScript framework for building web applications. This article covers the basics of routing in Rasengan.js.
 toc: true
 ---
 
@@ -66,7 +66,7 @@ A **Layout** wraps around multiple pages, providing a consistent structure (e.g.
   activeIndex={0}
 >
   <Tabs.Item>
-    ```tsx filename="src/app/app.layout.tsx" showLineNumbers copy
+    ```tsx title="src/app/app.layout.tsx" showLineNumbers
     import React from "react";
     import { LayoutComponent, Outlet } from "rasengan";
 
@@ -83,7 +83,7 @@ A **Layout** wraps around multiple pages, providing a consistent structure (e.g.
     ```
   </Tabs.Item>
   <Tabs.Item>
-    ```jsx filename="src/app/app.layout.jsx" showLineNumbers copy
+    ```jsx title="src/app/app.layout.jsx" showLineNumbers
     import React from "react";
     import { Outlet } from "rasengan";
 
@@ -117,7 +117,7 @@ A **Page** is a React component that is displayed when a user visits a specific 
   activeIndex={0}
 >
   <Tabs.Item>
-    ```tsx filename="src/app/home.page.tsx" showLineNumbers copy
+    ```tsx title="src/app/home.page.tsx" showLineNumbers
     import { PageComponent } from "rasengan";
     
     const Home: PageComponent = () => {
@@ -134,7 +134,7 @@ A **Page** is a React component that is displayed when a user visits a specific 
     ```
   </Tabs.Item>
   <Tabs.Item>
-    ```jsx filename="src/app/home.page.jsx" showLineNumbers copy
+    ```jsx title="src/app/home.page.jsx" showLineNumbers
     const Home = () => {
       return <div>Home Page</div>;
     };

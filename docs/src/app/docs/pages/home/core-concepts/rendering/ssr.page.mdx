@@ -1,0 +1,144 @@
+---
+path: ssr
+metadata:
+  title: Server-side Rendering - Rendering | Core concepts | Rasengan.js
+  description: Learn about Server-Side Rendering (SSR) in Rasengan.js, a React framework for building web applications.
+toc: true
+---
+
+import Tabs from '@/components/molecules/tab';
+import Pagination from '@/components/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Server-side Rendering (SSR)
+
+## What is Server-Side Rendering?
+
+Server-Side Rendering (`SSR`) is a rendering technique where pages are pre-rendered on the server and sent as fully formed HTML to the client. This approach offers several benefits:
+
+- **Better SEO** – Since the content is rendered before being sent, search engines can easily index it.
+- **Faster Initial Load** – Users receive a ready-to-display page without waiting for JavaScript execution.
+- **Always Up-to-Date Content** – The data is fetched and processed on each request.
+
+However, SSR also introduces some trade-offs, such as increased server load and potential latency depending on data-fetching times.
+
+## How SSR Works in Rasengan.js
+
+Rasengan.js supports SSR by default for all pages. When a user visits a page, the server fetches the necessary data and renders the page on the server, sending the fully rendered HTML to the client.
+This behavior can be disabled by setting **`ssr: false`** in the `rasengan.config.js` file.
+
+```js title="rasengan.config.js" {4} showLineNumbers copy
+import { defineConfig } from "rasengan";
+
+export default defineConfig({
+  ssr: true, // default value is set to true
+});
+```
+<br />
+Rasengan.js allows you to use SSR with the `loader` function inside your page component. This function runs on the `server` and fetches data before rendering the page.
+
+### Example: Fetching Data with loader
+
+```tsx title="profile.page.tsx" {31-35} showLineNumbers copy
+import { PageComponent } from "rasengan";
+
+type Post = {
+  id: string;
+  title: string;
+  content: string;
+}
+
+const Posts: PageComponent<{ posts: Post[] }> = ({ posts }) => {
+  return (
+    <div>
+      {
+        posts.map(post => (
+          <div key={post.id}>
+            <h2>{post.title}</h2>
+            <p>{post.content}</p>
+          </div>
+        ))
+      }
+    </div>
+  );
+};
+
+Posts.path = "/posts";
+Posts.metadata = {
+  title: "Posts",
+  description: "Explore our posts",
+};
+
+// Fetch posts data on the server before rendering the page
+Posts.loader = async () => {
+  const posts = await fetch(`https://api.example.com/posts`).then(res => res.json());
+
+  return { props: { posts } }; // Ensure the returned object contains `props`
+};
+
+export default Posts;
+```
+
+### How It Works
+
+1. **Request Handling** – When a user visits `/profile/123`, Rasengan.js executes the `loader` function before rendering the page.
+2. **Data Fetching** – The `loader` function retrieves user data from an API using the `params.id` from the URL.
+3. **Server-Side Rendering** – The page is rendered on the server using the fetched data.
+4. **HTML Delivery** – The fully rendered HTML is sent to the client.
+5. **Hydration** – Once received, React attaches event listeners and makes the page interactive.
+
+## Dynamic Routes with SSR
+
+The `loader` function is especially useful for dynamic routes. You can use URL parameters to fetch the necessary data.
+
+```tsx title="profile.page.tsx" {19-23} showLineNumbers copy
+import { PageComponent } from "rasengan";
+
+const Profile: PageComponent<{ user: { name: string; email: string } }> = ({ user }) => {
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+    </div>
+  );
+};
+
+Profile.path = "/profile/:id";
+Profile.metadata = {
+  title: "User Profile",
+  description: "View user details",
+};
+
+// Fetch user data on the server before rendering the page
+Profile.loader = async ({ params }) => {
+  const user = await fetch(`https://api.example.com/users/${params.id}`).then(res => res.json());
+
+  return { props: { user } }; // Ensure the returned object contains `props`
+};
+
+export default Profile;
+```
+
+## When to Use SSR
+
+✅ Use SSR when:
+- The page content **needs to be updated** on each request.
+- The page is **SEO-sensitive** and must be indexed correctly.
+- The data is **dynamic and cannot be pre-generated**.
+
+❌ Avoid SSR when:
+- The content **doesn’t change often** (use Static Site Generation instead).
+- The page contains **highly interactive elements** that don’t require fresh data on load.
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/redirecting',
+    label: 'Redirecting',
+  }}
+  next={{
+    href: '/docs/rendering/csr',
+    label: 'Client-Side Rendering',
+  }}
+/>

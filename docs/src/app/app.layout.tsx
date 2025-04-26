@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Outlet, LayoutComponent, Link } from 'rasengan';
+import { useEffect } from 'react';
+import { Outlet, LayoutComponent, Link, useLocation } from 'rasengan';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { useNavigationStore } from '@/store/navigation';
@@ -7,11 +7,23 @@ import { motion, AnimatePresence } from 'motion/react';
 import { NavigationData } from '@/data/docs';
 import { X } from 'lucide-react';
 import ThemeButton from '@/components/atoms/buttons/theme-button';
-import Footer from '@/components/layout/footer';
 
 const AppLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
   const { isOpen, toggle } = useNavigationStore();
+
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  // Scroll to the top on route change
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, [pathname]);
 
   return (
     <section

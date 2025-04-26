@@ -1,7 +1,7 @@
 ---
 path: installation
 metadata:
-  title: Creating your first Rasengan.js app
+  title: Creating your first Rasengan.js app | Getting Started | Rasengan.js
   description: Setting up your React project with the Create Rasengan CLI tool in seconds
 toc: false
 ---
@@ -9,6 +9,7 @@ toc: false
 import StepItem from '@/components/molecules/step-item';
 import Tabs from '@/components/molecules/tab';
 import Pagination from '@/components/molecules/pagination';
+import { AlertWithDescription } from "@/components/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
   GETTING STARTED
@@ -86,6 +87,13 @@ npm run dev
 </StepItem>
 
 ### Manual Installation
+
+<AlertWithDescription 
+  title="Warning"
+  description="This method is not recommended for beginners. It is recommended to use the automatic installation method."
+  className="mb-4"
+  status="warning"
+/>
 
 <Tabs 
   tabs={[

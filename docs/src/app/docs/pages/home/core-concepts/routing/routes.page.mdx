@@ -1,13 +1,14 @@
 ---
 path: routes
 metadata:
-  title: Defining Routes
-  description:
+  title: Defining Routes - Routing | Core concepts | Rasengan.js
+  description: Defining routes in Rasengan.js is straightforward.
 toc: true
 ---
 
 import Tabs from '@/components/molecules/tab';
 import Pagination from '@/components/molecules/pagination';
+import { AlertWithLink } from "@/components/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
@@ -99,6 +100,12 @@ Metadata helps search engines and social media platforms understand your page co
 | `title`      | string  | The title of the page                   |
 | `description`| string  | A short description of the page         |
 
+
+<AlertWithLink 
+  title="Learn more about metadata"
+  link="/docs/optimizing/metadata"
+  status="info"
+/>
 
 <Pagination 
   prev={{
