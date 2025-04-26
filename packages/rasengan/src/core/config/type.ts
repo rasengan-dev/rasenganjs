@@ -1,4 +1,5 @@
 import type * as Vite from 'vite';
+import { BuildOptions } from '../../server/build';
 
 export interface ServerConfig {
   /**
@@ -67,6 +68,12 @@ export type AppConfig = {
    * Configure the app
    */
   redirects?: () => Promise<Redirect[]>;
+};
+
+export type OptimizedAppConfig = {
+  ssr?: AppConfig['ssr'];
+  redirects: Redirect[];
+  buildOptions: BuildOptions;
 };
 
 export type AppConfigFunction = () => AppConfig;

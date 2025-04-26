@@ -1,5 +1,6 @@
 import type * as Express from 'express';
 import { ManifestManager } from '../build/manifest.js';
+import fs from 'node:fs';
 import path from 'node:path';
 import { RenderStreamFunction } from '../../entries/server/entry.server.js';
 import { generateRoutes } from '../../routing/utils/index.js';
@@ -16,8 +17,7 @@ import {
   isStaticRedirectFromConfig,
 } from '../dev/utils.js';
 import { handleRedirectRequest } from '../dev/handlers.js';
-import { AppConfig } from '../../core/config/type.js';
-import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
+import { OptimizedAppConfig } from '../../core/config/type.js';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
 
@@ -65,16 +65,26 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
         )
       ).default;
       // Get Config
-      const configHandler: () => Promise<AppConfig> = await (
-        await loadModuleSSR(
-          path.posix.join(
-            buildOptions.buildDirectory,
-            buildOptions.serverPathDirectory,
-            'config.js'
-          )
-        )
-      ).default;
-      const config = await configHandler();
+      const configPath = path.posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.clientPathDirectory,
+        buildOptions.assetPathDirectory,
+        'config.json'
+      );
+
+      const configPathExist = fs.existsSync(configPath);
+
+      if (!configPathExist) {
+        throw new Error(
+          'No config.json file found in dist/client/assets, please make a build again'
+        );
+      }
+
+      // Read the config.json file
+      const configData = fs.readFileSync(configPath, 'utf-8').toString();
+
+      // Parse the config.json file
+      const config = JSON.parse(configData) as OptimizedAppConfig;
 
       // extract render function
       const {
@@ -93,13 +103,15 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       let request = createRasenganRequest(req, res);
       let context = await handler.query(request);
 
-      const redirects = await config.redirects();
-      const redirectFound = await isStaticRedirectFromConfig(req, redirects);
+      const redirectFound = await isStaticRedirectFromConfig(
+        req,
+        config.redirects
+      );
 
       if (isRedirectResponse(context as Response) || redirectFound) {
         return await handleRedirectRequest(req, res, {
           context,
-          redirects,
+          redirects: config.redirects,
         });
       }
 

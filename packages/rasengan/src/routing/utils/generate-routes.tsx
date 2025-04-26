@@ -21,6 +21,7 @@ import {
   MetaTag,
 } from '../types.js';
 import { Suspense } from 'react';
+import MetadataProvider from '../providers/metadata.js';
 
 const defaultMetadata: Metadata = {
   title: 'Not Found',
@@ -33,6 +34,7 @@ const defaultMetadata: Metadata = {
  */
 export const getRouter = (routerInstance: RouterComponent) => {
   const routes = generateRoutes(routerInstance);
+
   let router = createBrowserRouter(routes, {
     hydrationData: window.__staticRouterHydrationData,
   });
@@ -255,6 +257,18 @@ export const generateRoutes = (
         params,
       };
 
+      // Check if the layout is the root layout and wrap it in a MetadataProvider
+      if (isRoot || !router.useParentLayout) {
+        // Generate metadata mapping
+        const metadataMapping = generateMetadataMapping(router);
+
+        return (
+          <MetadataProvider metadataMapping={metadataMapping}>
+            <Layout {...layoutProps} />
+          </MetadataProvider>
+        );
+      }
+
       return <Layout {...layoutProps} />;
     },
     async loader({ params, request }) {
@@ -381,4 +395,68 @@ export const generateRoutes = (
 
   // Return the formated router
   return routes;
+};
+
+/**
+ * This function receives a router component and return a mapping from path to metadata
+ * @param router Represents the router component
+ * @returns
+ */
+export const generateMetadataMapping = (
+  router: RouterComponent,
+  isRoot = true,
+  parentLayout: LayoutComponent | undefined = undefined
+): Record<string, Metadata> => {
+  const metadataMapping: Record<string, Metadata> = {};
+
+  // Get information about the layout and the path
+  const Layout = router.layout;
+
+  const layoutPath = !isRoot
+    ? router.useParentLayout
+      ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
+      : Layout.path
+    : Layout.path;
+
+  // Get informations about pages
+  router.pages.forEach((Page) => {
+    const pagePathFormated =
+      Page.path.startsWith('/') && Page.path !== '/'
+        ? Page.path.slice(1)
+        : Page.path;
+
+    // Get the path of the page
+    const path = Page.path === '/' ? layoutPath : layoutPath + pagePathFormated;
+
+    // Get metadata
+    metadataMapping[path] = {
+      openGraph: {
+        url: '',
+        image: '',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        image: '',
+        title: '',
+      },
+      ...Page.metadata,
+    };
+  });
+
+  // Loop through imported routers in order to apply the same logic like above.
+  for (const importedRouter of router.routers) {
+    const importedMetadataMapping = generateMetadataMapping(
+      importedRouter,
+      false,
+      Layout
+    );
+    Object.assign(metadataMapping, importedMetadataMapping);
+
+    // Add the metadata of the imported router's pages to the metadata mapping
+    for (const [path, metadata] of Object.entries(importedMetadataMapping)) {
+      metadataMapping[path] = metadata;
+    }
+  }
+
+  return metadataMapping;
 };
