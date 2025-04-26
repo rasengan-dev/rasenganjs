@@ -10,7 +10,13 @@ type Props = {
 export default function BlogCard({ post }: Props) {
   return (
     <article className="w-full border-[1px] border-border/60 rounded-2xl overflow-hidden">
-      <Image src={post.image} alt="Blog post image" width={400} height={250} />
+      <img
+        src={post.image}
+        alt={post.title}
+        width={400}
+        height={300}
+        className="w-full h-auto object-cover"
+      />
 
       <div className="w-full p-4 bg-background">
         <div className="flex items-baseline justify-between">
