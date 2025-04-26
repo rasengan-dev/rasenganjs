@@ -22,11 +22,11 @@ export const Tools = ['eslint', 'prettier'];
  * Version list with stable and beta
  */
 export const Versions: {
-  stable: string | null;
-  beta: string;
+  stable: string;
+  beta: string | null;
 } = {
-  stable: null,
-  beta: '1.0.0-beta.57',
+  stable: '^1.0.0',
+  beta: null,
 };
 
 /**

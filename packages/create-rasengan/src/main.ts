@@ -207,9 +207,11 @@ program
       let versionName = '';
 
       if (experimental) {
-        versionName = Versions.beta;
+        if (Versions.beta) {
+          versionName = Versions.beta;
+        }
       } else {
-        versionName = Versions.stable || Versions.beta;
+        versionName = Versions.stable;
       }
 
       // Ask for the language
