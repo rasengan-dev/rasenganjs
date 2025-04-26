@@ -31,12 +31,14 @@
   "peerDependencies": {
     "rasengan": "workspace:^"
   },
-  "devDependencies": {},
   "files": [
     "dist/",
     "bin.js",
     "CHANGELOG.md",
     "LICENSE.md",
     "README.md"
-  ]
+  ],
+  "dependencies": {
+    "execa": "^8.0.1"
+  }
 }
