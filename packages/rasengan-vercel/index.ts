@@ -183,6 +183,24 @@ const generatePackageJson = async () => {
   );
 };
 
+const runInstall = async () => {
+  try {
+    const vercelBuildOptions = getVercelBuildOptions();
+
+    console.log('Running npm install for serverless function...');
+
+    // Run npm install in the .vercel/output/functions/index.func directory
+    execa('npm', ['install', '--legacy-peer-deps'], {
+      cwd: path.posix.join(
+        vercelBuildOptions.buildDirectory,
+        vercelBuildOptions.functionsDirectory
+      ),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const generateServerlessHandler = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
@@ -381,8 +399,11 @@ const prepare = async (options: AdapterOptions) => {
     // Generate the package.json
     await generatePackageJson();
 
+    // Run install
+    await runInstall();
+
     // Copy the node_modules folder to the Vercel directory
-    await copyNodeModules();
+    // await copyNodeModules();
   }
 };
 
