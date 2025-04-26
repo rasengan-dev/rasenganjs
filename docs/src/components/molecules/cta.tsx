@@ -24,7 +24,7 @@ export default function CTA() {
           effortlessly.
         </p>
         <Link to="/docs/getting-started/introduction">
-          <Button className="bg-primary text-primary-foreground">
+          <Button hover tap className="bg-primary text-primary-foreground">
             Get started now
           </Button>
         </Link>

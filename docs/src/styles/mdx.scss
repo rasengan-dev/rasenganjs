@@ -8,6 +8,10 @@
   .rasengan-markdown-body {
     width: 100%;
 
+    & .no-underline {
+      text-decoration: none;
+    }
+
     & p {
       font-size: 16px;
     }

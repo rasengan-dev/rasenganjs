@@ -128,13 +128,15 @@ const Home: PageComponent = () => {
           </p>
 
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4">
-            <Button
-              hover
-              tap
-              className="bg-primary text-primary-foreground font-lexend-light h-[48px] px-6 w-full md:w-auto"
-            >
-              Get started
-            </Button>
+            <Link to="/docs/getting-started/introduction">
+              <Button
+                hover
+                tap
+                className="bg-primary text-primary-foreground font-lexend-light h-[48px] px-6 w-full md:w-auto"
+              >
+                Get started
+              </Button>
+            </Link>
             <CopyButton
               text="npx create-rasengan@latest"
               textToDisplay="- npx create-rasengan@latest"
@@ -372,37 +374,37 @@ const Home: PageComponent = () => {
           <ShowcaseCard
             image="/assets/images/showcase/biccas.png"
             title="Biccas"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_landing-biccas"
             className="a"
           />
           <ShowcaseCard
             image="/assets/images/showcase/kronix.png"
             title="Kronix"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-kronix"
             className="b"
           />
           <ShowcaseCard
             image="/assets/images/showcase/enver.png"
             title="Enver"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_landing-enver"
             className="c"
           />
           <ShowcaseCard
             image="/assets/images/showcase/rasengan.png"
             title="Rasengan"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-rasengan"
             className="d"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
             title="Hano"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
             className="e"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
             title="Hano"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
             className="f"
           />
         </div>

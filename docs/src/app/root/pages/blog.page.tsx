@@ -1,9 +1,12 @@
 import BlogCard from '@/components/molecules/blog-card';
 import CTA from '@/components/molecules/cta';
 import Heading from '@/components/molecules/heading';
+import { useBlogStore } from '@/store/blog';
 import { PageComponent } from 'rasengan';
 
 const Blog: PageComponent = () => {
+  const { blog: posts } = useBlogStore();
+
   return (
     <section className="w-full min-h-screen">
       <section className="grid-section relative px-4 xl:px-20 py-20 pt-40 overflow-hidden">
@@ -13,10 +16,9 @@ const Blog: PageComponent = () => {
         />
 
         <div className="relative showcase-containe grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10 z-20">
-          <BlogCard />
-          <BlogCard />
-          <BlogCard />
-          <BlogCard />
+          {posts.map((post, index) => (
+            <BlogCard key={index} post={post} />
+          ))}
         </div>
       </section>
 

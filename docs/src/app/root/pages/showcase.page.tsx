@@ -16,32 +16,32 @@ const Showcase: PageComponent = () => {
           <ShowcaseCard
             image="/assets/images/showcase/biccas.png"
             title="Biccas"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_landing-biccas"
           />
           <ShowcaseCard
             image="/assets/images/showcase/kronix.png"
             title="Kronix"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-kronix"
           />
           <ShowcaseCard
             image="/assets/images/showcase/enver.png"
             title="Enver"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_landing-enver"
           />
           <ShowcaseCard
             image="/assets/images/showcase/rasengan.png"
             title="Rasengan"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-rasengan"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
             title="Hano"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"
             title="Hano"
-            link="#"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
           />
         </div>
       </section>
