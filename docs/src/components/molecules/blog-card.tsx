@@ -20,7 +20,7 @@ export default function BlogCard({ post }: Props) {
 
           <div>
             <span className="text-foreground/80 font-lexend-light text-sm">
-              5 min read
+              {post.readingTime} read
             </span>
           </div>
         </div>

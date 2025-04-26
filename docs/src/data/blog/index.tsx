@@ -8,6 +8,7 @@ export type BlogDataType = {
   postedAt: string;
   link: string;
   image: string;
+  readingTime: string;
 };
 
 export const BlogData: Array<BlogDataType> = [
@@ -21,6 +22,7 @@ export const BlogData: Array<BlogDataType> = [
     postedAt: 'April 25, 2024',
     link: '/blog/rasengan-1-beta',
     image: '/assets/blog/rasengan-beta1.png',
+    readingTime: '3 min',
   },
   {
     id: 1,
@@ -32,5 +34,6 @@ export const BlogData: Array<BlogDataType> = [
     postedAt: 'April 26, 2025',
     link: '/blog/rasengan-v1-stable',
     image: '/assets/blog/rasengan-stable1.png',
+    readingTime: '5 min',
   },
 ];
