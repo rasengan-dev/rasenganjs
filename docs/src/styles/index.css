@@ -61,6 +61,7 @@
   /* Size */
   --main-width: calc(100% - 280px);
   --mobile-main-height: calc(100vh - 110px);
+  --hero-height: calc(100vh - 60px);
 }
 
 :root {

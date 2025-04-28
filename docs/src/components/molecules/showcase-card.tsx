@@ -30,7 +30,7 @@ export const ShowcaseCard = ({ image, title, link, className }: Props) => {
         <Image
           src={image}
           alt="Showcase"
-          className={twMerge('aspect-squareh rounded-3xl')}
+          className={twMerge('aspect-[9/7] rounded-3xl')}
           width={'100%'}
           height={'calc(100% - 60px)'}
         />
