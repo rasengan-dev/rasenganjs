@@ -9,6 +9,16 @@ export default defineConfig(async () => {
     vite: {
       plugins: [mdx(), tailwindcss(), rasengan({ adapter: configure() })],
     },
+
+    async redirects() {
+      return [
+        {
+          source: '/docs',
+          destination: '/docs/getting-started/installation',
+          permanent: true,
+        },
+      ];
+    },
   };
 });
 
