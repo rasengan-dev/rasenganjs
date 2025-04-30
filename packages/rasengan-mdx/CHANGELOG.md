@@ -7,3 +7,4 @@
 - feat: extract toc from mdx [17c4110](https://github.com/rasengan-dev/rasenganjs/17c4110a4b6723719a3f9ef29fc2c8b4534bb72a)
 - feat: preparing the markdown customization feature [5ec4919](https://github.com/rasengan-dev/rasenganjs/5ec49194e7986259ab7915cb3efe6e44d5f87c40)
 - feat: Enabling toc (table of content) from markdown file [0de1c8e](https://github.com/rasengan-dev/rasenganjs/0de1c8e6dc649330ebd304352b7f2f85ca941d89)
+- feat: add extractToc function to extract table of content from markdown [8bde7d7](https://github.com/rasengan-dev/rasenganjs/8bde7d720359e33f5149ba6d7f7323c8a721e927)
