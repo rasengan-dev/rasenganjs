@@ -391,6 +391,52 @@ importers:
         specifier: workspace:^
         version: link:../rasengan
 
+  playground/file-based-routing:
+    dependencies:
+      '@rasenganjs/image':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-image
+      '@rasenganjs/mdx':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-mdx
+      '@rasenganjs/serve':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-serve
+      '@rasenganjs/vercel':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-vercel
+      '@tailwindcss/vite':
+        specifier: ^4.*
+        version: 4.0.9(vite@6.2.6(@types/node@22.13.9)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.1)(sass@1.85.1)(stylus@0.64.0)(tsx@4.19.3)(yaml@2.7.0))
+      rasengan:
+        specifier: workspace:*
+        version: link:../../packages/rasengan
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      tailwindcss:
+        specifier: ^4.*
+        version: 4.0.9
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.0.10
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.0.4(@types/react@19.0.10)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      typescript:
+        specifier: ^5.1.3
+        version: 5.8.2
+      vite:
+        specifier: ^6.2.6
+        version: 6.2.6(@types/node@22.13.9)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.1)(sass@1.85.1)(stylus@0.64.0)(tsx@4.19.3)(yaml@2.7.0)
+
   playground/rasengan-v1-test:
     dependencies:
       '@rasenganjs/image':

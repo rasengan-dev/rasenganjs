@@ -5,7 +5,6 @@ import {
   LayoutComponent,
   MDXPageComponent,
   Metadata,
-  MetadataWithoutTitleAndDescription,
   PageComponent,
 } from '../types.js';
 
@@ -116,6 +115,7 @@ function insertNodeToTree(
   // console.log({ segments, routeInfo });
   let currentNode = tree[0];
   let currentLevel = tree[0].children;
+  let currentLayout = currentNode;
 
   // Handle the root layout
   if (segments.length === 1 && segments[0] === '_') {
@@ -138,6 +138,10 @@ function insertNodeToTree(
       currentNode = node;
       currentLevel = node.children;
       fullPath = node.fullPath;
+
+      if (node.isLayout) {
+        currentLayout = node;
+      }
     }
   }
 
@@ -146,8 +150,25 @@ function insertNodeToTree(
     currentNode.component = routeInfo.component;
     currentNode.metadata = routeInfo.metadata;
   } else {
+    let path = '';
+
+    // The case where we create an index page directly at the root of _routes folder
+    if (segments.length === 0) {
+      path = '/';
+    } else {
+      path = fullPath + '/' + segments.at(-1);
+    }
+
+    if (currentLayout.path !== '/') {
+      const position = path.indexOf(currentLayout.path);
+
+      if (position !== -1) {
+        path = path.slice(position + currentLayout.path.length);
+      }
+    }
+
     const node: RouteNode = {
-      path: fullPath + '/' + segments.at(-1),
+      path,
       fullPath: fullPath + '/' + segments.at(-1),
       segment: segments.at(-1),
       isLayout: false,
@@ -173,6 +194,7 @@ function generateRouter(tree: RouteNode[]) {
     // TODO: Add metadata here
 
     router.layout = layout;
+    router.useParentLayout = true;
   }
 
   // Get pages
@@ -199,8 +221,6 @@ function generateRoutes(tree: RouteNode[]) {
           `Page component is not defined for route: ${node.path}`
         );
       }
-
-      console.log({ meta: node.metadata });
 
       page.path = node.path;
       page.metadata = node.metadata;
@@ -288,16 +308,35 @@ export async function flatRoutes() {
   // Generate the skeleton tree containing just folders as nodes
   generateSkeletonTree(tree, foldersMap);
 
-  for (const [filePath, { segments, mod }] of modulesMap) {
-    const isLayout = filePath.includes('.layout.');
+  // Filter out layouts
+  const layoutModulesMap = new Map(
+    [...modulesMap.entries()].filter(([filePath]) =>
+      filePath.includes('.layout.')
+    )
+  );
 
+  const pageModulesMap = new Map(
+    [...modulesMap.entries()].filter(([filePath]) =>
+      filePath.includes('.page.')
+    )
+  );
+
+  for (const [, { segments, mod }] of layoutModulesMap) {
+    insertNodeToTree(tree, segments, {
+      component: mod.default,
+      metadata: mod.metadata ?? {},
+      isLayout: true,
+    });
+  }
+
+  for (const [, { segments, mod }] of pageModulesMap) {
     insertNodeToTree(tree, segments, {
       component: mod.default,
       metadata: mod.metadata ?? {
         title: 'Untitled',
         description: '',
       },
-      isLayout,
+      isLayout: false,
     });
   }
 

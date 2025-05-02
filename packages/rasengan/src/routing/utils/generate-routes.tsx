@@ -262,6 +262,8 @@ export const generateRoutes = (
         // Generate metadata mapping
         const metadataMapping = generateMetadataMapping(router);
 
+        // console.log(metadataMapping);
+
         return (
           <MetadataProvider metadataMapping={metadataMapping}>
             <Layout {...layoutProps} />
@@ -414,14 +416,19 @@ export const generateMetadataMapping = (
 
   const layoutPath = !isRoot
     ? router.useParentLayout
-      ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
+      ? parentLayout.path +
+        (Layout.path === '/'
+          ? ''
+          : Layout.path.startsWith('/') && parentLayout.path === '/'
+            ? Layout.path.slice(1)
+            : Layout.path)
       : Layout.path
     : Layout.path;
 
   // Get informations about pages
   router.pages.forEach((Page) => {
     const pagePathFormated =
-      Page.path.startsWith('/') && Page.path !== '/'
+      Page.path.startsWith('/') && Page.path !== '/' && layoutPath.endsWith('/')
         ? Page.path.slice(1)
         : Page.path;
 
