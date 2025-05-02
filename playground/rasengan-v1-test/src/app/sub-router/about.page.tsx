@@ -12,7 +12,7 @@ export const About: PageComponent = () => {
   );
 };
 
-About.path = '/about';
+About.path = '/about/h';
 
 About.metadata = {
   title: 'About',
