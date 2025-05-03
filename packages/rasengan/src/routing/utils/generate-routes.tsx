@@ -414,6 +414,13 @@ export const generateMetadataMapping = (
   // Get information about the layout and the path
   const Layout = router.layout;
 
+  // Set default path layout if not provided
+  if (!Layout.path) {
+    throw new Error(
+      `[rasengan] Page path is required for ${Layout.name} layout component`
+    );
+  }
+
   const layoutPath = !isRoot
     ? router.useParentLayout
       ? parentLayout.path +
@@ -427,6 +434,13 @@ export const generateMetadataMapping = (
 
   // Get informations about pages
   router.pages.forEach((Page) => {
+    // Set default page path if not provided
+    if (!Page.path) {
+      throw new Error(
+        `[rasengan] Page path is required for ${Page.name} page component`
+      );
+    }
+
     const pagePathFormated =
       Page.path.startsWith('/') && Page.path !== '/' && layoutPath.endsWith('/')
         ? Page.path.slice(1)

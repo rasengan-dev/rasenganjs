@@ -3,7 +3,7 @@ import { LayoutComponent, Outlet } from 'rasengan';
 const AppLayout: LayoutComponent = () => {
   return (
     <section className="h-screen w-full">
-      <header className="w-full h-20 bg-red-300">header</header>
+      <header className="w-full h-20 bg-blue-300">header 2</header>
       <Outlet />
     </section>
   );
