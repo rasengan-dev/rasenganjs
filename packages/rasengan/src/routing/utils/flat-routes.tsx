@@ -49,10 +49,17 @@ function getPathSegments(filePath: string, foldersOnly = false) {
   const relative = filePath.replace(basePath, '');
 
   if (!foldersOnly) {
-    const withoutExtension = relative.replace(
-      /\.(page|layout)\.(jsx|tsx|mdx|md)$/,
-      ''
-    );
+    let withoutExtension = '';
+
+    if (relative.includes('layout.')) {
+      withoutExtension = relative.replace(/(layout)\.(jsx|tsx)$/, '') + '_'; // /docs/layout.tsx => /docs/_
+    } else {
+      withoutExtension = relative.replace(
+        /\.(page|layout)\.(jsx|tsx|mdx|md)$/,
+        ''
+      );
+    }
+
     return withoutExtension.split('/').map(normalizeSegment).filter(Boolean);
   }
 
@@ -241,9 +248,10 @@ async function generateRoutes(tree: RouteNode[]) {
         const page = node.component as PageComponent;
 
         if (!page) {
-          throw new Error(
-            `[rasengan]: Page component is not exported by default for route: ${node.path}`
+          console.warn(
+            `Page component is not exported by default for route: ${node.path}`
           );
+          continue;
         }
 
         if (isMDXPage(page)) {
@@ -273,9 +281,10 @@ async function generateRoutes(tree: RouteNode[]) {
         const layout = node.component as LayoutComponent;
 
         if (!layout) {
-          throw new Error(
+          console.warn(
             `Layout component is not defined for route: ${node.path}`
           );
+          continue;
         }
 
         layout.path = node.path;
@@ -323,15 +332,20 @@ async function generateRoutes(tree: RouteNode[]) {
   }
 }
 
-export async function flatRoutes() {
+export async function flatRoutes(fn: () => Record<string, Module>) {
   try {
-    const modules: Record<string, any> = import.meta.glob(
-      [
-        '/src/app/_routes/**/*.layout.{jsx,tsx}',
-        '/src/app/_routes/**/*.page.{md,mdx,jsx,tsx}',
-      ],
-      { eager: true }
-    );
+    let modules = fn();
+
+    // import.meta.glob can be undefined in some cases (don't know why)
+    // if (import.meta.glob) {
+    //   let modules = import.meta.glob(
+    //     [
+    //       '/src/app/_routes/**/layout.{jsx,tsx}',
+    //       '/src/app/_routes/**/*.page.{md,mdx,jsx,tsx}',
+    //     ],
+    //     { eager: true }
+    //   );
+    // }
 
     const tree: RouteNode[] = [];
     const foldersMap: Map<string, { segments: string[]; mod: Module }> =
@@ -350,12 +364,10 @@ export async function flatRoutes() {
     // Generate the skeleton tree containing just folders as nodes
     generateSkeletonTree(tree, foldersMap);
 
-    console.log(tree);
-
     // Filter out layouts
     const layoutModulesMap = new Map(
       [...modulesMap.entries()].filter(([filePath]) =>
-        filePath.includes('.layout.')
+        filePath.includes('layout.')
       )
     );
 
@@ -365,11 +377,22 @@ export async function flatRoutes() {
       )
     );
 
+    // Handle the case where modules are empty
+    if (layoutModulesMap.size === 0) {
+      insertNodeToTree(tree, ['_'], {
+        component: DefaultLayout,
+        metadata: {},
+        isLayout: true,
+      });
+    }
+
     for (const [filePath, { segments, mod }] of layoutModulesMap) {
       if (!mod.default) {
-        throw new Error(
-          `[rasengan]: Layout component is not exported by default from: ${filePath}}`
+        console.warn(
+          `Layout component is not exported by default from: ${filePath}}`
         );
+
+        continue;
       }
 
       let metadata = (mod.default as LayoutComponent).metadata;
@@ -385,9 +408,10 @@ export async function flatRoutes() {
 
     for (const [filePath, { segments, mod }] of pageModulesMap) {
       if (!mod.default) {
-        throw new Error(
-          `[rasengan]: Page component is not exported by default from: ${filePath}}`
+        console.warn(
+          `Page component is not exported by default from: ${filePath}}`
         );
+        continue;
       }
 
       let metadata = (mod.default as PageComponent).metadata;
@@ -408,8 +432,6 @@ export async function flatRoutes() {
         isLayout: false,
       });
     }
-
-    console.log(tree);
 
     // Convert the tree into a router component instance
     const router = await generateRouter(tree);

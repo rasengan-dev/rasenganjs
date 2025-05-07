@@ -1,18 +1,18 @@
 import { PageComponent } from 'rasengan';
 
-const About: PageComponent = () => {
+const Company: PageComponent = () => {
   return (
     <section className="w-full h-full bg-white flex flex-col items-center justify-center px-[20px] md:px-[50px] xl:px-[200px] font-comfortaa">
-      About page 10
+      Company
     </section>
   );
 };
 
 const metadata = {
-  title: 'About',
-  description: 'About page',
+  title: 'Company',
+  description: 'Company page',
 };
 
-About.metadata = metadata;
+Company.metadata = metadata;
 
-export default About;
+export default Company;
