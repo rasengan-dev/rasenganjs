@@ -29,34 +29,16 @@ declare module '*.js?raw' {
 // Virtual modules
 
 /**
- * virtual-entry-server.d.ts
- **/
-declare module 'virtual:entry-server' {
-  import { type Response } from 'express';
-  import { redirect, StaticHandlerContext } from 'react-router';
-  import {
-    Metadata,
-    MetadataWithoutTitleAndDescription,
-  } from '../lib/esm/index.js';
+ * virtual-rasengan-router.d.ts
+ */
+declare module 'virtual:rasengan:router' {
+  import { RouterComponent } from '../lib/esm/routing/interfaces.js';
 
-  /**
-   * Render the app to a stream
-   * @param router
-   * @param res
-   * @param options
-   * @returns
-   */
-  export async function render(
-    router: any,
-    res: Response,
-    options: {
-      context: StaticHandlerContext;
-      metadata: {
-        page: Metadata;
-        layout: MetadataWithoutTitleAndDescription;
-      };
-    }
-  ): Promise<unknown>;
+  // Define the type you expect Router to have.
+  // Assuming flatRoutes returns a component
+  const Router: RouterComponent;
+
+  export default Router;
 }
 
 // declare module "virtual:rasengan-config" {
