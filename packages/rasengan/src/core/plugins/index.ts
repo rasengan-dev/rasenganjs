@@ -123,10 +123,14 @@ export interface AdapterConfig {
 
 type RasenganPluginOptions = {
   adapter?: AdapterConfig;
+  prerender?: {
+    routes: string[];
+  };
 };
 
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
+  prerender = { routes: [] },
 }: RasenganPluginOptions): Plugin {
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
@@ -230,6 +234,12 @@ export function rasengan({
           JSON.stringify(minimizedConfig),
           'utf-8'
         );
+
+        // Handling the prerendering
+        if (prerender.routes.length > 0) {
+          console.log('Prerendering routes...');
+          console.log(prerender);
+        }
 
         // Prepare the app for deployment
         await prepareToDeploy(adapter);
