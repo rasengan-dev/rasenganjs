@@ -22,7 +22,7 @@ const Home: PageComponent = () => {
   return (
     <section className="w-full overflow-hidden">
       <section className="w-full relative px-4 xl:px-20 lg:h-screen lg:max-h-[800px] lg:min-h-[800px] flex flex-col lg:flex-row justify-start lg:justify-between items-center gap-8 pt-[60px] overflow-hidden">
-        <div className="w-full lg:w-1/2 mt-20 lg:mt-0">
+        <div className="w-full lg:w-1/2 mt-20 lg:mt-0 z-20">
           <div className="flex justify-center items-center lg:justify-start lg:items-start">
             <Link to="/blog/rasengan-v1-stable">
               <AnnonceBadge
@@ -130,7 +130,10 @@ const Home: PageComponent = () => {
           </p>
 
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4">
-            <Link to="/docs/getting-started/introduction">
+            <Link
+              to="/docs/getting-started/introduction"
+              className="w-[280px] sm:w-[300px] md:w-auto"
+            >
               <Button
                 hover
                 tap
@@ -142,7 +145,7 @@ const Home: PageComponent = () => {
             <CopyButton
               text="npx create-rasengan@latest"
               textToDisplay="- npx create-rasengan@latest"
-              className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto"
+              className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full sm:w-[300px] md:w-auto"
             ></CopyButton>
             {/* <Button className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto">
               - npx create-rasengan@latest
