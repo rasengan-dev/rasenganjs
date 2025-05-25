@@ -1,0 +1,121 @@
+{
+  "hash": "ae818542",
+  "configHash": "80f9cfe2",
+  "lockfileHash": "845357ef",
+  "browserHash": "fab3ee88",
+  "optimized": {
+    "react": {
+      "src": "../../../../node_modules/.pnpm/react@19.0.0/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "0dee8079",
+      "needsInterop": true
+    },
+    "react-dom": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/index.js",
+      "file": "react-dom.js",
+      "fileHash": "b55e87a8",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../../../node_modules/.pnpm/react@19.0.0/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "b27ed3d9",
+      "needsInterop": true
+    },
+    "react/jsx-runtime": {
+      "src": "../../../../node_modules/.pnpm/react@19.0.0/node_modules/react/jsx-runtime.js",
+      "file": "react_jsx-runtime.js",
+      "fileHash": "e52adfe2",
+      "needsInterop": true
+    },
+    "prism-react-renderer": {
+      "src": "../../../../node_modules/.pnpm/prism-react-renderer@2.4.1_react@19.0.0/node_modules/prism-react-renderer/dist/index.mjs",
+      "file": "prism-react-renderer.js",
+      "fileHash": "b9dd7f64",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "be3ae1c2",
+      "needsInterop": true
+    },
+    "react-dom/server": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/server.browser.js",
+      "file": "react-dom_server.js",
+      "fileHash": "5edde0b2",
+      "needsInterop": true
+    },
+    "react-markdown": {
+      "src": "../../../../node_modules/.pnpm/react-markdown@9.1.0_@types+react@19.0.10_react@19.0.0/node_modules/react-markdown/index.js",
+      "file": "react-markdown.js",
+      "fileHash": "bc2b6d4b",
+      "needsInterop": false
+    },
+    "react-router": {
+      "src": "../../../../node_modules/.pnpm/react-router@7.5.2_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/react-router/dist/development/index.mjs",
+      "file": "react-router.js",
+      "fileHash": "97a2dfed",
+      "needsInterop": false
+    },
+    "rehype-stringify": {
+      "src": "../../../../node_modules/.pnpm/rehype-stringify@10.0.1/node_modules/rehype-stringify/index.js",
+      "file": "rehype-stringify.js",
+      "fileHash": "91805ced",
+      "needsInterop": false
+    },
+    "remark-gfm": {
+      "src": "../../../../node_modules/.pnpm/remark-gfm@4.0.1/node_modules/remark-gfm/index.js",
+      "file": "remark-gfm.js",
+      "fileHash": "07e12157",
+      "needsInterop": false
+    },
+    "remark-parse": {
+      "src": "../../../../node_modules/.pnpm/remark-parse@11.0.0/node_modules/remark-parse/index.js",
+      "file": "remark-parse.js",
+      "fileHash": "4d0f525b",
+      "needsInterop": false
+    },
+    "remark-rehype": {
+      "src": "../../../../node_modules/.pnpm/remark-rehype@11.1.1/node_modules/remark-rehype/index.js",
+      "file": "remark-rehype.js",
+      "fileHash": "b31df3b6",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-I46PM5IZ": {
+      "file": "chunk-I46PM5IZ.js"
+    },
+    "chunk-6GFY52XF": {
+      "file": "chunk-6GFY52XF.js"
+    },
+    "chunk-5NZ5KQVF": {
+      "file": "chunk-5NZ5KQVF.js"
+    },
+    "chunk-5XWD2ACU": {
+      "file": "chunk-5XWD2ACU.js"
+    },
+    "chunk-QJIADCDW": {
+      "file": "chunk-QJIADCDW.js"
+    },
+    "chunk-3TODNECC": {
+      "file": "chunk-3TODNECC.js"
+    },
+    "chunk-IUKRAPEX": {
+      "file": "chunk-IUKRAPEX.js"
+    },
+    "chunk-U2GIRGWN": {
+      "file": "chunk-U2GIRGWN.js"
+    },
+    "chunk-ZRKR3IOO": {
+      "file": "chunk-ZRKR3IOO.js"
+    },
+    "chunk-W3RG5IXQ": {
+      "file": "chunk-W3RG5IXQ.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}
