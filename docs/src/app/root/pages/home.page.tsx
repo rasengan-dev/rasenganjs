@@ -22,7 +22,7 @@ const Home: PageComponent = () => {
   return (
     <section className="w-full overflow-hidden">
       <section className="w-full relative px-4 xl:px-20 lg:h-screen lg:max-h-[800px] lg:min-h-[800px] flex flex-col lg:flex-row justify-start lg:justify-between items-center gap-8 pt-[60px] overflow-hidden">
-        <div className="w-full lg:w-1/2 mt-20 lg:mt-0">
+        <div className="w-full lg:w-1/2 mt-20 lg:mt-0 z-20">
           <div className="flex justify-center items-center lg:justify-start lg:items-start">
             <Link to="/blog/rasengan-v1-stable">
               <AnnonceBadge
