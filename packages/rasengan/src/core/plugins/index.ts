@@ -5,6 +5,7 @@ import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
 import { resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
+import { flatRoutes } from '../../routing/index.js';
 
 function loadRasenganGlobal(): Plugin {
   return {
@@ -73,6 +74,39 @@ function rasenganConfigPlugin(): Plugin {
 
         return `
           export const __RASENGAN_CONFIG__ = ${JSON.stringify(partialConfig)};
+        `;
+      }
+    },
+  };
+}
+
+function flatRoutesPlugin(): Plugin {
+  const virtualModuleId = 'virtual:rasengan:router';
+  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+
+  return {
+    name: 'vite-plugin-rasengan-router',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedVirtualModuleId) {
+        return `
+          import { flatRoutes } from 'rasengan';
+
+          const Router = flatRoutes(() => {
+            return import.meta.glob(
+              [
+                '/src/app/_routes/**/layout.{jsx,tsx}',
+                '/src/app/_routes/**/*.page.{md,mdx,jsx,tsx}',
+              ],
+              { eager: true }
+            );
+          });
+
+          export default Router;
         `;
       }
     },
@@ -254,4 +288,4 @@ const prepareToDeploy = async (adapter: AdapterConfig): Promise<void> => {
   }
 };
 
-export const plugins: Plugin[] = [loadRasenganGlobal()];
+export const plugins: Plugin[] = [loadRasenganGlobal(), flatRoutesPlugin()];

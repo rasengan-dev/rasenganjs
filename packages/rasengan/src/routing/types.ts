@@ -182,7 +182,7 @@ export type LayoutComponent<T = ReactComponentProps> = FunctionComponent<T> & {
   /**
    * Base path for the page
    */
-  path: string;
+  path?: string;
 
   /**
    * Metadata for the page
@@ -216,8 +216,8 @@ export type PageComponent<T = ReactComponentProps> = LayoutComponent<T> & {
  */
 export type MDXPageComponent = FunctionComponent & {
   metadata?: {
-    path: string;
-    metadata: Metadata;
+    path?: string;
+    metadata?: Metadata;
   };
 };
 
