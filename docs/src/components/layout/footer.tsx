@@ -9,7 +9,7 @@ import ThemeButton from '../atoms/buttons/theme-button';
 import { useEffect, useState } from 'react';
 import { newsletterProvider } from '@/api/newsletter';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, Coffee, XCircle } from 'lucide-react';
 import AppLogo from '../atoms/logo';
 // import { checkEmail } from 'utils/check';
 
@@ -61,11 +61,30 @@ export default function Footer() {
       <div className="max-w-[1500px] mx-auto">
         <div className="flex flex-col lg:flex-row items-start justify-between gap-x-2 gap-y-8">
           <div className="w-7/10 flex flex-col lg:flex-row gap-8">
-            <div className="w-1/3">
+            <div className="w-full lg:w-1/3">
               <AppLogo />
+
+              <div className="relative w-[150px] mt-4">
+                {/* Buy me a coffee button */}
+                <Link
+                  to="https://coff.ee/dilane3"
+                  target="_blank"
+                  className="relative z-10"
+                >
+                  <Button
+                    hover
+                    tap
+                    className="bg-primary flex items-center justify-center text-primary-foreground font-lexend-light h-[35px] rounded-full px-4 w-[150px]"
+                  >
+                    <Coffee size={18} className="mr-2" />
+                    <span className="text-sm">Support us</span>
+                  </Button>
+                </Link>
+                <div className="w-[60%] h-[60%] bg-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 rounded-full animate-ping"></div>
+              </div>
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full lg:w-1/3">
               <h3 className="text-lg font-lexend-medium">Resources</h3>
 
               <nav className="mt-4 text-sm">
@@ -89,7 +108,7 @@ export default function Footer() {
               </nav>
             </div>
 
-            <div className="w-1/3">
+            <div className="w-full lg:w-1/3">
               <h3 className="text-lg font-lexend-medium">Community</h3>
 
               <nav className="mt-4 text-sm">
