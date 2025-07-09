@@ -130,7 +130,10 @@ const Home: PageComponent = () => {
           </p>
 
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4">
-            <Link to="/docs/getting-started/introduction">
+            <Link
+              to="/docs/getting-started/introduction"
+              className="w-[280px] sm:w-[300px] md:w-auto"
+            >
               <Button
                 hover
                 tap
@@ -142,7 +145,7 @@ const Home: PageComponent = () => {
             <CopyButton
               text="npx create-rasengan@latest"
               textToDisplay="- npx create-rasengan@latest"
-              className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto"
+              className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full sm:w-[300px] md:w-auto"
             ></CopyButton>
             {/* <Button className="border-[1px] border-border font-mono-light text-sm h-[48px] px-6 w-full md:w-auto">
               - npx create-rasengan@latest
