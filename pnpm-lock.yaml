@@ -90,7 +90,7 @@ importers:
         version: 4.1.8
       zustand:
         specifier: ^5.0.3
-        version: 5.0.5(@types/react@19.1.6)(react@19.1.0)
+        version: 5.0.5(@types/react@19.1.6)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
     devDependencies:
       '@types/react':
         specifier: ^19.0.0
@@ -390,6 +390,52 @@ importers:
       rasengan:
         specifier: workspace:^
         version: link:../rasengan
+
+  playground/file-based-routing:
+    dependencies:
+      '@rasenganjs/image':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-image
+      '@rasenganjs/mdx':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-mdx
+      '@rasenganjs/serve':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-serve
+      '@rasenganjs/vercel':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-vercel
+      '@tailwindcss/vite':
+        specifier: ^4.*
+        version: 4.1.8(vite@6.3.5(@types/node@22.15.24)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+      rasengan:
+        specifier: workspace:*
+        version: link:../../packages/rasengan
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+      tailwindcss:
+        specifier: ^4.*
+        version: 4.1.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.10
+        version: 19.1.6
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.1.5(@types/react@19.1.6)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      typescript:
+        specifier: ^5.8.2
+        version: 5.8.3
+      vite:
+        specifier: ^6.2.6
+        version: 6.3.5(@types/node@22.15.24)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
 
   playground/rasengan-v1-test:
     dependencies:
@@ -6216,9 +6262,9 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  use-sync-external-store@1.5.0(react@19.0.0):
+  use-sync-external-store@1.5.0(react@19.1.0):
     dependencies:
-      react: 19.0.0
+      react: 19.1.0
     optional: true
 
   util-deprecate@1.0.2: {}
@@ -6322,9 +6368,10 @@ snapshots:
 
   yoctocolors-cjs@2.1.2: {}
 
-  zustand@5.0.5(@types/react@19.1.6)(react@19.1.0):
+  zustand@5.0.5(@types/react@19.1.6)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0)):
     optionalDependencies:
       '@types/react': 19.1.6
       react: 19.1.0
+      use-sync-external-store: 1.5.0(react@19.1.0)
 
   zwitch@2.0.4: {}
