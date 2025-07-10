@@ -8,6 +8,7 @@ import ncp from 'ncp';
 import chalk from 'chalk';
 import { logInfo } from './log-info.js';
 import { sleep } from '../utils/sleep.js';
+import { convertSecondsToMinutes } from '../utils/converter.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -24,6 +25,9 @@ export default async function createProjectFromTemplate(
     currentDirectory: boolean;
   }
 ) {
+  // Start timer
+  const start = Date.now();
+
   // Get the temporary folder path, the place where the repository will be cloned
   const tmpFolder = path.join(projectPath, '.tmp');
 
@@ -56,7 +60,11 @@ export default async function createProjectFromTemplate(
 
     try {
       // Clone the template repository
-      await git.clone(TEMPLATE_GITHUB_URL, '.tmp');
+      await git.clone(TEMPLATE_GITHUB_URL, '.tmp', [
+        '--no-checkout',
+        '--depth',
+        '1',
+      ]);
     } catch (error) {
       createSpinner.fail(
         chalk.red(
@@ -70,11 +78,29 @@ export default async function createProjectFromTemplate(
       return;
     }
 
-    const srcFolder = path.posix.join(tmpFolder, `examples/${templateName}`);
+    // cd into the temporary folder
+    await git.cwd(tmpFolder);
+
+    // Activate the git sparse-checkout feature
+    await git.raw(['sparse-checkout', 'init', '--cone']);
+
+    // Add the examples folder to the sparse-checkout
+    await git.raw(['sparse-checkout', 'set', `examples/${templateName}`]);
+
+    // Extract the examples folder
+    await git.raw(['checkout', 'HEAD', '--', `examples/${templateName}`]);
+
+    const templatePath = path.posix.join(tmpFolder, `examples/${templateName}`);
+
+    // // Add the template path to the sparse-checkout
+    // await git.raw(['sparse-checkout', 'set', templatePath]);
+
+    // // Extract the template files
+    // await git.raw(['checkout', 'HEAD', '--', templatePath]);
 
     // check if the template exists
     try {
-      await fs.readdir(srcFolder);
+      await fs.readdir(templatePath);
     } catch (err) {
       createSpinner.fail(
         chalk.red(
@@ -94,7 +120,7 @@ export default async function createProjectFromTemplate(
     createSpinner.text = 'Copying the template files...';
 
     // Copying the template files to the project directory
-    ncp(srcFolder, projectPath, async (err) => {
+    ncp(templatePath, projectPath, async (err) => {
       if (err) {
         createSpinner.fail(
           chalk.red('Error while creating the project, please try again!')
@@ -111,7 +137,6 @@ export default async function createProjectFromTemplate(
       createSpinner.text = 'Updating the package.json file...';
 
       // Read the package.json file
-
       let packageJsonString = await fs.readFile(
         path.join(projectPath, 'package.json'),
         'utf-8'
@@ -127,17 +152,28 @@ export default async function createProjectFromTemplate(
         JSON.stringify(packageJson, null, 2)
       );
 
+      // cd to the project directory
+      // await git.cwd(projectPath);
+
       // Removing the temporary folder
       rimraf.sync(tmpFolder);
 
       // Initializing the git repository
-      await git.init();
-      await git.add('-A');
-      await git.commit('Initial commit');
+      // await git.init();
+      // await git.add('-A');
+      // await git.commit('Initial commit');
 
       // Stopping the spinner
       await sleep(1000);
       createSpinner.succeed(chalk.green('Project created successfully!'));
+
+      console.log('');
+
+      // End timer
+      const end = Date.now();
+      console.log(
+        `${chalk.gray('Finished in')} ${chalk.green(`${convertSecondsToMinutes((end - start) / 1000)}`)}`
+      );
 
       console.log('');
 
