@@ -114,6 +114,11 @@ program
             `The language ${chalk.bold.blue(`"${language}"`)} is not supported!`
           )
         );
+        // Log the correct languages
+        console.log(
+          `Available languages: ${Languages.map((lang) => chalk.blue(lang))}`
+        );
+        console.log('');
         return;
       }
     }
