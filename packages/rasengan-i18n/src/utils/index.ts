@@ -1,3 +1,5 @@
+import { I18nConfig } from '../types/index.js';
+
 /**
  * Generates a unique identifier string.
  * @returns {string} A unique 9-character string.
@@ -7,23 +9,38 @@ export const uniqueId = (): string => {
 };
 
 /**
- * Determines the user's preferred color scheme based on their system settings.
- * @returns {"dark" | "light"} The preferred color scheme, either "dark" or "light".
+ * This function detects the locale based on the provided configuration.
  */
-export const getPreferredColorScheme = (): 'dark' | 'light' => {
-  if (typeof window === 'undefined') {
-    return 'light';
+export const detectLocale = (config: I18nConfig) => {};
+
+/**
+ * This function generates a default configuration object based on the provided configuration.
+ *
+ * @param config The configuration object to generate a default configuration from.
+ * @returns
+ */
+export const generateDefaultConfig = (config?: I18nConfig): I18nConfig => {
+  try {
+    return {
+      defaultLocale: config?.defaultLocale || 'en',
+      locales: config?.locales || [],
+      detection: {
+        order: config?.detection?.order || ['path'],
+      },
+      resources: {
+        source: config?.resources?.source || '/src/messages',
+      },
+    };
+  } catch (error) {
+    return {
+      defaultLocale: 'en',
+      locales: [],
+      detection: {
+        order: ['path'],
+      },
+      resources: {
+        source: '/src/messages',
+      },
+    };
   }
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-};
-
-export const loadSavedTheme = () => {
-  return localStorage.getItem('rasengan-theme') || null;
-};
-
-export const saveTheme = (theme: string) => {
-  localStorage.setItem('rasengan-theme', theme);
 };

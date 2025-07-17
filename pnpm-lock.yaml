@@ -331,6 +331,22 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
 
+  packages/rasengan-i18n:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.1
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.0.1
+        version: 19.1.6(@types/react@19.1.8)
+      vite:
+        specifier: ^6.0.0
+        version: 6.3.5(@types/node@24.0.10)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.2)(stylus@0.64.0)(tsx@4.20.3)(yaml@2.8.0)
+
   packages/rasengan-image:
     dependencies:
       react:
@@ -506,6 +522,49 @@ importers:
       rasengan:
         specifier: workspace:^
         version: link:../rasengan
+
+  playground/rasengan-i18n-demo:
+    dependencies:
+      '@rasenganjs/i18n':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-i18n
+      '@rasenganjs/image':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-image
+      '@rasenganjs/serve':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-serve
+      '@tailwindcss/vite':
+        specifier: ^4.*
+        version: 4.1.11(vite@6.3.5(@types/node@24.0.10)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.2)(stylus@0.64.0)(tsx@4.20.3)(yaml@2.8.0))
+      rasengan:
+        specifier: workspace:*
+        version: link:../../packages/rasengan
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+      tailwindcss:
+        specifier: ^4.*
+        version: 4.1.11
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.1.6(@types/react@19.1.8)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      typescript:
+        specifier: ^5.1.3
+        version: 5.8.3
+      vite:
+        specifier: ^6.2.6
+        version: 6.3.5(@types/node@24.0.10)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.2)(stylus@0.64.0)(tsx@4.20.3)(yaml@2.8.0)
 
   playground/rasengan-v1-test:
     dependencies:

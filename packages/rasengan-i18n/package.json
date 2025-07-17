@@ -7,8 +7,14 @@
   "main": "lib/index.js",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.js",
       "require": "./lib/index.js"
+    },
+    "./plugin": {
+      "types": "./lib/plugin.d.ts",
+      "import": "./lib/plugin.js",
+      "require": "./lib/plugin.js"
     }
   },
   "author": {
@@ -35,6 +41,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1"
+    "@types/react-dom": "^19.0.1",
+    "vite": "^6.0.0"
   }
 }
