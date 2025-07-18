@@ -1,5 +1,20 @@
 {
   "translation": {
-    "welcome": "Bienvenue sur React et react-i18next"
+    "welcome": "Bienvenue sur",
+    "action": "Pour commencer, editer le fichier",
+    "code": "src/app/home.page.tsx",
+    "poweredBy": "Propulsé par",
+    "documentation": "Documentation",
+    "learn": "Apprentissage",
+    "examples": "Exemples",
+    "community": "Communauté",
+    "documentationDescription": "Trouvez des informations approfondies sur les fonctionnalités et l'API de Rasengan.",
+    "readTheDocs": "Lire la documentation",
+    "learnDescription": "Apprenez à utiliser Rasengan avec un cours interactif et des quiz!",
+    "takeTheCourse": "Prenez le cours",
+    "examplesDescription": "Découvrez et déploiement des exemples de projets Rasengan.",
+    "viewExamples": "Voir les exemples",
+    "communityDescription": "Rejoignez notre communauté pour poser des questions, partager votre connaissance et collaborer sur des projets.",
+    "joinTheCommunity": "Rejoignez la communauté"
   }
 }

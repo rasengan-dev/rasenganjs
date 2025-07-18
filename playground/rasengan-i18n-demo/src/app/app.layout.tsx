@@ -4,6 +4,6 @@ const AppLayout: LayoutComponent = () => {
   return <Outlet />;
 };
 
-AppLayout.path = '/';
+AppLayout.path = '/:locale';
 
 export default AppLayout;

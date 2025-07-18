@@ -1,4 +1,5 @@
 import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
 import tailwindcss from '@tailwindcss/vite';
 import i18n from '@rasenganjs/i18n/plugin';
 
@@ -9,11 +10,11 @@ export default defineConfig(async () => {
         tailwindcss(),
         i18n({
           defaultLocale: 'fr',
-          locales: ['en', 'es', 'fr'],
           resources: {
             source: '/translations',
           },
         }),
+        rasengan({}),
       ],
     },
   };
