@@ -1,4 +1,4 @@
-import { I18nConfig } from '../types/index.js';
+import { I18nConfig, Resources } from '../types/index.js';
 
 /**
  * Generates a unique identifier string.
@@ -23,7 +23,6 @@ export const generateDefaultConfig = (config?: I18nConfig): I18nConfig => {
   try {
     return {
       defaultLocale: config?.defaultLocale || 'en',
-      locales: config?.locales || [],
       detection: {
         order: config?.detection?.order || ['path'],
       },
@@ -34,7 +33,6 @@ export const generateDefaultConfig = (config?: I18nConfig): I18nConfig => {
   } catch (error) {
     return {
       defaultLocale: 'en',
-      locales: [],
       detection: {
         order: ['path'],
       },
@@ -43,4 +41,25 @@ export const generateDefaultConfig = (config?: I18nConfig): I18nConfig => {
       },
     };
   }
+};
+
+/**
+ * This function checks the resources based on the provided configuration.
+ *
+ * @param resources The resources object to check.
+ */
+export const checkResources = (resources: Resources) => {
+  // Make sure that the resources are not empty
+  if (Object.keys(resources).length === 0) {
+    throw new Error('[rasengan:i18n]: No resources found');
+  }
+
+  // Make sure that each entry has a translation key
+  Object.entries(resources).forEach(([locale, resource]) => {
+    if (!resource['translation']) {
+      throw new Error(
+        `[rasengan:i18n]: No translation key found for locale ${locale}`
+      );
+    }
+  });
 };

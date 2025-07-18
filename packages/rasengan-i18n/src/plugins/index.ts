@@ -29,6 +29,7 @@ export default function i18nPlugin(config: I18nConfig): Plugin {
           const config = ${stringifyConfig};
 
           const resources = {};
+          const locales = [];
 
           for (const [filePath, mod] of Object.entries(modules)) {
             const lang = filePath.split('/').pop()?.split('.')[0];
@@ -38,11 +39,13 @@ export default function i18nPlugin(config: I18nConfig): Plugin {
             }
 
             resources[lang] = mod.default;
+            locales.push(lang);
           }
 
           const i18n = {
             resources,
             config,
+            locales,
           };
 
           export default i18n;

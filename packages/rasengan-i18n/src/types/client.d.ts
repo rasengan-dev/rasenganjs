@@ -4,6 +4,7 @@ declare module 'virtual:rasengan:i18n' {
   const i18n: {
     resources: Resources;
     config: I18nConfig;
+    locales: string[];
   };
   export default i18n;
 }

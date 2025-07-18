@@ -10,6 +10,7 @@ export type Resources = Record<string, ResourceItem>;
 export type I18nContext = {
   // state
   locale: string;
+  locales: string[];
   resources: Resources;
 
   // actions
@@ -24,11 +25,6 @@ export type I18nConfig = {
    * Default locale
    */
   defaultLocale: string;
-
-  /**
-   * Available locales
-   */
-  locales: string[];
 
   /**
    * Detection config

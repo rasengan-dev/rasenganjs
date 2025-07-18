@@ -333,6 +333,9 @@ importers:
 
   packages/rasengan-i18n:
     dependencies:
+      rasengan:
+        specifier: workspace:^
+        version: link:../rasengan
       react:
         specifier: ^19.0.0
         version: 19.1.0

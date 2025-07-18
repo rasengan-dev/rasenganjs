@@ -8,6 +8,7 @@ import { I18nContext } from '../types';
  */
 export default createContext<I18nContext>({
   locale: 'en',
+  locales: [],
   resources: {},
 
   setLocale: () => {},
