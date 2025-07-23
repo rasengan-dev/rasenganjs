@@ -8,7 +8,7 @@ export const useTranslations = (namespace?: string) => {
   const t = (key: string): string => {
     checkResources(resources);
 
-    return resources[locale]['translation'][key] || key;
+    return resources[locale]['translation'][key] || `translation.${key}`;
   };
 
   return t;
