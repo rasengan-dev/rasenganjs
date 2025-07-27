@@ -1,4 +1,4 @@
-import { RouterComponent, defineRouter, flatRoutes } from 'rasengan';
+import { RouterComponent, defineRouter } from 'rasengan';
 import Router from 'virtual:rasengan:router';
 
 class AppRouter extends RouterComponent {}

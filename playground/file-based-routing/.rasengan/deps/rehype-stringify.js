@@ -1,4 +1,3 @@
-import { ccount, zwitch } from './chunk-5XWD2ACU.js';
 import {
   find,
   html,
@@ -6,7 +5,8 @@ import {
   stringify2,
   svg,
   whitespace,
-} from './chunk-QJIADCDW.js';
+} from './chunk-XDD5PNFI.js';
+import { ccount, zwitch } from './chunk-5XWD2ACU.js';
 import './chunk-DC5AMYBS.js';
 
 // ../../node_modules/.pnpm/html-void-elements@3.0.0/node_modules/html-void-elements/index.js

@@ -99,8 +99,8 @@ function flatRoutesPlugin(): Plugin {
           const Router = flatRoutes(() => {
             return import.meta.glob(
               [
-                '/src/app/_routes/**/layout.{jsx,tsx}',
-                '/src/app/_routes/**/*.page.{md,mdx,jsx,tsx}',
+                '/src/app/_routes/**/layout.{js,ts,jsx,tsx}',
+                '/src/app/_routes/**/*.page.{md,mdx,js,ts,jsx,tsx}',
               ],
               { eager: true }
             );

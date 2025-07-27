@@ -123,43 +123,39 @@ export const NotFoundPageComponent = () => {
     <section
       style={{
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
         width: '100vw',
+        gap: 10,
       }}
     >
       <h1
         style={{
-          fontSize: '3rem',
-          fontWeight: 'bold',
-          marginBottom: 10,
+          fontSize: '18px',
+          fontWeight: 'normal',
         }}
       >
-        404 Page Not Found
+        404
       </h1>
+
+      <span
+        style={{
+          height: '20px',
+          borderRightWidth: '1px',
+          borderRightStyle: 'solid',
+          borderRightColor: '#ccc',
+        }}
+      ></span>
 
       <p
         style={{
-          fontSize: '1.2rem',
-          marginBottom: 20,
+          fontSize: '18px',
         }}
       >
-        The page you are looking for does not exist or has been moved.
+        Page not found
       </p>
-
-      <Link
-        to="/"
-        style={{
-          fontSize: '1.2rem',
-          fontWeight: 800,
-          marginBottom: 20,
-          textDecoration: 'none',
-        }}
-      >
-        Go back to home page
-      </Link>
     </section>
   );
 };

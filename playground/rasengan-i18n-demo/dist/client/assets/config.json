@@ -1,0 +1,1 @@
+{"buildOptions":{"buildDirectory":"./dist","manifestPathDirectory":".vite","assetPathDirectory":"assets","clientPathDirectory":"client","serverPathDirectory":"server","entryServerPath":"entry.server.js"},"ssr":true,"redirects":[]}

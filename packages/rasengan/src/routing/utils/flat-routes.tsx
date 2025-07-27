@@ -27,9 +27,16 @@ type Module = {
   default: FunctionComponent<any>;
 };
 
+/**
+ * Normalize a segment
+ * @param segment Segment to normalize
+ * @returns Normalized segment
+ */
 function normalizeSegment(segment: string) {
-  if (segment === 'index') return '.';
-  // if (segment.startsWith('[...')) return '*';
+  // Handle index
+  if (segment === 'index') return '.'; // eg. index => .
+
+  // Handle dynamic segments
   if (segment.startsWith('[') && segment.endsWith(']')) {
     const param = segment.slice(1, -1); // eg. [locale] => locale
 
@@ -45,19 +52,25 @@ function normalizeSegment(segment: string) {
   return segment;
 }
 
+/**
+ * Get path segments from file path
+ * @param filePath File path
+ * @param foldersOnly Whether to return only folders
+ * @returns Path segments
+ */
 function getPathSegments(filePath: string, foldersOnly = false) {
-  const relative = filePath.replace(basePath, '');
+  const relative = filePath.replace(basePath, ''); // eg. /src/app/_routes/docs/layout.tsx => docs/layout.tsx
 
   if (!foldersOnly) {
     let withoutExtension = '';
 
     if (relative.includes('layout.')) {
-      withoutExtension = relative.replace(/(layout)\.(jsx|tsx)$/, '') + '_'; // /docs/layout.tsx => /docs/_
+      withoutExtension = relative.replace(/(layout)\.(js|ts|jsx|tsx)$/, '_'); // eg. docs/layout.tsx => docs/_
     } else {
       withoutExtension = relative.replace(
-        /\.(page|layout)\.(jsx|tsx|mdx|md)$/,
+        /\.(page)\.(js|ts|jsx|tsx|mdx|md)$/,
         ''
-      );
+      ); // eg. docs/index.page.tsx => docs/index
     }
 
     return withoutExtension.split('/').map(normalizeSegment).filter(Boolean);
@@ -65,11 +78,16 @@ function getPathSegments(filePath: string, foldersOnly = false) {
 
   return relative
     .split('/')
+    .filter((segment) => !segment.includes('.')) // ignore last segment (file name)
     .map(normalizeSegment)
-    .filter((segment) => !segment.includes('.'))
     .filter(Boolean);
 }
 
+/**
+ * Generate the skeleton tree from modules
+ * @param tree Tree to generate
+ * @param modules Modules to generate tree from
+ */
 function generateSkeletonTree(
   tree: RouteNode[],
   modules: Map<string, { segments: string[]; mod: any }>
@@ -80,12 +98,12 @@ function generateSkeletonTree(
     path: '/',
     fullPath: '/',
     segment: '_',
-    isLayout: false,
+    isLayout: true,
     children: [],
   };
 
   currentLevel.push(root);
-  currentLevel = root.children ?? [];
+  currentLevel = root.children ?? []; // change level
 
   for (const [, { segments }] of modules) {
     let tmpLevel = currentLevel;
@@ -103,7 +121,7 @@ function generateSkeletonTree(
       const existing = tmpLevel.find((n) => n.segment === segment);
 
       if (existing) {
-        tmpLevel = existing.children;
+        tmpLevel = existing.children; // change level
         continue;
       }
 
@@ -116,7 +134,7 @@ function generateSkeletonTree(
       };
 
       tmpLevel.push(node);
-      tmpLevel = node.children ?? [];
+      tmpLevel = node.children ?? []; // change level
     }
   }
 }
@@ -210,6 +228,11 @@ function insertNodeToTree(
   }
 }
 
+/**
+ * This function receives a tree of routes and generate a router component
+ * @param tree Tree of routes
+ * @returns Router component
+ */
 async function generateRouter(tree: RouteNode[]) {
   const root = tree[0];
 
@@ -220,7 +243,7 @@ async function generateRouter(tree: RouteNode[]) {
   if (root.isLayout) {
     // use default layout if not defined
     const layout = (root.component || DefaultLayout) as LayoutComponent;
-    layout.path = root.path;
+    layout.path = root.path || DefaultLayout.path;
     // TODO: Add metadata here
 
     router.layout = layout;
@@ -234,9 +257,16 @@ async function generateRouter(tree: RouteNode[]) {
   router.pages = pages;
   router.routers = routers;
 
+  console.log(router);
+
   return router;
 }
 
+/**
+ * This function receives a tree of routes and generate a list of pages and routers
+ * @param tree Tree of routes
+ * @returns List of pages and routers
+ */
 async function generateRoutes(tree: RouteNode[]) {
   try {
     const routes: Array<PageComponent> = [];
@@ -332,11 +362,16 @@ async function generateRoutes(tree: RouteNode[]) {
   }
 }
 
+/**
+ * This function receives a function that returns a record of modules and generate a router component
+ * @param fn Function that returns a record of modules
+ * @returns Router component
+ */
 export async function flatRoutes(fn: () => Record<string, Module>) {
   try {
     let modules = fn();
 
-    // import.meta.glob can be undefined in some cases (don't know why)
+    // import.meta.glob can be undefined in some cases (because it's unavailable outside a vite env)
     // if (import.meta.glob) {
     //   let modules = import.meta.glob(
     //     [

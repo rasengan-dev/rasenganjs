@@ -4,7 +4,16 @@ import {
   NavigationItem,
   NavigationType,
 } from '@/data/docs';
-import { BookOpen, Box, ChevronDown, LayoutTemplate, Tag } from 'lucide-react';
+import {
+  BookOpen,
+  Box,
+  ChevronDown,
+  FlaskConical,
+  LayoutTemplate,
+  Tag,
+  TestTube,
+  TestTube2,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useLocation } from 'rasengan';
 import { ComponentProps, Fragment, useEffect, useState } from 'react';
@@ -53,7 +62,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
 
             <div className="flex flex-col gap-1">
               <span>Using stable version</span>
-              <span className="text-[12px] text-foreground/60">v1.0.0</span>
+              <span className="text-[12px] text-foreground/60">v1.1.0</span>
             </div>
           </div>
 
@@ -188,11 +197,31 @@ export const NavItem = ({
           className,
           isActive(item.link)
             ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
-            : 'text-foreground/90'
+            : 'text-foreground/90',
+          item.isComingSoon && 'text-foreground/40 hover:text-foreground/40'
         )}
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <span>{item.name}</span>
+        {item.isBeta ? (
+          <div className="flex items-center gap-2">
+            <FlaskConical size={16} className="text-green-500" />
+            <span>{item.name}</span>
+          </div>
+        ) : (
+          <span>{item.name}</span>
+        )}
+
+        {item.isNew && (
+          <span className="text-[10px] text-primary-foreground bg-primary px-2 py-1 rounded-full">
+            New
+          </span>
+        )}
+
+        {item.isComingSoon && (
+          <span className="text-[10px] text-primary-foreground bg-orange-500 px-2 py-1 rounded-full">
+            Coming Soon
+          </span>
+        )}
 
         {item.children && item.children.length > 0 && (
           <ChevronDown

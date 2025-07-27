@@ -1,5 +1,5 @@
-import { require_react } from './chunk-IUKRAPEX.js';
-import { __commonJS, __publicField, __toESM } from './chunk-DC5AMYBS.js';
+import { require_react } from './chunk-CUTZXKCK.js';
+import { __commonJS, __toESM } from './chunk-DC5AMYBS.js';
 
 // ../../node_modules/.pnpm/cookie@1.0.2/node_modules/cookie/dist/index.js
 var require_dist = __commonJS({
@@ -359,710 +359,13 @@ var require_set_cookie = __commonJS({
   },
 });
 
-// ../../node_modules/.pnpm/react-router@7.5.2_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/react-router/dist/development/chunk-BAXFHI7N.mjs
+// ../../node_modules/.pnpm/react-router@7.6.1_react-dom@19.1.0_react@19.1.0__react@19.1.0/node_modules/react-router/dist/development/chunk-DQRVZFIR.mjs
 var React3 = __toESM(require_react(), 1);
 var React = __toESM(require_react(), 1);
 var React2 = __toESM(require_react(), 1);
 var React10 = __toESM(require_react(), 1);
 var React9 = __toESM(require_react(), 1);
 var React4 = __toESM(require_react(), 1);
-
-// ../../node_modules/.pnpm/turbo-stream@2.4.0/node_modules/turbo-stream/dist/turbo-stream.mjs
-var HOLE = -1;
-var NAN = -2;
-var NEGATIVE_INFINITY = -3;
-var NEGATIVE_ZERO = -4;
-var NULL = -5;
-var POSITIVE_INFINITY = -6;
-var UNDEFINED = -7;
-var TYPE_BIGINT = 'B';
-var TYPE_DATE = 'D';
-var TYPE_ERROR = 'E';
-var TYPE_MAP = 'M';
-var TYPE_NULL_OBJECT = 'N';
-var TYPE_PROMISE = 'P';
-var TYPE_REGEXP = 'R';
-var TYPE_SET = 'S';
-var TYPE_SYMBOL = 'Y';
-var TYPE_URL = 'U';
-var TYPE_PREVIOUS_RESOLVED = 'Z';
-var Deferred = class {
-  constructor() {
-    __publicField(this, 'promise');
-    __publicField(this, 'resolve');
-    __publicField(this, 'reject');
-    this.promise = new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
-    });
-  }
-};
-function createLineSplittingTransform() {
-  const decoder = new TextDecoder();
-  let leftover = '';
-  return new TransformStream({
-    transform(chunk, controller) {
-      const str = decoder.decode(chunk, { stream: true });
-      const parts = (leftover + str).split('\n');
-      leftover = parts.pop() || '';
-      for (const part of parts) {
-        controller.enqueue(part);
-      }
-    },
-    flush(controller) {
-      if (leftover) {
-        controller.enqueue(leftover);
-      }
-    },
-  });
-}
-function flatten(input) {
-  const { indices } = this;
-  const existing = indices.get(input);
-  if (existing) return [existing];
-  if (input === void 0) return UNDEFINED;
-  if (input === null) return NULL;
-  if (Number.isNaN(input)) return NAN;
-  if (input === Number.POSITIVE_INFINITY) return POSITIVE_INFINITY;
-  if (input === Number.NEGATIVE_INFINITY) return NEGATIVE_INFINITY;
-  if (input === 0 && 1 / input < 0) return NEGATIVE_ZERO;
-  const index = this.index++;
-  indices.set(input, index);
-  stringify.call(this, input, index);
-  return index;
-}
-function stringify(input, index) {
-  const { deferred, plugins, postPlugins } = this;
-  const str = this.stringified;
-  const stack = [[input, index]];
-  while (stack.length > 0) {
-    const [input2, index2] = stack.pop();
-    const partsForObj = (obj) =>
-      Object.keys(obj)
-        .map((k) => `"_${flatten.call(this, k)}":${flatten.call(this, obj[k])}`)
-        .join(',');
-    let error = null;
-    switch (typeof input2) {
-      case 'boolean':
-      case 'number':
-      case 'string':
-        str[index2] = JSON.stringify(input2);
-        break;
-      case 'bigint':
-        str[index2] = `["${TYPE_BIGINT}","${input2}"]`;
-        break;
-      case 'symbol': {
-        const keyFor = Symbol.keyFor(input2);
-        if (!keyFor) {
-          error = new Error(
-            'Cannot encode symbol unless created with Symbol.for()'
-          );
-        } else {
-          str[index2] = `["${TYPE_SYMBOL}",${JSON.stringify(keyFor)}]`;
-        }
-        break;
-      }
-      case 'object': {
-        if (!input2) {
-          str[index2] = `${NULL}`;
-          break;
-        }
-        const isArray = Array.isArray(input2);
-        let pluginHandled = false;
-        if (!isArray && plugins) {
-          for (const plugin of plugins) {
-            const pluginResult = plugin(input2);
-            if (Array.isArray(pluginResult)) {
-              pluginHandled = true;
-              const [pluginIdentifier, ...rest] = pluginResult;
-              str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
-              if (rest.length > 0) {
-                str[index2] +=
-                  `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
-              }
-              str[index2] += ']';
-              break;
-            }
-          }
-        }
-        if (!pluginHandled) {
-          let result = isArray ? '[' : '{';
-          if (isArray) {
-            for (let i = 0; i < input2.length; i++)
-              result +=
-                (i ? ',' : '') +
-                (i in input2 ? flatten.call(this, input2[i]) : HOLE);
-            str[index2] = `${result}]`;
-          } else if (input2 instanceof Date) {
-            str[index2] = `["${TYPE_DATE}",${input2.getTime()}]`;
-          } else if (input2 instanceof URL) {
-            str[index2] = `["${TYPE_URL}",${JSON.stringify(input2.href)}]`;
-          } else if (input2 instanceof RegExp) {
-            str[index2] = `["${TYPE_REGEXP}",${JSON.stringify(
-              input2.source
-            )},${JSON.stringify(input2.flags)}]`;
-          } else if (input2 instanceof Set) {
-            if (input2.size > 0) {
-              str[index2] =
-                `["${TYPE_SET}",${[...input2].map((val) => flatten.call(this, val)).join(',')}]`;
-            } else {
-              str[index2] = `["${TYPE_SET}"]`;
-            }
-          } else if (input2 instanceof Map) {
-            if (input2.size > 0) {
-              str[index2] = `["${TYPE_MAP}",${[...input2]
-                .flatMap(([k, v]) => [
-                  flatten.call(this, k),
-                  flatten.call(this, v),
-                ])
-                .join(',')}]`;
-            } else {
-              str[index2] = `["${TYPE_MAP}"]`;
-            }
-          } else if (input2 instanceof Promise) {
-            str[index2] = `["${TYPE_PROMISE}",${index2}]`;
-            deferred[index2] = input2;
-          } else if (input2 instanceof Error) {
-            str[index2] = `["${TYPE_ERROR}",${JSON.stringify(input2.message)}`;
-            if (input2.name !== 'Error') {
-              str[index2] += `,${JSON.stringify(input2.name)}`;
-            }
-            str[index2] += ']';
-          } else if (Object.getPrototypeOf(input2) === null) {
-            str[index2] = `["${TYPE_NULL_OBJECT}",{${partsForObj(input2)}}]`;
-          } else if (isPlainObject(input2)) {
-            str[index2] = `{${partsForObj(input2)}}`;
-          } else {
-            error = new Error('Cannot encode object with prototype');
-          }
-        }
-        break;
-      }
-      default: {
-        const isArray = Array.isArray(input2);
-        let pluginHandled = false;
-        if (!isArray && plugins) {
-          for (const plugin of plugins) {
-            const pluginResult = plugin(input2);
-            if (Array.isArray(pluginResult)) {
-              pluginHandled = true;
-              const [pluginIdentifier, ...rest] = pluginResult;
-              str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
-              if (rest.length > 0) {
-                str[index2] +=
-                  `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
-              }
-              str[index2] += ']';
-              break;
-            }
-          }
-        }
-        if (!pluginHandled) {
-          error = new Error('Cannot encode function or unexpected type');
-        }
-      }
-    }
-    if (error) {
-      let pluginHandled = false;
-      if (postPlugins) {
-        for (const plugin of postPlugins) {
-          const pluginResult = plugin(input2);
-          if (Array.isArray(pluginResult)) {
-            pluginHandled = true;
-            const [pluginIdentifier, ...rest] = pluginResult;
-            str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
-            if (rest.length > 0) {
-              str[index2] +=
-                `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
-            }
-            str[index2] += ']';
-            break;
-          }
-        }
-      }
-      if (!pluginHandled) {
-        throw error;
-      }
-    }
-  }
-}
-var objectProtoNames = Object.getOwnPropertyNames(Object.prototype)
-  .sort()
-  .join('\0');
-function isPlainObject(thing) {
-  const proto = Object.getPrototypeOf(thing);
-  return (
-    proto === Object.prototype ||
-    proto === null ||
-    Object.getOwnPropertyNames(proto).sort().join('\0') === objectProtoNames
-  );
-}
-var globalObj =
-  typeof window !== 'undefined'
-    ? window
-    : typeof globalThis !== 'undefined'
-      ? globalThis
-      : void 0;
-function unflatten(parsed) {
-  const { hydrated, values } = this;
-  if (typeof parsed === 'number') return hydrate.call(this, parsed);
-  if (!Array.isArray(parsed) || !parsed.length) throw new SyntaxError();
-  const startIndex = values.length;
-  for (const value of parsed) {
-    values.push(value);
-  }
-  hydrated.length = values.length;
-  return hydrate.call(this, startIndex);
-}
-function hydrate(index) {
-  const { hydrated, values, deferred, plugins } = this;
-  let result;
-  const stack = [
-    [
-      index,
-      (v) => {
-        result = v;
-      },
-    ],
-  ];
-  let postRun = [];
-  while (stack.length > 0) {
-    const [index2, set] = stack.pop();
-    switch (index2) {
-      case UNDEFINED:
-        set(void 0);
-        continue;
-      case NULL:
-        set(null);
-        continue;
-      case NAN:
-        set(NaN);
-        continue;
-      case POSITIVE_INFINITY:
-        set(Infinity);
-        continue;
-      case NEGATIVE_INFINITY:
-        set(-Infinity);
-        continue;
-      case NEGATIVE_ZERO:
-        set(-0);
-        continue;
-    }
-    if (hydrated[index2]) {
-      set(hydrated[index2]);
-      continue;
-    }
-    const value = values[index2];
-    if (!value || typeof value !== 'object') {
-      hydrated[index2] = value;
-      set(value);
-      continue;
-    }
-    if (Array.isArray(value)) {
-      if (typeof value[0] === 'string') {
-        const [type, b, c] = value;
-        switch (type) {
-          case TYPE_DATE:
-            set((hydrated[index2] = new Date(b)));
-            continue;
-          case TYPE_URL:
-            set((hydrated[index2] = new URL(b)));
-            continue;
-          case TYPE_BIGINT:
-            set((hydrated[index2] = BigInt(b)));
-            continue;
-          case TYPE_REGEXP:
-            set((hydrated[index2] = new RegExp(b, c)));
-            continue;
-          case TYPE_SYMBOL:
-            set((hydrated[index2] = Symbol.for(b)));
-            continue;
-          case TYPE_SET:
-            const newSet = /* @__PURE__ */ new Set();
-            hydrated[index2] = newSet;
-            for (let i = 1; i < value.length; i++)
-              stack.push([
-                value[i],
-                (v) => {
-                  newSet.add(v);
-                },
-              ]);
-            set(newSet);
-            continue;
-          case TYPE_MAP:
-            const map = /* @__PURE__ */ new Map();
-            hydrated[index2] = map;
-            for (let i = 1; i < value.length; i += 2) {
-              const r = [];
-              stack.push([
-                value[i + 1],
-                (v) => {
-                  r[1] = v;
-                },
-              ]);
-              stack.push([
-                value[i],
-                (k) => {
-                  r[0] = k;
-                },
-              ]);
-              postRun.push(() => {
-                map.set(r[0], r[1]);
-              });
-            }
-            set(map);
-            continue;
-          case TYPE_NULL_OBJECT:
-            const obj = /* @__PURE__ */ Object.create(null);
-            hydrated[index2] = obj;
-            for (const key of Object.keys(b).reverse()) {
-              const r = [];
-              stack.push([
-                b[key],
-                (v) => {
-                  r[1] = v;
-                },
-              ]);
-              stack.push([
-                Number(key.slice(1)),
-                (k) => {
-                  r[0] = k;
-                },
-              ]);
-              postRun.push(() => {
-                obj[r[0]] = r[1];
-              });
-            }
-            set(obj);
-            continue;
-          case TYPE_PROMISE:
-            if (hydrated[b]) {
-              set((hydrated[index2] = hydrated[b]));
-            } else {
-              const d = new Deferred();
-              deferred[b] = d;
-              set((hydrated[index2] = d.promise));
-            }
-            continue;
-          case TYPE_ERROR:
-            const [, message, errorType] = value;
-            let error =
-              errorType && globalObj && globalObj[errorType]
-                ? new globalObj[errorType](message)
-                : new Error(message);
-            hydrated[index2] = error;
-            set(error);
-            continue;
-          case TYPE_PREVIOUS_RESOLVED:
-            set((hydrated[index2] = hydrated[b]));
-            continue;
-          default:
-            if (Array.isArray(plugins)) {
-              const r = [];
-              const vals = value.slice(1);
-              for (let i = 0; i < vals.length; i++) {
-                const v = vals[i];
-                stack.push([
-                  v,
-                  (v2) => {
-                    r[i] = v2;
-                  },
-                ]);
-              }
-              postRun.push(() => {
-                for (const plugin of plugins) {
-                  const result2 = plugin(value[0], ...r);
-                  if (result2) {
-                    set((hydrated[index2] = result2.value));
-                    return;
-                  }
-                }
-                throw new SyntaxError();
-              });
-              continue;
-            }
-            throw new SyntaxError();
-        }
-      } else {
-        const array = [];
-        hydrated[index2] = array;
-        for (let i = 0; i < value.length; i++) {
-          const n = value[i];
-          if (n !== HOLE) {
-            stack.push([
-              n,
-              (v) => {
-                array[i] = v;
-              },
-            ]);
-          }
-        }
-        set(array);
-        continue;
-      }
-    } else {
-      const object = {};
-      hydrated[index2] = object;
-      for (const key of Object.keys(value).reverse()) {
-        const r = [];
-        stack.push([
-          value[key],
-          (v) => {
-            r[1] = v;
-          },
-        ]);
-        stack.push([
-          Number(key.slice(1)),
-          (k) => {
-            r[0] = k;
-          },
-        ]);
-        postRun.push(() => {
-          object[r[0]] = r[1];
-        });
-      }
-      set(object);
-      continue;
-    }
-  }
-  while (postRun.length > 0) {
-    postRun.pop()();
-  }
-  return result;
-}
-async function decode(readable, options) {
-  const { plugins } = options ?? {};
-  const done = new Deferred();
-  const reader = readable
-    .pipeThrough(createLineSplittingTransform())
-    .getReader();
-  const decoder = {
-    values: [],
-    hydrated: [],
-    deferred: {},
-    plugins,
-  };
-  const decoded = await decodeInitial.call(decoder, reader);
-  let donePromise = done.promise;
-  if (decoded.done) {
-    done.resolve();
-  } else {
-    donePromise = decodeDeferred
-      .call(decoder, reader)
-      .then(done.resolve)
-      .catch((reason) => {
-        for (const deferred of Object.values(decoder.deferred)) {
-          deferred.reject(reason);
-        }
-        done.reject(reason);
-      });
-  }
-  return {
-    done: donePromise.then(() => reader.closed),
-    value: decoded.value,
-  };
-}
-async function decodeInitial(reader) {
-  const read = await reader.read();
-  if (!read.value) {
-    throw new SyntaxError();
-  }
-  let line;
-  try {
-    line = JSON.parse(read.value);
-  } catch (reason) {
-    throw new SyntaxError();
-  }
-  return {
-    done: read.done,
-    value: unflatten.call(this, line),
-  };
-}
-async function decodeDeferred(reader) {
-  let read = await reader.read();
-  while (!read.done) {
-    if (!read.value) continue;
-    const line = read.value;
-    switch (line[0]) {
-      case TYPE_PROMISE: {
-        const colonIndex = line.indexOf(':');
-        const deferredId = Number(line.slice(1, colonIndex));
-        const deferred = this.deferred[deferredId];
-        if (!deferred) {
-          throw new Error(`Deferred ID ${deferredId} not found in stream`);
-        }
-        const lineData = line.slice(colonIndex + 1);
-        let jsonLine;
-        try {
-          jsonLine = JSON.parse(lineData);
-        } catch (reason) {
-          throw new SyntaxError();
-        }
-        const value = unflatten.call(this, jsonLine);
-        deferred.resolve(value);
-        break;
-      }
-      case TYPE_ERROR: {
-        const colonIndex = line.indexOf(':');
-        const deferredId = Number(line.slice(1, colonIndex));
-        const deferred = this.deferred[deferredId];
-        if (!deferred) {
-          throw new Error(`Deferred ID ${deferredId} not found in stream`);
-        }
-        const lineData = line.slice(colonIndex + 1);
-        let jsonLine;
-        try {
-          jsonLine = JSON.parse(lineData);
-        } catch (reason) {
-          throw new SyntaxError();
-        }
-        const value = unflatten.call(this, jsonLine);
-        deferred.reject(value);
-        break;
-      }
-      default:
-        throw new SyntaxError();
-    }
-    read = await reader.read();
-  }
-}
-function encode(input, options) {
-  const { plugins, postPlugins, signal } = options ?? {};
-  const encoder2 = {
-    deferred: {},
-    index: 0,
-    indices: /* @__PURE__ */ new Map(),
-    stringified: [],
-    plugins,
-    postPlugins,
-    signal,
-  };
-  const textEncoder = new TextEncoder();
-  let lastSentIndex = 0;
-  const readable = new ReadableStream({
-    async start(controller) {
-      const id = flatten.call(encoder2, input);
-      if (Array.isArray(id)) {
-        throw new Error('This should never happen');
-      }
-      if (id < 0) {
-        controller.enqueue(
-          textEncoder.encode(`${id}
-`)
-        );
-      } else {
-        controller.enqueue(
-          textEncoder.encode(`[${encoder2.stringified.join(',')}]
-`)
-        );
-        lastSentIndex = encoder2.stringified.length - 1;
-      }
-      const seenPromises = /* @__PURE__ */ new WeakSet();
-      while (Object.keys(encoder2.deferred).length > 0) {
-        for (const [deferredId, deferred] of Object.entries(
-          encoder2.deferred
-        )) {
-          if (seenPromises.has(deferred)) continue;
-          seenPromises.add(
-            (encoder2.deferred[Number(deferredId)] = raceSignal(
-              deferred,
-              encoder2.signal
-            )
-              .then(
-                (resolved) => {
-                  const id2 = flatten.call(encoder2, resolved);
-                  if (Array.isArray(id2)) {
-                    controller.enqueue(
-                      textEncoder.encode(
-                        `${TYPE_PROMISE}${deferredId}:[["${TYPE_PREVIOUS_RESOLVED}",${id2[0]}]]
-`
-                      )
-                    );
-                    encoder2.index++;
-                    lastSentIndex++;
-                  } else if (id2 < 0) {
-                    controller.enqueue(
-                      textEncoder.encode(`${TYPE_PROMISE}${deferredId}:${id2}
-`)
-                    );
-                  } else {
-                    const values = encoder2.stringified
-                      .slice(lastSentIndex + 1)
-                      .join(',');
-                    controller.enqueue(
-                      textEncoder.encode(
-                        `${TYPE_PROMISE}${deferredId}:[${values}]
-`
-                      )
-                    );
-                    lastSentIndex = encoder2.stringified.length - 1;
-                  }
-                },
-                (reason) => {
-                  if (
-                    !reason ||
-                    typeof reason !== 'object' ||
-                    !(reason instanceof Error)
-                  ) {
-                    reason = new Error('An unknown error occurred');
-                  }
-                  const id2 = flatten.call(encoder2, reason);
-                  if (Array.isArray(id2)) {
-                    controller.enqueue(
-                      textEncoder.encode(
-                        `${TYPE_ERROR}${deferredId}:[["${TYPE_PREVIOUS_RESOLVED}",${id2[0]}]]
-`
-                      )
-                    );
-                    encoder2.index++;
-                    lastSentIndex++;
-                  } else if (id2 < 0) {
-                    controller.enqueue(
-                      textEncoder.encode(`${TYPE_ERROR}${deferredId}:${id2}
-`)
-                    );
-                  } else {
-                    const values = encoder2.stringified
-                      .slice(lastSentIndex + 1)
-                      .join(',');
-                    controller.enqueue(
-                      textEncoder.encode(
-                        `${TYPE_ERROR}${deferredId}:[${values}]
-`
-                      )
-                    );
-                    lastSentIndex = encoder2.stringified.length - 1;
-                  }
-                }
-              )
-              .finally(() => {
-                delete encoder2.deferred[Number(deferredId)];
-              }))
-          );
-        }
-        await Promise.race(Object.values(encoder2.deferred));
-      }
-      await Promise.all(Object.values(encoder2.deferred));
-      controller.close();
-    },
-  });
-  return readable;
-}
-function raceSignal(promise, signal) {
-  if (!signal) return promise;
-  if (signal.aborted)
-    return Promise.reject(signal.reason || new Error('Signal was aborted.'));
-  const abort = new Promise((resolve, reject) => {
-    signal.addEventListener('abort', (event) => {
-      reject(signal.reason || new Error('Signal was aborted.'));
-    });
-    promise.then(resolve).catch(reject);
-  });
-  abort.catch(() => {});
-  return Promise.race([abort, promise]);
-}
-
-// ../../node_modules/.pnpm/react-router@7.5.2_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/react-router/dist/development/chunk-BAXFHI7N.mjs
 var React8 = __toESM(require_react(), 1);
 var React7 = __toESM(require_react(), 1);
 var React5 = __toESM(require_react(), 1);
@@ -1378,17 +681,7 @@ function getUrlBasedHistory(
     }
   }
   function createURL(to) {
-    let base =
-      window2.location.origin !== 'null'
-        ? window2.location.origin
-        : window2.location.href;
-    let href2 = typeof to === 'string' ? to : createPath(to);
-    href2 = href2.replace(/ $/, '%20');
-    invariant(
-      base,
-      `No window.location.(origin|href) available to create URL for href: ${href2}`
-    );
-    return new URL(href2, base);
+    return createBrowserURLImpl(to);
   }
   let history = {
     get action() {
@@ -1427,6 +720,22 @@ function getUrlBasedHistory(
     },
   };
   return history;
+}
+function createBrowserURLImpl(to, isAbsolute = false) {
+  let base = 'http://localhost';
+  if (typeof window !== 'undefined') {
+    base =
+      window.location.origin !== 'null'
+        ? window.location.origin
+        : window.location.href;
+  }
+  invariant(base, 'No window.location.(origin|href) available to create URL');
+  let href2 = typeof to === 'string' ? to : createPath(to);
+  href2 = href2.replace(/ $/, '%20');
+  if (!isAbsolute && href2.startsWith('//')) {
+    href2 = base + href2;
+  }
+  return new URL(href2, base);
 }
 function unstable_createContext(defaultValue) {
   return { defaultValue };
@@ -2109,53 +1418,61 @@ function createRouter(init) {
   let initialMatches = matchRoutes(dataRoutes, init.history.location, basename);
   let initialMatchesIsFOW = false;
   let initialErrors = null;
+  let initialized;
   if (initialMatches == null && !init.patchRoutesOnNavigation) {
     let error = getInternalRouterError(404, {
       pathname: init.history.location.pathname,
     });
     let { matches, route } = getShortCircuitMatches(dataRoutes);
+    initialized = true;
     initialMatches = matches;
     initialErrors = { [route.id]: error };
-  }
-  if (initialMatches && !init.hydrationData) {
-    let fogOfWar = checkFogOfWar(
-      initialMatches,
-      dataRoutes,
-      init.history.location.pathname
-    );
-    if (fogOfWar.active) {
-      initialMatches = null;
-    }
-  }
-  let initialized;
-  if (!initialMatches) {
-    initialized = false;
-    initialMatches = [];
-    let fogOfWar = checkFogOfWar(
-      null,
-      dataRoutes,
-      init.history.location.pathname
-    );
-    if (fogOfWar.active && fogOfWar.matches) {
-      initialMatchesIsFOW = true;
-      initialMatches = fogOfWar.matches;
-    }
-  } else if (initialMatches.some((m) => m.route.lazy)) {
-    initialized = false;
-  } else if (!initialMatches.some((m) => m.route.loader)) {
-    initialized = true;
   } else {
-    let loaderData = init.hydrationData ? init.hydrationData.loaderData : null;
-    let errors = init.hydrationData ? init.hydrationData.errors : null;
-    if (errors) {
-      let idx = initialMatches.findIndex((m) => errors[m.route.id] !== void 0);
-      initialized = initialMatches
-        .slice(0, idx + 1)
-        .every((m) => !shouldLoadRouteOnHydration(m.route, loaderData, errors));
-    } else {
-      initialized = initialMatches.every(
-        (m) => !shouldLoadRouteOnHydration(m.route, loaderData, errors)
+    if (initialMatches && !init.hydrationData) {
+      let fogOfWar = checkFogOfWar(
+        initialMatches,
+        dataRoutes,
+        init.history.location.pathname
       );
+      if (fogOfWar.active) {
+        initialMatches = null;
+      }
+    }
+    if (!initialMatches) {
+      initialized = false;
+      initialMatches = [];
+      let fogOfWar = checkFogOfWar(
+        null,
+        dataRoutes,
+        init.history.location.pathname
+      );
+      if (fogOfWar.active && fogOfWar.matches) {
+        initialMatchesIsFOW = true;
+        initialMatches = fogOfWar.matches;
+      }
+    } else if (initialMatches.some((m) => m.route.lazy)) {
+      initialized = false;
+    } else if (!initialMatches.some((m) => m.route.loader)) {
+      initialized = true;
+    } else {
+      let loaderData = init.hydrationData
+        ? init.hydrationData.loaderData
+        : null;
+      let errors = init.hydrationData ? init.hydrationData.errors : null;
+      if (errors) {
+        let idx = initialMatches.findIndex(
+          (m) => errors[m.route.id] !== void 0
+        );
+        initialized = initialMatches
+          .slice(0, idx + 1)
+          .every(
+            (m) => !shouldLoadRouteOnHydration(m.route, loaderData, errors)
+          );
+      } else {
+        initialized = initialMatches.every(
+          (m) => !shouldLoadRouteOnHydration(m.route, loaderData, errors)
+        );
+      }
     }
   }
   let router;
@@ -2776,7 +2093,11 @@ function createRouter(init) {
       }
       return {
         matches,
-        pendingActionResult: [boundaryMatch.route.id, result],
+        pendingActionResult: [
+          boundaryMatch.route.id,
+          result,
+          actionMatch.route.id,
+        ],
       };
     }
     return {
@@ -2871,6 +2192,7 @@ function createRouter(init) {
       fetchRedirectIds,
       routesToUse,
       basename,
+      init.patchRoutesOnNavigation != null,
       pendingActionResult
     );
     pendingNavigationLoadId = ++incrementingLoadId;
@@ -3224,6 +2546,7 @@ function createRouter(init) {
       fetchRedirectIds,
       routesToUse,
       basename,
+      init.patchRoutesOnNavigation != null,
       [match.route.id, actionResult]
     );
     revalidatingFetchers
@@ -3265,6 +2588,10 @@ function createRouter(init) {
     fetchReloadIds.delete(key);
     fetchControllers.delete(key);
     revalidatingFetchers.forEach((r) => fetchControllers.delete(r.key));
+    if (state.fetchers.has(key)) {
+      let doneFetcher = getDoneFetcher(actionResult.data);
+      state.fetchers.set(key, doneFetcher);
+    }
     let redirect2 = findRedirect(loaderResults);
     if (redirect2) {
       return startRedirectNavigation(
@@ -3292,10 +2619,6 @@ function createRouter(init) {
       revalidatingFetchers,
       fetcherResults
     );
-    if (state.fetchers.has(key)) {
-      let doneFetcher = getDoneFetcher(actionResult.data);
-      state.fetchers.set(key, doneFetcher);
-    }
     abortStaleFetchLoads(loadId);
     if (
       state.navigation.state === 'loading' &&
@@ -3450,7 +2773,7 @@ function createRouter(init) {
       if (redirect2.response.headers.has('X-Remix-Reload-Document')) {
         isDocumentReload = true;
       } else if (ABSOLUTE_URL_REGEX.test(location)) {
-        const url = init.history.createURL(location);
+        const url = createBrowserURLImpl(location, true);
         isDocumentReload = // Hard reload if it's an absolute URL to a new origin
           url.origin !== routerWindow.location.origin || // Hard reload if it's an absolute URL that does not match our basename
           stripBasename(url.pathname, basename) == null;
@@ -3534,6 +2857,9 @@ function createRouter(init) {
             error: e,
           };
         });
+      return dataResults;
+    }
+    if (request.signal.aborted) {
       return dataResults;
     }
     for (let [routeId, result] of Object.entries(results)) {
@@ -4063,6 +3389,7 @@ function createStaticHandler(routes, opts) {
             return res;
           },
           async (error, routeId) => {
+            var _a;
             if (isResponse(error)) {
               return error;
             }
@@ -4075,15 +3402,22 @@ function createStaticHandler(routes, opts) {
                   dataRoutes,
                   renderedStaticContext,
                   error,
-                  findNearestBoundary(matches, routeId).route.id
+                  skipLoaderErrorBubbling
+                    ? routeId
+                    : findNearestBoundary(matches, routeId).route.id
                 )
               );
             } else {
-              let loaderIdx = matches.findIndex((m) => m.route.loader);
-              let boundary =
-                loaderIdx >= 0
-                  ? findNearestBoundary(matches, matches[loaderIdx].route.id)
-                  : findNearestBoundary(matches);
+              let boundaryRouteId = skipLoaderErrorBubbling
+                ? routeId
+                : findNearestBoundary(
+                    matches,
+                    ((_a = matches.find(
+                      (m) => m.route.id === routeId || m.route.loader
+                    )) == null
+                      ? void 0
+                      : _a.route.id) || routeId
+                  ).route.id;
               return respond({
                 matches,
                 location,
@@ -4091,7 +3425,7 @@ function createStaticHandler(routes, opts) {
                 loaderData: {},
                 actionData: null,
                 errors: {
-                  [boundary.route.id]: error,
+                  [boundaryRouteId]: error,
                 },
                 statusCode: isRouteErrorResponse(error) ? error.status : 500,
                 actionHeaders: {},
@@ -4821,6 +4155,7 @@ function getMatchesToLoad(
   fetchRedirectIds,
   routesToUse,
   basename,
+  hasPatchRoutesOnNavigation,
   pendingActionResult
 ) {
   var _a;
@@ -4914,8 +4249,14 @@ function getMatchesToLoad(
     ) {
       return;
     }
+    let fetcher = state.fetchers.get(key);
+    let isMidInitialLoad =
+      fetcher && fetcher.state !== 'idle' && fetcher.data === void 0;
     let fetcherMatches = matchRoutes(routesToUse, f.path, basename);
     if (!fetcherMatches) {
+      if (hasPatchRoutesOnNavigation && isMidInitialLoad) {
+        return;
+      }
       revalidatingFetchers.push({
         key,
         routeId: f.routeId,
@@ -4930,7 +4271,6 @@ function getMatchesToLoad(
     if (fetchRedirectIds.has(key)) {
       return;
     }
-    let fetcher = state.fetchers.get(key);
     let fetcherMatch = getTargetMatch(fetcherMatches, f.path);
     let fetchController = new AbortController();
     let fetchRequest = createClientSideRequest(
@@ -4950,7 +4290,7 @@ function getMatchesToLoad(
         lazyRoutePropertiesToSkip,
         scopedContext
       );
-    } else if (fetcher && fetcher.state !== 'idle' && fetcher.data === void 0) {
+    } else if (isMidInitialLoad) {
       if (isRevalidationRequired) {
         fetcherDsMatches = getTargetedDataStrategyMatches(
           mapRouteProperties2,
@@ -5003,7 +4343,7 @@ function shouldLoadRouteOnHydration(route, loaderData, errors) {
   if (!route.loader) {
     return false;
   }
-  let hasData = loaderData != null && loaderData[route.id] !== void 0;
+  let hasData = loaderData != null && route.id in loaderData;
   let hasError = errors != null && errors[route.id] !== void 0;
   if (!hasData && hasError) {
     return false;
@@ -5944,7 +5284,9 @@ function processRouteLoaderData(
   });
   if (pendingError !== void 0 && pendingActionResult) {
     errors = { [pendingActionResult[0]]: pendingError };
-    loaderData[pendingActionResult[0]] = void 0;
+    if (pendingActionResult[2]) {
+      loaderData[pendingActionResult[2]] = void 0;
+    }
   }
   return {
     loaderData,
@@ -6409,15 +5751,14 @@ function useHref(to, { relative } = {}) {
     // router loaded. We can help them understand how to avoid that.
     `useHref() may be used only in the context of a <Router> component.`
   );
-  let { basename, navigator: navigator2 } =
-    React2.useContext(NavigationContext);
+  let { basename, navigator } = React2.useContext(NavigationContext);
   let { hash, pathname, search } = useResolvedPath(to, { relative });
   let joinedPathname = pathname;
   if (basename !== '/') {
     joinedPathname =
       pathname === '/' ? basename : joinPaths([basename, pathname]);
   }
-  return navigator2.createHref({ pathname: joinedPathname, search, hash });
+  return navigator.createHref({ pathname: joinedPathname, search, hash });
 }
 function useInRouterContext() {
   return React2.useContext(LocationContext) != null;
@@ -6466,8 +5807,7 @@ function useNavigateUnstable() {
     `useNavigate() may be used only in the context of a <Router> component.`
   );
   let dataRouterContext = React2.useContext(DataRouterContext);
-  let { basename, navigator: navigator2 } =
-    React2.useContext(NavigationContext);
+  let { basename, navigator } = React2.useContext(NavigationContext);
   let { matches } = React2.useContext(RouteContext);
   let { pathname: locationPathname } = useLocation();
   let routePathnamesJson = JSON.stringify(getResolveToMatches(matches));
@@ -6480,7 +5820,7 @@ function useNavigateUnstable() {
       warning(activeRef.current, navigateEffectWarning);
       if (!activeRef.current) return;
       if (typeof to === 'number') {
-        navigator2.go(to);
+        navigator.go(to);
         return;
       }
       let path = resolveTo(
@@ -6495,7 +5835,7 @@ function useNavigateUnstable() {
             ? basename
             : joinPaths([basename, path.pathname]);
       }
-      (!!options.replace ? navigator2.replace : navigator2.push)(
+      (!!options.replace ? navigator.replace : navigator.push)(
         path,
         options.state,
         options
@@ -6503,7 +5843,7 @@ function useNavigateUnstable() {
     },
     [
       basename,
-      navigator2,
+      navigator,
       routePathnamesJson,
       locationPathname,
       dataRouterContext,
@@ -6557,8 +5897,7 @@ function useRoutesImpl(routes, locationArg, dataRouterState, future) {
     // router loaded. We can help them understand how to avoid that.
     `useRoutes() may be used only in the context of a <Router> component.`
   );
-  let { navigator: navigator2, static: isStatic } =
-    React2.useContext(NavigationContext);
+  let { navigator } = React2.useContext(NavigationContext);
   let { matches: parentMatches } = React2.useContext(RouteContext);
   let routeMatch = parentMatches[parentMatches.length - 1];
   let parentParams = routeMatch ? routeMatch.params : {};
@@ -6598,13 +5937,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
     let segments = pathname.replace(/^\//, '').split('/');
     remainingPathname = '/' + segments.slice(parentSegments.length).join('/');
   }
-  let matches =
-    !isStatic &&
-    dataRouterState &&
-    dataRouterState.matches &&
-    dataRouterState.matches.length > 0
-      ? dataRouterState.matches
-      : matchRoutes(routes, { pathname: remainingPathname });
+  let matches = matchRoutes(routes, { pathname: remainingPathname });
   if (ENABLE_DEV_WARNINGS) {
     warning(
       parentRoute || matches != null,
@@ -6626,8 +5959,8 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
           pathname: joinPaths([
             parentPathnameBase,
             // Re-encode pathnames that were decoded inside matchRoutes
-            navigator2.encodeLocation
-              ? navigator2.encodeLocation(match.pathname).pathname
+            navigator.encodeLocation
+              ? navigator.encodeLocation(match.pathname).pathname
               : match.pathname,
           ]),
           pathnameBase:
@@ -6636,8 +5969,8 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
               : joinPaths([
                   parentPathnameBase,
                   // Re-encode pathnames that were decoded inside matchRoutes
-                  navigator2.encodeLocation
-                    ? navigator2.encodeLocation(match.pathnameBase).pathname
+                  navigator.encodeLocation
+                    ? navigator.encodeLocation(match.pathnameBase).pathname
                     : match.pathnameBase,
                 ]),
         })
@@ -6951,14 +6284,12 @@ function useRevalidator() {
     'useRevalidator'
     /* UseRevalidator */
   );
+  let revalidate = React2.useCallback(async () => {
+    await dataRouterContext.router.revalidate();
+  }, [dataRouterContext.router]);
   return React2.useMemo(
-    () => ({
-      async revalidate() {
-        await dataRouterContext.router.revalidate();
-      },
-      state: state.revalidation,
-    }),
-    [dataRouterContext.router, state.revalidation]
+    () => ({ revalidate, state: state.revalidation }),
+    [revalidate, state.revalidation]
   );
 }
 function useMatches() {
@@ -7117,7 +6448,6 @@ function warnOnce(condition, message) {
     console.warn(message);
   }
 }
-var ENABLE_DEV_WARNINGS2 = true;
 function mapRouteProperties(route) {
   let updates = {
     // Note: this check also occurs in createRoutesFromChildren so update
@@ -7128,7 +6458,7 @@ function mapRouteProperties(route) {
       route.errorElement != null,
   };
   if (route.Component) {
-    if (ENABLE_DEV_WARNINGS2) {
+    if (ENABLE_DEV_WARNINGS) {
       if (route.element) {
         warning(
           false,
@@ -7142,7 +6472,7 @@ function mapRouteProperties(route) {
     });
   }
   if (route.HydrateFallback) {
-    if (ENABLE_DEV_WARNINGS2) {
+    if (ENABLE_DEV_WARNINGS) {
       if (route.hydrateFallbackElement) {
         warning(
           false,
@@ -7156,7 +6486,7 @@ function mapRouteProperties(route) {
     });
   }
   if (route.ErrorBoundary) {
-    if (ENABLE_DEV_WARNINGS2) {
+    if (ENABLE_DEV_WARNINGS) {
       if (route.errorElement) {
         warning(
           false,
@@ -7190,7 +6520,7 @@ function createMemoryRouter(routes, opts) {
       opts == null ? void 0 : opts.patchRoutesOnNavigation,
   }).initialize();
 }
-var Deferred2 = class {
+var Deferred = class {
   constructor() {
     this.status = 'pending';
     this.promise = new Promise((resolve, reject) => {
@@ -7297,7 +6627,7 @@ function RouterProvider({ router, flushSync: reactDomFlushSyncImpl }) {
   React3.useLayoutEffect(() => router.subscribe(setState), [router, setState]);
   React3.useEffect(() => {
     if (vtContext.isTransitioning && !vtContext.flushSync) {
-      setRenderDfd(new Deferred2());
+      setRenderDfd(new Deferred());
     }
   }, [vtContext]);
   React3.useEffect(() => {
@@ -7338,7 +6668,7 @@ function RouterProvider({ router, flushSync: reactDomFlushSyncImpl }) {
       setInterruption(void 0);
     }
   }, [vtContext.isTransitioning, interruption]);
-  let navigator2 = React3.useMemo(() => {
+  let navigator = React3.useMemo(() => {
     return {
       createHref: router.createHref,
       encodeLocation: router.encodeLocation,
@@ -7360,11 +6690,11 @@ function RouterProvider({ router, flushSync: reactDomFlushSyncImpl }) {
   let dataRouterContext = React3.useMemo(
     () => ({
       router,
-      navigator: navigator2,
+      navigator,
       static: false,
       basename,
     }),
-    [router, navigator2, basename]
+    [router, navigator, basename]
   );
   return React3.createElement(
     React3.Fragment,
@@ -7387,7 +6717,7 @@ function RouterProvider({ router, flushSync: reactDomFlushSyncImpl }) {
                 basename,
                 location: state.location,
                 navigationType: state.historyAction,
-                navigator: navigator2,
+                navigator,
               },
               React3.createElement(MemoizedDataRoutes, {
                 routes: router.routes,
@@ -7476,7 +6806,7 @@ function Router({
   children = null,
   location: locationProp,
   navigationType = 'POP',
-  navigator: navigator2,
+  navigator,
   static: staticProp = false,
 }) {
   invariant(
@@ -7487,11 +6817,11 @@ function Router({
   let navigationContext = React3.useMemo(
     () => ({
       basename,
-      navigator: navigator2,
+      navigator,
       static: staticProp,
       future: {},
     }),
-    [basename, navigator2, staticProp]
+    [basename, navigator, staticProp]
   );
   if (typeof locationProp === 'string') {
     locationProp = parsePath(locationProp);
@@ -8104,6 +7434,704 @@ function escapeHtml(html) {
 function createHtml(html) {
   return { __html: html };
 }
+var HOLE = -1;
+var NAN = -2;
+var NEGATIVE_INFINITY = -3;
+var NEGATIVE_ZERO = -4;
+var NULL = -5;
+var POSITIVE_INFINITY = -6;
+var UNDEFINED = -7;
+var TYPE_BIGINT = 'B';
+var TYPE_DATE = 'D';
+var TYPE_ERROR = 'E';
+var TYPE_MAP = 'M';
+var TYPE_NULL_OBJECT = 'N';
+var TYPE_PROMISE = 'P';
+var TYPE_REGEXP = 'R';
+var TYPE_SET = 'S';
+var TYPE_SYMBOL = 'Y';
+var TYPE_URL = 'U';
+var TYPE_PREVIOUS_RESOLVED = 'Z';
+var Deferred2 = class {
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+};
+function createLineSplittingTransform() {
+  const decoder = new TextDecoder();
+  let leftover = '';
+  return new TransformStream({
+    transform(chunk, controller) {
+      const str = decoder.decode(chunk, { stream: true });
+      const parts = (leftover + str).split('\n');
+      leftover = parts.pop() || '';
+      for (const part of parts) {
+        controller.enqueue(part);
+      }
+    },
+    flush(controller) {
+      if (leftover) {
+        controller.enqueue(leftover);
+      }
+    },
+  });
+}
+function flatten(input) {
+  const { indices } = this;
+  const existing = indices.get(input);
+  if (existing) return [existing];
+  if (input === void 0) return UNDEFINED;
+  if (input === null) return NULL;
+  if (Number.isNaN(input)) return NAN;
+  if (input === Number.POSITIVE_INFINITY) return POSITIVE_INFINITY;
+  if (input === Number.NEGATIVE_INFINITY) return NEGATIVE_INFINITY;
+  if (input === 0 && 1 / input < 0) return NEGATIVE_ZERO;
+  const index = this.index++;
+  indices.set(input, index);
+  stringify.call(this, input, index);
+  return index;
+}
+function stringify(input, index) {
+  const { deferred, plugins, postPlugins } = this;
+  const str = this.stringified;
+  const stack = [[input, index]];
+  while (stack.length > 0) {
+    const [input2, index2] = stack.pop();
+    const partsForObj = (obj) =>
+      Object.keys(obj)
+        .map((k) => `"_${flatten.call(this, k)}":${flatten.call(this, obj[k])}`)
+        .join(',');
+    let error = null;
+    switch (typeof input2) {
+      case 'boolean':
+      case 'number':
+      case 'string':
+        str[index2] = JSON.stringify(input2);
+        break;
+      case 'bigint':
+        str[index2] = `["${TYPE_BIGINT}","${input2}"]`;
+        break;
+      case 'symbol': {
+        const keyFor = Symbol.keyFor(input2);
+        if (!keyFor) {
+          error = new Error(
+            'Cannot encode symbol unless created with Symbol.for()'
+          );
+        } else {
+          str[index2] = `["${TYPE_SYMBOL}",${JSON.stringify(keyFor)}]`;
+        }
+        break;
+      }
+      case 'object': {
+        if (!input2) {
+          str[index2] = `${NULL}`;
+          break;
+        }
+        const isArray = Array.isArray(input2);
+        let pluginHandled = false;
+        if (!isArray && plugins) {
+          for (const plugin of plugins) {
+            const pluginResult = plugin(input2);
+            if (Array.isArray(pluginResult)) {
+              pluginHandled = true;
+              const [pluginIdentifier, ...rest] = pluginResult;
+              str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
+              if (rest.length > 0) {
+                str[index2] +=
+                  `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
+              }
+              str[index2] += ']';
+              break;
+            }
+          }
+        }
+        if (!pluginHandled) {
+          let result = isArray ? '[' : '{';
+          if (isArray) {
+            for (let i = 0; i < input2.length; i++)
+              result +=
+                (i ? ',' : '') +
+                (i in input2 ? flatten.call(this, input2[i]) : HOLE);
+            str[index2] = `${result}]`;
+          } else if (input2 instanceof Date) {
+            str[index2] = `["${TYPE_DATE}",${input2.getTime()}]`;
+          } else if (input2 instanceof URL) {
+            str[index2] = `["${TYPE_URL}",${JSON.stringify(input2.href)}]`;
+          } else if (input2 instanceof RegExp) {
+            str[index2] = `["${TYPE_REGEXP}",${JSON.stringify(
+              input2.source
+            )},${JSON.stringify(input2.flags)}]`;
+          } else if (input2 instanceof Set) {
+            if (input2.size > 0) {
+              str[index2] =
+                `["${TYPE_SET}",${[...input2].map((val) => flatten.call(this, val)).join(',')}]`;
+            } else {
+              str[index2] = `["${TYPE_SET}"]`;
+            }
+          } else if (input2 instanceof Map) {
+            if (input2.size > 0) {
+              str[index2] = `["${TYPE_MAP}",${[...input2]
+                .flatMap(([k, v]) => [
+                  flatten.call(this, k),
+                  flatten.call(this, v),
+                ])
+                .join(',')}]`;
+            } else {
+              str[index2] = `["${TYPE_MAP}"]`;
+            }
+          } else if (input2 instanceof Promise) {
+            str[index2] = `["${TYPE_PROMISE}",${index2}]`;
+            deferred[index2] = input2;
+          } else if (input2 instanceof Error) {
+            str[index2] = `["${TYPE_ERROR}",${JSON.stringify(input2.message)}`;
+            if (input2.name !== 'Error') {
+              str[index2] += `,${JSON.stringify(input2.name)}`;
+            }
+            str[index2] += ']';
+          } else if (Object.getPrototypeOf(input2) === null) {
+            str[index2] = `["${TYPE_NULL_OBJECT}",{${partsForObj(input2)}}]`;
+          } else if (isPlainObject(input2)) {
+            str[index2] = `{${partsForObj(input2)}}`;
+          } else {
+            error = new Error('Cannot encode object with prototype');
+          }
+        }
+        break;
+      }
+      default: {
+        const isArray = Array.isArray(input2);
+        let pluginHandled = false;
+        if (!isArray && plugins) {
+          for (const plugin of plugins) {
+            const pluginResult = plugin(input2);
+            if (Array.isArray(pluginResult)) {
+              pluginHandled = true;
+              const [pluginIdentifier, ...rest] = pluginResult;
+              str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
+              if (rest.length > 0) {
+                str[index2] +=
+                  `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
+              }
+              str[index2] += ']';
+              break;
+            }
+          }
+        }
+        if (!pluginHandled) {
+          error = new Error('Cannot encode function or unexpected type');
+        }
+      }
+    }
+    if (error) {
+      let pluginHandled = false;
+      if (postPlugins) {
+        for (const plugin of postPlugins) {
+          const pluginResult = plugin(input2);
+          if (Array.isArray(pluginResult)) {
+            pluginHandled = true;
+            const [pluginIdentifier, ...rest] = pluginResult;
+            str[index2] = `[${JSON.stringify(pluginIdentifier)}`;
+            if (rest.length > 0) {
+              str[index2] +=
+                `,${rest.map((v) => flatten.call(this, v)).join(',')}`;
+            }
+            str[index2] += ']';
+            break;
+          }
+        }
+      }
+      if (!pluginHandled) {
+        throw error;
+      }
+    }
+  }
+}
+var objectProtoNames = Object.getOwnPropertyNames(Object.prototype)
+  .sort()
+  .join('\0');
+function isPlainObject(thing) {
+  const proto = Object.getPrototypeOf(thing);
+  return (
+    proto === Object.prototype ||
+    proto === null ||
+    Object.getOwnPropertyNames(proto).sort().join('\0') === objectProtoNames
+  );
+}
+var globalObj =
+  typeof window !== 'undefined'
+    ? window
+    : typeof globalThis !== 'undefined'
+      ? globalThis
+      : void 0;
+function unflatten(parsed) {
+  const { hydrated, values } = this;
+  if (typeof parsed === 'number') return hydrate.call(this, parsed);
+  if (!Array.isArray(parsed) || !parsed.length) throw new SyntaxError();
+  const startIndex = values.length;
+  for (const value of parsed) {
+    values.push(value);
+  }
+  hydrated.length = values.length;
+  return hydrate.call(this, startIndex);
+}
+function hydrate(index) {
+  const { hydrated, values, deferred, plugins } = this;
+  let result;
+  const stack = [
+    [
+      index,
+      (v) => {
+        result = v;
+      },
+    ],
+  ];
+  let postRun = [];
+  while (stack.length > 0) {
+    const [index2, set] = stack.pop();
+    switch (index2) {
+      case UNDEFINED:
+        set(void 0);
+        continue;
+      case NULL:
+        set(null);
+        continue;
+      case NAN:
+        set(NaN);
+        continue;
+      case POSITIVE_INFINITY:
+        set(Infinity);
+        continue;
+      case NEGATIVE_INFINITY:
+        set(-Infinity);
+        continue;
+      case NEGATIVE_ZERO:
+        set(-0);
+        continue;
+    }
+    if (hydrated[index2]) {
+      set(hydrated[index2]);
+      continue;
+    }
+    const value = values[index2];
+    if (!value || typeof value !== 'object') {
+      hydrated[index2] = value;
+      set(value);
+      continue;
+    }
+    if (Array.isArray(value)) {
+      if (typeof value[0] === 'string') {
+        const [type, b, c] = value;
+        switch (type) {
+          case TYPE_DATE:
+            set((hydrated[index2] = new Date(b)));
+            continue;
+          case TYPE_URL:
+            set((hydrated[index2] = new URL(b)));
+            continue;
+          case TYPE_BIGINT:
+            set((hydrated[index2] = BigInt(b)));
+            continue;
+          case TYPE_REGEXP:
+            set((hydrated[index2] = new RegExp(b, c)));
+            continue;
+          case TYPE_SYMBOL:
+            set((hydrated[index2] = Symbol.for(b)));
+            continue;
+          case TYPE_SET:
+            const newSet = /* @__PURE__ */ new Set();
+            hydrated[index2] = newSet;
+            for (let i = value.length - 1; i > 0; i--)
+              stack.push([
+                value[i],
+                (v) => {
+                  newSet.add(v);
+                },
+              ]);
+            set(newSet);
+            continue;
+          case TYPE_MAP:
+            const map = /* @__PURE__ */ new Map();
+            hydrated[index2] = map;
+            for (let i = value.length - 2; i > 0; i -= 2) {
+              const r = [];
+              stack.push([
+                value[i + 1],
+                (v) => {
+                  r[1] = v;
+                },
+              ]);
+              stack.push([
+                value[i],
+                (k) => {
+                  r[0] = k;
+                },
+              ]);
+              postRun.push(() => {
+                map.set(r[0], r[1]);
+              });
+            }
+            set(map);
+            continue;
+          case TYPE_NULL_OBJECT:
+            const obj = /* @__PURE__ */ Object.create(null);
+            hydrated[index2] = obj;
+            for (const key of Object.keys(b).reverse()) {
+              const r = [];
+              stack.push([
+                b[key],
+                (v) => {
+                  r[1] = v;
+                },
+              ]);
+              stack.push([
+                Number(key.slice(1)),
+                (k) => {
+                  r[0] = k;
+                },
+              ]);
+              postRun.push(() => {
+                obj[r[0]] = r[1];
+              });
+            }
+            set(obj);
+            continue;
+          case TYPE_PROMISE:
+            if (hydrated[b]) {
+              set((hydrated[index2] = hydrated[b]));
+            } else {
+              const d = new Deferred2();
+              deferred[b] = d;
+              set((hydrated[index2] = d.promise));
+            }
+            continue;
+          case TYPE_ERROR:
+            const [, message, errorType] = value;
+            let error =
+              errorType && globalObj && globalObj[errorType]
+                ? new globalObj[errorType](message)
+                : new Error(message);
+            hydrated[index2] = error;
+            set(error);
+            continue;
+          case TYPE_PREVIOUS_RESOLVED:
+            set((hydrated[index2] = hydrated[b]));
+            continue;
+          default:
+            if (Array.isArray(plugins)) {
+              const r = [];
+              const vals = value.slice(1);
+              for (let i = 0; i < vals.length; i++) {
+                const v = vals[i];
+                stack.push([
+                  v,
+                  (v2) => {
+                    r[i] = v2;
+                  },
+                ]);
+              }
+              postRun.push(() => {
+                for (const plugin of plugins) {
+                  const result2 = plugin(value[0], ...r);
+                  if (result2) {
+                    set((hydrated[index2] = result2.value));
+                    return;
+                  }
+                }
+                throw new SyntaxError();
+              });
+              continue;
+            }
+            throw new SyntaxError();
+        }
+      } else {
+        const array = [];
+        hydrated[index2] = array;
+        for (let i = 0; i < value.length; i++) {
+          const n = value[i];
+          if (n !== HOLE) {
+            stack.push([
+              n,
+              (v) => {
+                array[i] = v;
+              },
+            ]);
+          }
+        }
+        set(array);
+        continue;
+      }
+    } else {
+      const object = {};
+      hydrated[index2] = object;
+      for (const key of Object.keys(value).reverse()) {
+        const r = [];
+        stack.push([
+          value[key],
+          (v) => {
+            r[1] = v;
+          },
+        ]);
+        stack.push([
+          Number(key.slice(1)),
+          (k) => {
+            r[0] = k;
+          },
+        ]);
+        postRun.push(() => {
+          object[r[0]] = r[1];
+        });
+      }
+      set(object);
+      continue;
+    }
+  }
+  while (postRun.length > 0) {
+    postRun.pop()();
+  }
+  return result;
+}
+async function decode(readable, options) {
+  const { plugins } = options ?? {};
+  const done = new Deferred2();
+  const reader = readable
+    .pipeThrough(createLineSplittingTransform())
+    .getReader();
+  const decoder = {
+    values: [],
+    hydrated: [],
+    deferred: {},
+    plugins,
+  };
+  const decoded = await decodeInitial.call(decoder, reader);
+  let donePromise = done.promise;
+  if (decoded.done) {
+    done.resolve();
+  } else {
+    donePromise = decodeDeferred
+      .call(decoder, reader)
+      .then(done.resolve)
+      .catch((reason) => {
+        for (const deferred of Object.values(decoder.deferred)) {
+          deferred.reject(reason);
+        }
+        done.reject(reason);
+      });
+  }
+  return {
+    done: donePromise.then(() => reader.closed),
+    value: decoded.value,
+  };
+}
+async function decodeInitial(reader) {
+  const read = await reader.read();
+  if (!read.value) {
+    throw new SyntaxError();
+  }
+  let line;
+  try {
+    line = JSON.parse(read.value);
+  } catch (reason) {
+    throw new SyntaxError();
+  }
+  return {
+    done: read.done,
+    value: unflatten.call(this, line),
+  };
+}
+async function decodeDeferred(reader) {
+  let read = await reader.read();
+  while (!read.done) {
+    if (!read.value) continue;
+    const line = read.value;
+    switch (line[0]) {
+      case TYPE_PROMISE: {
+        const colonIndex = line.indexOf(':');
+        const deferredId = Number(line.slice(1, colonIndex));
+        const deferred = this.deferred[deferredId];
+        if (!deferred) {
+          throw new Error(`Deferred ID ${deferredId} not found in stream`);
+        }
+        const lineData = line.slice(colonIndex + 1);
+        let jsonLine;
+        try {
+          jsonLine = JSON.parse(lineData);
+        } catch (reason) {
+          throw new SyntaxError();
+        }
+        const value = unflatten.call(this, jsonLine);
+        deferred.resolve(value);
+        break;
+      }
+      case TYPE_ERROR: {
+        const colonIndex = line.indexOf(':');
+        const deferredId = Number(line.slice(1, colonIndex));
+        const deferred = this.deferred[deferredId];
+        if (!deferred) {
+          throw new Error(`Deferred ID ${deferredId} not found in stream`);
+        }
+        const lineData = line.slice(colonIndex + 1);
+        let jsonLine;
+        try {
+          jsonLine = JSON.parse(lineData);
+        } catch (reason) {
+          throw new SyntaxError();
+        }
+        const value = unflatten.call(this, jsonLine);
+        deferred.reject(value);
+        break;
+      }
+      default:
+        throw new SyntaxError();
+    }
+    read = await reader.read();
+  }
+}
+function encode(input, options) {
+  const { plugins, postPlugins, signal } = options ?? {};
+  const encoder2 = {
+    deferred: {},
+    index: 0,
+    indices: /* @__PURE__ */ new Map(),
+    stringified: [],
+    plugins,
+    postPlugins,
+    signal,
+  };
+  const textEncoder = new TextEncoder();
+  let lastSentIndex = 0;
+  const readable = new ReadableStream({
+    async start(controller) {
+      const id = flatten.call(encoder2, input);
+      if (Array.isArray(id)) {
+        throw new Error('This should never happen');
+      }
+      if (id < 0) {
+        controller.enqueue(
+          textEncoder.encode(`${id}
+`)
+        );
+      } else {
+        controller.enqueue(
+          textEncoder.encode(`[${encoder2.stringified.join(',')}]
+`)
+        );
+        lastSentIndex = encoder2.stringified.length - 1;
+      }
+      const seenPromises = /* @__PURE__ */ new WeakSet();
+      if (Object.keys(encoder2.deferred).length) {
+        let raceDone;
+        const racePromise = new Promise((resolve, reject) => {
+          raceDone = resolve;
+          if (signal) {
+            const rejectPromise = () =>
+              reject(signal.reason || new Error('Signal was aborted.'));
+            if (signal.aborted) {
+              rejectPromise();
+            } else {
+              signal.addEventListener('abort', (event) => {
+                rejectPromise();
+              });
+            }
+          }
+        });
+        while (Object.keys(encoder2.deferred).length > 0) {
+          for (const [deferredId, deferred] of Object.entries(
+            encoder2.deferred
+          )) {
+            if (seenPromises.has(deferred)) continue;
+            seenPromises.add(
+              // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+              (encoder2.deferred[Number(deferredId)] = Promise.race([
+                racePromise,
+                deferred,
+              ])
+                .then(
+                  (resolved) => {
+                    const id2 = flatten.call(encoder2, resolved);
+                    if (Array.isArray(id2)) {
+                      controller.enqueue(
+                        textEncoder.encode(
+                          `${TYPE_PROMISE}${deferredId}:[["${TYPE_PREVIOUS_RESOLVED}",${id2[0]}]]
+`
+                        )
+                      );
+                      encoder2.index++;
+                      lastSentIndex++;
+                    } else if (id2 < 0) {
+                      controller.enqueue(
+                        textEncoder.encode(
+                          `${TYPE_PROMISE}${deferredId}:${id2}
+`
+                        )
+                      );
+                    } else {
+                      const values = encoder2.stringified
+                        .slice(lastSentIndex + 1)
+                        .join(',');
+                      controller.enqueue(
+                        textEncoder.encode(
+                          `${TYPE_PROMISE}${deferredId}:[${values}]
+`
+                        )
+                      );
+                      lastSentIndex = encoder2.stringified.length - 1;
+                    }
+                  },
+                  (reason) => {
+                    if (
+                      !reason ||
+                      typeof reason !== 'object' ||
+                      !(reason instanceof Error)
+                    ) {
+                      reason = new Error('An unknown error occurred');
+                    }
+                    const id2 = flatten.call(encoder2, reason);
+                    if (Array.isArray(id2)) {
+                      controller.enqueue(
+                        textEncoder.encode(
+                          `${TYPE_ERROR}${deferredId}:[["${TYPE_PREVIOUS_RESOLVED}",${id2[0]}]]
+`
+                        )
+                      );
+                      encoder2.index++;
+                      lastSentIndex++;
+                    } else if (id2 < 0) {
+                      controller.enqueue(
+                        textEncoder.encode(`${TYPE_ERROR}${deferredId}:${id2}
+`)
+                      );
+                    } else {
+                      const values = encoder2.stringified
+                        .slice(lastSentIndex + 1)
+                        .join(',');
+                      controller.enqueue(
+                        textEncoder.encode(
+                          `${TYPE_ERROR}${deferredId}:[${values}]
+`
+                        )
+                      );
+                      lastSentIndex = encoder2.stringified.length - 1;
+                    }
+                  }
+                )
+                .finally(() => {
+                  delete encoder2.deferred[Number(deferredId)];
+                }))
+            );
+          }
+          await Promise.race(Object.values(encoder2.deferred));
+        }
+        raceDone();
+      }
+      await Promise.all(Object.values(encoder2.deferred));
+      controller.close();
+    },
+  });
+  return readable;
+}
 async function createRequestInit(request) {
   let init = { signal: request.signal };
   if (request.method !== 'GET') {
@@ -8127,6 +8155,7 @@ async function createRequestInit(request) {
   return init;
 }
 var SingleFetchRedirectSymbol = Symbol('SingleFetchRedirect');
+var SingleFetchNoResultError = class extends Error {};
 var SINGLE_FETCH_REDIRECT_STATUS = 202;
 var NO_BODY_STATUS_CODES = /* @__PURE__ */ new Set([100, 101, 204, 205]);
 function StreamTransfer({ context, identifier, reader, textDecoder, nonce }) {
@@ -8273,7 +8302,11 @@ async function singleFetchActionStrategy(args, fetchAndDecode, basename) {
     });
     return result2;
   });
-  if (isResponse(result.result) || isRouteErrorResponse(result.result)) {
+  if (
+    isResponse(result.result) ||
+    isRouteErrorResponse(result.result) ||
+    isDataWithResponseInit(result.result)
+  ) {
     return { [actionMatch.route.id]: result };
   }
   return {
@@ -8377,8 +8410,10 @@ async function singleFetchLoaderNavigationStrategy(
     )
   );
   await Promise.all(routeDfds.map((d) => d.promise));
+  let isInitialLoad =
+    !router.state.initialized && router.state.navigation.state === 'idle';
   if (
-    (!router.state.initialized || routesParams.size === 0) &&
+    (isInitialLoad || routesParams.size === 0) &&
     !window.__reactRouterHdrActive
   ) {
     singleFetchDfd.resolve({ routes: {} });
@@ -8395,7 +8430,42 @@ async function singleFetchLoaderNavigationStrategy(
     }
   }
   await resolvePromise;
+  await bubbleMiddlewareErrors(
+    singleFetchDfd.promise,
+    args.matches,
+    routesParams,
+    results
+  );
   return results;
+}
+async function bubbleMiddlewareErrors(
+  singleFetchPromise,
+  matches,
+  routesParams,
+  results
+) {
+  try {
+    let middlewareError;
+    let fetchedData = await singleFetchPromise;
+    if ('routes' in fetchedData) {
+      for (let match of matches) {
+        if (match.route.id in fetchedData.routes) {
+          let routeResult = fetchedData.routes[match.route.id];
+          if ('error' in routeResult) {
+            middlewareError = routeResult.error;
+            break;
+          }
+        }
+      }
+    }
+    if (middlewareError !== void 0) {
+      Array.from(routesParams.values()).forEach((routeId) => {
+        if (results[routeId].result instanceof SingleFetchNoResultError) {
+          results[routeId].result = middlewareError;
+        }
+      });
+    }
+  } catch (e) {}
 }
 async function singleFetchLoaderFetcherStrategy(
   args,
@@ -8564,12 +8634,16 @@ function unwrapSingleFetchResult(result, routeId) {
     });
   }
   let routeResult = result.routes[routeId];
-  if ('error' in routeResult) {
+  if (routeResult == null) {
+    throw new SingleFetchNoResultError(
+      `No result found for routeId "${routeId}"`
+    );
+  } else if ('error' in routeResult) {
     throw routeResult.error;
   } else if ('data' in routeResult) {
     return routeResult.data;
   } else {
-    throw new Error(`No response found for routeId "${routeId}"`);
+    throw new Error(`Invalid response found for routeId "${routeId}"`);
   }
 }
 function createDeferred2() {
@@ -8628,7 +8702,7 @@ function RemixRootDefaultErrorBoundary({ error, isOutsideRemixApp }) {
     dangerouslySetInnerHTML: {
       __html: `
         console.log(
-          "💿 Hey developer 👋. You can provide a way better UX than this when your app throws errors. Check out https://remix.run/guides/errors for more information."
+          "💿 Hey developer 👋. You can provide a way better UX than this when your app throws errors. Check out https://reactrouter.com/how-to/error-boundary for more information."
         );
       `,
     },
@@ -8644,7 +8718,7 @@ function RemixRootDefaultErrorBoundary({ error, isOutsideRemixApp }) {
         ' ',
         error.statusText
       ),
-      heyDeveloper
+      ENABLE_DEV_WARNINGS ? heyDeveloper : null
     );
   }
   let errorInstance;
@@ -8723,18 +8797,20 @@ function RemixRootDefaultHydrateFallback() {
   return React6.createElement(
     BoundaryShell,
     { title: 'Loading...', renderScripts: true },
-    React6.createElement('script', {
-      dangerouslySetInnerHTML: {
-        __html: `
+    ENABLE_DEV_WARNINGS
+      ? React6.createElement('script', {
+          dangerouslySetInnerHTML: {
+            __html: `
               console.log(
                 "💿 Hey developer 👋. You can provide a way better UX than this " +
                 "when your app is loading JS modules and/or running \`clientLoader\` " +
-                "functions. Check out https://remix.run/route/hydrate-fallback " +
+                "functions. Check out https://reactrouter.com/start/framework/route-module#hydratefallback " +
                 "for more information."
               );
             `,
-      },
-    })
+          },
+        })
+      : null
   );
 }
 function groupRoutesByParentId(manifest) {
@@ -9258,8 +9334,8 @@ var nextPaths = /* @__PURE__ */ new Set();
 var discoveredPathsMaxSize = 1e3;
 var discoveredPaths = /* @__PURE__ */ new Set();
 var URL_LIMIT = 7680;
-function isFogOfWarEnabled(ssr) {
-  return ssr === true;
+function isFogOfWarEnabled(routeDiscovery, ssr) {
+  return routeDiscovery.mode === 'lazy' && ssr === true;
 }
 function getPartialManifest({ sri, ...manifest }, router) {
   let routeIds = new Set(router.state.matches.map((m) => m.route.id));
@@ -9290,10 +9366,11 @@ function getPatchRoutesOnNavigationFunction(
   manifest,
   routeModules,
   ssr,
+  routeDiscovery,
   isSpaMode,
   basename
 ) {
-  if (!isFogOfWarEnabled(ssr)) {
+  if (!isFogOfWarEnabled(routeDiscovery, ssr)) {
     return void 0;
   }
   return async ({ path, patch, signal, fetcherKey }) => {
@@ -9308,17 +9385,27 @@ function getPatchRoutesOnNavigationFunction(
       ssr,
       isSpaMode,
       basename,
+      routeDiscovery.manifestPath,
       patch,
       signal
     );
   };
 }
-function useFogOFWarDiscovery(router, manifest, routeModules, ssr, isSpaMode) {
+function useFogOFWarDiscovery(
+  router,
+  manifest,
+  routeModules,
+  ssr,
+  routeDiscovery,
+  isSpaMode
+) {
   React8.useEffect(() => {
-    var _a;
+    var _a, _b;
     if (
-      !isFogOfWarEnabled(ssr) ||
-      ((_a = navigator.connection) == null ? void 0 : _a.saveData) === true
+      !isFogOfWarEnabled(routeDiscovery, ssr) || // @ts-expect-error - TS doesn't know about this yet
+      ((_b = (_a = window.navigator) == null ? void 0 : _a.connection) == null
+        ? void 0
+        : _b.saveData) === true
     ) {
       return;
     }
@@ -9361,6 +9448,7 @@ function useFogOFWarDiscovery(router, manifest, routeModules, ssr, isSpaMode) {
           ssr,
           isSpaMode,
           router.basename,
+          routeDiscovery.manifestPath,
           router.patchRoutes
         );
       } catch (e) {
@@ -9377,7 +9465,14 @@ function useFogOFWarDiscovery(router, manifest, routeModules, ssr, isSpaMode) {
       attributeFilter: ['data-discover', 'href', 'action'],
     });
     return () => observer.disconnect();
-  }, [ssr, isSpaMode, manifest, routeModules, router]);
+  }, [ssr, isSpaMode, manifest, routeModules, router, routeDiscovery]);
+}
+function getManifestPath(_manifestPath, basename) {
+  let manifestPath = _manifestPath || '/__manifest';
+  if (basename == null) {
+    return manifestPath;
+  }
+  return `${basename}${manifestPath}`.replace(/\/+/g, '/');
 }
 var MANIFEST_VERSION_STORAGE_KEY = 'react-router-manifest-version';
 async function fetchAndApplyManifestPatches(
@@ -9388,14 +9483,14 @@ async function fetchAndApplyManifestPatches(
   ssr,
   isSpaMode,
   basename,
+  manifestPath,
   patchRoutes,
   signal
 ) {
-  let manifestPath = `${basename != null ? basename : '/'}/__manifest`.replace(
-    /\/+/g,
-    '/'
+  let url = new URL(
+    getManifestPath(manifestPath, basename),
+    window.location.origin
   );
-  let url = new URL(manifestPath, window.location.origin);
   paths.sort().forEach((path) => url.searchParams.append('p', path));
   url.searchParams.set('version', manifest.version);
   if (url.toString().length > URL_LIMIT) {
@@ -9428,7 +9523,8 @@ async function fetchAndApplyManifestPatches(
       }
       sessionStorage.setItem(MANIFEST_VERSION_STORAGE_KEY, manifest.version);
       window.location.href = errorReloadPath;
-      throw new Error('Detected manifest version mismatch, reloading...');
+      console.warn('Detected manifest version mismatch, reloading...');
+      await new Promise(() => {});
     } else if (res.status >= 400) {
       throw new Error(await res.text());
     }
@@ -9875,11 +9971,17 @@ function isValidMetaTag(tagName) {
 }
 var isHydrated = false;
 function Scripts(props) {
-  let { manifest, serverHandoffString, isSpaMode, ssr, renderMeta } =
-    useFrameworkContext();
+  let {
+    manifest,
+    serverHandoffString,
+    isSpaMode,
+    renderMeta,
+    routeDiscovery,
+    ssr,
+  } = useFrameworkContext();
   let { router, static: isStatic, staticContext } = useDataRouterContext2();
   let { matches: routerMatches } = useDataRouterStateContext();
-  let enableFogOfWar = isFogOfWarEnabled(ssr);
+  let enableFogOfWar = isFogOfWarEnabled(routeDiscovery, ssr);
   if (renderMeta) {
     renderMeta.didRenderScripts = true;
   }
@@ -10061,7 +10163,7 @@ var isBrowser =
   typeof window.document.createElement !== 'undefined';
 try {
   if (isBrowser) {
-    window.__reactRouterVersion = '7.5.2';
+    window.__reactRouterVersion = '7.6.1';
   }
 } catch (e) {}
 function createBrowserRouter(routes, opts) {
@@ -10319,15 +10421,14 @@ var NavLink = React10.forwardRef(function NavLinkWithRef(
   let path = useResolvedPath(to, { relative: rest.relative });
   let location = useLocation();
   let routerState = React10.useContext(DataRouterStateContext);
-  let { navigator: navigator2, basename } =
-    React10.useContext(NavigationContext);
+  let { navigator, basename } = React10.useContext(NavigationContext);
   let isTransitioning =
     routerState != null && // Conditional usage is OK here because the usage of a data router is static
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useViewTransitionState(path) &&
     viewTransition === true;
-  let toPathname = navigator2.encodeLocation
-    ? navigator2.encodeLocation(path).pathname
+  let toPathname = navigator.encodeLocation
+    ? navigator.encodeLocation(path).pathname
     : path.pathname;
   let locationPathname = location.pathname;
   let nextLocationPathname =
@@ -11255,6 +11356,7 @@ function ServerRouter({ context, url, nonce }) {
           future: context.future,
           ssr: context.ssr,
           isSpaMode: context.isSpaMode,
+          routeDiscovery: context.routeDiscovery,
           serializeError: context.serializeError,
           renderMeta: context.renderMeta,
         },
@@ -11311,6 +11413,7 @@ function createRoutesStub(routes, unstable_getContext) {
         routeModules: {},
         ssr: false,
         isSpaMode: false,
+        routeDiscovery: { mode: 'lazy', manifestPath: '/__manifest' },
       };
       let patched = processRoutes(
         // @ts-expect-error `StubRouteObject` is stricter about `loader`/`action`
@@ -11333,6 +11436,37 @@ function createRoutesStub(routes, unstable_getContext) {
     );
   };
 }
+function withComponentProps(Component4) {
+  return function Wrapped() {
+    return React13.createElement(Component4, {
+      params: useParams(),
+      loaderData: useLoaderData(),
+      actionData: useActionData(),
+      matches: useMatches(),
+    });
+  };
+}
+function withHydrateFallbackProps(HydrateFallback) {
+  return function Wrapped() {
+    const props = {
+      params: useParams(),
+      loaderData: useLoaderData(),
+      actionData: useActionData(),
+    };
+    return React13.createElement(HydrateFallback, props);
+  };
+}
+function withErrorBoundaryProps(ErrorBoundary) {
+  return function Wrapped() {
+    const props = {
+      params: useParams(),
+      loaderData: useLoaderData(),
+      actionData: useActionData(),
+      error: useRouteError(),
+    };
+    return React13.createElement(ErrorBoundary, props);
+  };
+}
 function processRoutes(routes, manifest, routeModules, parentId) {
   return routes.map((route) => {
     if (!route.id) {
@@ -11344,9 +11478,13 @@ function processRoutes(routes, manifest, routeModules, parentId) {
       id: route.id,
       path: route.path,
       index: route.index,
-      Component: route.Component,
-      HydrateFallback: route.HydrateFallback,
-      ErrorBoundary: route.ErrorBoundary,
+      Component: route.Component ? withComponentProps(route.Component) : void 0,
+      HydrateFallback: route.HydrateFallback
+        ? withHydrateFallbackProps(route.HydrateFallback)
+        : void 0,
+      ErrorBoundary: route.ErrorBoundary
+        ? withErrorBoundaryProps(route.ErrorBoundary)
+        : void 0,
       action: route.action,
       loader: route.loader,
       handle: route.handle,
@@ -11375,8 +11513,8 @@ function processRoutes(routes, manifest, routeModules, parentId) {
     };
     manifest.routes[newRoute.id] = entryRoute;
     routeModules[route.id] = {
-      default: route.Component || Outlet,
-      ErrorBoundary: route.ErrorBoundary || void 0,
+      default: newRoute.Component || Outlet,
+      ErrorBoundary: newRoute.ErrorBoundary || void 0,
       handle: route.handle,
       links: route.links,
       meta: route.meta,
@@ -12338,7 +12476,10 @@ Error: ${e instanceof Error ? e.toString() : e}`
         }
       }
     }
-    let manifestUrl = `${normalizedBasename}/__manifest`.replace(/\/+/g, '/');
+    let manifestUrl = getManifestPath(
+      _build.routeDiscovery.manifestPath,
+      normalizedBasename
+    );
     if (url.pathname === manifestUrl) {
       try {
         let res = await handleManifestRequest(_build, routes, url);
@@ -12348,7 +12489,7 @@ Error: ${e instanceof Error ? e.toString() : e}`
         return new Response('Unknown Server Error', { status: 500 });
       }
     }
-    let matches = matchServerRoutes(routes, url.pathname, _build.basename);
+    let matches = matchServerRoutes(routes, normalizedPath, _build.basename);
     if (matches && matches.length > 0) {
       Object.assign(params, matches[0].params);
     }
@@ -12570,17 +12711,21 @@ async function handleDocumentRequest(
       actionData: context.actionData,
       errors: serializeErrors2(context.errors, serverMode),
     };
+    let baseServerHandoff = {
+      basename: build.basename,
+      future: build.future,
+      routeDiscovery: build.routeDiscovery,
+      ssr: build.ssr,
+      isSpaMode: isSpaMode2,
+    };
     let entryContext = {
       manifest: build.assets,
       routeModules: createEntryRouteModules(build.routes),
       staticHandlerContext: context,
       criticalCss,
       serverHandoffString: createServerHandoffString({
-        basename: build.basename,
+        ...baseServerHandoff,
         criticalCss,
-        future: build.future,
-        ssr: build.ssr,
-        isSpaMode: isSpaMode2,
       }),
       serverHandoffStream: encodeViaTurboStream(
         state,
@@ -12591,6 +12736,7 @@ async function handleDocumentRequest(
       renderMeta: {},
       future: build.future,
       ssr: build.ssr,
+      routeDiscovery: build.routeDiscovery,
       isSpaMode: isSpaMode2,
       serializeError: (err) => serializeError(err, serverMode),
     };
@@ -12632,12 +12778,7 @@ async function handleDocumentRequest(
       entryContext = {
         ...entryContext,
         staticHandlerContext: context,
-        serverHandoffString: createServerHandoffString({
-          basename: build.basename,
-          future: build.future,
-          ssr: build.ssr,
-          isSpaMode: isSpaMode2,
-        }),
+        serverHandoffString: createServerHandoffString(baseServerHandoff),
         serverHandoffStream: encodeViaTurboStream(
           state2,
           request.signal,
@@ -12912,6 +13053,9 @@ function href(path, ...args) {
   return path
     .split('/')
     .map((segment) => {
+      if (segment === '*') {
+        return params ? params['*'] : void 0;
+      }
       const match = segment.match(/^:([\w-]+)(\?)?/);
       if (!match) return segment;
       const param = match[1];
@@ -13115,21 +13259,10 @@ export {
 };
 /*! Bundled license information:
 
-react-router/dist/development/chunk-BAXFHI7N.mjs:
-  (**
-   * react-router v7.5.2
-   *
-   * Copyright (c) Remix Software Inc.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE.md file in the root directory of this source tree.
-   *
-   * @license MIT
-   *)
-
+react-router/dist/development/chunk-DQRVZFIR.mjs:
 react-router/dist/development/index.mjs:
   (**
-   * react-router v7.5.2
+   * react-router v7.6.1
    *
    * Copyright (c) Remix Software Inc.
    *

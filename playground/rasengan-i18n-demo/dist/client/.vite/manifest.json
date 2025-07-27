@@ -1,0 +1,55 @@
+{
+  "../../packages/rasengan-image/lib/components/image.js": {
+    "file": "assets/image-DwK0B3RO.js",
+    "name": "image",
+    "src": "../../packages/rasengan-image/lib/components/image.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-DhFAT8zq.js"
+    ]
+  },
+  "../../packages/rasengan-mdx/lib/index.js": {
+    "file": "assets/index-C25cJe1Q.js",
+    "name": "index",
+    "src": "../../packages/rasengan-mdx/lib/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-DhFAT8zq.js"
+    ]
+  },
+  "_page-home-B_wyQ2D7.js": {
+    "file": "assets/page-home-B_wyQ2D7.js",
+    "name": "page-home",
+    "imports": [
+      "_vendor-DhFAT8zq.js"
+    ],
+    "dynamicImports": [
+      "../../packages/rasengan-mdx/lib/index.js",
+      "../../packages/rasengan-image/lib/components/image.js"
+    ],
+    "assets": [
+      "assets/logo-CBpp0gc6.svg"
+    ]
+  },
+  "_vendor-DhFAT8zq.js": {
+    "file": "assets/vendor-DhFAT8zq.js",
+    "name": "vendor"
+  },
+  "src/assets/logo.svg": {
+    "file": "assets/logo-CBpp0gc6.svg",
+    "src": "src/assets/logo.svg"
+  },
+  "src/index.ts": {
+    "file": "assets/index-B4rnT0DY.js",
+    "name": "index",
+    "src": "src/index.ts",
+    "isEntry": true,
+    "imports": [
+      "_vendor-DhFAT8zq.js",
+      "_page-home-B_wyQ2D7.js"
+    ],
+    "css": [
+      "assets/index-B6oOUN7C.css"
+    ]
+  }
+}

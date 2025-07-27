@@ -1,5 +1,6 @@
 import { defineRoutesGroup } from 'rasengan';
 import BaseConceptsPage from './base-concepts.page.mdx';
+import FileBasedRoutingPage from './file-based-routing.page.mdx';
 import RoutesPage from './routes.page.mdx';
 import RouterConfigurationPage from './router.page.mdx';
 import LayoutsPage from './layouts.page.mdx';
@@ -12,6 +13,7 @@ export default defineRoutesGroup({
   path: '/routing',
   children: [
     BaseConceptsPage,
+    FileBasedRoutingPage,
     RouterConfigurationPage,
     RoutesPage,
     LayoutsPage,

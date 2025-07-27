@@ -1,6 +1,5 @@
-import { pointStart, remarkRehype } from './chunk-I46PM5IZ.js';
-import { visit } from './chunk-6GFY52XF.js';
-import { require_jsx_runtime } from './chunk-5NZ5KQVF.js';
+import { require_jsx_runtime } from './chunk-NO5IRT5Q.js';
+import { require_react } from './chunk-CUTZXKCK.js';
 import {
   find,
   hastToReact,
@@ -9,10 +8,11 @@ import {
   stringify2,
   svg,
   whitespace,
-} from './chunk-QJIADCDW.js';
-import { require_react } from './chunk-IUKRAPEX.js';
-import { remarkParse, stringifyPosition } from './chunk-U2GIRGWN.js';
-import './chunk-ZRKR3IOO.js';
+} from './chunk-XDD5PNFI.js';
+import { remarkParse, stringifyPosition } from './chunk-KG3YFYIG.js';
+import './chunk-MAZ7EYB4.js';
+import { pointStart, remarkRehype } from './chunk-WFH3WSZP.js';
+import { visit } from './chunk-6GFY52XF.js';
 import { ok, unreachable } from './chunk-W3RG5IXQ.js';
 import { __commonJS, __toESM } from './chunk-DC5AMYBS.js';
 
@@ -176,9 +176,9 @@ var require_cjs = __commonJS({
         return mod && mod.__esModule ? mod : { default: mod };
       };
     Object.defineProperty(exports, '__esModule', { value: true });
-    exports.default = StyleToObject2;
+    exports.default = StyleToObject;
     var inline_style_parser_1 = __importDefault(require_inline_style_parser());
-    function StyleToObject2(style, iterator) {
+    function StyleToObject(style, iterator) {
       var styleObject = null;
       if (!style || typeof style !== 'string') {
         return styleObject;
@@ -200,6 +200,82 @@ var require_cjs = __commonJS({
       });
       return styleObject;
     }
+  },
+});
+
+// ../../node_modules/.pnpm/style-to-js@1.1.16/node_modules/style-to-js/cjs/utilities.js
+var require_utilities = __commonJS({
+  '../../node_modules/.pnpm/style-to-js@1.1.16/node_modules/style-to-js/cjs/utilities.js'(
+    exports
+  ) {
+    'use strict';
+    Object.defineProperty(exports, '__esModule', { value: true });
+    exports.camelCase = void 0;
+    var CUSTOM_PROPERTY_REGEX = /^--[a-zA-Z0-9_-]+$/;
+    var HYPHEN_REGEX = /-([a-z])/g;
+    var NO_HYPHEN_REGEX = /^[^-]+$/;
+    var VENDOR_PREFIX_REGEX = /^-(webkit|moz|ms|o|khtml)-/;
+    var MS_VENDOR_PREFIX_REGEX = /^-(ms)-/;
+    var skipCamelCase = function (property) {
+      return (
+        !property ||
+        NO_HYPHEN_REGEX.test(property) ||
+        CUSTOM_PROPERTY_REGEX.test(property)
+      );
+    };
+    var capitalize = function (match, character) {
+      return character.toUpperCase();
+    };
+    var trimHyphen = function (match, prefix) {
+      return ''.concat(prefix, '-');
+    };
+    var camelCase = function (property, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      if (skipCamelCase(property)) {
+        return property;
+      }
+      property = property.toLowerCase();
+      if (options.reactCompat) {
+        property = property.replace(MS_VENDOR_PREFIX_REGEX, trimHyphen);
+      } else {
+        property = property.replace(VENDOR_PREFIX_REGEX, trimHyphen);
+      }
+      return property.replace(HYPHEN_REGEX, capitalize);
+    };
+    exports.camelCase = camelCase;
+  },
+});
+
+// ../../node_modules/.pnpm/style-to-js@1.1.16/node_modules/style-to-js/cjs/index.js
+var require_cjs2 = __commonJS({
+  '../../node_modules/.pnpm/style-to-js@1.1.16/node_modules/style-to-js/cjs/index.js'(
+    exports,
+    module
+  ) {
+    'use strict';
+    var __importDefault =
+      (exports && exports.__importDefault) ||
+      function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+      };
+    var style_to_object_1 = __importDefault(require_cjs());
+    var utilities_1 = require_utilities();
+    function StyleToJS(style, options) {
+      var output = {};
+      if (!style || typeof style !== 'string') {
+        return output;
+      }
+      (0, style_to_object_1.default)(style, function (property, value) {
+        if (property && value) {
+          output[(0, utilities_1.camelCase)(property, options)] = value;
+        }
+      });
+      return output;
+    }
+    StyleToJS.default = StyleToJS;
+    module.exports = StyleToJS;
   },
 });
 
@@ -320,9 +396,8 @@ function name(name2, options) {
   return re.test(name2);
 }
 
-// ../../node_modules/.pnpm/style-to-object@1.0.8/node_modules/style-to-object/esm/index.mjs
-var import_cjs = __toESM(require_cjs(), 1);
-var esm_default = import_cjs.default.default || import_cjs.default;
+// ../../node_modules/.pnpm/hast-util-to-jsx-runtime@2.3.6/node_modules/hast-util-to-jsx-runtime/lib/index.js
+var import_style_to_js = __toESM(require_cjs2(), 1);
 
 // ../../node_modules/.pnpm/vfile-message@4.0.2/node_modules/vfile-message/lib/index.js
 var VFileMessage = class extends Error {
@@ -472,11 +547,10 @@ VFileMessage.prototype.place = void 0;
 VFileMessage.prototype.ruleId = void 0;
 VFileMessage.prototype.source = void 0;
 
-// ../../node_modules/.pnpm/hast-util-to-jsx-runtime@2.3.5/node_modules/hast-util-to-jsx-runtime/lib/index.js
+// ../../node_modules/.pnpm/hast-util-to-jsx-runtime@2.3.6/node_modules/hast-util-to-jsx-runtime/lib/index.js
 var own = {}.hasOwnProperty;
 var emptyMap = /* @__PURE__ */ new Map();
 var cap = /[A-Z]/g;
-var dashSomething = /-([a-z])/g;
 var tableElements = /* @__PURE__ */ new Set([
   'table',
   'tbody',
@@ -793,33 +867,24 @@ function createProperty(state, prop, value) {
   ];
 }
 function parseStyle(state, value) {
-  const result = {};
   try {
-    esm_default(value, replacer);
+    return (0, import_style_to_js.default)(value, { reactCompat: true });
   } catch (error) {
-    if (!state.ignoreInvalidStyle) {
-      const cause =
-        /** @type {Error} */
-        error;
-      const message = new VFileMessage('Cannot parse `style` attribute', {
-        ancestors: state.ancestors,
-        cause,
-        ruleId: 'style',
-        source: 'hast-util-to-jsx-runtime',
-      });
-      message.file = state.filePath || void 0;
-      message.url = docs + '#cannot-parse-style-attribute';
-      throw message;
+    if (state.ignoreInvalidStyle) {
+      return {};
     }
-  }
-  return result;
-  function replacer(name2, value2) {
-    let key = name2;
-    if (key.slice(0, 2) !== '--') {
-      if (key.slice(0, 4) === '-ms-') key = 'ms-' + key.slice(4);
-      key = key.replace(dashSomething, toCamel);
-    }
-    result[key] = value2;
+    const cause =
+      /** @type {Error} */
+      error;
+    const message = new VFileMessage('Cannot parse `style` attribute', {
+      ancestors: state.ancestors,
+      cause,
+      ruleId: 'style',
+      source: 'hast-util-to-jsx-runtime',
+    });
+    message.file = state.filePath || void 0;
+    message.url = docs + '#cannot-parse-style-attribute';
+    throw message;
   }
 }
 function findComponentFromName(state, name2, allowExpression) {
@@ -892,9 +957,6 @@ function transformStyleToCssCasing(from) {
   if (to.slice(0, 3) === 'ms-') to = '-' + to;
   return to;
 }
-function toCamel(_, $1) {
-  return $1.toUpperCase();
-}
 function toDash($0) {
   return '-' + $0.toLowerCase();
 }
@@ -924,7 +986,7 @@ var urlAttributes = {
   ],
 };
 
-// ../../node_modules/.pnpm/react-markdown@9.1.0_@types+react@19.0.10_react@19.0.0/node_modules/react-markdown/lib/index.js
+// ../../node_modules/.pnpm/react-markdown@9.1.0_@types+react@19.1.6_react@19.1.0/node_modules/react-markdown/lib/index.js
 var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
 var import_react = __toESM(require_react(), 1);
 
@@ -2466,7 +2528,7 @@ function isUint8Array2(value) {
   );
 }
 
-// ../../node_modules/.pnpm/react-markdown@9.1.0_@types+react@19.0.10_react@19.0.0/node_modules/react-markdown/lib/index.js
+// ../../node_modules/.pnpm/react-markdown@9.1.0_@types+react@19.1.6_react@19.1.0/node_modules/react-markdown/lib/index.js
 var changelog =
   'https://github.com/remarkjs/react-markdown/blob/main/changelog.md';
 var emptyPlugins = [];
