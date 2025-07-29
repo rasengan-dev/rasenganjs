@@ -17,5 +17,13 @@ export default defineConfig(async () => {
         rasengan({}),
       ],
     },
+
+    redirects: () => [
+      {
+        source: '/',
+        destination: '/fr/home',
+        permanent: true,
+      },
+    ],
   };
 });
