@@ -9,9 +9,41 @@ export const uniqueId = (): string => {
 };
 
 /**
- * This function detects the locale based on the provided configuration.
+ * Flattens a nested object into a flat object with dot notation keys
  */
-export const detectLocale = (config: I18nConfig) => {};
+export const flattenObject = (
+  obj: Record<string, any>,
+  prefix = ''
+): Record<string, string> => {
+  const flattened: Record<string, string> = {};
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = prefix ? `${prefix}.${key}` : key;
+
+      if (
+        typeof obj[key] === 'object' &&
+        obj[key] !== null &&
+        !Array.isArray(obj[key])
+      ) {
+        Object.assign(flattened, flattenObject(obj[key], newKey));
+      } else {
+        flattened[newKey] = String(obj[key]);
+      }
+    }
+  }
+
+  return flattened;
+};
+
+/**
+ * Gets a nested value from an object using dot notation
+ */
+export const getNestedValue = (obj: Record<string, any>, path: string): any => {
+  return path.split('.').reduce((current, key) => {
+    return current && current[key] !== undefined ? current[key] : undefined;
+  }, obj);
+};
 
 /**
  * This function generates a default configuration object based on the provided configuration.

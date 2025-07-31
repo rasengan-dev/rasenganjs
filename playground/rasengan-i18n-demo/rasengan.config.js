@@ -17,7 +17,6 @@ export default defineConfig(async () => {
         rasengan({}),
       ],
     },
-
     redirects: () => [
       {
         source: '/',
