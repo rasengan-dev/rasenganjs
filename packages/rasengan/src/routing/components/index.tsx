@@ -12,12 +12,45 @@ import { RasenganPageComponentProps } from '../types.js';
  * @returns
  */
 export function ErrorBoundary() {
+  const { DEV } = import.meta.env;
+  console.log(import.meta.env);
+
   let error = useRouteError();
+
+  if (!DEV)
+    return (
+      <section
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw',
+          gap: 10,
+          backgroundColor: '#fff',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '18px',
+          }}
+        >
+          Application Error
+        </p>
+      </section>
+    );
 
   if (isRouteErrorResponse(error)) {
     return (
       <>
-        <p>Hello Error</p>
+        <p>Application Error</p>
         <h1>
           {error.status} {error.statusText}
         </h1>
@@ -28,13 +61,20 @@ export function ErrorBoundary() {
     return (
       <div
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 100,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'start',
           alignItems: 'start',
           height: '100vh',
-          width: 'calc(100vw - 40px)',
+          width: '100vw',
           padding: 20,
+          backgroundColor: '#fff',
         }}
       >
         <h1
@@ -59,8 +99,8 @@ export function ErrorBoundary() {
           style={{
             marginTop: 20,
             overflow: 'auto',
-            width: 'calc(100% - 80px)',
-            maxHeight: 'calc(100vh - 100px)',
+            width: '100%',
+            maxHeight: '100vh',
             padding: '10px 20px',
             borderRadius: 10,
             backgroundColor: '#f5f5f5',
@@ -80,7 +120,7 @@ export function ErrorBoundary() {
               whiteSpace: 'pre-wrap',
               wordWrap: 'break-word',
               fontSize: '1rem',
-              color: '#ff000055',
+              color: '#ff0000aa',
             }}
           >
             {error.stack}

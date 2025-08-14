@@ -1,9 +1,11 @@
 import { LayoutComponent, Outlet } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
+  // console.log({ g });
+
   return (
     <section className="h-screen w-full">
-      <header className="w-full h-20 bg-blue-300">header Blog</header>
+      <div>Blog Layout</div>
       <Outlet />
     </section>
   );

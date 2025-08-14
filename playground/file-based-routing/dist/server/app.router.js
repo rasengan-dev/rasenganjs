@@ -2,12 +2,13 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 import { jsx, jsxs } from "react/jsx-runtime";
-import { D as DefaultLayout } from "./assets/template-CEO8RV0b.js";
+import { D as DefaultLayout } from "./assets/template-CcwGuTVp.js";
 import "react";
 import "react-dom/server";
-import { _ as __vite_glob_0_5, a as __vite_glob_0_3, b as __vite_glob_0_2, c as __vite_glob_0_0 } from "./assets/page-index-FclJ1kNm.js";
+import { _ as __vite_glob_0_8, a as __vite_glob_0_6, b as __vite_glob_0_4, c as __vite_glob_0_2, d as __vite_glob_0_0 } from "./assets/page-index-j8p3C8n1.js";
 import { _ as __vite_glob_0_1 } from "./assets/page-signin-BBokP9vt.js";
-import { d as developmentExports } from "./assets/vendor-CsqfrH1N.js";
+import { d as developmentExports } from "./assets/vendor-CvPxAy5V.js";
+import { _ as __vite_glob_0_9 } from "./assets/page-_id_-BD9vdm7k.js";
 const defineRouter = (option) => {
   const { imports, layout, pages, loaderComponent, notFoundComponent, useParentLayout } = option;
   return async (Router2) => {
@@ -59,7 +60,7 @@ const isMDXPage = (page) => {
 };
 const loadMDXRenderer = async () => {
   try {
-    const { MDXRenderer } = await import("./assets/index-CaGjM28j.js");
+    const { MDXRenderer } = await import("./assets/index-DKGxbWS3.js");
     return MDXRenderer;
   } catch (e) {
     throw new Error("Failed to load MDXRenderer component from @rasenganjs/mdx, make sure you have installed the package");
@@ -186,13 +187,13 @@ function getPathSegments(filePath, foldersOnly = false) {
   if (!foldersOnly) {
     let withoutExtension = "";
     if (relative.includes("layout.")) {
-      withoutExtension = relative.replace(/(layout)\.(jsx|tsx)$/, "") + "_";
+      withoutExtension = relative.replace(/(layout)\.(js|ts|jsx|tsx)$/, "_");
     } else {
-      withoutExtension = relative.replace(/\.(page|layout)\.(jsx|tsx|mdx|md)$/, "");
+      withoutExtension = relative.replace(/\.(page)\.(js|ts|jsx|tsx|mdx|md)$/, "");
     }
     return withoutExtension.split("/").map(normalizeSegment).filter(Boolean);
   }
-  return relative.split("/").map(normalizeSegment).filter((segment) => !segment.includes(".")).filter(Boolean);
+  return relative.split("/").filter((segment) => !segment.includes(".")).map(normalizeSegment).filter(Boolean);
 }
 function generateSkeletonTree(tree, modules) {
   let currentLevel = tree;
@@ -200,7 +201,7 @@ function generateSkeletonTree(tree, modules) {
     path: "/",
     fullPath: "/",
     segment: "_",
-    isLayout: false,
+    isLayout: true,
     children: []
   };
   currentLevel.push(root);
@@ -211,10 +212,6 @@ function generateSkeletonTree(tree, modules) {
     for (const segment of segments) {
       if (!(segment.startsWith("(") && segment.endsWith(")"))) {
         fullPath += "/" + segment;
-      } else {
-        if (fullPath === "") {
-          fullPath = "/";
-        }
       }
       const existing = tmpLevel.find((n) => n.segment === segment);
       if (existing) {
@@ -285,10 +282,11 @@ function insertNodeToTree(tree, segments, routeInfo) {
         }
       }
     }
+    const lastSegment = segments.at(-1);
     const node = {
       path,
-      fullPath: fullPath + "/" + segments.at(-1),
-      segment: segments.at(-1),
+      fullPath: fullPath + "/" + (lastSegment === "." ? "" : lastSegment),
+      segment: lastSegment,
       isLayout: false,
       component: routeInfo.component,
       metadata: routeInfo.metadata,
@@ -302,7 +300,7 @@ async function generateRouter(tree) {
   const router = new RouterComponent();
   if (root.isLayout) {
     const layout = root.component || DefaultLayout;
-    layout.path = root.path;
+    layout.path = root.path || DefaultLayout.path;
     router.layout = layout;
     router.useParentLayout = true;
   }
@@ -432,24 +430,52 @@ async function flatRoutes(fn) {
     console.error(error);
   }
 }
-const AppLayout = () => {
+const AppLayout$2 = () => {
+  console.log({ g });
   return /* @__PURE__ */ jsxs("section", { className: "h-screen w-full", children: [
-    /* @__PURE__ */ jsx("header", { className: "w-full h-20 bg-red-300", children: "header 6" }),
+    /* @__PURE__ */ jsx("div", { children: "Blog Layout" }),
     /* @__PURE__ */ jsx(developmentExports.Outlet, {})
   ] });
 };
-const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: AppLayout$2
+}, Symbol.toStringTag, { value: "Module" }));
+const AppLayout$1 = () => {
+  return /* @__PURE__ */ jsx("section", { className: "h-screen w-full", children: /* @__PURE__ */ jsx(developmentExports.Outlet, {}) });
+};
+const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: AppLayout$1
+}, Symbol.toStringTag, { value: "Module" }));
+const AppLayout = () => {
+  const { locale = "fr" } = developmentExports.useParams();
+  return /* @__PURE__ */ jsxs("section", { className: "h-screen w-full", children: [
+    /* @__PURE__ */ jsxs("header", { className: "w-full h-20 flex items-center justify-center gap-8 border-b border-b-border", children: [
+      /* @__PURE__ */ jsx(developmentExports.NavLink, { to: `/${locale}`, end: true, children: ({ isActive }) => /* @__PURE__ */ jsx("span", { className: isActive ? "text-blue-500" : "", children: "Home" }) }),
+      /* @__PURE__ */ jsx(developmentExports.NavLink, { to: `/${locale}/blog`, children: ({ isActive }) => /* @__PURE__ */ jsx("span", { className: isActive ? "text-blue-500" : "", children: "Blog" }) }),
+      /* @__PURE__ */ jsx(developmentExports.NavLink, { to: `/${locale}/company`, children: ({ isActive }) => /* @__PURE__ */ jsx("span", { className: isActive ? "text-blue-500" : "", children: "Company" }) }),
+      /* @__PURE__ */ jsx(developmentExports.NavLink, { to: `/${locale}/pricing`, children: ({ isActive }) => /* @__PURE__ */ jsx("span", { className: isActive ? "text-blue-500" : "", children: "Pricing" }) })
+    ] }),
+    /* @__PURE__ */ jsx(developmentExports.Outlet, {})
+  ] });
+};
+const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: AppLayout
 }, Symbol.toStringTag, { value: "Module" }));
 const Router = flatRoutes(() => {
   return /* @__PURE__ */ Object.assign({
-    "/src/app/_routes/about/index.page.tsx": __vite_glob_0_0,
-    "/src/app/_routes/auth/signin.page.tsx": __vite_glob_0_1,
-    "/src/app/_routes/company/index.page.tsx": __vite_glob_0_2,
-    "/src/app/_routes/index.page.tsx": __vite_glob_0_3,
-    "/src/app/_routes/layout.tsx": __vite_glob_0_4,
-    "/src/app/_routes/pricing/index.page.tsx": __vite_glob_0_5
+    "/src/app/_routes/[_locale]/about/index.page.tsx": __vite_glob_0_0,
+    "/src/app/_routes/[_locale]/auth/signin.page.tsx": __vite_glob_0_1,
+    "/src/app/_routes/[_locale]/blog/index.page.mdx": __vite_glob_0_2,
+    "/src/app/_routes/[_locale]/blog/layout.tsx": __vite_glob_0_3,
+    "/src/app/_routes/[_locale]/company/index.page.tsx": __vite_glob_0_4,
+    "/src/app/_routes/[_locale]/company/layout.tsx": __vite_glob_0_5,
+    "/src/app/_routes/[_locale]/index.page.tsx": __vite_glob_0_6,
+    "/src/app/_routes/[_locale]/layout.tsx": __vite_glob_0_7,
+    "/src/app/_routes/[_locale]/pricing/index.page.tsx": __vite_glob_0_8,
+    "/src/app/_routes/[_locale]/profile/[id].page.tsx": __vite_glob_0_9
   });
 });
 class AppRouter extends RouterComponent {

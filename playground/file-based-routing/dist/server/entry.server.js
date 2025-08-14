@@ -2,10 +2,10 @@ import { jsx, jsxs } from "react/jsx-runtime";
 import minpath from "node:path";
 import fs from "fs/promises";
 import React from "react";
-import { S as ScriptComponent, B as BodyComponent, R as RootComponent, H as HeadComponent } from "./assets/template-CEO8RV0b.js";
+import { S as ScriptComponent, B as BodyComponent, R as RootComponent, H as HeadComponent } from "./assets/template-CcwGuTVp.js";
 import { posix, join } from "path/posix";
 import { renderToPipeableStream } from "react-dom/server";
-import "./assets/vendor-CsqfrH1N.js";
+import "./assets/vendor-CvPxAy5V.js";
 const resolvePath = (pathValue) => {
   const isWindows = process.platform === "win32";
   if (isWindows) {

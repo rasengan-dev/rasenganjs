@@ -30,5 +30,6 @@ export {
   matchPath,
   createRoutesFromChildren,
   Navigate,
+  NavLink,
 } from 'react-router';
 export { CustomLink as Link };

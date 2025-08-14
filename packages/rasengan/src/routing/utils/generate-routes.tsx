@@ -236,7 +236,7 @@ export const generateRoutes = (
   const route: RouteObject = {
     path: !isRoot
       ? router.useParentLayout
-        ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
+        ? Layout.path.replace(parentLayout.path + '/', '')
         : Layout.path
       : Layout.path,
     errorElement: <ErrorBoundary />,
@@ -261,8 +261,6 @@ export const generateRoutes = (
       if (isRoot || !router.useParentLayout) {
         // Generate metadata mapping
         const metadataMapping = generateMetadataMapping(router);
-
-        // console.log(metadataMapping);
 
         return (
           <MetadataProvider metadataMapping={metadataMapping}>
@@ -318,6 +316,8 @@ export const generateRoutes = (
 
   // Get informations about pages
   const pages: Array<RouteObject> = router.pages.map((Page) => {
+    // /home => home
+    // / => /
     const pagePathFormated =
       Page.path.startsWith('/') && Page.path !== '/'
         ? Page.path.slice(1)
@@ -332,7 +332,8 @@ export const generateRoutes = (
           : Page.path;
 
     return {
-      path,
+      path: path === Layout.path ? undefined : path,
+      index: path === Layout.path,
       async loader({ params, request }) {
         // Extracting metadata from the page
         const metadata: Metadata = {

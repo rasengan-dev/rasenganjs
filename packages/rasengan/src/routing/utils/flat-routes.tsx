@@ -113,9 +113,9 @@ function generateSkeletonTree(
       if (!(segment.startsWith('(') && segment.endsWith(')'))) {
         fullPath += '/' + segment;
       } else {
-        if (fullPath === '') {
-          fullPath = '/';
-        }
+        // if (fullPath === '') {
+        //   fullPath = '/';
+        // }
       }
 
       const existing = tmpLevel.find((n) => n.segment === segment);
@@ -144,7 +144,6 @@ function insertNodeToTree(
   segments: string[],
   routeInfo: Partial<RouteNode>
 ) {
-  // console.log({ segments, routeInfo });
   let currentNode = tree[0];
   let currentLevel = tree[0].children;
   let currentLayout = currentNode;
@@ -214,10 +213,12 @@ function insertNodeToTree(
       }
     }
 
+    const lastSegment = segments.at(-1);
+
     const node: RouteNode = {
       path,
-      fullPath: fullPath + '/' + segments.at(-1),
-      segment: segments.at(-1),
+      fullPath: fullPath + '/' + (lastSegment === '.' ? '' : lastSegment),
+      segment: lastSegment,
       isLayout: false,
       component: routeInfo.component,
       metadata: routeInfo.metadata,
@@ -256,8 +257,6 @@ async function generateRouter(tree: RouteNode[]) {
   // Add pages to the router
   router.pages = pages;
   router.routers = routers;
-
-  console.log(router);
 
   return router;
 }

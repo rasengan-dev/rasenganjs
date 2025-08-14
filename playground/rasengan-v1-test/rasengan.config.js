@@ -15,4 +15,14 @@ export default defineConfig({
       }),
     ],
   },
+
+  redirects: () => {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: true,
+      },
+    ];
+  },
 });

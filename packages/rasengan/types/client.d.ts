@@ -31,7 +31,7 @@ declare module '*.js?raw' {
 /**
  * virtual-rasengan-router.d.ts
  */
-declare module 'virtual:rasengan:router' {
+declare module 'virtual:rasengan/router' {
   import { RouterComponent } from '../lib/esm/routing/interfaces.js';
 
   // Define the type you expect Router to have.
