@@ -22,7 +22,7 @@ export type TOCItem = {
   title: string;
   anchor: {
     id: string;
-    text: string;
+    text: React.ReactNode;
   };
   level: 2 | 3;
   children: Array<Omit<TOCItem, 'children'>>;
@@ -32,7 +32,7 @@ export type TOCItem = {
  * A React functional component that represents a simple block element.
  */
 export type ComponentWithTextChildrenProps = {
-  children: string;
+  children: React.ReactNode;
 };
 
 /**
