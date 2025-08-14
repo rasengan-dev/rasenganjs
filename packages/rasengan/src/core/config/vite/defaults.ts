@@ -85,6 +85,7 @@ export const createDefaultViteConfig = (
       },
     },
 
+    // Resolve config
     resolve: {
       alias: Array.isArray(config.vite?.resolve?.alias)
         ? config.vite.resolve.alias.map(({ find, replacement }) => ({
@@ -94,6 +95,7 @@ export const createDefaultViteConfig = (
         : [],
     },
 
+    // Builder config
     builder: {
       buildApp: async (builder) => {
         if (config.ssr) {

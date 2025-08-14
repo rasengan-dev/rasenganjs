@@ -5,7 +5,6 @@ const AppLayout: LayoutComponent = () => {
 
   return (
     <section className="h-screen w-full">
-      <div>Blog Layout</div>
       <Outlet />
     </section>
   );

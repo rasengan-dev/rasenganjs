@@ -272,6 +272,11 @@ export function isRedirectResponse(context: Response) {
   return context.status === 302 || context.status === 301;
 }
 
+/**
+ * Check if the request is a static redirect from the config file
+ * @param req Express request object
+ * @param redirects Redirects from the config file
+ */
 export async function isStaticRedirectFromConfig(
   req: Express.Request,
   redirects: Redirect[]
@@ -286,4 +291,12 @@ export async function isStaticRedirectFromConfig(
   }
 
   return redirectFound;
+}
+
+/**
+ * Generate a random port
+ * @returns
+ */
+export function generateRandomPort() {
+  return Math.floor(Math.random() * 10000) + 1024;
 }
