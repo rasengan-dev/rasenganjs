@@ -35,7 +35,7 @@ For a list of breaking changes, see the Change log.
 Rasengan v1.1.0 introduces you the <Link to="/docs/routing/file-based-routing">**file-based routing**</Link> feature. This feature allows you to create routes based on the file structure of your project.
 <br />
 
-To use this feature, you can create files in the `src/app/_routes` directory and always export a component from it by default in order to be considered.
+To use this feature, you have to create files in the `src/app/_routes` directory and always export a component from it by default in order to be considered.
 
 ```tsx title="src/app/_routes/index.page.tsx" showLineNumbers
 import { PageComponent } from "rasengan";
@@ -81,7 +81,7 @@ In order to work perfectly, you need to cover a last step, by importing the Rout
 
 ```tsx title="src/app/app.router.ts" showLineNumbers {2,7}
 import { RouterComponent, defineRouter } from "rasengan";
-import Router from "virtual:rasengan:router";
+import Router from "virtual:rasengan/router";
 
 class AppRouter extends RouterComponent {}
 
@@ -116,7 +116,7 @@ For futher information, see the <Link to="/packages/i18n">@rasenganjs/i18n</Link
 
 ### Add support for shadcn into create-rasengan CLI
 
-Building website in good, but doing it even faster is better.
+Building website is good, but doing it even faster is better.
 
 <Link to="https://ui.shadcn.com" target="_blank">Shadcn</Link> is a set of beautifully designed components that you can customize, extend, and build on.
 
@@ -139,3 +139,5 @@ This command will generate a new project with Shadcn UI configured and ready to 
   title="Learn more about this feature"
   link="/packages/create-rasengan#with-shadcn-(--with-shadcn)"
 />
+
+Learn more about [Rasengan.js documentation](/docs/getting-started/introduction) and have fun Ninja!

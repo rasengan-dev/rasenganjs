@@ -31,7 +31,7 @@ app/
 │   │   └── index.page.tsx         # → /about
 │   ├── blog/
 │   │   ├── index.page.tsx         # → /blog
-│   │   ├── [id].page.tsx         # → /blog/:id
+│   │   ├── [id].page.tsx          # → /blog/:id
 │   │   └── [slug]/
 │   │       └── index.page.tsx     # → /blog/:slug
 │   ├── _settings/
@@ -44,11 +44,24 @@ app/
 
 ## Router 
 
-The file based routing system will generate a `Router` Component that you need to include into your `app.router.ts` file.
+The file-based routing system in Rasengan.js automatically generates a `Router` component based on your folder and file structure.
+
+To integrate this generated router into your app, create a file at: 
+
+```txt 
+src/app/app.router.ts
+```
+<AlertWithDescription 
+  title="Warning"
+  description="`app.router.ts` is a required file, you have to place it at the src/app/ folder."
+  status="warning"
+/>
+
+And add the following:
 
 ```tsx title="src/app/app.router.ts" showLineNumbers {2,7}
 import { RouterComponent, defineRouter } from 'rasengan';
-import Router from 'virtual:rasengan:router';
+import Router from 'virtual:rasengan/router';
 
 class AppRouter extends RouterComponent {}
 
@@ -57,23 +70,29 @@ export default defineRouter({
 })(AppRouter);
 ```
 
-`Rasengan.js` provides you a virtual module `virtual:rasengan:router` that you can import to use the `Router` component.
+### How It Works
+
+- Rasengan.js exposes a virtual module named `virtual:rasengan/router`.
+- This module automatically includes all pages, layouts, and routes defined in `/app/_routes`.
+- You simply import it and inject it into your `AppRouter` using the `defineRouter` helper.
+
+This setup ensures that your routing configuration stays fully synchronized with your file structure — **no manual registration required**.
 
 ## Pages
 
-Every file ending with `.page.tsx` defines a route.
+Every file ending with `.page.tsx` defines a route. 
 
 ### Naming Convention
 
-| File Name               | Route Path        | Description                         |
-| ----------------------- | ----------------- | ----------------------------------- |
-| `index.page.tsx`        | `/`               | Index route                         |
-| `home.page.tsx`         | `/home`           | Normal route                        |
-| `about/index.page.tsx`  | `/about`          | Index route in `about` folder       |
-| `blog/index.page.tsx`   | `/blog`           | Index route in `blog` folder        |
-| `blog/[id].page.tsx`    | `/blog/:id`       | Dynamic route on file page          |
-| `blog/[_slug].page.tsx` | `/blog/:slug?`    | Optional dynamic route on file page |
-| `[_locale]/home.page.tsx` | `/:locale?/home`   | Optional dynamic route on folder |
+| File Name                 | Route Path        | Description                         |
+| ------------------------- | ----------------- | ----------------------------------- |
+| `index.page.tsx`          | `/`               | Index route                         |
+| `home.page.tsx`           | `/home`           | Normal route                        |
+| `about/index.page.tsx`    | `/about`          | Index route in `about` folder       |
+| `blog/index.page.tsx`     | `/blog`           | Index route in `blog` folder        |
+| `blog/[id].page.tsx`      | `/blog/:id`       | Dynamic route on file page          |
+| `blog/[_slug].page.tsx`   | `/blog/:slug?`    | Optional dynamic route on file page |
+| `[_locale]/home.page.tsx` | `/:locale?/home`  | Optional dynamic route on folder    |
 
 > 🖱 Only files located in `app/_routes/` are considered valid route definitions.
 
@@ -105,6 +124,30 @@ export default Home;
 ## Layouts
 
 Use `layout.tsx` files to define reusable structures (headers, sidebars, wrappers, etc.). A layout wraps all the routes inside its folder unless overridden by a deeper layout.
+
+### File Structure
+
+pages located at the same level of the layout or deeper will be wrapped by the layout.
+
+```bash
+app/
+├── _routes/
+│   ├── layout.tsx                 # Root Layout for all pages
+│   ├── index.page.tsx             # → /
+│   ├── about/
+│   │   ├── layout.tsx             # Layout for /about/*
+│   │   └── index.page.tsx         # → /about
+│   └── [_locale]/
+│       ├── layout.tsx             # Layout for /:locale?/*
+│       └── home.page.tsx          # → /home, /en/home, /fr/home, etc.
+└── app.router.ts                  # Entry point to register the routes
+```
+
+From this file structure, the `app/_routes/about/index.page.tsx` will be wrapped by the `app/_routes/about/layout.tsx` and the `app/_routes/layout.tsx`.
+
+### Layout Component
+
+The Layout Component has the be exported by default in order to be registered as a layout.
 
 ```tsx title="src/app/_routes/layout.tsx" showLineNumbers
 import React from "react";
@@ -232,11 +275,11 @@ Even if the page is inside the `(blog)` folder, the URL does **not** include `/b
 
 | Type               | Convention                 | Example Path                             | Matches                 |
 | ------------------ | -------------------------- | ---------------------------------------- | ----------------------- |
-| Routes folder   | `app/_routes/`             | `app/_routes/home.page.tsx`              | `/home`                 |
-| Page file       | `*.page.tsx`               | `index.page.tsx`, `profile.page.tsx`     | `/`, `/profile`         |
-| Dynamic segment | `[param]/index.page.tsx`   | `app/_routes/blog/[slug]/index.page.tsx` | `/blog/:slug`           |
-| Optional segment | `_folder/`, `[_param]/`    | `_settings`, `[_locale]`                 | `/`, `/settings`, `/en` |
-| Layout wrapper  | `layout.tsx` in any folder | `app/_routes/about/layout.tsx`           | Applies to `/about/*`   |
+| Routes folder      | `app/_routes/`             | `app/_routes/home.page.tsx`              | `/home`                 |
+| Page file          | `*.page.tsx`               | `index.page.tsx`, `profile.page.tsx`     | `/`, `/profile`         |
+| Dynamic segment    | `[param]/index.page.tsx`   | `app/_routes/blog/[slug]/index.page.tsx` | `/blog/:slug`           |
+| Optional segment   | `_folder/`, `[_param]/`    | `_settings`, `[_locale]`                 | `/`, `/settings`, `/en` |
+| Layout wrapper     | `layout.tsx` in any folder | `app/_routes/about/layout.tsx`           | Applies to `/about/*`   |
 
 
 ## Coming Soon
@@ -244,7 +287,6 @@ Even if the page is inside the `(blog)` folder, the URL does **not** include `/b
 Rasengan.js plans to support:
 
 * **Catch-all routes** with `[...param]`
-* **Middleware-based guards**
 * **Param validation & static type inference**
 
 

@@ -20,7 +20,7 @@ export const BlogData: Array<BlogDataType> = [
       We are publishing Rasengan v1.1.0, a new version of the framework that introduces you the file-based routing feature.
     `,
     authors: [Authors[AuthorUsernames.dilaneKombou]],
-    postedAt: 'August xx, 2025',
+    postedAt: 'August 16, 2025',
     link: '/blog/rasengan-v1-1-0',
     image: '/assets/blog/rasengan-1.1.0.png',
     readingTime: '3 min',
