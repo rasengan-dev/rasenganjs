@@ -1,0 +1,51 @@
+---
+metadata:
+  title: Blog
+  description: Blog page
+---
+
+# Introduction to `Rasengan.js` [#introduction-to-rasenganjs]
+
+Rasengan.js is a modern, fast and extensible framework for building web applications.
+
+## hey _Features_ [#features]
+
+- File-based routing
+- CSS Support
+- SSR / CSR
+- MDX Support
+
+## Installation **of** [#installation]
+
+```bash title="Terminal"
+npm install rasengan
+```
+
+## Usage
+
+```tsx
+import { defineRouter } from 'rasengan';
+
+const router = defineRouter({
+  pages: [],
+});
+
+export default router;
+```
+
+## Example
+
+```tsx
+import { defineRouter } from 'rasengan';
+
+const router = defineRouter({
+  pages: [
+    {
+      path: '/',
+      component: Home,
+    },
+  ],
+});
+
+export default router;
+```

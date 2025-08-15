@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.1.0-beta.2 (2025-07-09)
+
+## 1.1.0-beta.1 (2025-07-09)
+
+## 1.1.0-beta.0 (2025-07-09)
+
 ## 1.0.0 (2025-04-26)
 
 - fix: handling metadata on client when navigating between pages [5fbbaca](https://github.com/rasengan-dev/rasenganjs/5fbbaca5ce206d693b5a5d394827a3804838ba5c)

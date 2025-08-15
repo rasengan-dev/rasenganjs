@@ -1,3 +1,4 @@
+import React from 'react';
 import { TOCItem } from '../types/index.js';
 
 /**
@@ -41,35 +42,83 @@ export function extractTOC(markdown: string) {
  * @param title
  * @returns
  */
-export const generateAnchor = (title: string) => {
-  // Regex pattern to match links in the format [#link text]
-  const regex = new RegExp('^\\[#.+\\]');
+export const generateAnchor = (title: React.ReactNode) => {
+  if (Array.isArray(title)) {
+    const text = title
+      .map((item) => {
+        if (React.isValidElement(item)) {
+          return item.props['children'].toString().trim();
+        }
 
-  // split the children into an array of strings based on space
-  const childrenArray = title.split(' [#');
-  let lastWord = '';
-  let remainingWords = '';
-  let id = '';
+        return item.toString().trim();
+      })
+      .join(' ');
 
-  // Check if we have more than one word and if the last word is a link
-  if (
-    childrenArray.length > 1 &&
-    childrenArray.at(-1).includes(']') &&
-    regex.test(`[#${childrenArray.at(-1)}`)
-  ) {
-    lastWord = childrenArray.pop();
+    const lastItem = title[title.length - 1];
+
+    if (typeof lastItem === 'string') {
+      // Pattern to match a markdown anchor link at the end: [#something]
+      const match1 = text.match(/\s\[#([^\]]+)\]$/);
+
+      if (match1) {
+        return {
+          id: match1[1],
+          // remove the last element from title
+          text: title.slice(0, title.length - 1),
+        };
+      }
+    }
+
+    return {
+      id: text.replace(/\s+/g, '-').toLowerCase(),
+      text: title,
+    };
   }
 
-  if (lastWord) {
-    id = lastWord.replace(']', '').split(' ').join('-').toLowerCase();
-    remainingWords = childrenArray[0];
+  // If the title is a React element
+  if (React.isValidElement(title)) {
+    return {
+      id: title.props['children']
+        .toString()
+        .trim()
+        .replace(/\s+/g, '-')
+        .toLowerCase(),
+      text: title,
+    };
+  }
+
+  const strippedTitle = String(toText(title).trim());
+
+  // Pattern to match a markdown anchor link at the end: [#something]
+  const match = strippedTitle.match(/\s\[#([^\]]+)\]$/);
+
+  let id: string;
+  let text: string;
+
+  if (match) {
+    // match[1] is the content inside [#...]
+    id = match[1].trim().replace(/\s+/g, '-').toLowerCase();
+    // remove the matched anchor from the original text
+    text = strippedTitle.replace(match[0], '').trim();
   } else {
-    id = title.split(' ').join('-').toLowerCase();
-    remainingWords = title;
+    // No markdown anchor found, generate id from the whole title
+    id = strippedTitle.replace(/\s+/g, '-').toLowerCase();
+    text = strippedTitle;
   }
 
-  return {
-    id,
-    text: remainingWords,
-  };
+  return { id, text };
 };
+
+function toText(input: unknown): string {
+  if (input == null) return ''; // null/undefined
+  if (typeof input === 'string') return input; // already a string
+  if (Array.isArray(input)) return input.map(toText).join(' ');
+  if (input instanceof Uint8Array)
+    // Buffer/typed array
+    return new TextDecoder().decode(input);
+  try {
+    return String(input);
+  } catch {
+    return '';
+  } // fallback
+}

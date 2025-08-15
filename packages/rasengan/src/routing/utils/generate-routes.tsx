@@ -236,7 +236,7 @@ export const generateRoutes = (
   const route: RouteObject = {
     path: !isRoot
       ? router.useParentLayout
-        ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
+        ? Layout.path.replace(parentLayout.path + '/', '')
         : Layout.path
       : Layout.path,
     errorElement: <ErrorBoundary />,
@@ -316,6 +316,8 @@ export const generateRoutes = (
 
   // Get informations about pages
   const pages: Array<RouteObject> = router.pages.map((Page) => {
+    // /home => home
+    // / => /
     const pagePathFormated =
       Page.path.startsWith('/') && Page.path !== '/'
         ? Page.path.slice(1)
@@ -330,7 +332,8 @@ export const generateRoutes = (
           : Page.path;
 
     return {
-      path,
+      path: path === Layout.path ? undefined : path,
+      index: path === Layout.path,
       async loader({ params, request }) {
         // Extracting metadata from the page
         const metadata: Metadata = {
@@ -412,16 +415,35 @@ export const generateMetadataMapping = (
   // Get information about the layout and the path
   const Layout = router.layout;
 
+  // Set default path layout if not provided
+  if (!Layout.path) {
+    throw new Error(
+      `[rasengan] Page path is required for ${Layout.name} layout component`
+    );
+  }
+
   const layoutPath = !isRoot
     ? router.useParentLayout
-      ? parentLayout.path + (Layout.path === '/' ? '' : Layout.path)
+      ? parentLayout.path +
+        (Layout.path === '/'
+          ? ''
+          : Layout.path.startsWith('/') && parentLayout.path === '/'
+            ? Layout.path.slice(1)
+            : Layout.path)
       : Layout.path
     : Layout.path;
 
   // Get informations about pages
   router.pages.forEach((Page) => {
+    // Set default page path if not provided
+    if (!Page.path) {
+      throw new Error(
+        `[rasengan] Page path is required for ${Page.name} page component`
+      );
+    }
+
     const pagePathFormated =
-      Page.path.startsWith('/') && Page.path !== '/'
+      Page.path.startsWith('/') && Page.path !== '/' && layoutPath.endsWith('/')
         ? Page.path.slice(1)
         : Page.path;
 

@@ -70,6 +70,7 @@
 }
 
 .rasengan-markdown-body {
+  width: 100%;
   position: relative;
   box-sizing: border-box;
   margin: 0;

@@ -1,0 +1,22 @@
+/* Load Urbanist and Comfortaa font */
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500&family=Urbanist:wght@700&display=swap');
+
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #2a7fff;
+  --color-border: #eee;
+
+  --font-urbanist: Urbanist, sans-serif;
+  --font-comfortaa: Comfortaa, sans-serif;
+}
+
+body,
+html {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
