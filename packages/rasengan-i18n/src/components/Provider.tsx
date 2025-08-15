@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import ThemeContext from '../contexts/themes.js';
 import { Themes, ThemesType } from '../types/index.js';
 import { usePreferredColorScheme } from '../hooks/useColorScheme.js';
 import { loadSavedTheme, saveTheme } from '../utils/index.js';
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function Provider({ children }: Props) {

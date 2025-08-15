@@ -1,23 +1,52 @@
 import { jsx as _jsx } from 'react/jsx-runtime';
-import i18n from 'virtual:rasengan:i18n';
-import I18nContext from '../contexts/index.js';
 import { useEffect, useState } from 'react';
-import { useParams } from 'rasengan';
-export function RasenganI18nProvider({ children }) {
-  const { locale: defaultLocale } = useParams();
-  const [locale, setLocale] = useState(i18n.config.defaultLocale);
+import ThemeContext from '../contexts/themes.js';
+import { Themes } from '../types/index.js';
+import { usePreferredColorScheme } from '../hooks/useColorScheme.js';
+import { loadSavedTheme, saveTheme } from '../utils/index.js';
+export default function Provider({ children }) {
+  const [theme, setTheme] = useState({
+    value: null,
+    actual: null,
+    isDark: false,
+  });
+  // Get prefered colors scheme
+  const preferedTheme = usePreferredColorScheme();
+  // Effects
   useEffect(() => {
-    console.log({ defaultLocale });
-    if (defaultLocale && i18n.locales.includes(defaultLocale)) {
-      setLocale(defaultLocale);
-    }
-  }, [defaultLocale]);
-  return _jsx(I18nContext, {
+    (() => {
+      const savedTheme = loadSavedTheme();
+      if (savedTheme) {
+        setTheme({
+          value: savedTheme,
+          actual: savedTheme === Themes.system ? preferedTheme : savedTheme,
+          isDark: preferedTheme === Themes.dark,
+        });
+      } else {
+        setTheme({
+          value: Themes.system,
+          actual: preferedTheme,
+          isDark: preferedTheme === Themes.dark,
+        });
+      }
+    })();
+  }, [preferedTheme]);
+  // Handlers
+  const handleSetTheme = (theme) => {
+    setTheme({
+      value: theme,
+      actual: theme === Themes.system ? preferedTheme : theme,
+      isDark: preferedTheme === Themes.dark,
+    });
+    // Save theme
+    saveTheme(theme);
+  };
+  return _jsx(ThemeContext.Provider, {
     value: {
-      locale,
-      locales: i18n.locales,
-      resources: i18n.resources,
-      setLocale,
+      theme: theme.value,
+      actualTheme: theme.actual,
+      isDark: theme.actual === 'dark',
+      setTheme: handleSetTheme,
     },
     children: children,
   });

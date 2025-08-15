@@ -1,7 +1,6 @@
+import { ReactNode } from 'react';
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
-export declare function RasenganI18nProvider({
-  children,
-}: Props): import('react/jsx-runtime').JSX.Element;
+export default function Provider({ children }: Props): any;
 export {};

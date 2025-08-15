@@ -1,53 +1,39 @@
 /**
- * Resources types describing how translations are structured
+ * An object that defines the available themes for the application.
+ * The keys of this object represent the different theme options, and the values are the corresponding theme names.
  */
-export type ResourceItem = Record<string, any>;
-export type Resources = Record<string, ResourceItem>;
-/**
- * i18n context type
- */
-export type I18nContext = {
-  locale: string;
-  locales: string[];
-  resources: Resources;
-  setLocale: (locale: string) => void;
+export declare const Themes: {
+  readonly dark: 'dark';
+  readonly light: 'light';
+  readonly system: 'system';
 };
 /**
- * i18n config type
+ * Defines the available theme options for the application.
+ * The `Themes` type represents the valid theme values that can be used in the `ThemeContext`.
  */
-export type I18nConfig = {
+export type ThemesType = (typeof Themes)[keyof typeof Themes];
+/**
+ * Represents the context for managing the application's theme.
+ * This interface provides access to the current theme, the actual theme being used (light or dark),
+ * the default theme, and a function to set the current theme.
+ */
+export interface ThemeContext {
   /**
-   * Default locale
+   * The currently selected theme for the application.
+   * This can be one of the values defined in the `Themes` object.
    */
-  defaultLocale: string;
+  theme: ThemesType;
   /**
-   * Detection config
+   * The actual theme currently selected for the application, which can be either "light" or "dark".
    */
-  detection?: {
-    /**
-     * Detection order
-     * @default ["path"]
-     */
-    order?: I18nDetectionOrder[];
-  };
+  actualTheme: 'light' | 'dark';
   /**
-   * Resources config
+   * Indicates whether the current theme is a dark theme or not.
    */
-  resources?: {
-    /**
-     * Path to the resources source
-     * @default "/src/messages"
-     */
-    source?: string;
-  };
-};
-export declare const I18nDetectionOrders: {
-  readonly PATH: 'path';
-  readonly COOKIE: 'cookie';
-  readonly LOCAL_STORAGE: 'localStorage';
-  readonly SUBDOMAIN: 'subdomain';
-  readonly QUERYSTRING: 'querystring';
-  readonly ACCEPT_LANGUAGE: 'acceptLanguage';
-};
-export type I18nDetectionOrder =
-  (typeof I18nDetectionOrders)[keyof typeof I18nDetectionOrders];
+  isDark: boolean;
+  /**
+   * Sets the current theme for the application.
+   * @param theme - The new theme to set, which must be one of the values defined in the `Themes` object.
+   */
+  setTheme: (theme: ThemesType) => void;
+}
