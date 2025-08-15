@@ -16,7 +16,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.477.0",
-    "rasengan": "^1.0.0",
+    "rasengan": "^1.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.3.1",
@@ -27,6 +27,6 @@
     "cross-env": "^7.0.3",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5.1.3",
-    "vite": "^6.2.6"
+    "vite": "^7.0.0"
   }
 }

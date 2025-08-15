@@ -1,63 +1,174 @@
 # Rasengan Theme
 
-[![npm version](https://badge.fury.io/js/@rasenganjs%2Ftheme.svg)](https://badge.fury.io/js/@rasenganjs%2Ftheme)
-![NPM Downloads](https://img.shields.io/npm/dm/%40rasenganjs%2Ftheme)
-[![GitHub license](https://img.shields.io/github/license/rasengan-dev/rasengan-theme)](https://github.com/rasengan-dev/rasengan-theme/blob/main/LICENSE)
+[![npm version](https://badge.fury.io/js/@rasenganjs%2Fi18n.svg)](https://badge.fury.io/js/@rasenganjs%2Fi18n)
+![NPM Downloads](https://img.shields.io/npm/dm/%40rasenganjs%2Fi18n)
+[![GitHub license](https://img.shields.io/github/license/rasengan-dev/rasengan-i18n)](https://github.com/rasengan-dev/rasengan-i18n/blob/main/LICENSE)
 
-Simple Rasengan.JS package to manage the theme of your application.
+# Rasengan I18n
+
+The `@rasenganjs/i18n` makes it easy to add internationalization (i18n) to your Rasengan.js applications. It lets you manage translations using simple, static JSON files—keeping your localization workflow clear, fast, and scalable.
 
 ## Installation
 
-You can install the `@rasenganjs/theme` package by using the following command:
-
-```bash
-npm install @rasenganjs/theme
-```
-
-or
-
-```bash
-yarn add @rasenganjs/theme
+```bash title="Terminal"
+npm install @rasenganjs/i18n@1.0.0-beta.1
 ```
 
 ## Usage
 
-Here is an example of how you can use the `@rasenganjs/theme` package:
+### Configuration
 
-### Wrap your application with `ThemeProvider`
+First thing first, you have to configure the `i18n` package into the `rasengan.config.js` file by importing the plugin and passing it to the vite `plugins` array.
 
-```tsx
-import { type AppProps } from 'rasengan';
-import AppRouter from '@app/app.router';
-import ThemeProvider from '@rasenganjs/theme';
+```js title="rasengan.config.js" showLineNumbers
+import { defineConfig } from 'rasengan';
+import i18n from '@rasenganjs/i18n/plugin';
 
-export default function App({ Component, children }: AppProps) {
-  return (
-    <ThemeProvider>
-      <Component router={AppRouter}>{children}</Component>
-    </ThemeProvider>
-  );
+export default defineConfig(async () => {
+  return {
+    vite: {
+      plugins: [
+        i18n({
+          defaultLocale: 'fr',
+          resources: {
+            source: '/src/messages', // The path to the messages directory
+          },
+        }),
+      ],
+    },
+  };
+});
+```
+
+The `i18n plugin` takes a configuration object with the following properties:
+
+| Name             | Type   | Description                         | Optional | Default        |
+| ---------------- | ------ | ----------------------------------- | -------- | -------------- |
+| defaultLocale    | string | The default locale to use.          | false    | -              |
+| resources.source | string | The path to the messages directory. | true     | `src/messages` |
+
+### Messages
+
+The messages directory should contain JSON files for each locale, with the following structure:
+
+```json title="src/messages/en.json"
+{
+  "translation": {
+    "greeting": "Hello, World!"
+  }
 }
 ```
 
-### Use the `useTheme` hook to get the current theme
+> Every JSON file should have a `translation` key that contains the translations for that locale.
 
-```tsx
-import { useTheme } from '@rasenganjs/theme';
+### Register the Provider
 
-const Card = () => {
-  const { theme, actualTheme, setTheme, isDark } = useTheme();
+You have to register the `RasenganI18nProvider` component at the root of your application inside the root layout file.
 
-  return <div>{/* Code here */}</div>;
+```tsx title="src/app/app.layout.tsx" showLineNumbers
+import { LayoutComponent, Outlet } from 'rasengan';
+import { RasenganI18nProvider } from '@rasenganjs/i18n';
+
+const RootLayout: LayoutComponent = () => {
+  return (
+    <RasenganI18nProvider>
+      <Outlet />
+    </RasenganI18nProvider>
+  );
 };
+
+RootLayout.path = '/'; // Only work while using a Config-based routing
+
+export default RootLayout;
 ```
 
-| Property      | Type                      | Description                                           | Values                        |
-| ------------- | ------------------------- | ----------------------------------------------------- | ----------------------------- |
-| `theme`       | `string`                  | The current theme                                     | `light` or `dark` or `system` |
-| `actualTheme` | `string`                  | The actual theme                                      | `light` or `dark`             |
-| `setTheme`    | `(theme: string) => void` | A function to set the theme                           | -                             |
-| `isDark`      | `boolean`                 | A boolean that indicates if the current theme is dark | `true` or `false`             |
+> Don't wrap your application with the `RasenganI18nProvider` inside the `main.tsx` file, prefer to wrap it inside the root layout file.
+
+### Hooks
+
+The `@rasenganjs/i18n` package provides a number of hooks to help you manage translations in your application.
+
+| Name             | Description                                                               |
+| ---------------- | ------------------------------------------------------------------------- |
+| `useTranslation` | Returns a function that returns the current translation based on the key. |
+| `useLocale`      | Returns the current locale and a function to change it.                   |
+
+#### useTranslation
+
+```tsx title="src/components/greeting.tsx" showLineNumbers
+import { useTranslation } from '@rasenganjs/i18n';
+
+const Greeting = () => {
+  const t = useTranslation();
+
+  return (
+    <div>
+      <h1>{t('greeting')}</h1>
+    </div>
+  );
+};
+
+export default Greeting;
+```
+
+The `useTranslation` hook takes an optional param called `namespace` that allows you to specify the namespace of the translation you want to use.
+<br />
+
+Let's suppose we have the following message:
+
+```json title="src/messages/en.json"
+{
+  "translation": {
+    "home": {
+      "header": {
+        "greeting": "Hello, World!"
+      }
+    }
+  }
+}
+```
+
+And we can use the `useTranslation` hook like this:
+
+```tsx title="src/components/greeting.tsx" showLineNumbers
+import { useTranslation } from '@rasenganjs/i18n';
+
+const Greeting = () => {
+  const t = useTranslation('home');
+
+  return (
+    <div>
+      <h1>{t('header.greeting')}</h1>
+    </div>
+  );
+};
+
+export default Greeting;
+```
+
+#### useLocale
+
+From the `useLocale` hook, you can get the current locale and a function to change it.
+
+```tsx title="src/components/navbar.tsx" showLineNumbers
+import { useLocale } from '@rasenganjs/i18n';
+
+const Navbar = () => {
+  const { locale, setLocale } = useLocale();
+
+  return (
+    <div>
+      <h1>{locale}</h1>
+      <button onClick={() => setLocale('en')}>English</button>
+      <button onClick={() => setLocale('fr')}>French</button>
+    </div>
+  );
+};
+
+export default Navbar;
+```
+
+> **Note:** The value passed to `setLocale` must be one of the locales defined into your messages directory.
 
 ## Community
 

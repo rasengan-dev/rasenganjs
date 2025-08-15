@@ -3,9 +3,9 @@ name: Publish Package
 on:
   push:
     tags:
-      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
-      - "create-rasengan*" # Push events to matching plugin-*, i.e. create-rasengan@1.0.0
-      - "rasengan-*" # # Push events to matching @rasenganjs/*, i.e. @rasenganjs/serve@1.0.0
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - 'create-rasengan*' # Push events to matching plugin-*, i.e. create-rasengan@1.0.0
+      - 'rasengan-*' # # Push events to matching @rasenganjs/*, i.e. @rasenganjs/serve@1.0.0
 
 jobs:
   publish:
@@ -26,9 +26,9 @@ jobs:
       - name: Set node version to 20
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org/
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install deps
         run: pnpm install
@@ -36,7 +36,7 @@ jobs:
       - name: Build package
         run: pnpm run build
 
-      - name: Get token 
+      - name: Get token
         id: tag
         run: |
           if [[ $GITHUB_REF_NAME =~ ^rasengan-.+ ]]; then
