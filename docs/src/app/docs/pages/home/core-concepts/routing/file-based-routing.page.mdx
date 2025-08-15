@@ -10,6 +10,9 @@ toc: true
 import { AlertWithDescription } from "@/components/atoms/alerts"; 
 import Pagination from '@/components/molecules/pagination';
 
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
 # File-Based Routing in Rasengan.js
 
 Rasengan.js introduces a powerful and intuitive **file-based routing system**, inspired by modern frameworks but tailored to its own conventions.
@@ -184,6 +187,8 @@ To create dynamic routes, wrap folder names in square brackets:
 
 ``` txt
 app/_routes/blog/[slug]/index.page.tsx → /blog/:slug
+or
+app/_routes/blog/[slug].page.tsx → /blog/:slug
 ```
 
 You can access dynamic params using:
@@ -296,3 +301,15 @@ Rasengan.js plans to support:
 * Prefer `index.page.tsx` for folder roots
 * Use layouts to reduce duplication and enhance structure
 * Use optional segments thoughtfully to avoid ambiguous paths
+
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/layouts',
+    label: 'Layouts',
+  }}
+  next={{
+    href: '/docs/routing/linking-and-navigation',
+    label: 'Linking and Navigation',
+  }}
+/>

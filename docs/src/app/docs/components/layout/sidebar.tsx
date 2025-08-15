@@ -204,8 +204,8 @@ export const NavItem = ({
       >
         {item.isBeta ? (
           <div className="flex items-center gap-2">
-            <FlaskConical size={16} className="text-green-500" />
             <span>{item.name}</span>
+            <FlaskConical size={16} className="text-green-500" />
           </div>
         ) : (
           <span>{item.name}</span>

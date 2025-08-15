@@ -107,6 +107,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
+              name: 'Active Links',
+              link: '/docs/routing/active-link',
+              level: 3,
+              isNew: true,
+            },
+            {
+              id: randomId(),
               name: 'Error Handling',
               link: '/docs/routing/error-handling',
               level: 3,
@@ -257,6 +264,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Link',
               link: '/docs/api-reference/components/link',
               level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'NavLink',
+              link: '/docs/api-reference/components/navlink',
+              level: 3,
+              isNew: true,
             },
             {
               id: randomId(),

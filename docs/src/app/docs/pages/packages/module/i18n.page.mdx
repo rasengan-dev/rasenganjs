@@ -6,6 +6,9 @@ metadata:
 toc: true
 ---
 
+
+import { AlertWithDescription } from "@/components/atoms/alerts"; 
+
 <span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
   PACKAGES
 </span>
@@ -65,13 +68,17 @@ The messages directory should contain JSON files for each locale, with the follo
 }
 ```
 
-Every JSON file should have a `translation` key that contains the translations for that locale.
+<AlertWithDescription 
+  status="warning"
+  title="Warning"
+  description="Every JSON file should have a `translation` key that contains the translations for that locale."
+/>
 
 ### Register the Provider
 
 You have to register the `RasenganI18nProvider` component at the root of your application inside the root layout file.
 
-```tsx title="src/app/layout.tsx" showLineNumbers
+```tsx title="src/app/app.layout.tsx" showLineNumbers
 import { LayoutComponent, Outlet } from 'rasengan';
 import { RasenganI18nProvider } from '@rasenganjs/i18n';
 
@@ -87,6 +94,12 @@ RootLayout.path = '/'; // Only work while using a Config-based routing
 
 export default RootLayout;
 ```
+
+<AlertWithDescription 
+  status="warning"
+  title="Warning"
+  description="Don't wrap your application with the `RasenganI18nProvider` inside the `main.tsx` file, prefer to wrap it inside the root layout file."
+/>
 
 ### Hooks
 

@@ -8,6 +8,7 @@ import LinkingAndNavigatingPage from './linking.page.mdx';
 import DynamicRoutesPage from './dynamic-routes.page.mdx';
 import ErrorHandlingPage from './error-handling.page.mdx';
 import RedirectingPage from './redirecting.page.mdx';
+import NavLinkPage from './active-link.mdx';
 
 export default defineRoutesGroup({
   path: '/routing',
@@ -21,5 +22,6 @@ export default defineRoutesGroup({
     DynamicRoutesPage,
     ErrorHandlingPage,
     RedirectingPage,
+    NavLinkPage,
   ],
 });
