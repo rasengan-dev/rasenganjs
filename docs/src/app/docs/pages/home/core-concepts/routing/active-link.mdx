@@ -1,0 +1,125 @@
+---
+path: active-link
+metadata:
+  title: Define Active Links - Routing | Core concepts | Rasengan.js
+  description: Learn how to define active links in your app navigation bar.
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from 'rasengan';
+import { AlertWithDescription, AlertWithLink } from "@/components/atoms/alerts"; 
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Define Active Links
+
+Active links are links that are highlighted when the current route matches the link's `to` property.
+
+Without extra tools, you can define active links manually by combining `useLocation` and <Link to="/docs/api-reference/components/link">`Link`</Link> components.
+
+```tsx title="src/components/ActiveLink.tsx" showLineNumbers {2,10}
+import React from "react";
+import { Link, useLocation } from "rasengan";
+
+type Props = {
+  to: string;
+  children: React.ReactNode;
+};
+
+export default function ActiveLink({ to, children }: Props) {
+  const { pathname } = useLocation();
+
+  return (
+    <Link to={to} className={`${pathname === to ? "active" : ""}`}>
+      {children}
+    </Link>
+  );
+}
+```
+
+## NavLink Component
+
+Rasengan.js provides a `NavLink` component that makes it easier to define active links.
+
+```tsx title="src/components/NavLink.tsx" showLineNumbers {2,11-18}
+import React from "react";
+import { NavLink } from "rasengan";
+
+type Props = {
+  to: string;
+  children: React.ReactNode;
+};
+
+export default function ActiveLink({ to, children }: Props) {
+  return (
+    <NavLink 
+      to={to} 
+      className={({ isActive, isPending }) =>
+        isPending ? "pending" : isActive ? "active" : ""
+      }
+    >
+      {children}
+    </NavLink>
+  );
+}
+```
+
+<AlertWithDescription
+  title="Active state"
+  description="The `NavLink` component becomes active when the current route start with the `to` prop value."
+  status="info"
+/>
+
+```txt
+When to="/docs"
+
+Current route: /docs => isActive: true
+Current route: /docs/getting-started/introduction => isActive: true
+Current route: /packages => isActive: false
+Current route: /blog => isActive: false
+```
+
+## Props
+
+### children
+
+Can be regular React children or a function that receives an object with the `active` and `pending` states of the link.
+
+```tsx
+<NavLink to="/tasks">
+  {({ isActive }) => (
+    <span className={isActive ? "active" : ""}>Tasks</span>
+  )}
+</NavLink>
+```
+
+### end 
+
+Changes the matching logic for the `active` and `pending` states to only match to the **"end"** of the `NavLinkProps.to`. If the URL is longer, it will no longer be considered active.
+
+| Link	                      | URL	           | isActive |
+| --------------------------- | -------------- | -------- |
+| `<NavLink to="/tasks" />`     | /tasks         | true     |
+| `<NavLink to="/tasks" />`     | /tasks/123     | true     |
+| `<NavLink to="/tasks" end />` | /tasks         | true     |
+| `<NavLink to="/tasks" end />` | /tasks/123     | false    |
+
+<AlertWithLink
+  title="Learn more about NavLink"
+  status="info"
+  link="https://reactrouter.com/api/components/NavLink"
+/>
+
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/dynamic-routes',
+    label: 'Dynamic Routes',
+  }}
+  next={{
+    href: '/docs/routing/error-handling',
+    label: 'Error Handling',
+  }}
+/>

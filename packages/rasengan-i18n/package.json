@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/i18n",
   "private": false,
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Library that handles internationalization for Rasengan.JS applications",
   "type": "module",
   "main": "lib/index.js",
@@ -39,7 +39,7 @@
   "peerDependencies": {
     "react": "^19.0.0",
     "rasengan": "workspace:^",
-    "vite": "^6.0.0"
+    "vite": "^7.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.1",

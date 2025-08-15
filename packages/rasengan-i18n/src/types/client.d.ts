@@ -1,4 +1,4 @@
-declare module 'virtual:rasengan:i18n' {
+declare module 'virtual:rasengan/i18n' {
   import { I18nConfig, Resources } from './index.js';
 
   const i18n: {

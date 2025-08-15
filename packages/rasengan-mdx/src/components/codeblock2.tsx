@@ -28,7 +28,7 @@ export const CodeBlock2 = ({
   return (
     <Highlight
       theme={themes.oneDark}
-      code={children.trim()}
+      code={children.toString().trim()}
       language={language}
     >
       {({ className, tokens, getLineProps, getTokenProps, ...rest }: any) => {
@@ -52,7 +52,7 @@ export const CodeBlock2 = ({
          * It sets the `copied` state to `true` for 2 seconds to display a "copied" indicator.
          */
         const handleCopy = () => {
-          navigator.clipboard.writeText((children ?? '').trim());
+          navigator.clipboard.writeText((children ?? '').toString().trim());
           setCopied(true);
         };
 

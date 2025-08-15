@@ -18,6 +18,9 @@ export type NavigationItem = {
   icon?: React.ReactNode;
   visible?: boolean;
   children?: Array<NavigationItem>;
+  isNew?: boolean;
+  isComingSoon?: boolean;
+  isBeta?: boolean;
 };
 
 export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
@@ -85,6 +88,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
+              name: 'File-Based Routing',
+              link: '/docs/routing/file-based-routing',
+              level: 3,
+              isNew: true,
+            },
+            {
+              id: randomId(),
               name: 'Linking & Navigation',
               link: '/docs/routing/linking-and-navigation',
               level: 3,
@@ -94,6 +104,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Dynamic Routes',
               link: '/docs/routing/dynamic-routes',
               level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'Active Links',
+              link: '/docs/routing/active-link',
+              level: 3,
+              isNew: true,
             },
             {
               id: randomId(),
@@ -250,6 +267,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
+              name: 'NavLink',
+              link: '/docs/api-reference/components/navlink',
+              level: 3,
+              isNew: true,
+            },
+            {
+              id: randomId(),
               name: 'Outlet',
               link: '/docs/api-reference/components/outlet',
               level: 3,
@@ -395,9 +419,46 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
         {
           id: randomId(),
           name: 'Kurama',
-          link: '/packages/kurama',
+          link: '#',
+          // link: '/packages/kurama',
           level: 2,
-          visible: false,
+          // visible: false,
+          isComingSoon: true,
+        },
+        {
+          id: randomId(),
+          name: 'Query',
+          link: '#',
+          // link: '/packages/kurama',
+          level: 2,
+          // visible: false,
+          isComingSoon: true,
+        },
+        {
+          id: randomId(),
+          name: 'Kage Demo',
+          link: '#',
+          // link: '/packages/kurama',
+          level: 2,
+          // visible: false,
+          isComingSoon: true,
+        },
+        {
+          id: randomId(),
+          name: 'Sitemap',
+          link: '#',
+          // link: '/packages/kurama',
+          level: 2,
+          // visible: false,
+          isComingSoon: true,
+        },
+        {
+          id: randomId(),
+          name: 'I18n',
+          link: '/packages/i18n',
+          level: 2,
+          isNew: true,
+          isBeta: true,
         },
         {
           id: randomId(),
@@ -421,6 +482,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Node',
               link: '/packages/serve',
               level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'Netlify',
+              link: '#',
+              level: 3,
+              isComingSoon: true,
             },
           ],
         },

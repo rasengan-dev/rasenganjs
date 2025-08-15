@@ -1,10 +1,10 @@
-import i18n from 'virtual:rasengan:i18n';
+import i18n from 'virtual:rasengan/i18n';
 import I18nContext from '../contexts/index.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { useParams } from 'rasengan';
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function RasenganI18nProvider({ children }: Props) {

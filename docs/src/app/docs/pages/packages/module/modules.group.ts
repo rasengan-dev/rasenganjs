@@ -6,6 +6,7 @@ import MDXPage from './mdx.page.mdx';
 import ThemePage from './theme.page.mdx';
 import ServePage from './serve.page.mdx';
 import VercelPage from './vercel.page.mdx';
+import I18NPage from './i18n.page.mdx';
 
 export default defineRoutesGroup({
   path: '/',
@@ -17,5 +18,6 @@ export default defineRoutesGroup({
     ThemePage,
     ServePage,
     VercelPage,
+    I18NPage,
   ],
 });

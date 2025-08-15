@@ -8,6 +8,7 @@ toc: true
 
 import Tabs from '@/components/molecules/tab';
 import Pagination from '@/components/molecules/pagination';
+import { AlertWithLink } from "@/components/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
@@ -15,6 +16,22 @@ import Pagination from '@/components/molecules/pagination';
 # Rasengan.js Routing Basics
 
 Rasengan.js supports **multi-page application (MPA) routing** by default, powered by <a href="https://reactrouter.com/" target="_blank" rel="noopener noreferrer">`React Router`</a>. This allows you to handle different URLs and render specific components based on the URL, making navigation seamless within your application.
+<br />
+
+Rasengan.js introduces **file-based routing** to make it easier to manage routes. That means you have actually two ways to manage routes:
+
+- **Programmatic or Config-based routing**: This is the default way to manage routes. It is the way to manage routes using code, you have to define routes manually.
+- **File-based routing**: This is the second way to manage routes. It is based on the file structure of your application, routes are automatically generated based on the file structure.
+
+<br />
+
+The whole documentation will follow the `Config-based routing` way.
+
+<AlertWithLink 
+  link="/docs/routing/file-based-routing"
+  title="Learn more about file-based routing in Rasengan.js."
+  status="info"
+/>
 
 ## Understanding Routing in Rasengan.js
 Routing in Rasengan.js is managed through **Routers, Layouts, and Pages**:

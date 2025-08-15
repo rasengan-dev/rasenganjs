@@ -13,7 +13,12 @@ import inquirer from 'inquirer';
 import { loggerMiddleware } from '../../core/middlewares/index.js';
 
 // Load utilities functions
-import { isDataRequest, isDocumentRequest, logServerInfo } from './utils.js';
+import {
+  generateRandomPort,
+  isDataRequest,
+  isDocumentRequest,
+  logServerInfo,
+} from './utils.js';
 import {
   getDirname,
   loadModuleSSR,
@@ -177,7 +182,13 @@ async function createDevNodeServer({
 
   // Initialize a vite dev server as middleware
   const viteDevServer = await createViteServer({
-    server: { middlewareMode: true, hmr: true },
+    server: {
+      middlewareMode: true,
+      hmr: {
+        // TODO: Find a way to use a random port
+        port: generateRandomPort(),
+      },
+    },
     base,
     configFile: `${rootPath}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
   });

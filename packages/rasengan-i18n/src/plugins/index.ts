@@ -3,7 +3,7 @@ import { I18nConfig } from '../types/index.js';
 import { generateDefaultConfig } from '../utils/index.js';
 
 export default function i18nPlugin(config: I18nConfig): Plugin {
-  const virtualModuleId = 'virtual:rasengan:i18n';
+  const virtualModuleId = 'virtual:rasengan/i18n';
   const resolvedVirtualModuleId = '\0' + virtualModuleId;
 
   return {
