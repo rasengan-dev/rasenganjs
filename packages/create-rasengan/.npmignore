@@ -3,4 +3,3 @@ release
 yarn-error.log
 package-lock.json
 yarn.lock
-src
