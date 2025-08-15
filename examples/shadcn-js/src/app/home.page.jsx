@@ -22,36 +22,14 @@ const Home = () => {
       <img
         src={shadcnLogo}
         alt="shadcn logo"
-        className="
-    absolute 
-    top-10 left-4
-    sm:top-14 sm:left-10 
-    md:top-16 md:left-40 
-    w-[120px] 
-    sm:w-[180px] 
-    md:w-[300px] 
-    opacity-20 
-    pointer-events-none 
-    select-none
-  "
+        className="absolute top-10 left-4 sm:top-14 sm:left-10 md:top-16 md:left-40 w-[120px] sm:w-[180px] md:w-[300px] opacity-20 pointer-events-none select-none"
       />
 
       {/* === Rasengan Vector (droite) === */}
       <img
         src={RasenganVector}
         alt="Rasengan vector"
-        className="
-    absolute 
-    top-6 right-4 
-    sm:top-10 sm:right-10 
-    md:top-10 md:right-[12.5rem] 
-    w-[150px] 
-    sm:w-[240px] 
-    md:w-[340px] 
-    opacity-60 
-    pointer-events-none 
-    select-none
-  "
+        className="absolute top-6 right-4 sm:top-10 sm:right-10 md:top-10 md:right-[12.5rem] w-[150px] sm:w-[240px] md:w-[340px] opacity-60 pointer-events-none select-none"
       />
 
       {/* === Hero Section === */}
