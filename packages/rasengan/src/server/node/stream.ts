@@ -132,7 +132,8 @@ class StreamPump {
   enqueue(chunk: Uint8Array | string) {
     if (this.controller) {
       try {
-        let bytes = chunk instanceof Uint8Array ? chunk : Buffer.from(chunk);
+        let bytes: Uint8Array =
+          chunk instanceof Uint8Array ? chunk : Buffer.from(chunk);
 
         let available = (this.controller.desiredSize || 0) - bytes.byteLength;
         this.controller.enqueue(bytes);
