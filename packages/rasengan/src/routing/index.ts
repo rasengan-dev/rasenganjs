@@ -11,7 +11,7 @@ export type {
   ReactComponentProps,
   TemplateProps,
 } from './types.js';
-export { defineRouter, defineRoutesGroup } from './utils/index.js';
+export { defineRouter, defineRoutesGroup, flatRoutes } from './utils/index.js';
 export { RouterComponent } from './interfaces.js';
 export {
   Outlet,
@@ -30,5 +30,6 @@ export {
   matchPath,
   createRoutesFromChildren,
   Navigate,
+  NavLink,
 } from 'react-router';
 export { CustomLink as Link };

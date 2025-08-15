@@ -198,7 +198,7 @@ export const Contact: PageComponent = () => {
   );
 };
 
-Contact.path = '/contact';
+Contact.path = '/contact?';
 
 Contact.metadata = {
   title: 'Contact',

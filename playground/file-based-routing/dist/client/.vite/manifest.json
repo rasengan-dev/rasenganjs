@@ -1,46 +1,54 @@
 {
   "../../packages/rasengan-mdx/lib/index.js": {
-    "file": "assets/index-DmXVamtx.js",
+    "file": "assets/index-8NLz-1GN.js",
     "name": "index",
     "src": "../../packages/rasengan-mdx/lib/index.js",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-DAQpAcEA.js"
+      "_vendor-CbTaxVRS.js"
     ]
   },
-  "_page-index-XOAD-EmU.js": {
-    "file": "assets/page-index-XOAD-EmU.js",
+  "_page-_id_-DGUDB2r1.js": {
+    "file": "assets/page-_id_-DGUDB2r1.js",
+    "name": "page-_id_",
+    "imports": [
+      "_vendor-CbTaxVRS.js"
+    ]
+  },
+  "_page-index-Cq-PL6iK.js": {
+    "file": "assets/page-index-Cq-PL6iK.js",
     "name": "page-index",
     "imports": [
-      "_vendor-DAQpAcEA.js"
+      "_vendor-CbTaxVRS.js"
     ]
   },
-  "_page-signin--4d4tlDW.js": {
-    "file": "assets/page-signin--4d4tlDW.js",
+  "_page-signin-8E7ekKzl.js": {
+    "file": "assets/page-signin-8E7ekKzl.js",
     "name": "page-signin",
     "imports": [
-      "_vendor-DAQpAcEA.js"
+      "_vendor-CbTaxVRS.js"
     ]
   },
-  "_vendor-DAQpAcEA.js": {
-    "file": "assets/vendor-DAQpAcEA.js",
+  "_vendor-CbTaxVRS.js": {
+    "file": "assets/vendor-CbTaxVRS.js",
     "name": "vendor"
   },
   "src/index.ts": {
-    "file": "assets/index-CuiqHVc4.js",
+    "file": "assets/index-DugFdNcm.js",
     "name": "index",
     "src": "src/index.ts",
     "isEntry": true,
     "imports": [
-      "_vendor-DAQpAcEA.js",
-      "_page-index-XOAD-EmU.js",
-      "_page-signin--4d4tlDW.js"
+      "_vendor-CbTaxVRS.js",
+      "_page-index-Cq-PL6iK.js",
+      "_page-signin-8E7ekKzl.js",
+      "_page-_id_-DGUDB2r1.js"
     ],
     "dynamicImports": [
       "../../packages/rasengan-mdx/lib/index.js"
     ],
     "css": [
-      "assets/index-CYtBea_7.css"
+      "assets/index-B68OoCh3.css"
     ]
   }
 }

@@ -5,6 +5,8 @@ import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
 import { resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
+import { createVirtualModule } from '../../server/virtual/index.js';
+import { pathToFileURL } from 'url';
 
 function loadRasenganGlobal(): Plugin {
   return {
@@ -79,19 +81,50 @@ function rasenganConfigPlugin(): Plugin {
   };
 }
 
+function flatRoutesPlugin(): Plugin {
+  const { id: virtualModuleId, resolvedId } = createVirtualModule('router');
+
+  return {
+    name: 'vite-plugin-rasengan-router',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedId) {
+        return `
+          import { flatRoutes } from 'rasengan';
+
+          const Router = flatRoutes(() => {
+            return import.meta.glob(
+              [
+                '/src/app/_routes/**/layout.{js,ts,jsx,tsx}',
+                '/src/app/_routes/**/*.page.{md,mdx,js,ts,jsx,tsx}',
+              ],
+              { eager: true }
+            );
+          });
+
+          export default Router;
+        `;
+      }
+    },
+  };
+}
+
 function buildOutputInformation(): Plugin {
-  const virtualModuleId = 'virtual:rasengan-build-info';
-  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+  const { id: virtualModuleId, resolvedId } = createVirtualModule('build-info');
 
   return {
     name: 'vite-plugin-rasengan-build-info',
     resolveId(id: string) {
       if (id === virtualModuleId) {
-        return resolvedVirtualModuleId;
+        return resolvedId;
       }
     },
     async load(id: string) {
-      if (id === resolvedVirtualModuleId) {
+      if (id === resolvedId) {
         return `
           export const resolveBuildOptions = (buildPath) => {
             return {
@@ -106,6 +139,23 @@ function buildOutputInformation(): Plugin {
     },
   };
 }
+
+/**
+ * This plugin is responsible for fixing the path of the C drive on Windows.
+ */
+const fixCPathPlugin = (): Plugin => {
+  return {
+    name: 'vite-plugin-rasengan-fix-c-path',
+    resolveId(source) {
+      if (/^c:[\\/]/i.test(source)) {
+        const fullPath = path.resolve(source.replace(/^c:/i, 'C:'));
+        return pathToFileURL(fullPath).href;
+      }
+      return null;
+    },
+    enforce: 'pre',
+  };
+};
 
 export const Adapters = {
   VERCEL: 'vercel',
@@ -125,9 +175,14 @@ type RasenganPluginOptions = {
   adapter?: AdapterConfig;
 };
 
+/**
+ * This plugin is responsible for building the app.
+ * @param param0
+ * @returns
+ */
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
-}: RasenganPluginOptions): Plugin {
+}: RasenganPluginOptions = {}): Plugin {
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
 
@@ -254,4 +309,8 @@ const prepareToDeploy = async (adapter: AdapterConfig): Promise<void> => {
   }
 };
 
-export const plugins: Plugin[] = [loadRasenganGlobal()];
+export const plugins: Plugin[] = [
+  // fixCPathPlugin(),
+  loadRasenganGlobal(),
+  flatRoutesPlugin(),
+];

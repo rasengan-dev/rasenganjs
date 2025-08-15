@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig({
-  // ssr: false,
+  ssr: false,
   vite: {
     plugins: [
       mdx(),
@@ -14,5 +14,15 @@ export default defineConfig({
         adapter: configure({}),
       }),
     ],
+  },
+
+  redirects: () => {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: true,
+      },
+    ];
   },
 });

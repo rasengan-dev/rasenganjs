@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug to help us improve RasenganJS
+about: Report a bug to help us improve Rasengan.js
 title: '[BUG] - <short description of the bug>'
 labels: bug
 assignees: ''
