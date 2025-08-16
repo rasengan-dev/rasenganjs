@@ -95,7 +95,7 @@ export const convertMDXPageToPageComponent = async (
 
 export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
   // Check if page is a MDX Page Component or not
-  if (page.name === 'MDXContent') {
+  if (page.type === 'MDXPageComponent') {
     return true;
   }
 

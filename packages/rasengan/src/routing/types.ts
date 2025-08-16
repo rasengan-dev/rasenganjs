@@ -203,6 +203,11 @@ export type PageComponent<T = ReactComponentProps> = LayoutComponent<T> & {
    * Metadata for the page omit title
    */
   metadata?: Metadata;
+
+  /**
+   * Type of the page
+   */
+  type?: string;
 };
 
 /**
@@ -219,6 +224,7 @@ export type MDXPageComponent = FunctionComponent & {
     path?: string;
     metadata?: Metadata;
   };
+  type?: string;
 };
 
 /**
