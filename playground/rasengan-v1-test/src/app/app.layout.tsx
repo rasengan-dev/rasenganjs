@@ -8,8 +8,6 @@ const AppLayout: LayoutComponent = () => {
   const { data } = fetcher;
   const match = useMatch('/');
 
-  console.log({ fetcherData: data, fetcher, match });
-
   return (
     <section className="w-full bg-white font-inter overflow-auto h-screen dark">
       <header className="border-b-[1px] border-b-[#222] h-[60px] w-full bg-black fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-2">
