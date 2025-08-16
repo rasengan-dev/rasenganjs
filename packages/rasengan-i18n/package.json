@@ -15,6 +15,9 @@
       "types": "./lib/plugin.d.ts",
       "import": "./lib/plugin.js",
       "require": "./lib/plugin.js"
+    },
+    "./types/client": {
+      "types": "./types/client.d.ts"
     }
   },
   "author": {
