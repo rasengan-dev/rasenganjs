@@ -51,16 +51,16 @@ importers:
         version: 1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2)
       '@rasenganjs/serve':
         specifier: ^1.0.0
-        version: 1.0.1(rasengan@1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))
+        version: 1.0.1(rasengan@1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))
       '@rasenganjs/theme':
         specifier: ^1.0.1
         version: 1.0.1(react@19.1.0)
       '@rasenganjs/vercel':
         specifier: ^1.0.0
-        version: 1.0.0(rasengan@1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))
+        version: 1.0.0(rasengan@1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))
       '@tailwindcss/vite':
         specifier: ^4.*
-        version: 4.1.8(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+        version: 4.1.8(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
       '@vercel/analytics':
         specifier: ^1.5.0
         version: 1.5.0(react@19.1.0)
@@ -74,8 +74,8 @@ importers:
         specifier: ^12.4.10
         version: 12.15.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rasengan:
-        specifier: ^1.0.0
-        version: 1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+        specifier: ^1.1.0
+        version: 1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -108,8 +108,8 @@ importers:
         specifier: ^5.1.3
         version: 5.8.3
       vite:
-        specifier: ^6.2.6
-        version: 6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
+        specifier: ^7.0.0
+        version: 7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
 
   examples/shadcn-js:
     dependencies:
@@ -2987,31 +2987,6 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  rasengan@1.0.0:
-    resolution: {integrity: sha512-Kok4ci3KCWpqLApYXoeRqjjHpjnH2uZw6Dqv/uBiYNp0c332Gp90x0GLJhXSljCmfJo8ZJFo5etGRNSEiMDbJA==}
-    engines: {node: '>=20.13.1'}
-    hasBin: true
-    peerDependencies:
-      '@rasenganjs/mdx': ^1.1.1
-      '@types/node': ^18.0.0 || >=20.0.0
-      less: '*'
-      react: ^19.0.0
-      react-dom: ^19.0.0
-      sass: '*'
-      stylus: '*'
-      vite: ^6.0.0
-    peerDependenciesMeta:
-      '@rasenganjs/mdx':
-        optional: true
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-
   rasengan@1.1.0:
     resolution: {integrity: sha512-d67KfHCd1LvCV56ju4FOnOcL21ps8XqXU4ad2E9boGrGLTKyx9xVfmilZ4koLV3fopW2vWMaOFH9eVdkkKn7Wg==}
     engines: {node: '>=20.13.1'}
@@ -4049,14 +4024,14 @@ snapshots:
       - supports-color
     optional: true
 
-  '@rasenganjs/serve@1.0.1(rasengan@1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))':
+  '@rasenganjs/serve@1.0.1(rasengan@1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))':
     dependencies:
       chalk: 5.4.1
       compression: 1.8.0
       express: 4.21.2
       get-port: 7.1.0
       morgan: 1.10.0
-      rasengan: 1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+      rasengan: 1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - supports-color
@@ -4077,10 +4052,10 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  '@rasenganjs/vercel@1.0.0(rasengan@1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))':
+  '@rasenganjs/vercel@1.0.0(rasengan@1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)))':
     dependencies:
       execa: 8.0.1
-      rasengan: 1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+      rasengan: 1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
 
   '@rolldown/pluginutils@1.0.0-beta.9': {}
 
@@ -4473,18 +4448,6 @@ snapshots:
   '@vercel/analytics@1.5.0(react@19.1.0)':
     optionalDependencies:
       react: 19.1.0
-
-  '@vitejs/plugin-react@4.5.0(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))':
-    dependencies:
-      '@babel/core': 7.27.3
-      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.3)
-      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.27.3)
-      '@rolldown/pluginutils': 1.0.0-beta.9
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.17.0
-      vite: 6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
-    transitivePeerDependencies:
-      - supports-color
 
   '@vitejs/plugin-react@4.5.0(vite@7.1.2(@types/node@20.17.52)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))':
     dependencies:
@@ -6237,9 +6200,9 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  rasengan@1.0.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)):
+  rasengan@1.1.0(@rasenganjs/mdx@1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)):
     dependencies:
-      '@vitejs/plugin-react': 4.5.0(vite@6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.0(vite@7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0))
       chalk: 5.4.1
       commander: 11.1.0
       compression: 1.8.0
@@ -6251,7 +6214,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       react-router: 7.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      vite: 6.3.5(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
+      vite: 7.1.2(@types/node@24.3.0)(jiti@2.4.2)(less@4.3.0)(lightningcss@1.30.1)(sass@1.89.0)(stylus@0.64.0)(tsx@4.19.4)(yaml@2.8.0)
     optionalDependencies:
       '@rasenganjs/mdx': 1.1.1(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.46.2)
       '@types/node': 24.3.0
