@@ -1,0 +1,23 @@
+{
+  "translation": {
+    "header": {
+      "poweredBy": "Powered by"
+    },
+    "main": {
+      "welcome": "Welcome to",
+      "action": "To get started, edit the file",
+      "documentation": "Documentation",
+      "documentationDescription": "Find in-depth information about Rasengan features and API.",
+      "readTheDocs": "Read the Docs",
+      "learn": "Learn",
+      "learnDescription": "Learn about Rasengan in an interactive course with quizzes!",
+      "takeTheCourse": "Take the Course",
+      "examples": "Examples",
+      "examplesDescription": "Discover and deploy boilerplate example Rasengan projects.",
+      "viewExamples": "View Examples",
+      "community": "Community",
+      "communityDescription": "Join our community to ask questions, share knowledge, and collaborate on projects.",
+      "joinTheCommunity": "Join the Community"
+    }
+  }
+}

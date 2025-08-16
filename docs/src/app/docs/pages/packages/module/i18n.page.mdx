@@ -20,7 +20,7 @@ The `@rasenganjs/i18n` makes it easy to add internationalization (i18n) to your 
 ## Installation
 
 ```bash title="Terminal"
-npm install @rasenganjs/i18n@1.0.0-beta.1
+npm install @rasenganjs/i18n@1.0.0-beta.3
 ```
 
 ## Usage
@@ -81,25 +81,37 @@ You have to register the `RasenganI18nProvider` component at the root of your ap
 ```tsx title="src/app/app.layout.tsx" showLineNumbers
 import { LayoutComponent, Outlet } from 'rasengan';
 import { RasenganI18nProvider } from '@rasenganjs/i18n';
+import i18n from 'virtual:rasengan/i18n';
 
 const RootLayout: LayoutComponent = () => {
   return (
-    <RasenganI18nProvider>
+    <RasenganI18nProvider i18n={i18n}>
       <Outlet />
     </RasenganI18nProvider>
   );
 }
 
-RootLayout.path = '/'; // Only work while using a Config-based routing
+RootLayout.path = '/:locale?'; // Only work while using a Config-based routing
 
 export default RootLayout;
 ```
+
+If you prefere using the `file-based routing` feature, you have to put your RootLayout inside the `src/app/_routes/[_locale]/layout.tsx` file.
+
+This is recommended because the `@rasenganjs/i18n` package will automatically detect the current `locale` from the url.
 
 <AlertWithDescription 
   status="warning"
   title="Warning"
   description="Don't wrap your application with the `RasenganI18nProvider` inside the `main.tsx` file, prefer to wrap it inside the root layout file."
 />
+
+If you are using `TypeScript`, you have to configure types into the `rasengan-env.d.ts` file. This will add the types support for the virtual modules `virtual:rasengan/i18n`.
+
+```ts title="rasengan-env.d.ts" showLineNumbers {2}
+/// <reference types="rasengan/types/client" />
+/// <reference types="@rasenganjs/i18n/types/client" />
+```
 
 ### Hooks
 

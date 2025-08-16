@@ -1,70 +1,37 @@
+import I18nContext from '../contexts/index.js';
 import { useEffect, useState, ReactNode } from 'react';
-import ThemeContext from '../contexts/themes.js';
-import { Themes, ThemesType } from '../types/index.js';
-import { usePreferredColorScheme } from '../hooks/useColorScheme.js';
-import { loadSavedTheme, saveTheme } from '../utils/index.js';
+import { useParams } from 'rasengan';
+import { I18nConfig, Resources } from '../types/index.js';
 
 interface Props {
   children: ReactNode;
+  i18n: {
+    resources: Resources;
+    config: I18nConfig;
+    locales: string[];
+  };
 }
 
-export default function Provider({ children }: Props) {
-  const [theme, setTheme] = useState<{
-    value: ThemesType | null;
-    actual: 'light' | 'dark' | null;
-    isDark: boolean;
-  }>({
-    value: null,
-    actual: null,
-    isDark: false,
-  });
+export function RasenganI18nProvider({ children, i18n }: Props) {
+  const { locale: defaultLocale } = useParams();
+  const [locale, setLocale] = useState(i18n.config.defaultLocale);
 
-  // Get prefered colors scheme
-  const preferedTheme = usePreferredColorScheme();
-
-  // Effects
   useEffect(() => {
-    (() => {
-      const savedTheme = loadSavedTheme() as ThemesType | null;
-
-      if (savedTheme) {
-        setTheme({
-          value: savedTheme,
-          actual: savedTheme === Themes.system ? preferedTheme : savedTheme,
-          isDark: preferedTheme === Themes.dark,
-        });
-      } else {
-        setTheme({
-          value: Themes.system,
-          actual: preferedTheme,
-          isDark: preferedTheme === Themes.dark,
-        });
-      }
-    })();
-  }, [preferedTheme]);
-
-  // Handlers
-  const handleSetTheme = (theme: ThemesType) => {
-    setTheme({
-      value: theme,
-      actual: theme === Themes.system ? preferedTheme : theme,
-      isDark: preferedTheme === Themes.dark,
-    });
-
-    // Save theme
-    saveTheme(theme);
-  };
+    if (defaultLocale && i18n.locales.includes(defaultLocale)) {
+      setLocale(defaultLocale);
+    }
+  }, [defaultLocale]);
 
   return (
-    <ThemeContext.Provider
+    <I18nContext
       value={{
-        theme: theme.value,
-        actualTheme: theme.actual,
-        isDark: theme.actual === 'dark',
-        setTheme: handleSetTheme,
+        locale,
+        locales: i18n.locales,
+        resources: i18n.resources,
+        setLocale,
       }}
     >
       {children}
-    </ThemeContext.Provider>
+    </I18nContext>
   );
 }

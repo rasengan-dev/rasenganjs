@@ -1,0 +1,23 @@
+{
+  "translation": {
+    "header": {
+      "poweredBy": "Propulsé par"
+    },
+    "main": {
+      "welcome": "Bienvenue sur",
+      "action": "Pour commencer, éditez le fichier",
+      "documentation": "Documentation",
+      "documentationDescription": "Trouvez des informations approfondies sur les fonctionnalités et l'API de Rasengan.",
+      "readTheDocs": "Lire la documentation",
+      "learn": "Apprentissage",
+      "learnDescription": "Apprenez à utiliser Rasengan avec un cours interactif et des quiz!",
+      "takeTheCourse": "Prenez le cours",
+      "examples": "Exemples",
+      "examplesDescription": "Découvrez et déployez des exemples de projets Rasengan.",
+      "viewExamples": "Voir les exemples",
+      "community": "Communauté",
+      "communityDescription": "Rejoignez notre communauté pour poser des questions, partager vos connaissances, et collaborer sur des projets.",
+      "joinTheCommunity": "Rejoignez la communauté"
+    }
+  }
+}

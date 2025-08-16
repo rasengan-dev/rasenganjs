@@ -1,10 +1,8 @@
-# Rasengan Theme
+# Rasengan I18n
 
 [![npm version](https://badge.fury.io/js/@rasenganjs%2Fi18n.svg)](https://badge.fury.io/js/@rasenganjs%2Fi18n)
 ![NPM Downloads](https://img.shields.io/npm/dm/%40rasenganjs%2Fi18n)
 [![GitHub license](https://img.shields.io/github/license/rasengan-dev/rasengan-i18n)](https://github.com/rasengan-dev/rasengan-i18n/blob/main/LICENSE)
-
-# Rasengan I18n
 
 The `@rasenganjs/i18n` makes it easy to add internationalization (i18n) to your Rasengan.js applications. It lets you manage translations using simple, static JSON files—keeping your localization workflow clear, fast, and scalable.
 
