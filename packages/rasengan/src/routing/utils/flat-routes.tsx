@@ -113,9 +113,9 @@ function generateSkeletonTree(
       if (!(segment.startsWith('(') && segment.endsWith(')'))) {
         fullPath += '/' + segment;
       } else {
-        // if (fullPath === '') {
-        //   fullPath = '/';
-        // }
+        if (fullPath === '') {
+          fullPath = '/';
+        }
       }
 
       const existing = tmpLevel.find((n) => n.segment === segment);
@@ -473,6 +473,8 @@ export async function flatRoutes(fn: () => Record<string, Module>) {
     return router;
   } catch (error) {
     console.error(error);
+
+    throw error;
 
     // TODO: Handle error
   }
