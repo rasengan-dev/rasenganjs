@@ -39,6 +39,11 @@ sourceMapSupport.install({
 
 run();
 
+/**
+ * Parse a number from a string
+ * @param raw
+ * @returns
+ */
 function parseNumber(raw?: string) {
   if (raw === undefined) return undefined;
   let maybe = Number(raw);
@@ -46,8 +51,22 @@ function parseNumber(raw?: string) {
   return maybe;
 }
 
+/**
+ * Parse the port from the arguments
+ * @param args
+ * @returns
+ */
+function parsePortFromArgs(args: string[]) {
+  const portArg = args.find((arg) => arg === '-p');
+  if (!portArg) return undefined;
+  const port = args[args.indexOf(portArg) + 1];
+  return parseNumber(port);
+}
+
 async function run() {
-  let port = parseNumber(process.env.PORT) ?? (await getPort({ port: 4320 }));
+  let portArg = parsePortFromArgs(process.argv);
+  let port =
+    portArg ?? parseNumber(process.env.PORT) ?? (await getPort({ port: 4320 }));
 
   let buildPathArg = process.argv[2];
 
@@ -85,7 +104,7 @@ async function run() {
         `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}\n`)}`
       );
       console.log(
-        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}`)}`
+        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}\n`)}`
       );
     } else {
       console.log(
@@ -95,7 +114,7 @@ async function run() {
         `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}`)}`
       );
       console.log(
-        `${chalk.bold('- Network:')}  ${chalk.blue(`http://${address}:${port}`)}`
+        `${chalk.bold('- Network:')}  ${chalk.blue(`http://${address}:${port}\n`)}`
       );
     }
   };
@@ -103,7 +122,11 @@ async function run() {
   let app = express();
   app.disable('x-powered-by');
   app.use(compression());
-  app.use(morgan('tiny'));
+  app.use(
+    morgan(
+      '[:date[web]]: :method :url :status :res[content-length] - :response-time ms'
+    )
+  );
   // ssr assets
   app.use(
     path.posix.join('/assets'),
