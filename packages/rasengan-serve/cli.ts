@@ -57,7 +57,7 @@ function parseNumber(raw?: string) {
  * @returns
  */
 function parsePortFromArgs(args: string[]) {
-  const portArg = args.find((arg) => arg === '-p');
+  const portArg = args.find((arg) => arg === '-p' || arg === '--port');
   if (!portArg) return undefined;
   const port = args[args.indexOf(portArg) + 1];
   return parseNumber(port);

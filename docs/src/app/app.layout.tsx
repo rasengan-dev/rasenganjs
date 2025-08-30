@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { NavigationData } from '@/data/docs';
 import { X } from 'lucide-react';
 import ThemeButton from '@/components/atoms/buttons/theme-button';
+import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
 
 const AppLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
@@ -16,23 +17,27 @@ const AppLayout: LayoutComponent = () => {
   const pathname = location.pathname;
 
   // Scroll to the top on route change
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  // useEffect(() => {
+  //   if (typeof window === 'undefined') return;
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  }, [pathname]);
+  //   window.scrollTo({
+  //     top: 0,
+  //     behavior: 'smooth',
+  //   });
+  // }, [pathname]);
 
   return (
     <section
       className={twMerge(
-        'w-full h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
+        'w-screen min-h-screen overflow-y-auto overflow-x-hidden bg-background font-lexend-light text-foreground',
         isDark ? 'dark' : ''
       )}
     >
-      <Outlet />
+      <ScrollRestoration />
+
+      <div className="w-screen lh-screen">
+        <Outlet />
+      </div>
 
       <AnimatePresence>
         {isOpen && (

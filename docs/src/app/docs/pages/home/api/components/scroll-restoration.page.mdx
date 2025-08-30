@@ -1,0 +1,129 @@
+---
+path: scroll-restoration
+metadata:
+  title: ScrollRestoration - Components | API Reference | Rasengan.js
+  description: ScrollRestoration is a special component that is used to restore the scroll position of the current page.
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+import Tabs from '@/components/molecules/tab';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# ScrollRestoration
+
+The `ScrollRestoration` React component is a special component that is used to restore the scroll position of the current page.
+
+By default, the scroll position is not well resotored because of the client side navigation. The scroll position is tracked and maintained for all the pages of your website.
+
+This means, if you are on page 2 and you scroll down, and then you navigate to page 3, the scroll position will be restored to the position you were on page 2. That's why the `ScrollRestoration` component is useful.
+
+## Usage 
+
+The `ScrollRestoration` component is a functional that you have to put where you want to restore the scroll position, generally in your root layout.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.layout.tsx" showLineNumbers copy /ScrollRestoration/ {6}
+    import { LayoutComponent, Outlet, ScrollRestoration } from "rasengan";
+    
+    const AppLayout: LayoutComponent = () => {
+      return (
+        <div>
+          <ScrollRestoration />
+
+          <header>
+            <h1>Header</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    };
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.layout.jsx" showLineNumbers copy /ScrollRestoration/ {6}
+    import { Outlet, ScrollRestoration } from "rasengan";
+    
+    const AppLayout = () => {
+      return (
+        <div>
+          <ScrollRestoration />
+
+          <header>
+            <h1>Header</h1>
+          </header>
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      );
+    };
+
+    AppLayout.path = "/";
+
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+<br />
+
+## Props
+
+### `alwaysToTop`
+
+By default, the `ScrollRestoration` component will keep track of the scroll position of the current page and restore it when the page is reloaded.
+
+But, you can configure your `ScrollRestoration` component to restore the scroll position to the top of the page.
+
+```tsx title="scroll-restoration"
+import { ScrollRestoration } from "rasengan";
+
+// Usage
+<ScrollRestoration alwaysToTop />
+```
+
+### `target`
+
+The `target` prop is used to specify the element in which the scroll position will be restored. If not specified, the scroll position will be applied to the `window`.
+
+```tsx title="scroll-restoration"
+import { ScrollRestoration } from "rasengan";
+
+// Usage
+export const ScrollRestorationExample = () => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <ScrollRestoration target={ref} />
+      <div ref={ref}>
+        <h1>ScrollRestoration Example</h1>
+        <p>Scroll down and navigate to another page, then navigate back to this page. The scroll position will be restored.</p>
+      </div>
+    </>
+  );
+}
+```
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/components/router-component',
+    label: 'Router Component',
+  }}
+  next={{
+    href: '/docs/api-reference/functions/define-config',
+    label: 'defineConfig',
+  }}
+/>

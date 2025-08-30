@@ -308,6 +308,12 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               link: '/docs/api-reference/components/router-component',
               level: 3,
             },
+            {
+              id: randomId(),
+              name: 'ScrollRestoration',
+              link: '/docs/api-reference/components/scroll-restoration',
+              level: 3,
+            },
           ],
         },
         {
