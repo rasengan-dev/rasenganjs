@@ -313,6 +313,7 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'ScrollRestoration',
               link: '/docs/api-reference/components/scroll-restoration',
               level: 3,
+              isNew: true,
             },
           ],
         },

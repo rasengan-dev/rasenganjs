@@ -15,6 +15,18 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Rasengan v1.1.3 - Introducing ScrollRestoration',
+    description: `
+      We are publishing Rasengan v1.1.3, a new version of the framework that introduces you the ScrollRestoration component.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'August 30, 2025',
+    link: '/blog/rasengan-v1-1-3',
+    image: '/assets/blog/rasengan-1.1.3.png',
+    readingTime: '2 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan v1.1.0 - Introducing file-based routing',
     description: `
       We are publishing Rasengan v1.1.0, a new version of the framework that introduces you the file-based routing feature.
