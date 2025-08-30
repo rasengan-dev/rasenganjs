@@ -7,13 +7,40 @@ import {
 } from 'react-router';
 import { RasenganPageComponentProps } from '../types.js';
 
+// Extract the environment variables
+const extractEnv = () => {
+  try {
+    const env = import.meta.env;
+
+    if (!env)
+      return {
+        DEV: false,
+        PROD: true,
+        TEST: false,
+      };
+
+    return {
+      DEV: env.DEV,
+      PROD: env.PROD,
+      TEST: env.TEST,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      DEV: false,
+      PROD: true,
+      TEST: false,
+    };
+  }
+};
+
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
  * @returns
  */
 export function ErrorBoundary() {
-  const { DEV } = import.meta.env;
-  console.log(import.meta.env);
+  const { DEV } = extractEnv();
 
   let error = useRouteError();
 
@@ -49,17 +76,50 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <>
-        <p>Application Error</p>
-        <h1>
+      <section
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw',
+          gap: 10,
+          backgroundColor: '#fff',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '18px',
+          }}
+        >
+          Application Error
+        </p>
+        <h1
+          style={{
+            fontSize: '18px',
+          }}
+        >
           {error.status} {error.statusText}
         </h1>
-        <p>{error.data}</p>
-      </>
+        <p
+          style={{
+            fontSize: '18px',
+          }}
+        >
+          {error.data}
+        </p>
+      </section>
     );
   } else if (error instanceof Error) {
     return (
-      <div
+      <section
         style={{
           position: 'fixed',
           top: 0,
@@ -126,7 +186,7 @@ export function ErrorBoundary() {
             {error.stack}
           </pre>
         </div>
-      </div>
+      </section>
     );
   } else {
     return <h1>Unknown Error</h1>;

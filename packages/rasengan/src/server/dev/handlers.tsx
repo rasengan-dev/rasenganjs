@@ -109,6 +109,23 @@ export async function handleDocumentRequest(
 
       const headers = extractHeadersFromRRContext(context);
 
+      // const route = await handler.queryRoute(request, {
+      //   requestContext: context,
+      // });
+
+      // // TODO: Check this line again
+      // if (route['meta']?.title === 'Not Found') {
+      //   // Set headers
+      //   res.writeHead(404, {
+      //     ...Object.fromEntries(headers),
+      //   });
+      // } else {
+      //   // Set headers
+      //   res.writeHead(context.statusCode, {
+      //     ...Object.fromEntries(headers),
+      //   });
+      // }
+
       // Set headers
       res.writeHead(context.statusCode, {
         ...Object.fromEntries(headers),
