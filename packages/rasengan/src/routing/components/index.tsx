@@ -2,18 +2,47 @@ import {
   isRouteErrorResponse,
   Link,
   LinkProps,
+  useLocation,
   useParams,
   useRouteError,
 } from 'react-router';
+import { useEffect, useRef } from 'react';
 import { RasenganPageComponentProps } from '../types.js';
+
+// Extract the environment variables
+const extractEnv = () => {
+  try {
+    const env = import.meta.env;
+
+    if (!env)
+      return {
+        DEV: false,
+        PROD: true,
+        TEST: false,
+      };
+
+    return {
+      DEV: env.DEV,
+      PROD: env.PROD,
+      TEST: env.TEST,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      DEV: false,
+      PROD: true,
+      TEST: false,
+    };
+  }
+};
 
 /**
  * Error boundary component that will be displayed if an error occurs during a routing
  * @returns
  */
 export function ErrorBoundary() {
-  const { DEV } = import.meta.env;
-  console.log(import.meta.env);
+  const { DEV } = extractEnv();
 
   let error = useRouteError();
 
@@ -49,17 +78,50 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <>
-        <p>Application Error</p>
-        <h1>
+      <section
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw',
+          gap: 10,
+          backgroundColor: '#fff',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '18px',
+          }}
+        >
+          Application Error
+        </p>
+        <h1
+          style={{
+            fontSize: '18px',
+          }}
+        >
           {error.status} {error.statusText}
         </h1>
-        <p>{error.data}</p>
-      </>
+        <p
+          style={{
+            fontSize: '18px',
+          }}
+        >
+          {error.data}
+        </p>
+      </section>
     );
   } else if (error instanceof Error) {
     return (
-      <div
+      <section
         style={{
           position: 'fixed',
           top: 0,
@@ -126,7 +188,7 @@ export function ErrorBoundary() {
             {error.stack}
           </pre>
         </div>
-      </div>
+      </section>
     );
   } else {
     return <h1>Unknown Error</h1>;
@@ -224,3 +286,56 @@ export const CustomLink = (props: LinkProps) => {
     </Link>
   );
 };
+
+// Store scroll positions globally (per location.key)
+const scrollPositions: Record<string, number> = {};
+
+type Props = {
+  alwaysToTop?: boolean;
+  target?: React.RefObject<HTMLElement | null>;
+};
+
+/**
+ * Scroll restoration component
+ * @param {Props} props
+ * @returns
+ */
+export function ScrollRestoration({ alwaysToTop = false, target }: Props) {
+  const location = useLocation();
+  const pathnameRef = useRef(location.pathname);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const prevPathname = pathnameRef.current;
+    const el = target?.current; // easier to reference
+
+    if (alwaysToTop) {
+      if (el) {
+        el.scrollTo(0, 0);
+      } else {
+        window.scrollTo(0, 0);
+      }
+      pathnameRef.current = location.pathname;
+      return;
+    }
+
+    // Save scroll position of the previous page
+    if (prevPathname) {
+      scrollPositions[prevPathname] = el ? el.scrollTop : window.scrollY;
+    }
+
+    // Restore scroll position of the new page (default to 0 if not stored)
+    const storedY = scrollPositions[location.pathname] ?? 0;
+    if (el) {
+      el.scrollTo(0, storedY);
+    } else {
+      window.scrollTo(0, storedY);
+    }
+
+    // Update ref
+    pathnameRef.current = location.pathname;
+  }, [location.pathname, target?.current]); // depend on target.current
+
+  return null;
+}

@@ -2,28 +2,31 @@ import Navbar from '@/components/layout/navbar';
 import { Outlet, LayoutComponent, useLocation } from 'rasengan';
 import SidebarNavigation from './components/layout/sidebar';
 import Footer from '@/components/layout/footer';
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import { AlignJustify } from 'lucide-react';
 import ThemeButton from '@/components/atoms/buttons/theme-button';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
+import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
 
 const DocsLayout: LayoutComponent = () => {
   const { hash } = useLocation();
   const { isDark } = useTheme();
 
+  const targetRef = useRef<HTMLElement>(null);
+
   const [navigationOpen, setNavigationOpen] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  // useEffect(() => {
+  //   if (typeof window === 'undefined') return;
 
-    if (hash) {
-      // smooth scroll to the anchor
-      const element = document.getElementById(hash.slice(1));
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+  //   if (hash) {
+  //     // smooth scroll to the anchor
+  //     const element = document.getElementById(hash.slice(1));
+  //     element?.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, []);
 
   return (
     <section
@@ -31,7 +34,9 @@ const DocsLayout: LayoutComponent = () => {
         'docs w-full h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
         isDark ? 'dark' : ''
       )}
+      ref={targetRef}
     >
+      <ScrollRestoration target={targetRef} />
       <Navbar />
 
       <div className="fixed z-30 top-[60px] w-full h-[50px] flex lg:hidden items-center justify-between px-4 lg:px-6 bg-background text-foreground border-b-[1px] border-b-border">

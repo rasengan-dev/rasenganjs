@@ -1,4 +1,4 @@
-import { CustomLink } from './components/index.js';
+import { CustomLink, ScrollRestoration } from './components/index.js';
 
 export type {
   Metadata,
@@ -15,7 +15,6 @@ export { defineRouter, defineRoutesGroup, flatRoutes } from './utils/index.js';
 export { RouterComponent } from './interfaces.js';
 export {
   Outlet,
-  ScrollRestoration,
   useLocation,
   useNavigate,
   useNavigation,
@@ -32,4 +31,4 @@ export {
   Navigate,
   NavLink,
 } from 'react-router';
-export { CustomLink as Link };
+export { CustomLink as Link, ScrollRestoration };

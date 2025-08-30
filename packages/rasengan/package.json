@@ -87,7 +87,7 @@
     "less": "*",
     "sass": "*",
     "stylus": "*",
-    "vite": "^7.0.0"
+    "vite": "^6.3.0 || ^7.0.0"
   },
   "peerDependenciesMeta": {
     "@types/node": {

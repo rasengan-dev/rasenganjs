@@ -5,7 +5,7 @@ import { PageComponent } from 'rasengan';
 
 const Showcase: PageComponent = () => {
   return (
-    <section className="w-full min-h-screen">
+    <section className="w-full h-full">
       <section className="grid-section relative px-4 xl:px-20 py-20 pt-40 overflow-hidden">
         <Heading
           title="Showcase"

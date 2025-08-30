@@ -105,7 +105,7 @@ html {
   padding: 0;
   width: 100vw;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .grid-section {
