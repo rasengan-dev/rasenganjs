@@ -1,5 +1,5 @@
 import Navbar from '@/components/layout/navbar';
-import { Outlet, LayoutComponent, useLocation } from 'rasengan';
+import { Outlet, LayoutComponent } from 'rasengan';
 import SidebarNavigation from './components/layout/sidebar';
 import Footer from '@/components/layout/footer';
 import { useState, useRef } from 'react';
@@ -11,22 +11,11 @@ import { twMerge } from 'tailwind-merge';
 import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
 
 const DocsLayout: LayoutComponent = () => {
-  const { hash } = useLocation();
   const { isDark } = useTheme();
 
   const targetRef = useRef<HTMLElement>(null);
 
   const [navigationOpen, setNavigationOpen] = useState(false);
-
-  // useEffect(() => {
-  //   if (typeof window === 'undefined') return;
-
-  //   if (hash) {
-  //     // smooth scroll to the anchor
-  //     const element = document.getElementById(hash.slice(1));
-  //     element?.scrollIntoView({ behavior: 'smooth' });
-  //   }
-  // }, []);
 
   return (
     <section
