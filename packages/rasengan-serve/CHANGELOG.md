@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.1.0 (2025-08-30)
+
 ## 1.0.1 (2025-04-26)
 
 - Style: Properly display server information in build output [a2c833b](https://github.com/rasengan-dev/rasenganjs/a2c833ba29f8976929baf4a35b06f530a9355d5e)
