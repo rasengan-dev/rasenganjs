@@ -14,5 +14,13 @@ const metadata = {
 };
 
 Company.metadata = metadata;
+Company.loader = async () => {
+  console.log({ message: 'Loader function called from company page' });
+
+  return {
+    props: {},
+    meta: metadata,
+  };
+};
 
 export default Company;

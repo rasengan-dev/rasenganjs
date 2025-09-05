@@ -111,6 +111,7 @@ const loadMDXRenderer = async (): Promise<
 
     return MDXRenderer;
   } catch (e) {
+    console.error(e);
     throw new Error(
       'Failed to load MDXRenderer component from @rasenganjs/mdx, make sure you have installed the package'
     );

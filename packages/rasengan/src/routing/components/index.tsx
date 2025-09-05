@@ -14,12 +14,16 @@ const extractEnv = () => {
   try {
     const env = import.meta.env;
 
-    if (!env)
+    // If not env, use process.env on the server only
+    if (!env) {
+      const serverEnv = process.env;
+
       return {
-        DEV: false,
-        PROD: true,
-        TEST: false,
+        DEV: serverEnv.NODE_ENV === 'development',
+        PROD: serverEnv.NODE_ENV === 'production',
+        TEST: serverEnv.NODE_ENV === 'test',
       };
+    }
 
     return {
       DEV: env.DEV,
@@ -43,6 +47,8 @@ const extractEnv = () => {
  */
 export function ErrorBoundary() {
   const { DEV } = extractEnv();
+
+  console.log({ DEV });
 
   let error = useRouteError();
 

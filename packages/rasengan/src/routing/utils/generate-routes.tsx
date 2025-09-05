@@ -1,6 +1,8 @@
 import {
+  Outlet,
   RouterProvider,
   createBrowserRouter,
+  matchRoutes,
   useLoaderData,
   useParams,
 } from 'react-router';
@@ -18,10 +20,18 @@ import {
   LoaderResponse,
   Metadata,
   MetadataWithoutTitleAndDescription,
-  MetaTag,
+  PageComponent,
+  MDXPageComponent,
 } from '../types.js';
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import MetadataProvider from '../providers/metadata.js';
+import {
+  convertMDXPageToPageComponent,
+  isMDXPage,
+  Module,
+  RouteNode,
+} from './index.js';
+import { HydrationFallback } from '../components/fallback.js';
 
 const defaultMetadata: Metadata = {
   title: 'Not Found',
@@ -34,6 +44,19 @@ const defaultMetadata: Metadata = {
  */
 export const getRouter = (routerInstance: RouterComponent) => {
   const routes = generateRoutes(routerInstance);
+
+  // Detect which routes match the current location
+  // const matches = matchRoutes(routes, window.location);
+
+  // // Preload lazy modules for the matched routes
+  // await Promise.all(
+  //   matches?.map(async (match) => {
+  //     if (match.route.lazy) {
+  //       const resolved = await match.route.lazy();
+  //       Object.assign(match.route, resolved); // patch route with real Component
+  //     }
+  //   }) ?? []
+  // );
 
   let router = createBrowserRouter(routes, {
     hydrationData: window.__staticRouterHydrationData,
@@ -225,80 +248,183 @@ const createLoaderFunction = ({
 export const generateRoutes = (
   router: RouterComponent,
   isRoot = true,
-  parentLayout: LayoutComponent | undefined = undefined
+  parentLayoutPath: string | undefined = undefined
 ) => {
   // Initialization of the list of routes
   const routes: Array<RouteObject> = [];
 
-  // Get information about the layout and the path
-  const Layout = router.layout;
+  let route: RouteObject;
+  let layoutPath: string;
 
-  const route: RouteObject = {
-    path: !isRoot
-      ? router.useParentLayout
-        ? Layout.path.replace(parentLayout.path + '/', '')
-        : Layout.path
-      : Layout.path,
-    errorElement: <ErrorBoundary />,
-    Component() {
-      // Default data
-      const defaultData = {
-        props: {},
-      };
+  // Check if the layout is coming from the file-based routing system
+  if ('source' in router.layout) {
+    const layoutNode = router.layout as RouteNode;
+    layoutPath = layoutNode.path;
 
-      // Get SSR data
-      let { props } = (useLoaderData() as LoaderResponse) || defaultData;
+    route = {
+      path: !isRoot
+        ? router.useParentLayout
+          ? layoutNode.path.replace(parentLayoutPath + '/', '')
+          : layoutNode.path
+        : layoutNode.path,
+      errorElement: <ErrorBoundary />,
+      lazy: async () => {
+        const Layout = (await layoutNode.module()).default as LayoutComponent;
 
-      // get params
-      const params = useParams();
+        if (!Layout) {
+          console.warn(
+            `Layout component is not exported by default from: ${layoutNode.source}}`
+          );
 
-      const layoutProps = {
-        ...props,
-        params,
-      };
+          return {
+            Component() {
+              return <Outlet />;
+            },
+          };
+        }
 
-      // Check if the layout is the root layout and wrap it in a MetadataProvider
-      if (isRoot || !router.useParentLayout) {
-        // Generate metadata mapping
-        const metadataMapping = generateMetadataMapping(router);
+        return {
+          Component() {
+            // Default data
+            const defaultData = {
+              props: {},
+            };
 
-        return (
-          <MetadataProvider metadataMapping={metadataMapping}>
+            // Get SSR data
+            let { props } = (useLoaderData() as LoaderResponse) || defaultData;
+
+            // get params
+            const params = useParams();
+
+            const layoutProps = {
+              ...props,
+              params,
+            };
+
+            // Check if the layout is the root layout and wrap it in a MetadataProvider
+            if (isRoot || !router.useParentLayout) {
+              // Generate metadata mapping
+              // const metadataMapping = generateMetadataMapping(router);
+
+              return (
+                // <MetadataProvider metadataMapping={metadataMapping}>
+                <Layout {...layoutProps} />
+                // </MetadataProvider>
+              );
+            }
+
+            return <Layout {...layoutProps} />;
+          },
+
+          async loader({ params, request }) {
+            // Extract metadata from the layout
+            const metadata: MetadataWithoutTitleAndDescription = {
+              openGraph: {
+                url: '',
+                image: '',
+              },
+              twitter: {
+                card: 'summary_large_image',
+                image: '',
+                title: '',
+              },
+              ...Layout.metadata,
+            };
+
+            return createLoaderFunction({
+              loader: Layout.loader,
+              metadata,
+              isLayout: true,
+            })({
+              params,
+              request,
+            });
+          },
+        };
+      },
+      children: [],
+      nested: router.useParentLayout,
+      hydrateFallbackElement: null,
+      shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+        // Only revalidate if navigating to a different route
+        return currentUrl.pathname !== nextUrl.pathname;
+      },
+    };
+  } else {
+    const Layout = router.layout as LayoutComponent;
+    layoutPath = Layout.path;
+
+    route = {
+      path: !isRoot
+        ? router.useParentLayout
+          ? layoutPath.replace(parentLayoutPath + '/', '')
+          : layoutPath
+        : layoutPath,
+      errorElement: <ErrorBoundary />,
+      Component() {
+        // Default data
+        const defaultData = {
+          props: {},
+        };
+
+        // Get SSR data
+        let { props } = (useLoaderData() as LoaderResponse) || defaultData;
+
+        // get params
+        const params = useParams();
+
+        const layoutProps = {
+          ...props,
+          params,
+        };
+
+        // Check if the layout is the root layout and wrap it in a MetadataProvider
+        if (isRoot || !router.useParentLayout) {
+          // Generate metadata mapping
+          // const metadataMapping = generateMetadataMapping(router);
+
+          return (
+            // <MetadataProvider metadataMapping={metadataMapping}>
             <Layout {...layoutProps} />
-          </MetadataProvider>
-        );
-      }
+            // </MetadataProvider>
+          );
+        }
 
-      return <Layout {...layoutProps} />;
-    },
-    async loader({ params, request }) {
-      // Extract metadata from the layout
-      const metadata: MetadataWithoutTitleAndDescription = {
-        openGraph: {
-          url: '',
-          image: '',
-        },
-        twitter: {
-          card: 'summary_large_image',
-          image: '',
-          title: '',
-        },
-        ...Layout.metadata,
-      };
+        return <Layout {...layoutProps} />;
+      },
+      async loader({ params, request }) {
+        // Extract metadata from the layout
+        const metadata: MetadataWithoutTitleAndDescription = {
+          openGraph: {
+            url: '',
+            image: '',
+          },
+          twitter: {
+            card: 'summary_large_image',
+            image: '',
+            title: '',
+          },
+          ...Layout.metadata,
+        };
 
-      return createLoaderFunction({
-        loader: Layout.loader,
-        metadata,
-        isLayout: true,
-      })({
-        params,
-        request,
-      });
-    },
-    children: [],
-    nested: router.useParentLayout,
-    hydrateFallbackElement: <></>, // TODO: Add hydration fallback
-  };
+        return createLoaderFunction({
+          loader: Layout.loader,
+          metadata,
+          isLayout: true,
+        })({
+          params,
+          request,
+        });
+      },
+      children: [],
+      nested: router.useParentLayout,
+      hydrateFallbackElement: <></>, // TODO: enable override
+      shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+        // Only revalidate if navigating to a different route
+        return currentUrl.pathname !== nextUrl.pathname;
+      },
+    };
+  }
 
   // Defining the page not found route
   if (isRoot || router.notFoundComponent) {
@@ -315,65 +441,181 @@ export const generateRoutes = (
   }
 
   // Get informations about pages
-  const pages: Array<RouteObject> = router.pages.map((Page) => {
-    // /home => home
-    // / => /
-    const pagePathFormated =
-      Page.path.startsWith('/') && Page.path !== '/'
-        ? Page.path.slice(1)
-        : Page.path;
+  const pages: Array<RouteObject> = router.pages.map(
+    (p: PageComponent | RouteNode) => {
+      // Check if the page is coming from file-based routing system
+      if ('source' in p) {
+        const pageNode = p as RouteNode;
 
-    // Get the path of the page
-    const path =
-      Page.path === '/'
-        ? Layout.path
-        : Layout.path.length > 1
-          ? pagePathFormated
-          : Page.path;
+        // /home => home
+        // / => /
+        const pagePathFormated =
+          pageNode.path.startsWith('/') && pageNode.path !== '/'
+            ? pageNode.path.slice(1)
+            : pageNode.path;
 
-    return {
-      path: path === Layout.path ? undefined : path,
-      index: path === Layout.path,
-      async loader({ params, request }) {
-        // Extracting metadata from the page
-        const metadata: Metadata = {
-          openGraph: {
-            url: '',
-            image: '',
+        // Get the path of the page
+        const path =
+          pageNode.path === '/'
+            ? layoutPath
+            : layoutPath.length > 1
+              ? pagePathFormated
+              : pageNode.path;
+
+        return {
+          path: path === layoutPath ? undefined : path,
+          index: path === layoutPath,
+          async lazy() {
+            let Page = (await pageNode.module()).default as PageComponent;
+
+            if (!Page) {
+              console.warn(
+                `Page component is not exported by default from: ${pageNode.source}}`
+              );
+
+              return {
+                Component() {
+                  return null;
+                },
+              };
+            }
+
+            // Detech if the page is a MDXPageComponent or not
+            if (isMDXPage(Page)) {
+              // Convert PageComponent to MDXPageComponent (to make ts happy)
+              const mdxPage = Page as unknown as MDXPageComponent;
+
+              // mdxPage.metadata.path = node.path;
+              // mdxPage.metadata.metadata = Page.metadata;
+
+              Page = await convertMDXPageToPageComponent(mdxPage);
+            }
+
+            return {
+              Component() {
+                // Default data
+                const defaultData = {
+                  props: {
+                    params: {},
+                  },
+                };
+
+                const loaderData =
+                  (useLoaderData() as LoaderResponse) || defaultData;
+
+                return (
+                  <Suspense fallback={<>Loading</>}>
+                    <RasenganPageComponent page={Page} data={loaderData} />
+                  </Suspense>
+                );
+              },
+
+              async loader({ params, request }) {
+                // Extracting metadata from the page
+                const metadata: Metadata = {
+                  openGraph: {
+                    url: '',
+                    image: '',
+                  },
+                  twitter: {
+                    card: 'summary_large_image',
+                    image: '',
+                    title: '',
+                  },
+                  ...Page.metadata,
+                };
+
+                return createLoaderFunction({
+                  loader: Page.loader,
+                  metadata,
+                })({
+                  params,
+                  request,
+                });
+              },
+            };
           },
-          twitter: {
-            card: 'summary_large_image',
-            image: '',
-            title: '',
+          errorElement: <ErrorBoundary />,
+          shouldRevalidate: ({
+            currentUrl,
+            nextUrl,
+            defaultShouldRevalidate,
+          }) => {
+            // Only revalidate if navigating to a different route
+            return currentUrl.pathname !== nextUrl.pathname;
           },
-          ...Page.metadata,
         };
+      } else {
+        const Page = p as PageComponent;
 
-        return createLoaderFunction({ loader: Page.loader, metadata })({
-          params,
-          request,
-        });
-      },
-      Component() {
-        // Default data
-        const defaultData = {
-          props: {
-            params: {},
+        // /home => home
+        // / => /
+        const pagePathFormated =
+          Page.path.startsWith('/') && Page.path !== '/'
+            ? Page.path.slice(1)
+            : Page.path;
+
+        // Get the path of the page
+        const path =
+          Page.path === '/'
+            ? layoutPath
+            : layoutPath.length > 1
+              ? pagePathFormated
+              : Page.path;
+
+        return {
+          path: path === layoutPath ? undefined : path,
+          index: path === layoutPath,
+          async loader({ params, request }) {
+            // Extracting metadata from the page
+            const metadata: Metadata = {
+              openGraph: {
+                url: '',
+                image: '',
+              },
+              twitter: {
+                card: 'summary_large_image',
+                image: '',
+                title: '',
+              },
+              ...Page.metadata,
+            };
+
+            return createLoaderFunction({ loader: Page.loader, metadata })({
+              params,
+              request,
+            });
+          },
+          Component() {
+            // Default data
+            const defaultData = {
+              props: {
+                params: {},
+              },
+            };
+
+            const loaderData =
+              (useLoaderData() as LoaderResponse) || defaultData;
+
+            return (
+              <Suspense fallback={<>Loading</>}>
+                <RasenganPageComponent page={Page} data={loaderData} />
+              </Suspense>
+            );
+          },
+          errorElement: <ErrorBoundary />,
+          shouldRevalidate: ({
+            currentUrl,
+            nextUrl,
+            defaultShouldRevalidate,
+          }) => {
+            // Only revalidate if navigating to a different route
+            return currentUrl.pathname !== nextUrl.pathname;
           },
         };
-
-        const loaderData = (useLoaderData() as LoaderResponse) || defaultData;
-
-        return (
-          <Suspense fallback={<>Loading</>}>
-            <RasenganPageComponent page={Page} data={loaderData} />
-          </Suspense>
-        );
-      },
-      errorElement: <ErrorBoundary />,
-      hydrateFallbackElement: <></>, // TODO: Add hydration fallback
-    };
-  });
+      }
+    }
+  );
 
   // Add pages into children of the current route
   pages.forEach((page) => {
@@ -382,7 +624,7 @@ export const generateRoutes = (
 
   // Loop through imported routers in order to apply the same logic like above.
   for (const importedRouter of router.routers) {
-    const importedRoutes = generateRoutes(importedRouter, false, Layout);
+    const importedRoutes = generateRoutes(importedRouter, false, layoutPath);
 
     for (const importedRoute of importedRoutes) {
       if (importedRoute.nested) {
@@ -405,80 +647,80 @@ export const generateRoutes = (
  * @param router Represents the router component
  * @returns
  */
-export const generateMetadataMapping = (
-  router: RouterComponent,
-  isRoot = true,
-  parentLayout: LayoutComponent | undefined = undefined
-): Record<string, Metadata> => {
-  const metadataMapping: Record<string, Metadata> = {};
+// export const generateMetadataMapping = (
+//   router: RouterComponent,
+//   isRoot = true,
+//   parentLayoutPath: string | undefined = undefined
+// ): Record<string, Metadata> => {
+//   const metadataMapping: Record<string, Metadata> = {};
 
-  // Get information about the layout and the path
-  const Layout = router.layout;
+//   // Get information about the layout and the path
+//   const Layout = router.layout;
 
-  // Set default path layout if not provided
-  if (!Layout.path) {
-    throw new Error(
-      `[rasengan] Page path is required for ${Layout.name} layout component`
-    );
-  }
+//   // Set default path layout if not provided
+//   if (!Layout.path) {
+//     throw new Error(
+//       `[rasengan] Page path is required for ${Layout.name} layout component`
+//     );
+//   }
 
-  const layoutPath = !isRoot
-    ? router.useParentLayout
-      ? parentLayout.path +
-        (Layout.path === '/'
-          ? ''
-          : Layout.path.startsWith('/') && parentLayout.path === '/'
-            ? Layout.path.slice(1)
-            : Layout.path)
-      : Layout.path
-    : Layout.path;
+//   const layoutPath = !isRoot
+//     ? router.useParentLayout
+//       ? parentLayoutPath +
+//         (Layout.path === '/'
+//           ? ''
+//           : Layout.path.startsWith('/') && parentLayoutPath === '/'
+//             ? Layout.path.slice(1)
+//             : Layout.path)
+//       : Layout.path
+//     : Layout.path;
 
-  // Get informations about pages
-  router.pages.forEach((Page) => {
-    // Set default page path if not provided
-    if (!Page.path) {
-      throw new Error(
-        `[rasengan] Page path is required for ${Page.name} page component`
-      );
-    }
+//   // Get informations about pages
+//   router.pages.forEach((Page) => {
+//     // Set default page path if not provided
+//     if (!Page.path) {
+//       throw new Error(
+//         `[rasengan] Page path is required for ${Page.name} page component`
+//       );
+//     }
 
-    const pagePathFormated =
-      Page.path.startsWith('/') && Page.path !== '/' && layoutPath.endsWith('/')
-        ? Page.path.slice(1)
-        : Page.path;
+//     const pagePathFormated =
+//       Page.path.startsWith('/') && Page.path !== '/' && layoutPath.endsWith('/')
+//         ? Page.path.slice(1)
+//         : Page.path;
 
-    // Get the path of the page
-    const path = Page.path === '/' ? layoutPath : layoutPath + pagePathFormated;
+//     // Get the path of the page
+//     const path = Page.path === '/' ? layoutPath : layoutPath + pagePathFormated;
 
-    // Get metadata
-    metadataMapping[path] = {
-      openGraph: {
-        url: '',
-        image: '',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        image: '',
-        title: '',
-      },
-      ...Page.metadata,
-    };
-  });
+//     // Get metadata
+//     metadataMapping[path] = {
+//       openGraph: {
+//         url: '',
+//         image: '',
+//       },
+//       twitter: {
+//         card: 'summary_large_image',
+//         image: '',
+//         title: '',
+//       },
+//       ...Page.metadata,
+//     };
+//   });
 
-  // Loop through imported routers in order to apply the same logic like above.
-  for (const importedRouter of router.routers) {
-    const importedMetadataMapping = generateMetadataMapping(
-      importedRouter,
-      false,
-      Layout
-    );
-    Object.assign(metadataMapping, importedMetadataMapping);
+//   // Loop through imported routers in order to apply the same logic like above.
+//   for (const importedRouter of router.routers) {
+//     const importedMetadataMapping = generateMetadataMapping(
+//       importedRouter,
+//       false,
+//       Layout
+//     );
+//     Object.assign(metadataMapping, importedMetadataMapping);
 
-    // Add the metadata of the imported router's pages to the metadata mapping
-    for (const [path, metadata] of Object.entries(importedMetadataMapping)) {
-      metadataMapping[path] = metadata;
-    }
-  }
+//     // Add the metadata of the imported router's pages to the metadata mapping
+//     for (const [path, metadata] of Object.entries(importedMetadataMapping)) {
+//       metadataMapping[path] = metadata;
+//     }
+//   }
 
-  return metadataMapping;
-};
+//   return metadataMapping;
+// };

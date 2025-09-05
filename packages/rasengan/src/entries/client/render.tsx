@@ -3,7 +3,7 @@ import { StrictMode, FunctionComponent } from 'react';
 import { type AppProps } from '../../core/index.js';
 import { RootComponent } from '../../routing/components/template.js';
 
-const isSpaMode = window.__RASENGAN_SPA_MODE__;
+const isSpaMode = Boolean(window.__RASENGAN_SPA_MODE__);
 
 export default function renderApp(
   App: FunctionComponent<AppProps>,
@@ -17,30 +17,35 @@ export default function renderApp(
     throw new Error('Root element not found');
   }
 
-  // If SPA mode, render the app
+  const appTree = options.reactStrictMode ? (
+    <StrictMode>
+      <App Component={RootComponent} />
+    </StrictMode>
+  ) : (
+    <App Component={RootComponent} />
+  );
+
   if (isSpaMode) {
-    if (options.reactStrictMode) {
-      createRoot(root).render(
-        <StrictMode>
-          <App Component={RootComponent} />
-        </StrictMode>
-      );
-    } else {
-      createRoot(root).render(<App Component={RootComponent} />);
-    }
-
-    return;
-  }
-
-  // Handling hydration
-  if (options.reactStrictMode) {
-    hydrateRoot(
-      root,
-      <StrictMode>
-        <App Component={RootComponent} />
-      </StrictMode>
-    );
+    // No SSR markup, so start fresh
+    createRoot(root, {
+      onCaughtError: (error) => {
+        console.error(error);
+      },
+      onRecoverableError(error, errorInfo) {
+        console.error(error);
+        console.error(errorInfo);
+      },
+    }).render(appTree);
   } else {
-    hydrateRoot(root, <App Component={RootComponent} />);
+    // SSR markup present, hydrate instead of re-rendering
+    hydrateRoot(root, appTree, {
+      onCaughtError: (error) => {
+        console.error(error);
+      },
+      onRecoverableError(error, errorInfo) {
+        console.error(error);
+        console.error(errorInfo);
+      },
+    });
   }
 }

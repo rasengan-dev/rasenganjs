@@ -193,6 +193,13 @@ export type LayoutComponent<T = ReactComponentProps> = FunctionComponent<T> & {
    * Loader function that loads data for the page from the server
    */
   loader?: RouteLoaderFunction;
+
+  /**
+   * Source of the route
+   *
+   * Not available from config-based routing
+   */
+  source?: string;
 };
 
 /**

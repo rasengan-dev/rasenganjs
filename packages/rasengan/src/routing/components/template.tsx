@@ -16,7 +16,7 @@ export const RootComponent = ({
   children = undefined,
 }: RootComponentProps) => {
   // Return children if they exist
-  if (children) return children;
+  if (children) return children; // For the SSR
 
   const AppRouter = use(AppRouterPromise);
 
