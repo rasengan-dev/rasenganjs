@@ -23,12 +23,6 @@ export const defineRouter = (option: RouterProps) => {
   } = option;
 
   return async (Router: new () => RouterComponent) => {
-    // Handle errors
-    // if (!option.pages)
-    //   throw new Error(
-    //     'You must provide a list of pages in the router option object'
-    //   );
-
     // Create router
     const router = new Router();
 
@@ -112,8 +106,6 @@ const loadMDXRenderer = async (): Promise<
     return MDXRenderer;
   } catch (e) {
     console.error(e);
-    throw new Error(
-      'Failed to load MDXRenderer component from @rasenganjs/mdx, make sure you have installed the package'
-    );
+    throw e;
   }
 };

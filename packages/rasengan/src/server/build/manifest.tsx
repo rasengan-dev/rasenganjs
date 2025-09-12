@@ -41,10 +41,10 @@ export class ManifestManager {
 
 	/**
 	 * Resolve all assets for a given page.
-	 * @param pageName - The name of the page to resolve.
+	 * @param source - The file path of the page to resolve.
 	 * @returns Resolved assets with scripts and styles.
 	 */
-	public resolveAssets(pageName: string): ResolvedAssets {
+	public resolveAssets(source: string): ResolvedAssets {
 		const visited = new Set<string>();
 		const assets: ResolvedAssets = {
 			scripts: [],
@@ -92,10 +92,24 @@ export class ManifestManager {
 				}
 			}
 
-			// Collect dynamic imports
+			// // Collect dynamic imports
+			// if (entry.dynamicImports) {
+			// 	for (const dynamicImport of entry.dynamicImports) {
+			// 		collectAssets(this._manifest[dynamicImport]);
+			// 	}
+			// }
+
+			// Collect dynamic imports (filter by pageName)
 			if (entry.dynamicImports) {
 				for (const dynamicImport of entry.dynamicImports) {
-					collectAssets(this._manifest[dynamicImport]);
+					const dynEntry = this._manifest[dynamicImport];
+
+					if (!dynEntry) continue;
+
+					// Check if the dynamic import corresponds to the requested page
+					if (dynEntry.src?.includes(source)) {
+						collectAssets(dynEntry);
+					}
 				}
 			}
 		};
@@ -108,11 +122,11 @@ export class ManifestManager {
 
 	/**
 	 * Generate meta tags for a given page.
-	 * @param pageName - The name of the page to generate meta tags for.
+	 * @param source - The file path of the page to generate meta tags for.
 	 * @returns HTML string containing script and style tags.
 	 */
-	public generateMetaTags(pageName: string) {
-		const { scripts, styles } = this.resolveAssets(pageName);
+	public generateMetaTags(source: string) {
+		const { scripts, styles } = this.resolveAssets(source);
 
 		const scriptTags = scripts.map((file) => (
 			<script type='module' src={`/${file}`}></script>

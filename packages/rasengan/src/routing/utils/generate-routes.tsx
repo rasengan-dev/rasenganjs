@@ -1,11 +1,4 @@
-import {
-  Outlet,
-  RouterProvider,
-  createBrowserRouter,
-  matchRoutes,
-  useLoaderData,
-  useParams,
-} from 'react-router';
+import { Outlet, matchRoutes, useLoaderData, useParams } from 'react-router';
 import {
   ErrorBoundary,
   NotFoundPageComponent,
@@ -36,33 +29,6 @@ import { HydrationFallback } from '../components/fallback.js';
 const defaultMetadata: Metadata = {
   title: 'Not Found',
   description: 'Page not found',
-};
-
-/**
- * This function receives a router component and get a formated router first
- * and then return a router.
- */
-export const getRouter = (routerInstance: RouterComponent) => {
-  const routes = generateRoutes(routerInstance);
-
-  // Detect which routes match the current location
-  // const matches = matchRoutes(routes, window.location);
-
-  // // Preload lazy modules for the matched routes
-  // await Promise.all(
-  //   matches?.map(async (match) => {
-  //     if (match.route.lazy) {
-  //       const resolved = await match.route.lazy();
-  //       Object.assign(match.route, resolved); // patch route with real Component
-  //     }
-  //   }) ?? []
-  // );
-
-  let router = createBrowserRouter(routes, {
-    hydrationData: window.__staticRouterHydrationData,
-  });
-
-  return () => <RouterProvider router={router} />;
 };
 
 /**
@@ -181,10 +147,12 @@ const createLoaderFunction = ({
   loader,
   metadata,
   isLayout = false,
+  source,
 }: {
   loader?: RouteLoaderFunction;
   metadata?: Metadata | MetadataWithoutTitleAndDescription;
   isLayout?: boolean;
+  source?: string;
 }): LoaderFunction => {
   return async ({ params, request }) => {
     try {
@@ -193,6 +161,7 @@ const createLoaderFunction = ({
         return {
           props: {},
           meta: metadata,
+          source,
         };
       }
 
@@ -216,6 +185,7 @@ const createLoaderFunction = ({
       return {
         props: response.props,
         meta: mergeMetaData(response.meta ?? {}, metadata, isLayout),
+        source,
       };
     } catch (error) {
       console.error(error);
@@ -235,9 +205,36 @@ const createLoaderFunction = ({
           metaTags: [],
           links: [],
         },
+        source,
       };
     }
   };
+};
+
+/**
+ * This function preload the matching lazy routes
+ * @param url
+ * @param routes
+ */
+export const preloadMatches = async (
+  url: Partial<Location> | string,
+  routes: RouteObject[]
+) => {
+  const matches = matchRoutes(routes, url);
+  if (!matches) return;
+
+  await Promise.all(
+    matches.map(async (match) => {
+      if (match.route.lazy) {
+        const resolved = await (match.route.lazy as Function)();
+
+        Object.assign(match.route, resolved);
+
+        // Strip lazy so Router never tries to suspend again
+        delete match.route.lazy;
+      }
+    })
+  );
 };
 
 /**
@@ -335,6 +332,7 @@ export const generateRoutes = (
               loader: Layout.loader,
               metadata,
               isLayout: true,
+              source: layoutNode.source,
             })({
               params,
               request,
@@ -344,11 +342,11 @@ export const generateRoutes = (
       },
       children: [],
       nested: router.useParentLayout,
-      hydrateFallbackElement: null,
-      shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
-        // Only revalidate if navigating to a different route
-        return currentUrl.pathname !== nextUrl.pathname;
-      },
+      hydrateFallbackElement: <></>,
+      // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+      //   // Only revalidate if navigating to a different route
+      //   return currentUrl.pathname !== nextUrl.pathname;
+      // },
     };
   } else {
     const Layout = router.layout as LayoutComponent;
@@ -418,11 +416,12 @@ export const generateRoutes = (
       },
       children: [],
       nested: router.useParentLayout,
-      hydrateFallbackElement: <></>, // TODO: enable override
-      shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
-        // Only revalidate if navigating to a different route
-        return currentUrl.pathname !== nextUrl.pathname;
-      },
+      hydrateFallbackElement: <></>,
+      // hydrateFallbackElement: <>Loading...</>, // TODO: enable override
+      // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+      //   // Only revalidate if navigating to a different route
+      //   return currentUrl.pathname !== nextUrl.pathname;
+      // },
     };
   }
 
@@ -504,9 +503,9 @@ export const generateRoutes = (
                   (useLoaderData() as LoaderResponse) || defaultData;
 
                 return (
-                  <Suspense fallback={<>Loading</>}>
-                    <RasenganPageComponent page={Page} data={loaderData} />
-                  </Suspense>
+                  // <Suspense fallback={<>Loading</>}>
+                  <RasenganPageComponent page={Page} data={loaderData} />
+                  // </Suspense>
                 );
               },
 
@@ -528,6 +527,7 @@ export const generateRoutes = (
                 return createLoaderFunction({
                   loader: Page.loader,
                   metadata,
+                  source: pageNode.source,
                 })({
                   params,
                   request,
@@ -536,6 +536,8 @@ export const generateRoutes = (
             };
           },
           errorElement: <ErrorBoundary />,
+          hydrateFallbackElement: <></>,
+          // hydrateFallbackElement: <>Loading...</>,
           shouldRevalidate: ({
             currentUrl,
             nextUrl,
@@ -581,7 +583,10 @@ export const generateRoutes = (
               ...Page.metadata,
             };
 
-            return createLoaderFunction({ loader: Page.loader, metadata })({
+            return createLoaderFunction({
+              loader: Page.loader,
+              metadata,
+            })({
               params,
               request,
             });
@@ -598,12 +603,14 @@ export const generateRoutes = (
               (useLoaderData() as LoaderResponse) || defaultData;
 
             return (
-              <Suspense fallback={<>Loading</>}>
-                <RasenganPageComponent page={Page} data={loaderData} />
-              </Suspense>
+              // <Suspense fallback={<>Loading</>}>
+              <RasenganPageComponent page={Page} data={loaderData} />
+              // </Suspense>
             );
           },
           errorElement: <ErrorBoundary />,
+          hydrateFallbackElement: <></>,
+          // hydrateFallbackElement: <>Loading...</>,
           shouldRevalidate: ({
             currentUrl,
             nextUrl,

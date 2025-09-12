@@ -1,14 +1,7 @@
 import { FunctionComponent } from 'react';
 import { DefaultLayout } from '../components/template.js';
 import { RouterComponent } from '../interfaces.js';
-import {
-  LayoutComponent,
-  MDXPageComponent,
-  Metadata,
-  PageComponent,
-  RouteLoaderFunction,
-} from '../types.js';
-import { convertMDXPageToPageComponent, isMDXPage } from './define-router.js';
+import { LayoutComponent, Metadata } from '../types.js';
 
 const basePath = '/src/app/_routes/';
 
@@ -20,7 +13,6 @@ export type RouteNode = {
   module?: () => Promise<Module>;
   component?: FunctionComponent<any>;
   metadata?: Metadata;
-  // loader?: RouteLoaderFunction;
   children?: RouteNode[];
   source?: string;
 };
@@ -60,7 +52,7 @@ function normalizeSegment(segment: string) {
  * @param foldersOnly Whether to return only folders
  * @returns Path segments
  */
-function getPathSegments(filePath: string, foldersOnly = false) {
+export function getPathSegments(filePath: string, foldersOnly = false) {
   const relative = filePath.replace(basePath, ''); // eg. /src/app/_routes/docs/layout.tsx => docs/layout.tsx
 
   if (!foldersOnly) {
@@ -155,10 +147,9 @@ function insertNodeToTree(
   // Handle the root layout
   if (segments.length === 1 && segments[0] === '_') {
     currentNode.isLayout = true;
-    currentNode.component = routeInfo.component;
+    currentNode.component = routeInfo.component; // Has to be considered in the case where the developer doesn't provide a layout
     currentNode.metadata = routeInfo.metadata;
     currentNode.module = routeInfo.module;
-    // currentNode.loader = routeInfo.loader;
     currentNode.source = routeInfo.source;
 
     return;
@@ -191,7 +182,6 @@ function insertNodeToTree(
     currentNode.component = routeInfo.component;
     currentNode.metadata = routeInfo.metadata;
     currentNode.module = routeInfo.module;
-    // currentNode.loader = routeInfo.loader;
     currentNode.source = routeInfo.source;
   } else {
     let path = '';
@@ -228,10 +218,7 @@ function insertNodeToTree(
       fullPath: fullPath + '/' + (lastSegment === '.' ? '' : lastSegment),
       segment: lastSegment,
       isLayout: false,
-      component: routeInfo.component,
-      metadata: routeInfo.metadata,
       module: routeInfo.module,
-      // loader: routeInfo.loader,
       source: routeInfo.source,
     };
 
@@ -250,15 +237,18 @@ async function generateRouter(tree: RouteNode[]) {
   // Generate the base router
   const router = new RouterComponent();
 
+  // use default layout if not defined
+  let layout: RouteNode | LayoutComponent;
+
   // Get layout if defined
   if (root.isLayout) {
-    // use default layout if not defined
-    const layout = (root.component || DefaultLayout) as LayoutComponent;
-    layout.path = root.path || DefaultLayout.path;
-    // TODO: Add metadata here
-
-    router.layout = layout;
-    router.useParentLayout = true;
+    if ('source' in root) {
+      layout = root as RouteNode;
+    } else {
+      layout = root.component as LayoutComponent;
+      layout.path = root.path;
+      layout.metadata = root.metadata;
+    }
   }
 
   // Get pages
@@ -267,6 +257,10 @@ async function generateRouter(tree: RouteNode[]) {
   // Add pages to the router
   router.pages = pages;
   router.routers = routers;
+
+  // Add layout to the router
+  router.layout = layout;
+  router.useParentLayout = true;
 
   return router;
 }
@@ -284,31 +278,6 @@ async function generateRoutes(tree: RouteNode[]) {
     for (const node of tree) {
       // Handle page
       if (!node.isLayout && node.module) {
-        // if (!page) {
-        //   console.warn(
-        //     `Page component is not exported by default for route: ${node.path}`
-        //   );
-        //   continue;
-        // }
-
-        // if (isMDXPage(page)) {
-        //   // Convert PageComponent to MDXPageComponent (to make ts happy)
-        //   const mdxPage = page as unknown as MDXPageComponent;
-
-        //   mdxPage.metadata.path = node.path;
-        //   mdxPage.metadata.metadata = node.metadata;
-
-        //   const pageComponent = await convertMDXPageToPageComponent(mdxPage);
-
-        //   routes.push(pageComponent);
-        //   continue;
-        // }
-
-        // page.path = node.path;
-        // page.metadata = node.metadata;
-        // page.loader = node.loader;
-        // page.source = node.source;
-
         routes.push(node);
 
         continue;
@@ -318,7 +287,7 @@ async function generateRoutes(tree: RouteNode[]) {
       if (node.isLayout) {
         let layout: LayoutComponent | RouteNode;
 
-        if (node.module) {
+        if ('source' in node) {
           layout = node;
         } else {
           layout = node.component as LayoutComponent;
@@ -332,7 +301,6 @@ async function generateRoutes(tree: RouteNode[]) {
 
           layout.path = node.path;
           layout.metadata = node.metadata;
-          // layout.loader = node.loader;
           layout.source = node.source;
         }
 
@@ -435,21 +403,8 @@ export async function flatRoutes(
 
     // Insert every layout into the tree
     for (const [filePath, { segments, mod }] of layoutModulesMap) {
-      // if (!mod2.default) {
-      //   console.warn(
-      //     `Layout component is not exported by default from: ${filePath}}`
-      //   );
-      //   continue;
-      // }
-
-      // let metadata = (mod.default as LayoutComponent).metadata;
-      // let loader = (mod.default as LayoutComponent).loader;
-
       insertNodeToTree(tree, segments, {
-        // component: mod.default,
-        // metadata: metadata ?? {},
-        // loader,
-        module: mod,
+        module: mod, // Only present for lazy routes, instead prefer component attribute
         isLayout: true,
         source: filePath,
       });
@@ -457,31 +412,8 @@ export async function flatRoutes(
 
     // Insert every pages into the tree
     for (const [filePath, { segments, mod }] of pageModulesMap) {
-      // if (!mod.default) {
-      //   console.warn(
-      //     `Page component is not exported by default from: ${filePath}}`
-      //   );
-      //   console.log({ mod });
-
-      //   continue;
-      // }
-
-      // let metadata = (mod.default as PageComponent).metadata;
-      // let loader = (mod.default as PageComponent).loader;
-
-      // // extracting the metadata
-      // if (isMDXPage(mod.default)) {
-      //   metadata = (mod.default as MDXPageComponent).metadata.metadata;
-      // }
-
       insertNodeToTree(tree, segments, {
-        // component: mod.default,
-        // metadata: metadata ?? {
-        //   title: mod.default.name,
-        //   description: '',
-        // },
-        // loader,
-        module: mod,
+        module: mod, // Only present for lazy routes, instead prefer component attribute
         isLayout: false,
         source: filePath,
       });
