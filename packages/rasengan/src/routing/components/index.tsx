@@ -48,8 +48,6 @@ const extractEnv = () => {
 export function ErrorBoundary() {
   const { DEV } = extractEnv();
 
-  console.log({ DEV });
-
   let error = useRouteError();
 
   if (!DEV)
