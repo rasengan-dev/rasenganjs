@@ -304,9 +304,9 @@ export const generateRoutes = (
               // const metadataMapping = generateMetadataMapping(router);
 
               return (
-                // <MetadataProvider metadataMapping={metadataMapping}>
-                <Layout {...layoutProps} />
-                // </MetadataProvider>
+                <MetadataProvider>
+                  <Layout {...layoutProps} />
+                </MetadataProvider>
               );
             }
 
@@ -316,15 +316,6 @@ export const generateRoutes = (
           async loader({ params, request }) {
             // Extract metadata from the layout
             const metadata: MetadataWithoutTitleAndDescription = {
-              openGraph: {
-                url: '',
-                image: '',
-              },
-              twitter: {
-                card: 'summary_large_image',
-                image: '',
-                title: '',
-              },
               ...Layout.metadata,
             };
 
@@ -382,9 +373,9 @@ export const generateRoutes = (
           // const metadataMapping = generateMetadataMapping(router);
 
           return (
-            // <MetadataProvider metadataMapping={metadataMapping}>
-            <Layout {...layoutProps} />
-            // </MetadataProvider>
+            <MetadataProvider>
+              <Layout {...layoutProps} />
+            </MetadataProvider>
           );
         }
 
@@ -393,15 +384,6 @@ export const generateRoutes = (
       async loader({ params, request }) {
         // Extract metadata from the layout
         const metadata: MetadataWithoutTitleAndDescription = {
-          openGraph: {
-            url: '',
-            image: '',
-          },
-          twitter: {
-            card: 'summary_large_image',
-            image: '',
-            title: '',
-          },
           ...Layout.metadata,
         };
 
@@ -512,15 +494,6 @@ export const generateRoutes = (
               async loader({ params, request }) {
                 // Extracting metadata from the page
                 const metadata: Metadata = {
-                  openGraph: {
-                    url: '',
-                    image: '',
-                  },
-                  twitter: {
-                    card: 'summary_large_image',
-                    image: '',
-                    title: '',
-                  },
                   ...Page.metadata,
                 };
 
@@ -571,15 +544,6 @@ export const generateRoutes = (
           async loader({ params, request }) {
             // Extracting metadata from the page
             const metadata: Metadata = {
-              openGraph: {
-                url: '',
-                image: '',
-              },
-              twitter: {
-                card: 'summary_large_image',
-                image: '',
-                title: '',
-              },
               ...Page.metadata,
             };
 

@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import { useEffect } from 'react';
 import { Metadata } from '../types.js';
 import { generateMetadata } from '../utils/generate-metadata.js';
@@ -6,28 +6,43 @@ import ReactDOMServer from 'react-dom/server';
 
 export default function MetadataProvider({
   children,
-  metadataMapping,
 }: {
   children: React.ReactNode;
-  metadataMapping: Record<string, Metadata>;
 }) {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const routes = useMatches();
 
   useEffect(() => {
-    const metadata = metadataMapping[pathname];
+    if (typeof window === 'undefined') return;
 
-    if (!metadata) return;
+    (async () => {
+      const loadersData = routes.map((route) => route.loaderData) as Array<{
+        meta: Metadata;
+      }>;
 
-    handleInjectMetadata(metadata);
-  }, [pathname]);
+      await handleApplyMetadata(loadersData);
+    })();
+  }, [location]);
 
-  const handleInjectMetadata = (metadata: Metadata) => {
-    if (!metadata) return;
+  const handleApplyMetadata = async (
+    loadersData: Array<{ meta: Metadata }>
+  ) => {
+    // We generate the metadata
+    const metadatas = generateMetadata(loadersData.map((item) => item.meta));
 
+    // We get the last metadata
+    // This is the metadata of the page
+    const leafMetadata = loadersData.at(-1)?.meta;
+
+    handleInjectMetadata(metadatas, leafMetadata);
+  };
+
+  const handleInjectMetadata = (
+    metaTags: React.JSX.Element[],
+    leafMetadata?: Metadata
+  ) => {
     // Check if we are on the browser
     if (typeof window !== 'undefined') {
-      const metaTags = generateMetadata([metadata]);
-
       // Find all meta tags with data-rg attribute and remove them
       const metaTagsToRemove = document.querySelectorAll(
         'meta[data-rg="true"]'
@@ -45,13 +60,15 @@ export default function MetadataProvider({
         document.head.insertAdjacentHTML('beforeend', metaTagString);
       });
 
+      if (!leafMetadata) return;
+
       // Change the title of the page
-      document.title = metadata.title;
+      document.title = leafMetadata.title;
 
       // Change the description of the page
       const metaDescription = document.createElement('meta');
       metaDescription.setAttribute('name', 'description');
-      metaDescription.setAttribute('content', metadata.description);
+      metaDescription.setAttribute('content', leafMetadata.description);
       metaDescription.setAttribute('data-rg', 'true');
       document.head.appendChild(metaDescription);
     }
