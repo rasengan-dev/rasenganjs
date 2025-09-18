@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react';
 import { RouteObject as RRRouteObject } from 'react-router';
 import { RouterComponent } from './interfaces.js';
+import { RouteNode } from './utils/index.js';
 
 export type MetadataLink = {
   rel: string;
@@ -82,7 +83,10 @@ export type RouterProps = {
    * Usefull to collect pages
    */
   pages?: Array<
-    PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
+    | PageComponent
+    | MDXPageComponent
+    | RouteNode
+    | Array<PageComponent | MDXPageComponent | RouteNode>
   >;
 
   /**

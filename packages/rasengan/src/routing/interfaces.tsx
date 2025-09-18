@@ -19,7 +19,7 @@ export class RouterComponent {
   /**
    * Defines the list of pages
    */
-  private _pages!: Array<PageComponent> | Array<RouteNode>;
+  private _pages!: Array<PageComponent | RouteNode>;
 
   /**
    * Defines the loader component to display when pages aren't available
@@ -99,7 +99,7 @@ export class RouterComponent {
   /**
    * Set the list of pages
    */
-  set pages(pages: Array<PageComponent> | Array<RouteNode>) {
+  set pages(pages: Array<PageComponent | RouteNode>) {
     this._pages = pages;
   }
 
