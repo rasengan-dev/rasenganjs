@@ -16,17 +16,17 @@ export default function MetadataProvider({
     if (typeof window === 'undefined') return;
 
     (async () => {
-      const loadersData = routes.map((route) => route.loaderData) as Array<{
+      const loadersData = routes.map(
+        (route) => route.loaderData ?? route.data // Normally the route.data is deprecated, we need to consider route.loaderData, but in some cases, it's undefined and I don't know why, that's why we are using route.data instead
+      ) as Array<{
         meta: Metadata;
       }>;
 
-      await handleApplyMetadata(loadersData);
+      handleInjectMetadata(loadersData);
     })();
   }, [location]);
 
-  const handleApplyMetadata = async (
-    loadersData: Array<{ meta: Metadata }>
-  ) => {
+  const handleInjectMetadata = (loadersData: Array<{ meta: Metadata }>) => {
     // We generate the metadata
     const metadatas = generateMetadata(loadersData.map((item) => item.meta));
 
@@ -34,44 +34,32 @@ export default function MetadataProvider({
     // This is the metadata of the page
     const leafMetadata = loadersData.at(-1)?.meta;
 
-    handleInjectMetadata(metadatas, leafMetadata);
-  };
+    // Find all meta tags with data-rg attribute and remove them
+    const metaTagsToRemove = document.querySelectorAll('meta[data-rg="true"]');
 
-  const handleInjectMetadata = (
-    metaTags: React.JSX.Element[],
-    leafMetadata?: Metadata
-  ) => {
-    // Check if we are on the browser
-    if (typeof window !== 'undefined') {
-      // Find all meta tags with data-rg attribute and remove them
-      const metaTagsToRemove = document.querySelectorAll(
-        'meta[data-rg="true"]'
-      );
+    metaTagsToRemove.forEach((metaTag) => {
+      metaTag.remove();
+    });
 
-      metaTagsToRemove.forEach((metaTag) => {
-        metaTag.remove();
-      });
+    // Inject the meta tags
+    metadatas.forEach((metaTag) => {
+      // Convert React element to string
+      const metaTagString = ReactDOMServer.renderToStaticMarkup(metaTag);
 
-      // Inject the meta tags
-      metaTags.forEach((metaTag) => {
-        // Convert React element to string
-        const metaTagString = ReactDOMServer.renderToStaticMarkup(metaTag);
+      document.head.insertAdjacentHTML('beforeend', metaTagString);
+    });
 
-        document.head.insertAdjacentHTML('beforeend', metaTagString);
-      });
+    if (!leafMetadata) return;
 
-      if (!leafMetadata) return;
+    // Change the title of the page
+    document.title = leafMetadata.title;
 
-      // Change the title of the page
-      document.title = leafMetadata.title;
-
-      // Change the description of the page
-      const metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      metaDescription.setAttribute('content', leafMetadata.description);
-      metaDescription.setAttribute('data-rg', 'true');
-      document.head.appendChild(metaDescription);
-    }
+    // Change the description of the page
+    const metaDescription = document.createElement('meta');
+    metaDescription.setAttribute('name', 'description');
+    metaDescription.setAttribute('content', leafMetadata.description);
+    metaDescription.setAttribute('data-rg', 'true');
+    document.head.appendChild(metaDescription);
   };
 
   return <>{children}</>;
