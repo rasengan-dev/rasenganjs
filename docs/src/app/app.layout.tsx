@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, LayoutComponent, Link, useLocation } from 'rasengan';
+import { Outlet, LayoutComponent, Link } from 'rasengan';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { useNavigationStore } from '@/store/navigation';
@@ -8,23 +8,28 @@ import { NavigationData } from '@/data/docs';
 import { X } from 'lucide-react';
 import ThemeButton from '@/components/atoms/buttons/theme-button';
 import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
+import Banner from '@/components/molecules/banner';
+import { useBannerStore } from '@/store/banner';
 
 const AppLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
   const { isOpen, toggle } = useNavigationStore();
 
-  const location = useLocation();
-  const pathname = location.pathname;
+  const { show, setShow } = useBannerStore();
 
-  // Scroll to the top on route change
-  // useEffect(() => {
-  //   if (typeof window === 'undefined') return;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const bannerDisabled = localStorage.getItem('bannerDisabled');
+      if (!bannerDisabled) {
+        setShow(true);
+      }
+    }
+  }, []);
 
-  //   window.scrollTo({
-  //     top: 0,
-  //     behavior: 'smooth',
-  //   });
-  // }, [pathname]);
+  const handleClose = () => {
+    localStorage.setItem('bannerDisabled', 'true');
+    setShow(false);
+  };
 
   return (
     <section
@@ -35,7 +40,21 @@ const AppLayout: LayoutComponent = () => {
     >
       <ScrollRestoration />
 
-      <div className="w-screen lh-screen">
+      <Banner onClose={handleClose} show={show}>
+        <Link
+          to="https://ui.rasengan.dev"
+          target="_blank"
+          className="hover:underline"
+        >
+          <div className="text-white/80">
+            We are introducing{' '}
+            <strong className="text-white">Rasengan UI Kit</strong> - Get{' '}
+            <span className="text-white">40% discount</span> for the first{' '}
+            <span className="text-white">100 shinobis 🚀</span>
+          </div>
+        </Link>
+      </Banner>
+      <div className="relative w-screen lh-screen">
         <Outlet />
       </div>
 

@@ -3,13 +3,6 @@ import { join } from 'node:path';
 import type { UserConfig } from 'vite';
 import type { AppConfig } from '../type.js';
 
-// Define core external packages
-const CORE_EXTERNALS = [
-  // '@rasenganjs/mdx',
-  // '@rasenganjs/vercel',
-  // '@rasenganjs/netlify',
-];
-
 export const createDefaultViteConfig = (
   rootPath: string,
   __dirname: string,
@@ -18,7 +11,6 @@ export const createDefaultViteConfig = (
 ): UserConfig => {
   // Combine core externals with user-defined externals
   const externals = [
-    ...CORE_EXTERNALS,
     ...(Array.isArray(config.vite?.build?.external)
       ? config.vite.build.external
       : []),
@@ -39,21 +31,12 @@ export const createDefaultViteConfig = (
             if (id.includes('node_modules')) return 'vendor';
             if (id.includes('src/components')) return 'shared-components';
 
-            if (config.ssr) {
-              if (id.includes('src/app') && id.includes('.page.')) {
-                const parts = id.split('src/app')[1]?.split('/');
-                if (parts?.length) {
-                  const pageName = parts.pop()?.split('.')[0];
-                  return pageName ? `page-${pageName}` : undefined;
-                }
-              }
-            }
             return undefined;
           },
         },
       },
       outDir: 'dist',
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 2000,
     },
 
     environments: {

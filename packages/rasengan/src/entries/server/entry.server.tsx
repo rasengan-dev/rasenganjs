@@ -45,6 +45,7 @@ export const render: RenderStreamFunction = async (
   let App: FunctionComponent<AppProps>;
   let Template: FunctionComponent<TemplateProps>;
 
+  // If build options are provided, that means we are in production mode
   if (buildOptions) {
     App = (
       await loadModuleSSR(

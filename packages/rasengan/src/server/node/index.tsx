@@ -3,7 +3,11 @@ import { ManifestManager } from '../build/manifest.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { RenderStreamFunction } from '../../entries/server/entry.server.js';
-import { generateRoutes } from '../../routing/utils/index.js';
+import {
+  generateRoutes,
+  preloadMatches,
+  // generateSSRRoutes,
+} from '../../routing/utils/index.js';
 import {
   createStaticHandler,
   createStaticRouter,
@@ -96,6 +100,9 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       // Get static routes
       const staticRoutes = generateRoutes(AppRouter);
 
+      // Preload matches
+      await preloadMatches(req.originalUrl, staticRoutes);
+
       // Create static handler
       let handler = createStaticHandler(staticRoutes);
 
@@ -119,8 +126,11 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
         // Extract meta from context
         const metadata = extractMetaFromRRContext(context);
 
+        // Get the source file from the context
+        const source = context.loaderData.source;
+
         // Get assets tags
-        const assets = manifest.generateMetaTags(''); // TODO: Add the correct path
+        const assets = manifest.generateMetaTags(source);
 
         // Create static router
         let router = createStaticRouter(handler.dataRoutes, context);

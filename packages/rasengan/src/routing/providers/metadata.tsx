@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import { useEffect } from 'react';
 import { Metadata } from '../types.js';
 import { generateMetadata } from '../utils/generate-metadata.js';
@@ -6,55 +6,60 @@ import ReactDOMServer from 'react-dom/server';
 
 export default function MetadataProvider({
   children,
-  metadataMapping,
 }: {
   children: React.ReactNode;
-  metadataMapping: Record<string, Metadata>;
 }) {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const routes = useMatches();
 
   useEffect(() => {
-    const metadata = metadataMapping[pathname];
+    if (typeof window === 'undefined') return;
 
-    if (!metadata) return;
+    (async () => {
+      const loadersData = routes.map(
+        (route) => route.loaderData ?? route.data // Normally the route.data is deprecated, we need to consider route.loaderData, but in some cases, it's undefined and I don't know why, that's why we are using route.data instead
+      ) as Array<{
+        meta: Metadata;
+      }>;
 
-    handleInjectMetadata(metadata);
-  }, [pathname]);
+      handleInjectMetadata(loadersData);
+    })();
+  }, [location]);
 
-  const handleInjectMetadata = (metadata: Metadata) => {
-    if (!metadata) return;
+  const handleInjectMetadata = (loadersData: Array<{ meta: Metadata }>) => {
+    // We generate the metadata
+    const metadatas = generateMetadata(loadersData.map((item) => item.meta));
 
-    // Check if we are on the browser
-    if (typeof window !== 'undefined') {
-      const metaTags = generateMetadata([metadata]);
+    // We get the last metadata
+    // This is the metadata of the page
+    const leafMetadata = loadersData.at(-1)?.meta;
 
-      // Find all meta tags with data-rg attribute and remove them
-      const metaTagsToRemove = document.querySelectorAll(
-        'meta[data-rg="true"]'
-      );
+    // Find all meta tags with data-rg attribute and remove them
+    const metaTagsToRemove = document.querySelectorAll('meta[data-rg="true"]');
 
-      metaTagsToRemove.forEach((metaTag) => {
-        metaTag.remove();
-      });
+    metaTagsToRemove.forEach((metaTag) => {
+      metaTag.remove();
+    });
 
-      // Inject the meta tags
-      metaTags.forEach((metaTag) => {
-        // Convert React element to string
-        const metaTagString = ReactDOMServer.renderToStaticMarkup(metaTag);
+    // Inject the meta tags
+    metadatas.forEach((metaTag) => {
+      // Convert React element to string
+      const metaTagString = ReactDOMServer.renderToStaticMarkup(metaTag);
 
-        document.head.insertAdjacentHTML('beforeend', metaTagString);
-      });
+      document.head.insertAdjacentHTML('beforeend', metaTagString);
+    });
 
-      // Change the title of the page
-      document.title = metadata.title;
+    if (!leafMetadata) return;
 
-      // Change the description of the page
-      const metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      metaDescription.setAttribute('content', metadata.description);
-      metaDescription.setAttribute('data-rg', 'true');
-      document.head.appendChild(metaDescription);
-    }
+    // Change the title of the page
+    document.title = leafMetadata.title;
+
+    // Change the description of the page
+    const metaDescription = document.createElement('meta');
+    metaDescription.setAttribute('name', 'description');
+    metaDescription.setAttribute('content', leafMetadata.description);
+    metaDescription.setAttribute('data-rg', 'true');
+    document.head.appendChild(metaDescription);
   };
 
   return <>{children}</>;

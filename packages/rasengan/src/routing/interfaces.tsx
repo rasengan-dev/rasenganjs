@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { LayoutComponent, PageComponent } from './types.js';
+import { RouteNode } from './utils/flat-routes.js';
 
 /**
  * Router component that define a routing system
@@ -8,7 +9,7 @@ export class RouterComponent {
   /**
    * Defines the layout applied to the Router
    */
-  private _layout!: LayoutComponent;
+  private _layout!: LayoutComponent | RouteNode;
 
   /**
    * Defines the list of sub routers
@@ -18,7 +19,7 @@ export class RouterComponent {
   /**
    * Defines the list of pages
    */
-  private _pages!: Array<PageComponent>;
+  private _pages!: Array<PageComponent | RouteNode>;
 
   /**
    * Defines the loader component to display when pages aren't available
@@ -84,7 +85,7 @@ export class RouterComponent {
   /**
    * Set the layout value
    */
-  set layout(layout: LayoutComponent) {
+  set layout(layout: LayoutComponent | RouteNode) {
     this._layout = layout;
   }
 
@@ -98,7 +99,7 @@ export class RouterComponent {
   /**
    * Set the list of pages
    */
-  set pages(pages: Array<PageComponent>) {
+  set pages(pages: Array<PageComponent | RouteNode>) {
     this._pages = pages;
   }
 

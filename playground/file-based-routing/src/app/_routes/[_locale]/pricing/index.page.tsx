@@ -14,5 +14,13 @@ const metadata = {
 };
 
 Pricing.metadata = metadata;
+Pricing.loader = async () => {
+  console.log({ message: 'Loader function called from pricing page' });
+
+  return {
+    props: {},
+    meta: metadata,
+  };
+};
 
 export default Pricing;

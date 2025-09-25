@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react';
 import { RouteObject as RRRouteObject } from 'react-router';
 import { RouterComponent } from './interfaces.js';
+import { RouteNode } from './utils/index.js';
 
 export type MetadataLink = {
   rel: string;
@@ -82,7 +83,10 @@ export type RouterProps = {
    * Usefull to collect pages
    */
   pages?: Array<
-    PageComponent | MDXPageComponent | Array<PageComponent | MDXPageComponent>
+    | PageComponent
+    | MDXPageComponent
+    | RouteNode
+    | Array<PageComponent | MDXPageComponent | RouteNode>
   >;
 
   /**
@@ -115,12 +119,25 @@ export type LoaderOptions = {
 export type LoaderResponse = {
   props?: { [key: string]: any };
   redirect?: string;
+
+  /**
+   * Represent the set of metadata for the page to which the loader is linked to
+   */
   meta?: Metadata | MetadataWithoutTitleAndDescription;
+
+  /**
+   * Should contain the source of the loader
+   *
+   * It represent the source file of the page in which it's defined
+   *
+   * Not available from config-based routing
+   */
+  source?: string;
 };
 
 export type RouteLoaderFunction = (
   options: LoaderOptions
-) => Promise<LoaderResponse>;
+) => Promise<Omit<LoaderResponse, 'source'>>;
 
 export type LoaderFunction = ({
   params,
@@ -193,6 +210,13 @@ export type LayoutComponent<T = ReactComponentProps> = FunctionComponent<T> & {
    * Loader function that loads data for the page from the server
    */
   loader?: RouteLoaderFunction;
+
+  /**
+   * Source of the route
+   *
+   * Not available from config-based routing
+   */
+  source?: string;
 };
 
 /**
@@ -248,6 +272,7 @@ export type TemplateProps = {
  * Props for the base Component that takes the app router
  */
 export type RootComponentProps = {
-  router: Promise<RouterComponent>;
+  // router: Promise<RouterComponent>;
+  Router?: FunctionComponent;
   children: React.ReactNode;
 };

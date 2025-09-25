@@ -32,7 +32,10 @@ import {
   handleSpaModeRequest,
 } from './handlers.js';
 import { createStaticHandler } from 'react-router';
-import { generateRoutes } from '../../routing/utils/generate-routes.js';
+import {
+  generateRoutes,
+  preloadMatches,
+} from '../../routing/utils/generate-routes.js';
 
 type ServerError = Error & { code: string };
 
@@ -62,8 +65,30 @@ async function devRequestHandler(
       // Get static routes
       const staticRoutes = generateRoutes(AppRouter);
 
+      await preloadMatches(req.originalUrl, staticRoutes);
+
       // Create static handler
       let handler = createStaticHandler(staticRoutes);
+
+      // Get matches for the current URL
+      // const matches = matchRoutes(staticRoutes, req.originalUrl);
+
+      // Resolve all lazy() modules for matched routes
+      // const resolvedMatches = await Promise.all(
+      //   matches?.map(async (match) => {
+      //     if (match.route.lazy) {
+      //       const lazyFn = match.route.lazy as unknown as () => Promise<any>;
+      //       const resolved = await lazyFn();
+      //       Object.assign(match.route, resolved);
+      //     }
+      //     return match;
+      //   }) ?? []
+      // );
+
+      // console.log({
+      //   resolvedMatches: JSON.stringify(resolvedMatches),
+      //   url: req.originalUrl,
+      // });
 
       if (isDataRequest(req)) {
         // Handle data request
