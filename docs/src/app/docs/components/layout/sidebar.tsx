@@ -10,6 +10,7 @@ import {
   ChevronDown,
   FlaskConical,
   LayoutTemplate,
+  Palette,
   Tag,
   TestTube,
   TestTube2,
@@ -106,6 +107,13 @@ export default function SidebarNavigation({ className, onClose }: Props) {
             <div className="flex items-center gap-4 text-foreground/90 hover:cursor-pointer hover:text-primary transition-all">
               <LayoutTemplate size={20} />
               <span>Templates</span>
+            </div>
+          </Link>
+
+          <Link to="https://ui.rasengan.dev" target="_blank">
+            <div className="flex items-center gap-4 text-foreground/90 hover:cursor-pointer hover:text-primary transition-all">
+              <Palette size={20} />
+              <span>Rasengan UI Kit</span>
             </div>
           </Link>
         </div>

@@ -24,9 +24,9 @@ const Home: PageComponent = () => {
       <section className="w-full relative px-4 xl:px-20 lg:h-screen lg:max-h-[800px] lg:min-h-[800px] flex flex-col lg:flex-row justify-start lg:justify-between items-center gap-8 pt-[60px] overflow-hidden">
         <div className="w-full lg:w-1/2 mt-20 lg:mt-0 z-20">
           <div className="flex justify-center items-center lg:justify-start lg:items-start">
-            <Link to="/blog/rasengan-v1-1-0">
+            <Link to="https://ui.rasengan.dev" target="_blank">
               <AnnonceBadge
-                text="Introducing file-based routing 🚀"
+                text="Introducing Rasengan UI Kit 🚀"
                 className="mb-2 hover:border-primary/30 border border-transparent"
               >
                 <svg
