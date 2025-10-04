@@ -21,9 +21,35 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   // Get base config
   const baseConfig = createDefaultViteConfig(rootPath, __dirname, mode, config);
 
+  // Check if rc is configured
+  const rcMode = config.sageMode.reactCompiler;
+  const rcBabelConfig =
+    typeof rcMode === 'object'
+      ? {
+          plugins: [
+            [
+              'babel-plugin-react-compiler',
+              {
+                compilationMode: 'annotation',
+              },
+            ],
+          ],
+        }
+      : {
+          plugins: ['babel-plugin-react-compiler'],
+        };
+
   // Merge with user plugins
   return {
     ...baseConfig,
-    plugins: [react(), ...plugins, ...(config.vite?.plugins || [])],
+    plugins: [
+      react(
+        rcMode && {
+          babel: rcBabelConfig,
+        }
+      ),
+      ...plugins,
+      ...(config.vite?.plugins || []),
+    ],
   };
 });

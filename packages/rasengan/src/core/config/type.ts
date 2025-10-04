@@ -51,8 +51,29 @@ export interface ViteConfig
   appType?: 'spa' | 'mpa' | 'custom';
 }
 
+export type SageModeConfig = {
+  /**
+   * ReactCompiler option enable the React Compiler feature, in order to memoize automatically values, functions and react components.
+   */
+  reactCompiler?:
+    | boolean
+    | {
+        compilationMode: 'annotation';
+      };
+
+  /**
+   * rsc stands for React Server Component, this option enable all the feature related to RSC and makes rasengan.js becomes a really powerfull framework by leveraging more react features
+   */
+  // rsc?: boolean;
+};
+
 export type AppConfig = {
   ssr?: boolean;
+
+  /**
+   * Enable much power by enabling reactCompiler and rsc features
+   */
+  sageMode?: SageModeConfig;
 
   /**
    * Configure server
