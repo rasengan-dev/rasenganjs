@@ -2,12 +2,19 @@ import { PageComponent, Link } from 'rasengan';
 import logo from '@/assets/logo.svg';
 import Image from '@rasenganjs/image';
 import { useCountStore } from '@/store/count';
+import { useThemeStore } from '@/store/theme';
 
 const Page: PageComponent = () => {
   const { count, increment, decrement, reset } = useCountStore();
+  const { mode, toggle } = useThemeStore();
 
   return (
     <section className="main">
+      <div>
+        <span>Theme: {mode}</span>
+        <button onClick={toggle}>Toggle Theme</button>
+      </div>
+
       <header className="header">
         <div>
           <span>Powered by</span>

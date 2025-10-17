@@ -1,3 +1,3 @@
-import { create } from './state/utils/index.js';
+import { create, persist } from './state/utils/index.js';
 
-export { create };
+export { create as createStore, persist };

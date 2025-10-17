@@ -68,3 +68,71 @@ export function create<T>(createStateFn: CreateStateFn<T>) {
     );
   };
 }
+
+/**
+ * The persist function wraps a createStateFn to enable state persistence
+ * It saves and restores the store state using the provided storage
+ * @param createStateFn - The store initializer function
+ * @param options - The persistence options (name and storage)
+ */
+export function persist<T>(
+  createStateFn: CreateStateFn<T>,
+  options: { name: string; storage: 'local' | 'session' }
+): CreateStateFn<T> {
+  return (set, get) => {
+    if (typeof window === 'undefined') return createStateFn(set, get);
+
+    // Get the storage
+    const storage = getStorage(options.storage);
+
+    // Load initial state from storage if available
+    try {
+      const storedValue = storage.getItem(options.name);
+
+      if (storedValue) {
+        const parsed = JSON.parse(storedValue);
+
+        // Initialize store with persisted data
+        const state = createStateFn((partial) => {
+          const nextState =
+            typeof partial === 'function' ? partial(get()) : partial;
+          set(nextState);
+
+          // Persist new state
+          storage.setItem(options.name, JSON.stringify(get()));
+        }, get);
+
+        // Merge the stored state with the new one
+        return { ...state, ...parsed };
+      }
+    } catch (error) {
+      console.warn(
+        `[Kurama persist] Failed to load state for ${options.name}`,
+        error
+      );
+    }
+
+    // Default behavior if nothing is stored
+    const state = createStateFn((partial) => {
+      const nextState =
+        typeof partial === 'function' ? partial(get()) : partial;
+      set(nextState);
+
+      // Save to storage
+      try {
+        storage.setItem(options.name, JSON.stringify(get()));
+      } catch (error) {
+        console.warn(
+          `[Kurama persist] Failed to save state for ${options.name}`,
+          error
+        );
+      }
+    }, get);
+
+    return state;
+  };
+}
+
+function getStorage(storage: 'local' | 'session') {
+  return storage === 'local' ? localStorage : sessionStorage;
+}
