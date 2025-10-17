@@ -108,18 +108,6 @@ export const useStore = createStore(
 
 ---
 
-## 🧩 Composing Stores
-
-```tsx
-import { combineStores } from '@rasenganjs/kurama';
-import { useTheme } from './theme';
-import { useCounter } from './counter';
-
-export const useApp = combineStores(useTheme, useCounter);
-```
-
----
-
 ## 🔮 Roadmap
 
 - [ ] DevTools integration (Kurama Vision)

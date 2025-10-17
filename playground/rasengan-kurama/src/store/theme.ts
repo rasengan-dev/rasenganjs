@@ -1,4 +1,4 @@
-import { createStore, persist } from '@rasenganjs/kurama';
+import { createStore, middleware } from '@rasenganjs/kurama';
 
 interface State {
   mode: 'light' | 'dark';
@@ -9,15 +9,12 @@ interface Actions {
 }
 
 export const useThemeStore = createStore<State & Actions>(
-  persist(
-    (set) => ({
-      mode: 'light',
-      toggle: () =>
-        set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
-    }),
-    {
-      name: 'theme',
-      storage: 'session',
-    }
-  )
+  middleware.compose(
+    middleware.logger,
+    middleware.persist({ name: 'theme', storage: 'session' })
+  )((set) => ({
+    mode: 'light',
+    toggle: () =>
+      set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
+  }))
 );

@@ -133,6 +133,11 @@ export function persist<T>(
   };
 }
 
+/**
+ * The getStorage function returns the appropriate storage object based on the provided type
+ * @param storage - The type of storage (local or session)
+ * @returns The storage object (localStorage or sessionStorage)
+ */
 function getStorage(storage: 'local' | 'session') {
   return storage === 'local' ? localStorage : sessionStorage;
 }
