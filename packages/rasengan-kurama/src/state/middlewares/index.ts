@@ -26,10 +26,10 @@ export const middleware = {
    */
   persist: ({
     name,
-    storage,
+    storage = 'local',
   }: {
     name: string;
-    storage: 'local' | 'session';
+    storage?: 'local' | 'session';
   }) => {
     return <T>(createStateFn: CreateStateFn<T>): CreateStateFn<T> =>
       persist(createStateFn, { name, storage });

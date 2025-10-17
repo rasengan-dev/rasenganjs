@@ -15,7 +15,6 @@ Inspired by **Zustand**, **Jotai**, and the raw energy of **Kurama**, it gives d
 - 🔁 **Persistent Stores** – Save state to `localStorage` or custom drivers.
 - 🔒 **SSR + Hydration** – Works seamlessly with Rasengan.js server rendering.
 - ⚙️ **Middleware System** – Extend store behavior (logger, persist, devtools, etc.).
-- 🧱 **Composable Stores** – Combine stores to build scalable state systems.
 - 🧩 **Framework Agnostic** – Works in Rasengan.js, Next.js, Remix, React Router & more.
 
 ---
@@ -69,7 +68,7 @@ function Counter() {
 ## 💾 Persistent Store Example
 
 ```tsx
-import { persist, createStore } from '@rasenganjs/kurama';
+import { middleware, createStore } from '@rasenganjs/kurama';
 
 export type ThemeState = {
   mode: 'light' | 'dark';
@@ -77,17 +76,10 @@ export type ThemeState = {
 };
 
 export const useTheme = createStore<ThemeState>(
-  persist(
-    (set) => ({
-      mode: 'light',
-      toggle: () =>
-        set((s) => ({ mode: s.mode === 'light' ? 'dark' : 'light' })),
-    }),
-    {
-      name: 'theme',
-      storage: localStorage,
-    }
-  )
+  middleware.persist({ name: 'theme', storage: 'session' })((set) => ({
+    mode: 'light',
+    toggle: () => set((s) => ({ mode: s.mode === 'light' ? 'dark' : 'light' })),
+  }))
 );
 ```
 
@@ -110,6 +102,7 @@ export const useStore = createStore(
 
 ## 🔮 Roadmap
 
+- [x] Middleware composition
 - [ ] DevTools integration (Kurama Vision)
 - [ ] Store dependency tracking
 - [ ] Multi-tab state synchronization
