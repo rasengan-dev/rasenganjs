@@ -6,7 +6,8 @@ import { useThemeStore } from '@/store/theme';
 
 const Page: PageComponent = () => {
   const { count, increment, decrement, reset } = useCountStore();
-  const { mode, toggle } = useThemeStore();
+  const mode = useThemeStore((state) => state.mode);
+  const { toggle } = useThemeStore((state) => ({ toggle: state.toggle }));
 
   return (
     <section className="main">
@@ -28,9 +29,9 @@ const Page: PageComponent = () => {
         <h1 className="title">Count: {count}</h1>
 
         <div className="controls">
-          <button onClick={increment}>Increment</button>
+          {/* <button onClick={increment}>Increment</button>
           <button onClick={decrement}>Decrement</button>
-          <button onClick={reset}>Reset</button>
+          <button onClick={reset}>Reset</button> */}
         </div>
       </div>
 

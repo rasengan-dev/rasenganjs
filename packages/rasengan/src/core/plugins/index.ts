@@ -173,6 +173,7 @@ export interface AdapterConfig {
 
 type RasenganPluginOptions = {
   adapter?: AdapterConfig;
+  prerender?: boolean | string[];
 };
 
 /**
@@ -182,6 +183,7 @@ type RasenganPluginOptions = {
  */
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
+  prerender = false,
 }: RasenganPluginOptions = {}): Plugin {
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
@@ -285,6 +287,16 @@ export function rasengan({
           JSON.stringify(minimizedConfig),
           'utf-8'
         );
+
+        // Prerender mode only
+        if (prerender) {
+          // Log info
+          console.log('Prerendering mode enabled');
+
+          const routes = Array.isArray(prerender) ? prerender : [];
+
+          console.log(routes);
+        }
 
         // Prepare the app for deployment
         await prepareToDeploy(adapter);

@@ -3,6 +3,6 @@ import { rasengan } from 'rasengan/plugin';
 
 export default defineConfig({
   vite: {
-    plugins: [rasengan()],
+    plugins: [rasengan({ prerender: true })],
   },
 });

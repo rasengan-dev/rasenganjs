@@ -1,6 +1,9 @@
 import type { CreateStateFn } from '../type.js';
 import { persist } from '../utils';
 
+/**
+ * The middleware object contains various middleware functions for state management
+ */
 export const middleware = {
   /**
    * 🪵 Logger Middleware
