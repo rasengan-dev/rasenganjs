@@ -30,7 +30,11 @@ export const defineConfig = async (
       config = loadedConfig;
     }
 
-    const { ssr, server, vite, redirects } = config;
+    const { ssr, sageMode, server, vite, redirects } = config;
+
+    const defaultSageModeConfig = {
+      reactCompiler: sageMode?.reactCompiler ?? false,
+    };
 
     // Define default values for vite config coming from loadedConfig.vite
     const defaultViteConfig = {
@@ -57,6 +61,7 @@ export const defineConfig = async (
       const config: AppConfig = {
         ssr: ssr ?? true,
         server: defaultServerConfig,
+        sageMode: defaultSageModeConfig,
         vite: {
           ...defaultViteConfig,
           resolve: {
@@ -76,6 +81,9 @@ export const defineConfig = async (
     } catch (error) {
       return {
         ssr: true,
+        sageMode: {
+          reactCompiler: false,
+        },
         vite: {
           appType: 'custom',
           resolve: {
