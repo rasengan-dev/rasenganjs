@@ -1,5 +1,30 @@
 ## Unreleased
 
+## 1.2.0-beta.1 (2025-09-19)
+
+- fix(rasengan): falling back to route.data if route.loaderData is undefined [3cc418](https://github.com/rasengan-dev/rasenganjs/3cc4186e34a5d115e6ef69e8c8b36538aa8562ed)
+
+## 1.2.0-beta.0 (2025-09-18)
+
+- feat: adding experiment lazyLoadPage function [017b26](https://github.com/rasengan-dev/rasenganjs/017b26a480815ff480a0f99368fa8fc0c094d5ab)
+- feat(rasengan): synchronizing metadata on client navigation [75374b](https://github.com/rasengan-dev/rasenganjs/75374b958180ad1f46bb00f91235e22bfa11a321)
+- feat(rasengan): adding support for lazy route loading into file-base routing [1161bc](https://github.com/rasengan-dev/rasenganjs/1161bc409679630e293a376536b2e749cbeeaab8)
+- feat: start adding support for lazy loading pages into file-based routing [cbcfdb](https://github.com/rasengan-dev/rasenganjs/cbcfdb6a1f4992b6cfacc280c68dc0d8fe42059c)
+
+## 1.1.3 (2025-08-30)
+
+## 1.1.2 (2025-08-16)
+
+## 1.1.1 (2025-08-16)
+
+## 1.1.0 (2025-08-15)
+
+## 1.1.0-beta.2 (2025-07-09)
+
+## 1.1.0-beta.1 (2025-07-09)
+
+## 1.1.0-beta.0 (2025-07-09)
+
 ## 1.0.0 (2025-04-26)
 
 - fix: handling metadata on client when navigating between pages [5fbbaca](https://github.com/rasengan-dev/rasenganjs/5fbbaca5ce206d693b5a5d394827a3804838ba5c)

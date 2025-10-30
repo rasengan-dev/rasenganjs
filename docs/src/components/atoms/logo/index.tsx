@@ -11,14 +11,25 @@ export default function AppLogo({ size = 'md' }: Props) {
 
   return (
     <Link to="/">
-      <Image
-        src={
-          isDark ? '/rasengan-large-white.svg' : '/rasengan-large-normal.svg'
-        }
-        alt="Rasengan Logo"
-        width={size === 'sm' ? 100 : size === 'md' ? 130 : 160}
-        height={'auto'}
-      />
+      <div className="md:hidden">
+        <Image
+          src={'/rasengan.svg'}
+          alt="Rasengan Logo"
+          width={40}
+          height={'auto'}
+        />
+      </div>
+
+      <div className="hidden md:block">
+        <Image
+          src={
+            isDark ? '/rasengan-large-white.svg' : '/rasengan-large-normal.svg'
+          }
+          alt="Rasengan Logo"
+          width={160}
+          height={'auto'}
+        />
+      </div>
     </Link>
   );
 }

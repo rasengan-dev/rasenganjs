@@ -1,6 +1,6 @@
-import React, { JSX, use, useMemo } from 'react';
+import React, { JSX, useMemo } from 'react';
 import { RootComponentProps } from '../types.js';
-import { generateMetadata, getRouter } from '../utils/index.js';
+import { generateMetadata } from '../utils/index.js';
 import { Outlet } from 'react-router';
 import {
   LayoutComponent,
@@ -12,16 +12,13 @@ import {
  * App component that represent the entry point of the application
  */
 export const RootComponent = ({
-  router: AppRouterPromise,
-  children = undefined,
+  Router, // Client Router
+  children = undefined, // Static Router for SSR when provided
 }: RootComponentProps) => {
   // Return children if they exist
-  if (children) return children;
+  if (children) return children; // For the SSR
 
-  const AppRouter = use(AppRouterPromise);
-
-  // Otherwise, get the router and return it
-  let Router = getRouter(AppRouter);
+  if (!Router) return null;
 
   return <Router />;
 };

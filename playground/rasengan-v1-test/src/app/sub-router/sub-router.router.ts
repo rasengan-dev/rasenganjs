@@ -8,5 +8,5 @@ class SubRouter extends RouterComponent {}
 export default defineRouter({
   imports: [],
   pages: [Home, About, Group1],
-  useParentLayout: false,
+  useParentLayout: true,
 })(SubRouter);

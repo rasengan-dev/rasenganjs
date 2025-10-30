@@ -1,4 +1,6 @@
 import type * as Express from 'express';
+import { EventEmitter } from 'node:events';
+import { Readable } from 'node:stream';
 import {
   createReadableStreamFromReadable,
   writeReadableStreamToWritable,
@@ -113,4 +115,63 @@ export function createRasenganHeaders(
   }
 
   return headers;
+}
+
+/**
+ * Creates a fake Express-like request and response for static prerendering.
+ * This mimics the shape expected by `createRasenganRequest(req, res)`.
+ */
+export function createFakeRasenganRequest(
+  pathname: string,
+  options?: {
+    host?: string;
+    protocol?: 'http' | 'https';
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string | Buffer;
+  }
+) {
+  const {
+    host = 'localhost:5320',
+    protocol = 'http',
+    method = 'GET',
+    headers = {},
+    body,
+  } = options ?? {};
+
+  // --- Fake Request ---
+  const req = {
+    originalUrl: pathname.startsWith('/') ? pathname : `/${pathname}`,
+    method,
+    protocol,
+    hostname: host.split(':')[0],
+    headers,
+    get(headerName: string) {
+      const key = headerName.toLowerCase();
+      if (key === 'x-forwarded-host') return host;
+      if (key === 'host') return host;
+      return headers[key];
+    },
+  } as any;
+
+  // If a body exists, attach it as a readable stream (like Express req)
+  if (body) {
+    const readable = Readable.from([body]);
+    Object.assign(req, readable);
+  }
+
+  // --- Fake Response ---
+  const res = new EventEmitter() as any;
+  res.on = res.addListener; // mimic Express style
+  res.write = () => true;
+  res.end = () => {
+    res.emit('finish');
+  };
+
+  // Utility to simulate stream end
+  process.nextTick(() => {
+    res.emit('close');
+  });
+
+  return { req, res };
 }

@@ -1,5 +1,6 @@
 import {
   createStaticRouter,
+  matchRoutes,
   StaticHandler,
   StaticHandlerContext,
   StaticRouterProvider,
@@ -109,12 +110,35 @@ export async function handleDocumentRequest(
 
       const headers = extractHeadersFromRRContext(context);
 
+      // const route = await handler.queryRoute(request, {
+      //   requestContext: context,
+      // });
+
+      // // TODO: Check this line again
+      // if (route['meta']?.title === 'Not Found') {
+      //   // Set headers
+      //   res.writeHead(404, {
+      //     ...Object.fromEntries(headers),
+      //   });
+      // } else {
+      //   // Set headers
+      //   res.writeHead(context.statusCode, {
+      //     ...Object.fromEntries(headers),
+      //   });
+      // }
+
       // Set headers
       res.writeHead(context.statusCode, {
         ...Object.fromEntries(headers),
       });
 
-      const Router = <StaticRouterProvider router={router} context={context} />;
+      const Router = (
+        <StaticRouterProvider
+          router={router}
+          context={context}
+          hydrate={true}
+        />
+      );
 
       // If stream mode enabled, render the page as a plain text
       return await render(Router, res, {

@@ -6,6 +6,8 @@ import LayoutComponentPage from './layout-component.page.mdx';
 import PageComponentPage from './page-component.page.mdx';
 import RouterComponentPage from './router-component.page.mdx';
 import TemplatePage from './template.page.mdx';
+import NavLinkPage from './navlink.page.mdx';
+import ScrollRestorationPage from './scroll-restoration.page.mdx';
 
 export default defineRoutesGroup({
   path: '/components',
@@ -17,5 +19,7 @@ export default defineRoutesGroup({
     PageComponentPage,
     RouterComponentPage,
     TemplatePage,
+    NavLinkPage,
+    ScrollRestorationPage,
   ],
 });

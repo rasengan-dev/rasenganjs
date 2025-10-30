@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "dfx": "0.17.0",
+  "canisters": {},
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "type": "persistent"
+    }
+  }
+}

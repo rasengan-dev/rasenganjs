@@ -3,12 +3,7 @@ import { BookOpen, Box, LayoutTemplate } from 'lucide-react';
 import { Outlet, LayoutComponent, useFetcher, useMatch } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
-  const fetcher = useFetcher();
-
-  const { data } = fetcher;
-  const match = useMatch('/');
-
-  console.log({ fetcherData: data, fetcher, match });
+  // console.log(g);
 
   return (
     <section className="w-full bg-white font-inter overflow-auto h-screen dark">

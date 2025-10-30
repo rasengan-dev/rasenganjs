@@ -114,6 +114,11 @@ program
             `The language ${chalk.bold.blue(`"${language}"`)} is not supported!`
           )
         );
+        // Log the correct languages
+        console.log(
+          `Available languages: ${Languages.map((lang) => chalk.blue(lang))}`
+        );
+        console.log('');
         return;
       }
     }
@@ -223,6 +228,9 @@ program
       // Version of tailwind if the template is tailwind
       let tailwindVersion = '';
 
+      // Routing mode
+      let routingMode = '';
+
       // Prepare question about tools
       // let tools = [];
 
@@ -269,9 +277,20 @@ program
 
           tailwindVersion = answer;
         }
+
+        // Prepare the question for the routing mode
+        const routingModeAnswer = await consola.prompt(
+          'Do you want to enable file-based routing?',
+          {
+            type: 'confirm',
+          }
+        );
+
+        routingMode = routingModeAnswer ? 'file-based' : 'config-based';
       } else {
         languageName = 'typescript';
         templateName = 'blank';
+        routingMode = 'file-based';
 
         // Display the selected values
         console.log('');
@@ -280,18 +299,15 @@ program
 
         console.log(`Language: ${chalk.blue(languageName)}`);
         console.log(`Template: ${chalk.blue(templateName)}`);
+        console.log(`Routing mode: ${chalk.blue(routingMode)}`);
       }
 
       // Handling all answers
       const templatePath = path.join(
         __dirname,
         '../..',
-        `templates/${templateName}${
-          templateName === 'tailwind'
-            ? tailwindVersion === 'v3'
-              ? '-v3'
-              : '-v4'
-            : ''
+        `templates/${routingMode}/${templateName}${
+          templateName === 'tailwind' ? `-${tailwindVersion}` : ''
         }-${languageName === 'typescript' ? 'ts' : 'js'}`
       );
 

@@ -8,7 +8,7 @@ export type AppProps = {
   /**
    * Represents the component that will be rendered
    */
-  Component: React.FC<RootComponentProps>;
+  Component: React.FC<Omit<RootComponentProps, 'Router'>>;
 
   /**
    * Represents the children of the component

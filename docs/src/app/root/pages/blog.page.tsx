@@ -8,8 +8,8 @@ const Blog: PageComponent = () => {
   const { blog: posts } = useBlogStore();
 
   return (
-    <section className="w-full min-h-screen">
-      <section className="grid-section relative px-4 xl:px-20 py-20 pt-40 overflow-hidden">
+    <section className="w-full h-full">
+      <section className="grid-section relative px-4 xl:px-20 py-20 pt-40 overflow-x-hidden">
         <Heading
           title="Blog"
           description="Insights, tips, and updates from the Rasengan.js community."

@@ -1,0 +1,51 @@
+{
+  "name": "@rasenganjs/i18n",
+  "private": false,
+  "version": "1.0.0-beta.3",
+  "description": "Library that handles internationalization for Rasengan.JS applications",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "require": "./lib/index.js"
+    },
+    "./plugin": {
+      "types": "./lib/plugin.d.ts",
+      "import": "./lib/plugin.js",
+      "require": "./lib/plugin.js"
+    },
+    "./types/client": {
+      "types": "./types/client.d.ts"
+    }
+  },
+  "author": {
+    "name": "dilane3",
+    "email": "komboudilane125@gmail.com",
+    "url": "https://dilane3.com",
+    "twitter": "https://twitter.com/dilanekombou",
+    "github": "https://github.com/dilane3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasengan-i18n.git",
+    "issues": "https://github.com/rasengan-dev/rasengan-i18n/issues"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:clean": "rimraf ./lib",
+    "build": "pnpm run build:clean && tsc",
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "rasengan": "workspace:^",
+    "vite": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1"
+  }
+}

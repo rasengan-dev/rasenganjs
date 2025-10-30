@@ -1,0 +1,148 @@
+---
+path: /rasengan-v1-1-0
+metadata: 
+  title: Rasengan v1.1.0
+  description: We are publishing Rasengan v1.1.0, a new version of the framework that introduces you the file-based routing feature.
+  openGraph:
+    title: Rasengan v1.1.0
+    description: We are publishing Rasengan v1.1.0, a new version of the framework that introduces you the file-based routing feature.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.1.0.png'
+  twitter:
+    title: Rasengan v1.1.0
+    description: We are publishing Rasengan v1.1.0, a new version of the framework that introduces you the file-based routing feature.
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.1.0.png'
+---
+
+import BlogDetailsHeader from '@/components/molecules/blog-header-details';
+import { AlertWithLink } from "@/components/atoms/alerts"; 
+import { Link } from 'rasengan';
+
+<BlogDetailsHeader />
+
+`Rasengan v1.1.0` is now available on [npm](https://www.npmjs.com/package/rasengan).
+
+<br />
+
+In this post, we will talk about the new features of Rasengan v1.1.0 and how you can adopt them into your projects.
+
+For a list of breaking changes, see the Change log.
+
+## What's new in Rasengan v1.1.0?
+
+### Introduction of File-based routing
+
+Rasengan v1.1.0 introduces you the <Link to="/docs/routing/file-based-routing">**file-based routing**</Link> feature. This feature allows you to create routes based on the file structure of your project.
+<br />
+
+To use this feature, you have to create files in the `src/app/_routes` directory and always export a component from it by default in order to be considered.
+
+```tsx title="src/app/_routes/index.page.tsx" showLineNumbers
+import { PageComponent } from "rasengan";
+
+const Page: PageComponent = () => {
+  return <h1>Home</h1>;
+}
+
+Page.metadata = {
+  title: "Home",
+  description: "Home page",
+}
+
+export default Page;
+```
+<br />
+
+This will create a route for the `index` page with the path `/`.
+<br />
+
+You can also create nested routes by creating a directory in the `src/app/_routes` directory and exporting a component from it.
+```tsx title="src/app/_routes/blog/index.page.tsx" showLineNumbers
+import { PageComponent } from "rasengan";
+
+const Page: PageComponent = () => {
+  return <h1>Blog</h1>;
+}
+
+Page.metadata = {
+  title: "Blog",
+  description: "Blog page",
+}
+
+export default Page;
+```
+<br />
+
+This will create a route for the `blog` page with the path `/blog`.
+
+<br />
+
+In order to work perfectly, you need to cover a last step, by importing the Router component that represent your file-based routes into the `app.router.ts` file.
+
+```tsx title="src/app/app.router.ts" showLineNumbers {2,7}
+import { RouterComponent, defineRouter } from "rasengan";
+import Router from "virtual:rasengan/router";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [Router],
+})(AppRouter);
+```
+
+Now you are ready to use the file-based routing feature 😊.
+
+<AlertWithLink 
+  status="info"
+  title="Learn more about File-based routing"
+  link="/docs/routing/file-based-routing"
+/>
+
+### Introduction of NavLink component
+
+Rasengan v1.1.0 introduces you the <Link to="/docs/api-reference/components/navlink">**NavLink**</Link> component. This component is a wrapper around the `<Link>` component with additional props for styling `active` and `pending` states.
+
+
+### Introduction of @rasenganjs/i18n package
+
+We are proud to announce you the release of the <Link to="/packages/i18n">@rasenganjs/i18n</Link> package.
+
+The purpose is to provide internationalization support to your application based on static files (JSON format) holding the translations.
+
+<br />
+
+The package is currently in `beta` and we are working on it to make it more stable and to add more features. If you want to try it out, you can install it via npm.
+
+```bash title="Terminal"
+npm install @rasenganjs/i18n@1.0.0-beta.3
+```
+
+For futher information, see the <Link to="/packages/i18n">@rasenganjs/i18n</Link> package documentation.
+
+### Add support for shadcn into create-rasengan CLI
+
+Building website is good, but doing it even faster is better.
+
+<Link to="https://ui.shadcn.com" target="_blank">Shadcn</Link> is a set of beautifully designed components that you can customize, extend, and build on.
+
+<br />
+
+In the previous version of <Link to="/packages/create-rasengan">create-rasengan CLI</Link> package, we were supporting only Tailwind CSS (both v3 and v4) and we were not supporting any UI framework.
+
+<br />
+
+Now, we are supporting Shadcn UI, that means you have the possibility to initialize your project with Shadcn UI well configured with just one command.
+
+```bash title="Terminal"
+npx create-rasengan@latest --with-shadcn
+```
+
+This command will generate a new project with Shadcn UI configured and ready to use.
+
+<AlertWithLink 
+  status="info"
+  title="Learn more about this feature"
+  link="/packages/create-rasengan#with-shadcn-(--with-shadcn)"
+/>
+
+Learn more about [Rasengan.js documentation](/docs/getting-started/introduction) and have fun Ninja!

@@ -1,4 +1,4 @@
-export function create(name: string) {
+export function createVirtualModule(name: string) {
   let id = `virtual:rasengan/${name}`;
   return {
     id,

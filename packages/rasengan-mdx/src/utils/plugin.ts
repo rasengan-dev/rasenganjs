@@ -104,6 +104,7 @@ export default async function plugin(): Promise<{
           
           MDXContent.metadata = metadata;
           MDXContent.toc = toc;
+          MDXContent.type = "MDXPageComponent"; // important for the defineRouter function
         `,
         map: result.map,
       };

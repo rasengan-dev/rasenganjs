@@ -7,6 +7,7 @@ release({
   packages: [
     'rasengan',
     'rasengan-image',
+    'rasengan-i18n',
     'rasengan-mdx',
     'rasengan-serve',
     'rasengan-theme',

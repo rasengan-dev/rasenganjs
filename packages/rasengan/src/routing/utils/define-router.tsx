@@ -6,6 +6,7 @@ import {
   MDXRendererProps,
 } from '../types.js';
 import { RouterComponent } from '../interfaces.js';
+import { RouteNode } from './index.js';
 
 /**
  * This function adds metadata to a router
@@ -23,23 +24,23 @@ export const defineRouter = (option: RouterProps) => {
   } = option;
 
   return async (Router: new () => RouterComponent) => {
-    // Handle errors
-    if (!option.pages)
-      throw new Error(
-        'You must provide a list of pages in the router option object'
-      );
-
     // Create router
     const router = new Router();
 
     // List of pages component
-    const pageComponentList: PageComponent[] = [];
+    const pageComponentList: Array<PageComponent | RouteNode> = [];
 
     for (let p of pages ?? []) {
       // Check if p is an array
       if (Array.isArray(p)) {
         for (let page of p) {
-          if (isMDXPage(page)) {
+          if ('source' in page) {
+            pageComponentList.push(page as RouteNode);
+
+            continue;
+          }
+
+          if (isMDXPage(page as MDXPageComponent)) {
             const Page = await convertMDXPageToPageComponent(
               page as MDXPageComponent
             );
@@ -53,8 +54,14 @@ export const defineRouter = (option: RouterProps) => {
         continue;
       }
 
+      if ('source' in p) {
+        pageComponentList.push(p as RouteNode);
+
+        continue;
+      }
+
       // When p is a MDXPageComponent
-      if (isMDXPage(p)) {
+      if (isMDXPage(p as MDXPageComponent)) {
         const Page = await convertMDXPageToPageComponent(p as MDXPageComponent);
 
         pageComponentList.push(Page);
@@ -77,7 +84,9 @@ export const defineRouter = (option: RouterProps) => {
   };
 };
 
-const convertMDXPageToPageComponent = async (MDXPage: MDXPageComponent) => {
+export const convertMDXPageToPageComponent = async (
+  MDXPage: MDXPageComponent
+) => {
   // Load MDXRenderer from @rasenganjs/mdx
   const MDXRenderer = await loadMDXRenderer();
 
@@ -91,9 +100,9 @@ const convertMDXPageToPageComponent = async (MDXPage: MDXPageComponent) => {
   return Page;
 };
 
-const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
+export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
   // Check if page is a MDX Page Component or not
-  if (!page['path']) {
+  if (page.type === 'MDXPageComponent') {
     return true;
   }
 
@@ -109,8 +118,7 @@ const loadMDXRenderer = async (): Promise<
 
     return MDXRenderer;
   } catch (e) {
-    throw new Error(
-      'Failed to load MDXRenderer component from @rasenganjs/mdx, make sure you have installed the package'
-    );
+    console.error(e);
+    throw e;
   }
 };

@@ -1,0 +1,85 @@
+---
+path: /rasengan-v1-1-3
+metadata: 
+  title: Rasengan v1.1.3
+  description: We are publishing Rasengan v1.1.3, a new version of the framework that introduces you the ScrollRestoration component.
+  openGraph:
+    title: Rasengan v1.1.3
+    description: We are publishing Rasengan v1.1.3, a new version of the framework that introduces you the ScrollRestoration component.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.1.3.png'
+  twitter:
+    title: Rasengan v1.1.3
+    description: We are publishing Rasengan v1.1.3, a new version of the framework that introduces you the ScrollRestoration component.
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.1.3.png'
+---
+
+import BlogDetailsHeader from '@/components/molecules/blog-header-details';
+import { AlertWithLink } from "@/components/atoms/alerts"; 
+import { Link } from 'rasengan';
+
+<BlogDetailsHeader />
+
+`Rasengan v1.1.3` is now available on [npm](https://www.npmjs.com/package/rasengan).
+
+<br />
+
+In this post, we will talk about the new features of Rasengan v1.1.3 and how you can adopt them into your projects.
+
+For a list of breaking changes, see the Change log.
+
+## What's new in Rasengan v1.1.3?
+
+### Introduction of `ScrollRestoration` component
+
+Rasengan v1.1.3 introduces you the <Link to="/docs/api-reference/components/scroll-restoration">**ScrollRestoration**</Link> component. It is a special component that is used to restore the scroll position of the current page.
+<br />
+
+To use this feature, you have to put the `<ScrollRestoration />` component where you want to restore the scroll position, generally in your root layout.
+
+```tsx title="src/app/app.layout.tsx" showLineNumbers copy /ScrollRestoration/ {6}
+import { LayoutComponent, Outlet, ScrollRestoration } from "rasengan";
+
+const AppLayout: LayoutComponent = () => {
+  return (
+    <>
+      <ScrollRestoration />
+      <Outlet />
+    </>
+  );
+}
+```
+
+<AlertWithLink 
+  status="info"
+  title="Learn more about the ScrollRestoration Component"
+  link="/docs/api-reference/components/scroll-restoration"
+/>
+
+### Logs update into `@rasenganjs/serve` package
+
+When hosting your application on production or just trying to preview your application in a production environment, you have to use the `@rasenganjs/serve` adapter package.
+
+This package is a simple and fast way to deploy your application on a private server (VPS).
+
+<br />
+
+This new release also updates the `@rasenganjs/serve` package to the latest version, by adding some new features and fixing some bugs.
+
+- Added `--port` option to specify the port on which the server will run
+- Enhanced the `logs` to be more readable and identifiable by adding timestamps for each log
+
+
+<AlertWithLink 
+  status="info"
+  title="Learn more about the @rasenganjs/serve package"
+  link="/packages/serve#custom-port"
+/>
+
+### Fixing bugs into `rasengan` regarding `file-based routing`
+
+This new release also fixes some bugs into `rasengan` regarding `file-based routing`.
+
+<br />
+
+Learn more about [Rasengan.js documentation](/docs/getting-started/introduction) and have fun Ninja!

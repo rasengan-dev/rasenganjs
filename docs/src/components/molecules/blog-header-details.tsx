@@ -18,8 +18,6 @@ export default function BlogDetailsHeader({}: Props) {
   const { title, authors, postedAt } = useMemo(() => {
     const post = posts.find((blog) => pathname.includes(blog.link));
 
-    console.log({ post, pathname });
-
     return {
       title: post?.title,
       authors: post?.authors,
@@ -28,7 +26,7 @@ export default function BlogDetailsHeader({}: Props) {
   }, [pathname]);
 
   const handleGoBack = () => {
-    navigate(-1);
+    navigate('/blog');
   };
 
   return (

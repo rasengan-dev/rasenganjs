@@ -10,7 +10,7 @@ import type {
 import { TemplateLayout } from './index.js';
 import { BuildOptions } from '../../server/build/index.js';
 import { join, posix } from 'path/posix';
-import { renderToStream } from '../../server/node/rendering.js';
+import { renderToStream, renderToString } from '../../server/node/rendering.js';
 
 export type RenderStreamFunction = (
   StaticRouterComponent: React.ReactNode,
@@ -22,8 +22,11 @@ export type RenderStreamFunction = (
     };
     assets?: JSX.Element[]; // Usefull for the production build
     buildOptions?: BuildOptions;
-  }
-) => Promise<void>;
+    App?: FunctionComponent<AppProps>;
+    Template?: FunctionComponent<TemplateProps>;
+  },
+  stream?: boolean
+) => Promise<void | string>;
 
 /**
  * Render the app to a stream
@@ -35,7 +38,8 @@ export type RenderStreamFunction = (
 export const render: RenderStreamFunction = async (
   StaticRouterComponent,
   res,
-  options
+  options,
+  stream = true
 ) => {
   const { metadata, assets, buildOptions } = options;
 
@@ -45,6 +49,7 @@ export const render: RenderStreamFunction = async (
   let App: FunctionComponent<AppProps>;
   let Template: FunctionComponent<TemplateProps>;
 
+  // If build options are provided, that means we are in production mode
   if (buildOptions) {
     App = (
       await loadModuleSSR(
@@ -66,19 +71,35 @@ export const render: RenderStreamFunction = async (
     ).default;
   } else {
     // Import Main App Component
-    App = (await loadModuleSSR(`${rootPath}/src/main`)).default;
+    App = options.App || (await loadModuleSSR(`${rootPath}/src/main`)).default;
     // Import Template
-    Template = (await loadModuleSSR(`${rootPath}/src/template`)).default;
+    Template =
+      options.Template ||
+      (await loadModuleSSR(`${rootPath}/src/template`)).default;
   }
 
-  await renderToStream(
-    <TemplateLayout
-      StaticRouterComponent={StaticRouterComponent}
-      metadata={metadata}
-      assets={assets}
-      App={App}
-      Template={Template}
-    />,
-    res
-  );
+  if (stream) {
+    await renderToStream(
+      <TemplateLayout
+        StaticRouterComponent={StaticRouterComponent}
+        metadata={metadata}
+        assets={assets}
+        App={App}
+        Template={Template}
+      />,
+      res
+    );
+  } else {
+    const html = renderToString(
+      <TemplateLayout
+        StaticRouterComponent={StaticRouterComponent}
+        metadata={metadata}
+        assets={assets}
+        App={App}
+        Template={Template}
+      />
+    );
+
+    return html;
+  }
 };

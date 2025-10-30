@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 1.1.7 (2025-08-16)
+
+## 1.1.6 (2025-08-16)
+
+## 1.1.5 (2025-08-15)
+
+## 1.1.4 (2025-08-15)
+
+## 1.1.2 (2025-08-15)
+
+## 1.1.3 (2025-08-15)
+
+## 1.1.2 (2025-08-15)
+
 ## 1.1.1 (2025-04-26)
 
 - fix(packages/mdx): correct the types link in package.json [dfdbc7c0](https://github.com/rasengan-dev/rasenganjs/commit/dfdbc7c001471b4f3b76b41673108e9e13cc3049)

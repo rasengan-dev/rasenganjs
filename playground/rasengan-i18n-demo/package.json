@@ -1,0 +1,28 @@
+{
+  "name": "rasengan-i18n-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan dev",
+    "build": "rasengan build",
+    "serve": "rasengan-serve ./dist"
+  },
+  "dependencies": {
+    "rasengan": "workspace:*",
+    "@rasenganjs/image": "workspace:*",
+    "@rasenganjs/serve": "workspace:*",
+    "@rasenganjs/i18n": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.*",
+    "@tailwindcss/vite": "^4.*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.1.3",
+    "vite": "^6.2.6"
+  }
+}

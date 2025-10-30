@@ -64,7 +64,7 @@ export const TemplateLayout = ({
         <script
           type="module"
           dangerouslySetInnerHTML={{
-            __html: `window.__RASENGAN_SPA_MODE__ = true;`,
+            __html: `window.__RASENGAN_SPA_MODE__=true;`,
           }}
         />
 
@@ -79,7 +79,7 @@ export const TemplateLayout = ({
         <script
           type="module"
           dangerouslySetInnerHTML={{
-            __html: `window.__RASENGAN_SPA_MODE__ = false;`,
+            __html: `window.__RASENGAN_SPA_MODE__=false;`,
           }}
         />
       </React.Fragment>
@@ -99,7 +99,11 @@ export const TemplateLayout = ({
         <BodyComponent
           asChild={App ? true : false}
           AppContent={
-            App && <App Component={RootComponent}>{StaticRouterComponent}</App>
+            App && (
+              <App Component={(props) => <RootComponent {...props} />}>
+                {StaticRouterComponent}
+              </App>
+            )
           }
         >
           {children}

@@ -63,6 +63,22 @@ This will start a server that serves your application from the `dist` folder.
 
 Currently, `@rasenganjs/serve` provides a default configuration for serving your built project. Future updates may include additional options for customization.
 
+#### Custom port
+
+You can specify a custom port for the server by using the `--p` or `--port` option:
+
+```bash title="Terminal"
+npm run serve -- -p 3000
+```
+
+or 
+
+```bash title="Terminal"
+pnpm run serve -p 3000
+```
+
+The `-p` option stands for `port`, and allow you to specify a custom port for the server by replacing the default port `4320` for production server.
+
 ## Community
 
 Join the Rasengan.js community to get support, ask questions, and share your projects:

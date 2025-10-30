@@ -1,29 +1,23 @@
 import Navbar from '@/components/layout/navbar';
-import { Outlet, LayoutComponent, useLocation } from 'rasengan';
+import { Outlet, LayoutComponent } from 'rasengan';
 import SidebarNavigation from './components/layout/sidebar';
 import Footer from '@/components/layout/footer';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AlignJustify } from 'lucide-react';
 import ThemeButton from '@/components/atoms/buttons/theme-button';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
+import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
+import { useBannerStore } from '@/store/banner';
 
 const DocsLayout: LayoutComponent = () => {
-  const { hash } = useLocation();
   const { isDark } = useTheme();
 
+  const targetRef = useRef<HTMLElement>(null);
+
   const [navigationOpen, setNavigationOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    if (hash) {
-      // smooth scroll to the anchor
-      const element = document.getElementById(hash.slice(1));
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+  const { show: showBanner } = useBannerStore();
 
   return (
     <section
@@ -31,10 +25,17 @@ const DocsLayout: LayoutComponent = () => {
         'docs w-full h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
         isDark ? 'dark' : ''
       )}
+      ref={targetRef}
     >
+      <ScrollRestoration target={targetRef} />
       <Navbar />
 
-      <div className="fixed z-30 top-[60px] w-full h-[50px] flex lg:hidden items-center justify-between px-4 lg:px-6 bg-background text-foreground border-b-[1px] border-b-border">
+      <div
+        className={twMerge(
+          'fixed z-30  w-full h-[50px] flex lg:hidden items-center justify-between px-4 lg:px-6 bg-background text-foreground border-b-[1px] border-b-border',
+          showBanner ? 'top-[120px]' : 'top-[60px]'
+        )}
+      >
         <div
           className="flex items-center justify-center mr-2"
           onClick={() => setNavigationOpen((prev) => !prev)}
@@ -47,7 +48,12 @@ const DocsLayout: LayoutComponent = () => {
         </div>
       </div>
 
-      <section className="relative h-auto flex pt-16 lg:pt-4">
+      <section
+        className={twMerge(
+          'relative h-auto flex ',
+          showBanner ? 'pt-24 lg:pt-20' : 'pt-16 lg:pt-4'
+        )}
+      >
         <SidebarNavigation className="hidden lg:block h-auto" />
 
         <motion.div

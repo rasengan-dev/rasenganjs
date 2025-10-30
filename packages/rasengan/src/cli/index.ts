@@ -11,9 +11,9 @@ program
 // Handle the dev command
 program
   .command('dev')
-  .option('-p <port>')
+  .option('-p, --port <port>', 'Port number')
   .description('Start development server')
-  .action(async ({ p: port }: { p: number }) => {
+  .action(async ({ port }: { port: number }) => {
     const convertedPort = Number(port);
 
     // Checking port
