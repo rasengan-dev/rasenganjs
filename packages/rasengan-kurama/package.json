@@ -1,15 +1,15 @@
 {
-  "name": "@rasenganjs/vercel",
+  "name": "@rasenganjs/kurama",
   "version": "1.0.0",
   "type": "module",
-  "description": "Vercel adapter to serve Rasengan apps on Vercel",
+  "description": "Kurama is a lightweight state management library for Rasengan",
   "bugs": {
     "url": "https://github.com/rasengan-dev/rasenganjs/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-vercel"
+    "directory": "packages/rasengan-kurama"
   },
   "license": "MIT",
   "exports": {
@@ -29,16 +29,17 @@
     "pack": "pnpm pack --pack-destination ./release/"
   },
   "peerDependencies": {
-    "rasengan": "workspace:^"
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1 || ^19.0.0",
+    "@types/react-dom": "^18.3.1 || ^19.0.0"
   },
   "files": [
     "dist/",
-    "bin.js",
     "CHANGELOG.md",
     "LICENSE.md",
     "README.md"
-  ],
-  "dependencies": {
-    "execa": "^8.0.1"
-  }
+  ]
 }

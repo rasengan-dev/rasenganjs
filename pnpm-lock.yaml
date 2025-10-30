@@ -366,6 +366,22 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
 
+  packages/rasengan-kurama:
+    dependencies:
+      react:
+        specifier: ^19.1.1
+        version: 19.1.1
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.1.1(react@19.1.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.1 || ^19.0.0
+        version: 19.1.10
+      '@types/react-dom':
+        specifier: ^18.3.1 || ^19.0.0
+        version: 19.1.7(@types/react@19.1.10)
+
   packages/rasengan-mdx:
     dependencies:
       '@mdx-js/rollup':
@@ -614,6 +630,43 @@ importers:
       vite:
         specifier: ^6.2.6
         version: 6.3.5(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)
+
+  playground/rasengan-kurama:
+    dependencies:
+      '@rasenganjs/image':
+        specifier: ^1.0.0
+        version: 1.1.3(react@19.1.1)
+      '@rasenganjs/kurama':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-kurama
+      '@rasenganjs/serve':
+        specifier: ^1.0.0
+        version: 1.0.1(rasengan@packages+rasengan)
+      rasengan:
+        specifier: workspace:*
+        version: link:../../packages/rasengan
+      react:
+        specifier: ^19.1.1
+        version: 19.1.1
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.1.1(react@19.1.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.1.10
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.1.7(@types/react@19.1.10)
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      typescript:
+        specifier: ^5.1.3
+        version: 5.9.2
+      vite:
+        specifier: ^7.0.0
+        version: 7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)
 
   playground/rasengan-v1-test:
     dependencies:
@@ -4178,6 +4231,18 @@ snapshots:
       get-port: 7.1.0
       morgan: 1.10.0
       rasengan: 1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
+      source-map-support: 0.5.21
+    transitivePeerDependencies:
+      - supports-color
+
+  '@rasenganjs/serve@1.0.1(rasengan@packages+rasengan)':
+    dependencies:
+      chalk: 5.4.1
+      compression: 1.8.0
+      express: 4.21.2
+      get-port: 7.1.0
+      morgan: 1.10.0
+      rasengan: link:packages/rasengan
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - supports-color
