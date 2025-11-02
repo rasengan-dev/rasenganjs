@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { RouteObject as RRRouteObject } from 'react-router';
 import { RouterComponent } from './interfaces.js';
-import { RouteNode } from './utils/index.js';
+import { Module, RouteNode } from './utils/index.js';
 
 export type MetadataLink = {
   rel: string;
@@ -147,7 +147,14 @@ export type LoaderFunction = ({
   request: Request;
 }) => Promise<LoaderResponse | Response>;
 
+export type GenerateStaticPathsFunction = () => Promise<{
+  paths: Array<{ params: Record<string, string> }>;
+}>;
+
 export type RouteObject = RRRouteObject & {
+  /**
+   * Loader function that loads data for the page from the server
+   */
   loader?: LoaderFunction;
 
   /**
@@ -159,6 +166,12 @@ export type RouteObject = RRRouteObject & {
    * Determines if the route is nested
    */
   nested?: boolean;
+
+  /**
+   * Function that returns a Promise that resolves to a module object that represents the page component
+   * This is used for static page generation only
+   */
+  module?: () => Promise<Module>;
 };
 
 export type RoutesGroupProps = {
@@ -231,7 +244,12 @@ export type PageComponent<T = ReactComponentProps> = LayoutComponent<T> & {
   /**
    * Type of the page
    */
-  type?: string;
+  type?: 'MDXPageComponent' | 'PageComponent';
+
+  /**
+   * Generate static paths for SSG
+   */
+  generatePaths?: GenerateStaticPathsFunction;
 };
 
 /**
@@ -244,11 +262,18 @@ export type PageComponent<T = ReactComponentProps> = LayoutComponent<T> & {
  * which can be used to store metadata about the page.
  */
 export type MDXPageComponent = FunctionComponent & {
+  /**
+   * Metadata for the page omit title
+   */
   metadata?: {
     path?: string;
     metadata?: Metadata;
   };
-  type?: string;
+
+  /**
+   * Type of the page
+   */
+  type?: 'MDXPageComponent' | 'PageComponent';
 };
 
 /**

@@ -103,7 +103,6 @@ function flatRoutesPlugin(): Plugin {
                 '/src/app/_routes/**/layout.{js,ts,jsx,tsx}',
                 '/src/app/_routes/**/*.page.{md,mdx,js,ts,jsx,tsx}',
               ],
-              // { eager: true }
             );
           });
 

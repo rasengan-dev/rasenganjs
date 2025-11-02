@@ -8,6 +8,7 @@ import {
 } from '../../entries/server/entry.server.js';
 import {
   generateRoutes,
+  getAllRoutesPath,
   preloadMatches,
   // generateSSRRoutes,
 } from '../../routing/utils/index.js';
@@ -191,8 +192,8 @@ export async function preRenderApp(options: PreRenderAppOptions) {
   try {
     const {
       build: buildOptions,
-      outDir = 'dist/static',
-      routes = ['/'],
+      outDir = 'dist',
+      // routes = ['/'],
     } = options;
     // Initialize a vite dev server as middleware
     const viteDevServer = await createViteServer({
@@ -264,7 +265,7 @@ export async function preRenderApp(options: PreRenderAppOptions) {
 
     // 4. Load App Config
     const configPath = path.posix.join(
-      clientDir,
+      clientDir, // dist or dist/client
       buildOptions.assetPathDirectory,
       'config.json'
     );
@@ -274,9 +275,11 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     // 5. Generate static routes
     const staticRoutes = generateRoutes(AppRouter);
 
+    const routes = await getAllRoutesPath(staticRoutes);
+
     // 6. Loop through routes and render them to HTML
     for (const route of routes) {
-      const pathname = route === '/' ? '/' : `/${route}`;
+      const pathname = route === '/' ? '/' : `${route}/`;
       console.log(`🧩 Rendering ${pathname}`);
 
       // Simulate fake request & response
@@ -329,8 +332,9 @@ export async function preRenderApp(options: PreRenderAppOptions) {
         fs.mkdirSync(outputDir, { recursive: true });
         fs.writeFileSync(path.join(outputDir, 'index.html'), html as string);
 
+        const splittedOutputDir = outputDir.split('dist/');
         console.log(
-          `✅  Rendered: ${pathname} → dist/${outputDir.split('dist/')[1]}/index.html`
+          `✅  Rendered: ${pathname} → dist/${splittedOutputDir[1] ? splittedOutputDir[1] + '/' : ''}index.html`
         );
       }
     }
