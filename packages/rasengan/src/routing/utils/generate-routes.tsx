@@ -627,8 +627,9 @@ export const generateRoutes = (
 export async function getAllRoutesPath(
   routes: RouteObject[],
   parentPath: string = ''
-): Promise<string[]> {
+): Promise<{ paths: string[]; error: Set<string> }> {
   const allPaths: string[] = [];
+  const error = new Set<string>();
 
   for (const route of routes) {
     // Compute the full path
@@ -639,8 +640,11 @@ export async function getAllRoutesPath(
     // If route is an index route, it represents its parent path
     if (route.index) {
       if (parentPath.includes(':')) {
-        const staticPaths = await getStaticRoutesPath(parentPath, route);
+        const { paths: staticPaths, error: staticError } =
+          await getStaticRoutesPath(parentPath, route);
         allPaths.push(...staticPaths);
+
+        Array.from(staticError).forEach((err) => error.add(err));
       } else {
         allPaths.push(parentPath || '/');
       }
@@ -649,8 +653,11 @@ export async function getAllRoutesPath(
     // If route has a path and isn't only an index, add it
     else if (route.path) {
       if (route.path.includes(':')) {
-        const staticPaths = await getStaticRoutesPath(fullPath, route);
+        const { paths: staticPaths, error: staticError } =
+          await getStaticRoutesPath(fullPath, route);
         allPaths.push(...staticPaths);
+
+        Array.from(staticError).forEach((err) => error.add(err));
       } else {
         allPaths.push(fullPath);
       }
@@ -658,19 +665,24 @@ export async function getAllRoutesPath(
 
     // Handle children recursively
     if (route.children?.length) {
-      const childPaths = await getAllRoutesPath(route.children, fullPath);
+      const { paths: childPaths, error: childError } = await getAllRoutesPath(
+        route.children,
+        fullPath
+      );
       allPaths.push(...childPaths);
+
+      Array.from(childError).forEach((err) => error.add(err));
     }
   }
 
   // Ensure uniqueness (optional)
-  return Array.from(new Set(allPaths));
+  return { paths: Array.from(new Set(allPaths)), error };
 }
 
 async function getStaticRoutesPath(
   path: string,
   route: RouteObject
-): Promise<string[]> {
+): Promise<{ paths: string[]; error: Set<string> }> {
   const allPaths: string[] = [];
   const error = new Set<string>();
 
@@ -695,17 +707,17 @@ async function getStaticRoutesPath(
     }
   } else {
     // If no generatePaths function is provided, show a warning
-    console.warn(
+    error.add(
       `[rasengan:router]: Path '${path}' does not have a generatePaths function`
     );
   }
 
-  if (error.size > 0) {
-    // Log errors
-    Array.from(error).forEach((error) => console.warn(error));
-  }
+  // if (error.size > 0) {
+  //   // Log errors
+  //   Array.from(error).forEach((error) => console.warn(error));
+  // }
 
-  return allPaths;
+  return { paths: allPaths, error };
 }
 
 /**
