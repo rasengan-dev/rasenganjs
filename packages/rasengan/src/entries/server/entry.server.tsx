@@ -22,8 +22,6 @@ export type RenderStreamFunction = (
     };
     assets?: JSX.Element[]; // Usefull for the production build
     buildOptions?: BuildOptions;
-    App?: FunctionComponent<AppProps>;
-    Template?: FunctionComponent<TemplateProps>;
   },
   stream?: boolean
 ) => Promise<void | string>;
@@ -71,11 +69,9 @@ export const render: RenderStreamFunction = async (
     ).default;
   } else {
     // Import Main App Component
-    App = options.App || (await loadModuleSSR(`${rootPath}/src/main`)).default;
+    App = (await loadModuleSSR(`${rootPath}/src/main`)).default;
     // Import Template
-    Template =
-      options.Template ||
-      (await loadModuleSSR(`${rootPath}/src/template`)).default;
+    Template = (await loadModuleSSR(`${rootPath}/src/template`)).default;
   }
 
   if (stream) {

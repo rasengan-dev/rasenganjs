@@ -21,7 +21,7 @@ export const renderIndexHTML = async (
   const manifest = new ManifestManager(
     path.posix.join(
       buildOptions.buildDirectory,
-      config.ssr ? buildOptions.clientPathDirectory : '',
+      (config.ssr || config.prerender) ? buildOptions.clientPathDirectory : '',
       buildOptions.manifestPathDirectory,
       'manifest.json'
     )
@@ -44,19 +44,22 @@ export const renderIndexHTML = async (
     path.posix.join(
       rootPath, 
       buildOptions.buildDirectory, 
+      config.prerender ? buildOptions.clientPathDirectory : "",
       'index.html'
     ),
     html,
     'utf-8'
   );
 
-  // Delete the dist/assets/template.js file
-  await fs.rm(
-    path.posix.join(
-      rootPath,
-      buildOptions.buildDirectory,
-      buildOptions.assetPathDirectory,
-      'template.js'
-    )
-  );
+  // Delete the dist/assets/template.js or dist/client/assets/template.js file
+  if (!config.prerender) {
+    await fs.rm(
+      path.posix.join(
+        rootPath,
+        buildOptions.buildDirectory,
+        buildOptions.assetPathDirectory,
+        'template.js'
+      )
+    );
+  }
 }

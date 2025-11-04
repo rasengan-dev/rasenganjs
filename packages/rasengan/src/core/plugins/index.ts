@@ -173,11 +173,6 @@ export interface AdapterConfig {
 
 type RasenganPluginOptions = {
   adapter?: AdapterConfig;
-  prerender?:
-    | boolean
-    | {
-        routes: string[];
-      };
 };
 
 /**
@@ -187,7 +182,6 @@ type RasenganPluginOptions = {
  */
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
-  prerender = false,
 }: RasenganPluginOptions = {}): Plugin {
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
@@ -236,17 +230,19 @@ export function rasengan({
 
       // SPA mode only
       if (!config.ssr) {
-        // Generate the template.js file into the dist/assets
-        fs.writeFileSync(
-          path.posix.join(
-            process.cwd(),
-            buildOptions.buildDirectory,
-            buildOptions.assetPathDirectory,
-            'template.js'
-          ),
-          module.code,
-          'utf-8'
-        );
+        if (!config.prerender) {
+          // Generate the template.js file into the dist/assets
+          fs.writeFileSync(
+            path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              buildOptions.assetPathDirectory,
+              'template.js'
+            ),
+            module.code,
+            'utf-8'
+          );
+        }
       }
     },
 
@@ -257,12 +253,23 @@ export function rasengan({
         // Check if SPA mode is enabled
         if (!config.ssr) {
           // Load the template.js file
-          const templatePath = path.posix.join(
-            process.cwd(),
-            buildOptions.buildDirectory,
-            buildOptions.assetPathDirectory,
-            'template.js'
-          );
+          let templatePath = '';
+
+          if (config.prerender) {
+            templatePath = path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              'prerender',
+              'template.js'
+            );
+          } else {
+            templatePath = path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              buildOptions.assetPathDirectory,
+              'template.js'
+            );
+          }
 
           const Template = (await import(templatePath)).default;
 
@@ -284,7 +291,9 @@ export function rasengan({
           path.posix.join(
             process.cwd(),
             buildOptions.buildDirectory,
-            config.ssr ? buildOptions.clientPathDirectory : '',
+            config.ssr || config.prerender
+              ? buildOptions.clientPathDirectory
+              : '',
             buildOptions.assetPathDirectory,
             'config.json'
           ),
@@ -293,20 +302,17 @@ export function rasengan({
         );
 
         // Handling the prerendering
-        if (prerender) {
+        if (config.prerender) {
           let routes = [];
+          const buildOptions = resolveBuildOptions({
+            serverPathDirectory: 'prerender',
+          });
 
-          if (typeof prerender === 'object') {
-            routes = prerender.routes;
+          if (typeof config.prerender === 'object') {
+            routes = config.prerender.routes;
           }
 
-          const outDir = config.ssr
-            ? path.posix.join(
-                process.cwd(),
-                buildOptions.buildDirectory,
-                buildOptions.clientPathDirectory
-              )
-            : path.posix.join(process.cwd(), buildOptions.buildDirectory);
+          const outDir = `${process.cwd()}/static`;
 
           await preRenderApp({
             build: buildOptions,

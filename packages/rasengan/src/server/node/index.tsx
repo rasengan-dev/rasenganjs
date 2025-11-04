@@ -39,6 +39,7 @@ import {
 import { RouterComponent } from '../../routing/interfaces.js';
 import { FunctionComponent } from 'react';
 import ora from 'ora';
+import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -204,20 +205,24 @@ export async function preRenderApp(options: PreRenderAppOptions) {
   try {
     const {
       build: buildOptions,
-      outDir = 'dist',
+      outDir = 'static',
       // routes = ['/'],
     } = options;
+
+    // Copy client directory into static
+    // fs.mkdirSync(outDir, { recursive: true });
+
     // Initialize a vite dev server as middleware
-    const viteDevServer = await createViteServer({
-      server: {
-        middlewareMode: true,
-        hmr: false,
-      },
-      base: '/',
-      configFile: `${process.cwd()}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
-    });
-    // Get the module runner through ssr environment
-    const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+    // const viteDevServer = await createViteServer({
+    //   server: {
+    //     middlewareMode: true,
+    //     hmr: false,
+    //   },
+    //   base: '/',
+    //   configFile: `${process.cwd()}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
+    // });
+    // // Get the module runner through ssr environment
+    // const runner = createServerModuleRunner(viteDevServer.environments.ssr);
 
     const createSpinner = spinner('Starting static pre-rendering...');
 
@@ -234,20 +239,43 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     createSpinner.start();
 
     // Locate the assets directory
-    const clientDirCandidates = [
-      path.posix.join(
-        buildOptions.buildDirectory,
-        buildOptions.clientPathDirectory
-      ),
-      path.posix.join(buildOptions.buildDirectory),
-    ];
+    const clientDir = path.posix.join(
+      buildOptions.buildDirectory,
+      buildOptions.clientPathDirectory
+    );
 
-    const clientDir = clientDirCandidates.find((dir) => fs.existsSync(dir));
-
-    if (!clientDir) {
+    if (!fs.existsSync(clientDir)) {
       throw new Error(
-        'No "dist/client" or "dist" directory found. Please make sure to run "rasengan build" first.'
+        'No "dist/client" directory found. Please make sure to run "rasengan build".'
       );
+    }
+
+    // Prepare the static directory
+    fs.mkdirSync(outDir, { recursive: true });
+
+    // Read the content of dist/client
+    const items = fs.readdirSync(clientDir, { recursive: true });
+    const files: string[] = [];
+
+    items.forEach((item) => {
+      const fullPath = path.posix.join(path.resolve(clientDir), item as string);
+      const stat = fs.statSync(fullPath);
+
+      if (stat.isFile()) {
+        files.push(item);
+      } else {
+        // Create this folder
+        fs.mkdirSync(path.posix.join(path.resolve(outDir), item as string), {
+          recursive: true,
+        });
+      }
+    });
+
+    for (const file of files) {
+      const src = path.posix.join(clientDir, file as string);
+      const dest = path.posix.join(outDir, file as string);
+
+      fs.copyFileSync(src, dest);
     }
 
     // 1. Load build manifest
@@ -260,21 +288,17 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     );
 
     // 2. Load app-router
-    const AppRouter: RouterComponent = await (
-      await runner.import(path.posix.join(process.cwd(), '/src/app/app.router'))
+    const AppRouter = await (
+      await loadModuleSSR(
+        path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.serverPathDirectory,
+          'app.router.js'
+        )
+      )
     ).default;
 
-    // Load Main App
-    const App: FunctionComponent = await (
-      await runner.import(path.posix.join(process.cwd(), '/src/main'))
-    ).default;
-
-    // Load Template
-    const Template: FunctionComponent = await (
-      await runner.import(path.posix.join(process.cwd(), '/src/template'))
-    ).default;
-
-    // 4. Load App Config
+    // 3. Load App Config
     const configPath = path.posix.join(
       clientDir, // dist or dist/client
       buildOptions.assetPathDirectory,
@@ -283,7 +307,7 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     const configData = fs.readFileSync(configPath, 'utf-8').toString();
     const config = JSON.parse(configData) as OptimizedAppConfig;
 
-    // 5. Generate static routes
+    // 4. Generate static routes
     const staticRoutes = generateRoutes(AppRouter);
 
     const { paths: routes, error: staticError } =
@@ -291,7 +315,7 @@ export async function preRenderApp(options: PreRenderAppOptions) {
 
     const generatedFiles: string[] = [];
 
-    // 6. Loop through routes and render them to HTML
+    // 5. Loop through routes and render them to HTML
     for (const route of routes) {
       const pathname = route === '/' ? '/' : `${route}/`;
       // console.log(`🧩 Rendering ${pathname}`);
@@ -314,7 +338,6 @@ export async function preRenderApp(options: PreRenderAppOptions) {
         config.redirects
       );
       if (redirectFound) {
-        // console.log(`➡️  Skipping redirect route: ${pathname}`);
         createSpinner.text = `Skipping redirect route: ${pathname}`;
         continue;
       }
@@ -336,9 +359,7 @@ export async function preRenderApp(options: PreRenderAppOptions) {
           {
             metadata,
             assets,
-            // buildOptions,
-            App,
-            Template,
+            buildOptions,
           },
           false
         );
@@ -352,27 +373,20 @@ export async function preRenderApp(options: PreRenderAppOptions) {
           fs.mkdirSync(outputDir, { recursive: true });
           fs.writeFileSync(path.join(outputDir, '404.html'), html as string);
 
-          generatedFiles.push('dist/404.html');
+          generatedFiles.push('static/404.html');
         } else {
           outputDir = path.join(outDir, route || 'index');
           fs.mkdirSync(outputDir, { recursive: true });
           fs.writeFileSync(path.join(outputDir, 'index.html'), html as string);
 
-          const splittedOutputDir = outputDir.split('dist/');
+          const splittedOutputDir = outputDir.split('static/');
 
           generatedFiles.push(
-            `dist/${splittedOutputDir[1] ? splittedOutputDir[1] + '/' : ''}index.html`
+            `static/${splittedOutputDir[1] ? splittedOutputDir[1] + '/' : ''}index.html`
           );
         }
-
-        // console.log(
-        //   `✅  Rendered: ${pathname} → dist/${splittedOutputDir[1] ? splittedOutputDir[1] + '/' : ''}index.html`
-        // );
       }
     }
-
-    // Stop the vite dev server
-    viteDevServer.close();
 
     createSpinner.succeed('pre-rendering completed!');
     createSpinner.stop();
