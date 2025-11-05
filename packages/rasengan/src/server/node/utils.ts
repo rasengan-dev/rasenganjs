@@ -219,16 +219,13 @@ export async function logRenderedPagesGrouped(files: string[]) {
   }
 
   console.log();
-  console.log(
-    chalk.cyanBright(`✨ ${rows.length} page(s) successfully rendered:\n`)
-  );
 
   // Compute max filename length for nice column alignment
   const longestPath = Math.max(...rows.map((r) => r.file.length));
 
   for (const [folder, group] of groups) {
     console.log(
-      chalk.bold.greenBright(`📁 ${folder === 'root' ? '/' : '/' + folder}`)
+      chalk.bold.blueBright(`📁 ${folder === 'root' ? '/' : '/' + folder}`)
     );
     for (const { file, size, gzip } of group) {
       const paddedFile = chalk.white(file.padEnd(longestPath + 4, ' '));
@@ -239,7 +236,7 @@ export async function logRenderedPagesGrouped(files: string[]) {
     console.log();
   }
 
-  console.log(chalk.greenBright('🎉 Static generation completed.\n'));
+  console.log(chalk.blueBright('🎉 Static generation completed.\n'));
 }
 
 /**
@@ -249,4 +246,45 @@ function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes.toFixed(2)} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} kB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
+
+/**
+ * Match a route pattern like "/blog/**" or "/profile"
+ * to a list of available page paths.
+ */
+export function filterRoutesForPrerender(
+  routes: string[],
+  availablePages: string[]
+) {
+  // Convert route patterns to RegExp
+  const routeRegexList = routes.map((route) => {
+    // Escape regex special chars except for *
+    const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Replace wildcard `**` with `.*` (match anything after)
+    const regexStr = '^' + escaped.replace(/\\\*\\\*/g, '.*') + '$';
+    return new RegExp(regexStr);
+  });
+
+  // Filter pages that match at least one route pattern
+  const matchedPages = availablePages.filter((page) =>
+    routeRegexList.some((regex) => regex.test(page))
+  );
+
+  // Remove duplicates, add /* for 404 page and sort
+  return [...new Set([...matchedPages, '/*'])].sort();
+}
+
+// Convert seconds to minutes and seconds
+export function convertSecondsToMinutes(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (minutes === 0) {
+    if (remainingSeconds < 1) {
+      return `${remainingSeconds * 1000}ms`;
+    }
+    return `${remainingSeconds.toFixed(2)}s`;
+  }
+
+  return `${minutes}m ${remainingSeconds.toFixed(2)}s`;
 }

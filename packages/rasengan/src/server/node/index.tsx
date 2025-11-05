@@ -18,7 +18,9 @@ import {
   StaticRouterProvider,
 } from 'react-router';
 import createRasenganRequest, {
+  convertSecondsToMinutes,
   createFakeRasenganRequest,
+  filterRoutesForPrerender,
   logRenderedPagesGrouped,
 } from './utils.js';
 import {
@@ -40,6 +42,7 @@ import { RouterComponent } from '../../routing/interfaces.js';
 import { FunctionComponent } from 'react';
 import ora from 'ora';
 import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
+import chalk from 'chalk';
 
 // Spinner
 const spinner = (text: string) =>
@@ -203,27 +206,10 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
  */
 export async function preRenderApp(options: PreRenderAppOptions) {
   try {
-    const {
-      build: buildOptions,
-      outDir = 'static',
-      // routes = ['/'],
-    } = options;
+    const { build: buildOptions, outDir = 'static' } = options;
 
-    // Copy client directory into static
-    // fs.mkdirSync(outDir, { recursive: true });
-
-    // Initialize a vite dev server as middleware
-    // const viteDevServer = await createViteServer({
-    //   server: {
-    //     middlewareMode: true,
-    //     hmr: false,
-    //   },
-    //   base: '/',
-    //   configFile: `${process.cwd()}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
-    // });
-    // // Get the module runner through ssr environment
-    // const runner = createServerModuleRunner(viteDevServer.environments.ssr);
-
+    // Start timer
+    const start = Date.now();
     const createSpinner = spinner('Starting static pre-rendering...');
 
     // Redirect console.log to a file
@@ -310,13 +296,20 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     // 4. Generate static routes
     const staticRoutes = generateRoutes(AppRouter);
 
+    // Extracting all routes available
     const { paths: routes, error: staticError } =
       await getAllRoutesPath(staticRoutes);
+
+    let routesToPrerender = routes;
+
+    if (options.routes.length > 0) {
+      routesToPrerender = filterRoutesForPrerender(options.routes, routes);
+    }
 
     const generatedFiles: string[] = [];
 
     // 5. Loop through routes and render them to HTML
-    for (const route of routes) {
+    for (const route of routesToPrerender) {
       const pathname = route === '/' ? '/' : `${route}/`;
       // console.log(`🧩 Rendering ${pathname}`);
       createSpinner.text = `Rendering ${pathname}`;
@@ -388,7 +381,11 @@ export async function preRenderApp(options: PreRenderAppOptions) {
       }
     }
 
-    createSpinner.succeed('pre-rendering completed!');
+    // End timer
+    const end = Date.now();
+    createSpinner.succeed(
+      `${chalk.green(`${generatedFiles.length} page(s) successfully rendered in ${convertSecondsToMinutes((end - start) / 1000)}`)}`
+    );
     createSpinner.stop();
 
     console.log = originalLog;

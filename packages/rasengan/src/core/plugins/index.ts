@@ -309,7 +309,7 @@ export function rasengan({
           });
 
           if (typeof config.prerender === 'object') {
-            routes = config.prerender.routes;
+            routes = config.prerender.routes || [];
           }
 
           const outDir = `${process.cwd()}/static`;
