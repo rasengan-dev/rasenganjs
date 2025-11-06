@@ -10,6 +10,7 @@ import morgan from 'morgan';
 import sourceMapSupport from 'source-map-support';
 import getPort from 'get-port';
 import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+import { OptimizedAppConfig } from 'rasengan';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
@@ -204,7 +205,7 @@ async function run() {
     const configData = fs.readFileSync(configPath, 'utf-8').toString();
 
     // Parse the config.json file
-    const config = JSON.parse(configData);
+    const config: OptimizedAppConfig = JSON.parse(configData);
 
     if (config.ssr) {
       const requestHandler = createRequestHandler({
