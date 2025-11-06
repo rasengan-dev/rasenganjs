@@ -213,8 +213,17 @@ async function run() {
 
       return requestHandler(req, res);
     } else {
+      // Check if spa-fallback.html exists
+      const isSpaFallbackExists = fs.existsSync(
+        path.posix.join(buildOptions.buildDirectory, 'spa-fallback.html')
+      );
+
       return res.sendFile(
-        path.posix.join(buildOptions.buildDirectory, 'index.html')
+        // buildDirectory can be either dist or static
+        path.posix.join(
+          buildOptions.buildDirectory,
+          isSpaFallbackExists ? 'spa-fallback.html' : 'index.html'
+        )
       );
     }
   });

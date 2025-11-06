@@ -13,9 +13,10 @@ export const renderIndexHTML = async (
   options: {
     rootPath: string;
     config: AppConfig;
+    enableIndexFallback: boolean;
   }
 ) => {
-  const { rootPath, config } = options;
+  const { rootPath, config, enableIndexFallback } = options;
   const buildOptions = resolveBuildOptions({});
 
   const manifest = new ManifestManager(
@@ -39,17 +40,17 @@ export const renderIndexHTML = async (
     />
   );
 
-  // Render the html into an index.html file
+  // Render the html into an index.html or spa-fallback.html file
   await fs.writeFile(
     path.posix.join(
       rootPath, 
-      buildOptions.buildDirectory, 
-      config.prerender ? buildOptions.clientPathDirectory : "",
-      'index.html'
+      config.prerender ? buildOptions.staticDirectory : buildOptions.buildDirectory,
+      enableIndexFallback ? "spa-fallback.html" : "index.html"
     ),
     html,
     'utf-8'
   );
+  
 
   // Delete the dist/assets/template.js or dist/client/assets/template.js file
   if (!config.prerender) {

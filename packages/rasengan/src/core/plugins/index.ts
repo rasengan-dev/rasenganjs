@@ -250,8 +250,57 @@ export function rasengan({
       // We check here if the environment is client has been built because it's the
       // last environment to be built in the Vite build process
       if (this.environment.name === 'client') {
-        // Check if SPA mode is enabled
-        if (!config.ssr) {
+        // Generate a config.json file into the dist/client/assets or dist/assets
+        const minimizedConfig = {
+          buildOptions,
+          ssr: config.ssr,
+          prerender: !!config.prerender,
+          redirects: await config.redirects(),
+        };
+
+        fs.writeFileSync(
+          path.posix.join(
+            process.cwd(),
+            buildOptions.buildDirectory,
+            config.ssr || config.prerender
+              ? buildOptions.clientPathDirectory
+              : '',
+            buildOptions.assetPathDirectory,
+            'config.json'
+          ),
+          JSON.stringify(minimizedConfig),
+          'utf-8'
+        );
+
+        // Enable the generation of spa-fallback.html during pre-rendering
+        // Only if every pages are not generated
+        // @default to false - we assume that all pages are not generated
+        let enableIndexFallback = false;
+
+        // Handling the prerendering
+        if (config.prerender) {
+          let routes = [];
+          const buildOptions = resolveBuildOptions({
+            serverPathDirectory: 'prerender',
+          });
+
+          if (typeof config.prerender === 'object') {
+            routes = config.prerender.routes || [];
+          }
+
+          const outDir = `${process.cwd()}/static`;
+
+          const { isIndexPrerendered } = await preRenderApp({
+            build: buildOptions,
+            outDir,
+            routes,
+          });
+
+          enableIndexFallback = isIndexPrerendered;
+        }
+
+        // Check if SPA or SSG mode is enabled
+        if (!config.ssr || config.prerender) {
           // Load the template.js file
           let templatePath = '';
 
@@ -277,47 +326,7 @@ export function rasengan({
           await renderIndexHTML(Template, {
             rootPath: process.cwd(),
             config,
-          });
-        }
-
-        // Generate a config.json file into the dist/client/assets or dist/assets
-        const minimizedConfig = {
-          buildOptions,
-          ssr: config.ssr,
-          redirects: await config.redirects(),
-        };
-
-        fs.writeFileSync(
-          path.posix.join(
-            process.cwd(),
-            buildOptions.buildDirectory,
-            config.ssr || config.prerender
-              ? buildOptions.clientPathDirectory
-              : '',
-            buildOptions.assetPathDirectory,
-            'config.json'
-          ),
-          JSON.stringify(minimizedConfig),
-          'utf-8'
-        );
-
-        // Handling the prerendering
-        if (config.prerender) {
-          let routes = [];
-          const buildOptions = resolveBuildOptions({
-            serverPathDirectory: 'prerender',
-          });
-
-          if (typeof config.prerender === 'object') {
-            routes = config.prerender.routes || [];
-          }
-
-          const outDir = `${process.cwd()}/static`;
-
-          await preRenderApp({
-            build: buildOptions,
-            outDir,
-            routes,
+            enableIndexFallback,
           });
         }
 

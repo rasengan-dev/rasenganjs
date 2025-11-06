@@ -398,6 +398,11 @@ export async function preRenderApp(options: PreRenderAppOptions) {
         `❌  Some error(s) found: \n${Array.from(staticError).join('\n')}`
       );
     }
+
+    return {
+      // Check if the index page is prerendered
+      isIndexPrerendered: routesToPrerender.some((route) => route === '/'),
+    };
   } catch (error) {
     console.error(error);
     throw error;
