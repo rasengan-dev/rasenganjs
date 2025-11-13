@@ -366,6 +366,21 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
 
+  packages/rasengan-kage-demo:
+    devDependencies:
+      '@types/clean-css':
+        specifier: ^4.2.11
+        version: 4.2.11
+      '@types/react':
+        specifier: ^18.3.1 || ^19.0.0
+        version: 19.1.10
+      '@types/react-dom':
+        specifier: ^18.3.1 || ^19.0.0
+        version: 19.1.7(@types/react@19.1.10)
+      clean-css:
+        specifier: ^5.3.3
+        version: 5.3.3
+
   packages/rasengan-kurama:
     dependencies:
       react:
@@ -5202,7 +5217,7 @@ snapshots:
     dependencies:
       '@types/estree-jsx': 1.0.5
       astring: 1.9.0
-      source-map: 0.7.4
+      source-map: 0.7.6
 
   estree-util-visit@2.0.0:
     dependencies:
