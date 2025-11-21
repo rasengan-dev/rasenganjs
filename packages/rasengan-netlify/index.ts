@@ -248,7 +248,8 @@ const prepare = async (options: AdapterOptions) => {
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
   return {
-    name: Adapters.NETLIFY,
+    name: Adapters.VERCEL,
+    // name: Adapters.NETLIFY,
     prepare: async () => {
       await prepare(options);
     },
