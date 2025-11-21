@@ -168,7 +168,7 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
       };
     };
 
-    export const config: Config = {
+    export const config = {
       path: "/*",
       excludedPath: [
         "/assets/*",
