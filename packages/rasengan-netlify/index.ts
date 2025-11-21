@@ -14,7 +14,7 @@ interface NetlifyBuildOptions {
   versionDirectory: string; // .netlify/v1
   functionsDirectory: string; // .netlify/v1/functions
   edgeFunctionsDirectory: string; // .netlify/v1/edge-functions
-  staticDirectory: string; // public/static assets
+  // staticDirectory: string; // public/static assets
   configFile: string; // .netlify/v1/config.json
 }
 
@@ -23,7 +23,7 @@ const getNetlifyBuildOptions = (): NetlifyBuildOptions => ({
   versionDirectory: '.netlify/v1',
   functionsDirectory: '.netlify/v1/functions',
   edgeFunctionsDirectory: '.netlify/v1/edge-functions',
-  staticDirectory: '.netlify/v1/static',
+  // staticDirectory: '.netlify/v1/static',
   configFile: 'config.json',
 });
 
@@ -50,26 +50,26 @@ const generateNetlifyDirectory = async (config: OptimizedAppConfig) => {
   await fs.mkdir(opts.versionDirectory, { recursive: true });
   await fs.mkdir(opts.functionsDirectory, { recursive: true });
   await fs.mkdir(opts.edgeFunctionsDirectory, { recursive: true });
-  await fs.mkdir(opts.staticDirectory, { recursive: true });
+  // await fs.mkdir(opts.staticDirectory, { recursive: true });
 };
 
 /* -------------------------------------------------------------------------- */
 /*                           STATIC FILES COPY                                */
 /* -------------------------------------------------------------------------- */
 
-const copyStaticFiles = async (config: OptimizedAppConfig) => {
-  const opts = getNetlifyBuildOptions();
-  const buildOptions = resolveBuildOptions({});
+// const copyStaticFiles = async (config: OptimizedAppConfig) => {
+//   const opts = getNetlifyBuildOptions();
+//   const buildOptions = resolveBuildOptions({});
 
-  await fs.cp(
-    path.posix.join(
-      buildOptions.buildDirectory,
-      config.ssr ? buildOptions.clientPathDirectory : ''
-    ),
-    opts.staticDirectory,
-    { recursive: true }
-  );
-};
+//   await fs.cp(
+//     path.posix.join(
+//       buildOptions.buildDirectory,
+//       config.ssr ? buildOptions.clientPathDirectory : ''
+//     ),
+//     opts.staticDirectory,
+//     { recursive: true }
+//   );
+// };
 
 /* -------------------------------------------------------------------------- */
 /*                         SERVER FILES FOR SSR                               */
@@ -179,16 +179,17 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
   const netlifyConfig = {
     functions: {
       directory: opts.functionsDirectory,
+      included_files: ['dist/server/**', 'dist/client/**'],
     },
     redirects: [
       {
         from: '/assets/*',
-        to: '/static/:splat',
+        to: config.ssr ? '/client/assets/:splat' : '/assets/:splat',
         status: 200,
       },
       {
         from: '/*',
-        to: config.ssr ? '/.netlify/functions/ssr' : '/static/index.html',
+        to: config.ssr ? '/.netlify/functions/ssr' : '/index.html',
         status: 200,
       },
     ],
@@ -236,7 +237,7 @@ const prepare = async (options: AdapterOptions) => {
   const config = await loadRasenganConfig();
 
   await generateNetlifyDirectory(config);
-  await copyStaticFiles(config);
+  // await copyStaticFiles(config);
   await copyServerFiles(config);
   await generateSSRHandler(config);
   await generateNetlifyConfigFile(config);
