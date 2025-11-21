@@ -115,18 +115,9 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     import { resolveBuildOptions, createRequestHandler } from "rasengan/server";
     import { Readable } from "node:stream";
     import path from "node:path";
-    import fsSync from "node:fs";
-
-    // log all the files containing in the process.cwd()
-    console.log("Files in process.cwd():");
-    console.log(process.cwd());
-
-    // use fsSync to read the files
-    const files = fsSync.readdirSync(process.cwd());
-    console.log(files);
 
     const buildOptions = resolveBuildOptions({
-      buildDirectory: process.cwd(),
+      buildDirectory: path.posix.join(process.cwd(), 'dist'),
     });
 
     const handler = createRequestHandler({
@@ -142,7 +133,11 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         body: ["GET", "HEAD"].includes(event.httpMethod) ? undefined : event.body,
       });
 
+      console.log({ req });
+
       const res = await handler(req);
+
+      console.log({ res });
 
       let body = undefined;
 
