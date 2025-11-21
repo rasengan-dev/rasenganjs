@@ -167,26 +167,6 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         body,
       };
     };
-
-    export const config = {
-      path: "/*",
-      excludedPath: [
-        "/assets/*",
-        "/*.@(png|jpg|jpeg|gif|webp|svg|ico|css|js|json|xml|txt)"
-      ],
-      preferStatic: true,
-      
-      // Use esbuild to bundle everything into one file
-      nodeBundler: "esbuild",
-      
-      // Include your server directory
-      includedFiles: ["dist/server/**", "node_modules/**", "package.json"],
-
-      nodeVersion: "22",
-      
-      // generator: "rasengan@1.2.0",
-      // name: "Rasengan SSR"
-    };
   `;
 
   await fs.writeFile(
@@ -205,7 +185,7 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
   const netlifyConfig = {
     functions: {
       directory: opts.functionsDirectory,
-      included_files: ['dist/server/**'],
+      included_files: ['dist/server/**', 'node_modules/**', 'package.json'],
     },
     redirects: [
       {
@@ -220,6 +200,8 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
       },
     ],
     edge_functions: [],
+    preferStatic: true,
+    nodeVersion: '22',
   };
 
   await fs.writeFile(
