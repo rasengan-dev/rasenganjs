@@ -127,6 +127,8 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     export default async (event, context) => {
       const url = "https://" + event.headers.host + event.rawUrl;
 
+      console.log({ event });
+
       const req = new Request(url, {
         method: event.httpMethod,
         headers: event.headers,
@@ -164,6 +166,26 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         headers: Object.fromEntries(res.headers.entries()),
         body,
       };
+    };
+
+    export const config: Config = {
+      path: "/*",
+      excludedPath: [
+        "/assets/*",
+        "/*.@(png|jpg|jpeg|gif|webp|svg|ico|css|js|json|xml|txt)"
+      ],
+      preferStatic: true,
+      
+      // Use esbuild to bundle everything into one file
+      nodeBundler: "esbuild",
+      
+      // Include your server directory
+      includedFiles: ["dist/server/**", "node_modules/**", "package.json"],
+
+      nodeVersion: "22",
+      
+      // generator: "rasengan@1.2.0",
+      // name: "Rasengan SSR"
     };
   `;
 
