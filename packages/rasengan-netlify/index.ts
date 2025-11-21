@@ -115,6 +115,15 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     import { resolveBuildOptions, createRequestHandler } from "rasengan/server";
     import { Readable } from "node:stream";
     import path from "node:path";
+    import fsSync from "node:fs";
+
+    // log all the files containing in the process.cwd()
+    console.log("Files in process.cwd():");
+    console.log(process.cwd());
+
+    // use fsSync to read the files
+    const files = fsSync.readdirSync(process.cwd());
+    console.log(files);
 
     const buildOptions = resolveBuildOptions({
       buildDirectory: process.cwd(),
@@ -161,6 +170,36 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         body,
       };
     };
+
+    export const config: Config = {
+      path: "/*",
+      
+      // Exclude all static assets - they'll be served from dist/client
+      excludedPath: [
+        "/assets/*",      // Bundled JS/CSS
+        "/images/*",      // Images
+        "/fonts/*",       // Fonts
+        "/favicon.ico",   // Favicon
+        "/*.png",
+        "/*.jpg",
+        "/*.jpeg",
+        "/*.gif",
+        "/*.webp",
+        "/*.svg",
+        "/*.ico",
+        "/*.css",
+        "/*.js",
+        "/*.json",
+        "/*.xml",
+        "/*.txt",
+        "/*.pdf"
+      ],
+      
+      // This is KEY: prefer static files over the function
+      preferStatic: true,
+      
+      // ... rest of config
+    };
   `;
 
   await fs.writeFile(
@@ -179,7 +218,7 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
   const netlifyConfig = {
     functions: {
       directory: opts.functionsDirectory,
-      included_files: ['dist/server/**', 'dist/client/**'],
+      included_files: ['dist/server/**'],
     },
     redirects: [
       {
