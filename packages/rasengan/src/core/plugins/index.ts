@@ -159,6 +159,7 @@ const fixCPathPlugin = (): Plugin => {
 
 export const Adapters = {
   VERCEL: 'vercel',
+  NETLIFY: 'netlify',
   DEFAULT: '',
 } as const;
 
@@ -311,6 +312,12 @@ const prepareToDeploy = async (adapter: AdapterConfig): Promise<void> => {
   // Preparing app for deployment
   switch (adapter.name) {
     case Adapters.VERCEL: {
+      await adapter.prepare();
+
+      break;
+    }
+
+    case Adapters.NETLIFY: {
       await adapter.prepare();
 
       break;

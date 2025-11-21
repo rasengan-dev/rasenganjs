@@ -1,0 +1,44 @@
+{
+  "name": "@rasenganjs/netlify",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Netlify adapter to serve Rasengan apps on Netlify",
+  "bugs": {
+    "url": "https://github.com/rasengan-dev/rasenganjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs",
+    "directory": "packages/rasengan-netlify"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build:compile": "tsc",
+    "build:clean": "rimraf ./dist",
+    "build": "pnpm run build:clean & pnpm run build:compile",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta",
+    "pack": "pnpm pack --pack-destination ./release/"
+  },
+  "peerDependencies": {
+    "rasengan": "workspace:^"
+  },
+  "files": [
+    "dist/",
+    "bin.js",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "dependencies": {
+    "execa": "^8.0.1"
+  }
+}
