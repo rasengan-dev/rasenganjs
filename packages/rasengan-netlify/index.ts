@@ -170,40 +170,10 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         body,
       };
     };
-
-    export const config = {
-      path: "/*",
-      
-      // Exclude all static assets - they'll be served from dist/client
-      excludedPath: [
-        "/assets/*",      // Bundled JS/CSS
-        "/images/*",      // Images
-        "/fonts/*",       // Fonts
-        "/favicon.ico",   // Favicon
-        "/*.png",
-        "/*.jpg",
-        "/*.jpeg",
-        "/*.gif",
-        "/*.webp",
-        "/*.svg",
-        "/*.ico",
-        "/*.css",
-        "/*.js",
-        "/*.json",
-        "/*.xml",
-        "/*.txt",
-        "/*.pdf"
-      ],
-      
-      // This is KEY: prefer static files over the function
-      preferStatic: true,
-      
-      // ... rest of config
-    };
   `;
 
   await fs.writeFile(
-    path.posix.join(opts.functionsDirectory, 'ssr.js'),
+    path.posix.join(opts.functionsDirectory, 'rasengan-ssr.js'),
     ssrHandler
   );
 };
@@ -228,7 +198,7 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
       },
       {
         from: '/*',
-        to: config.ssr ? '/.netlify/functions/ssr' : '/index.html',
+        to: config.ssr ? '/.netlify/functions/rasengan-ssr' : '/index.html',
         status: 200,
       },
     ],
