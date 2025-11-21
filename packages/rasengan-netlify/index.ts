@@ -171,7 +171,7 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
       };
     };
 
-    export const config: Config = {
+    export const config = {
       path: "/*",
       
       // Exclude all static assets - they'll be served from dist/client
