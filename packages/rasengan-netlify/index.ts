@@ -125,21 +125,8 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     });
 
     export default async (event, context) => {
-      const url = "https://" + event.headers.host + event.rawUrl;
-
-      console.log({ event });
-
-      const req = new Request(url, {
-        method: event.httpMethod,
-        headers: event.headers,
-        body: ["GET", "HEAD"].includes(event.httpMethod) ? undefined : event.body,
-      });
-
-      console.log({ req });
-
-      const res = await handler(req);
-
-      console.log({ res });
+      console.log({ event, context });
+      const res = await handler(event);
 
       let body = undefined;
 
