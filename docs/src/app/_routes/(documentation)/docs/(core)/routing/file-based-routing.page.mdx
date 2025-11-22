@@ -1,0 +1,314 @@
+---
+metadata:
+  title: File-Based Routing - Routing | Core Concepts | Rasengan.js
+  description: File-based routing in Rasengan.js is a powerful and intuitive system that allows you to define routes in a simple and efficient way.
+toc: true
+---
+
+
+import { AlertWithDescription } from "@/components/atoms/alerts"; 
+import Pagination from '@/components/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# File-Based Routing in Rasengan.js
+
+Rasengan.js introduces a powerful and intuitive **file-based routing system**, inspired by modern frameworks but tailored to its own conventions.
+
+All route definitions live inside the special folder: `app/_routes/`
+
+The file and folder structure under this directory determines your app’s routing automatically.
+
+
+## Directory Structure Example
+
+``` bash
+app/
+├── _routes/
+│   ├── index.page.tsx             # → /
+│   ├── home.page.tsx              # → /home
+│   ├── about/
+│   │   ├── layout.tsx             # Layout for /about/*
+│   │   └── index.page.tsx         # → /about
+│   ├── blog/
+│   │   ├── index.page.tsx         # → /blog
+│   │   ├── [id].page.tsx          # → /blog/:id
+│   │   └── [slug]/
+│   │       └── index.page.tsx     # → /blog/:slug
+│   ├── _settings/
+│   │   └── index.page.tsx         # → /, /settings
+│   └── [_locale]/
+│       └── home.page.tsx          # → /home, /en/home, /fr/home, etc.
+└── app.router.ts                  # Entry point to register the routes
+```
+> Note: The `app.router.ts` file is the entry point to register the routes.
+
+## Router 
+
+The file-based routing system in Rasengan.js automatically generates a `Router` component based on your folder and file structure.
+
+To integrate this generated router into your app, create a file at: 
+
+```txt 
+src/app/app.router.ts
+```
+<AlertWithDescription 
+  title="Warning"
+  description="`app.router.ts` is a required file, you have to place it at the src/app/ folder."
+  status="warning"
+/>
+
+And add the following:
+
+```tsx title="src/app/app.router.ts" showLineNumbers {2,7}
+import { RouterComponent, defineRouter } from 'rasengan';
+import Router from 'virtual:rasengan/router';
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [Router],
+})(AppRouter);
+```
+
+### How It Works
+
+- Rasengan.js exposes a virtual module named `virtual:rasengan/router`.
+- This module automatically includes all pages, layouts, and routes defined in `/app/_routes`.
+- You simply import it and inject it into your `AppRouter` using the `defineRouter` helper.
+
+This setup ensures that your routing configuration stays fully synchronized with your file structure — **no manual registration required**.
+
+## Pages
+
+Every file ending with `.page.tsx` defines a route. 
+
+### Naming Convention
+
+| File Name                 | Route Path        | Description                         |
+| ------------------------- | ----------------- | ----------------------------------- |
+| `index.page.tsx`          | `/`               | Index route                         |
+| `home.page.tsx`           | `/home`           | Normal route                        |
+| `about/index.page.tsx`    | `/about`          | Index route in `about` folder       |
+| `blog/index.page.tsx`     | `/blog`           | Index route in `blog` folder        |
+| `blog/[id].page.tsx`      | `/blog/:id`       | Dynamic route on file page          |
+| `blog/[_slug].page.tsx`   | `/blog/:slug?`    | Optional dynamic route on file page |
+| `[_locale]/home.page.tsx` | `/:locale?/home`  | Optional dynamic route on folder    |
+
+> 🖱 Only files located in `app/_routes/` are considered valid route definitions.
+
+Page components have to be exported as default in order to be registered as routes.
+
+```tsx title="src/app/_routes/home.page.tsx" showLineNumbers
+import React from "react";
+import { PageComponent } from "rasengan";
+
+const Home: PageComponent = () => {
+  return <div>Home Page</div>;
+};
+
+Home.metadata = {
+  title: "Home",
+  description: "Home Page"
+};
+
+export default Home;
+```
+
+<AlertWithDescription 
+  title="Page Component"
+  description="Don't define `path` manually onto the page definition, because it's directly extracted from the file and folder structure."
+  status="info"
+/>
+
+
+## Layouts
+
+Use `layout.tsx` files to define reusable structures (headers, sidebars, wrappers, etc.). A layout wraps all the routes inside its folder unless overridden by a deeper layout.
+
+### File Structure
+
+pages located at the same level of the layout or deeper will be wrapped by the layout.
+
+```bash
+app/
+├── _routes/
+│   ├── layout.tsx                 # Root Layout for all pages
+│   ├── index.page.tsx             # → /
+│   ├── about/
+│   │   ├── layout.tsx             # Layout for /about/*
+│   │   └── index.page.tsx         # → /about
+│   └── [_locale]/
+│       ├── layout.tsx             # Layout for /:locale?/*
+│       └── home.page.tsx          # → /home, /en/home, /fr/home, etc.
+└── app.router.ts                  # Entry point to register the routes
+```
+
+From this file structure, the `app/_routes/about/index.page.tsx` will be wrapped by the `app/_routes/about/layout.tsx` and the `app/_routes/layout.tsx`.
+
+### Layout Component
+
+The Layout Component has the be exported by default in order to be registered as a layout.
+
+```tsx title="src/app/_routes/layout.tsx" showLineNumbers
+import React from "react";
+import { LayoutComponent, Outlet } from "rasengan";
+
+const AppLayout: LayoutComponent = () => {
+  return (
+    <div>
+      <header>My Header</header>
+      <Outlet /> {/* Renders the current page */}
+      <footer>My Footer</footer>
+    </div>
+  );
+};
+
+export default AppLayout;
+```
+
+| Layout Path                    | Applies To            |
+| ------------------------------ | --------------------- |
+| `app/_routes/layout.tsx`       | All routes            |
+| `app/_routes/about/layout.tsx` | Routes under `/about` |
+
+<AlertWithDescription
+  title="Path Definition"
+  description="When using `file based routing`, you don't need to define `path` manually onto the page and layout definition, because it's directly extracted from the file and folder structure."
+  status="info"
+></AlertWithDescription>
+
+
+## Dynamic Routes
+
+To create dynamic routes, wrap folder names in square brackets:
+
+``` txt
+app/_routes/blog/[slug]/index.page.tsx → /blog/:slug
+or
+app/_routes/blog/[slug].page.tsx → /blog/:slug
+```
+
+You can access dynamic params using:
+
+```tsx
+const { slug } = useParams(); // Rasengan.js core hook
+```
+
+
+## Optional Segments
+
+Rasengan.js supports optional **static** and **dynamic** segments using the underscore (`_`) prefix.
+
+### Optional Static Segments
+
+To create a route that optionally includes a folder, prefix it with an underscore:
+
+``` txt
+app/_routes/_settings/index.page.tsx
+```
+
+Routes matched:
+
+* `/`
+* `/settings`
+
+
+### Optional Dynamic Segments
+
+Wrap the param in brackets and prefix with `_` to make it optional:
+
+``` txt
+app/_routes/[_locale]/home.page.tsx
+```
+
+Routes matched:
+
+* `/home`
+* `/en/home`
+* `/fr/home`
+
+Inside the component:
+
+```tsx
+const { locale } = useParams(); // Might be undefined
+```
+
+
+## Nested Routes
+
+You can create deeply nested routes by nesting folders:
+
+``` txt
+app/_routes/dashboard/settings/index.page.tsx → /dashboard/settings
+```
+
+If you include a `layout.tsx` in `dashboard/`, it will wrap both `/dashboard` and `/dashboard/settings`.
+
+
+## Grouping Routes
+
+### What is a Route Group?
+
+A **route group** is a **folder used for organizational purposes only**. It helps structure your codebase without affecting the actual URL path.
+
+* It’s enclosed in parentheses: `(groupName)`
+* It does **not** appear in the URL.
+* Inspired by **Next.js App Router** and other modern frameworks.
+
+
+### Example in Rasengan.js
+
+```md /(blog)/
+/app/_routes/(blog)/home.page.tsx → /home
+```
+
+Even if the page is inside the `(blog)` folder, the URL does **not** include `/blog`.
+
+### Use Cases
+
+* Organizing routes by domain (`(marketing)`, `(dashboard)`, `(auth)`)
+* Sharing layout or logic across grouped routes
+* Improving readability in large apps
+
+> "**Route Groups** using parentheses ( ) to organize routes without affecting the final path."
+
+
+## Routing Rules Summary
+
+| Type               | Convention                 | Example Path                             | Matches                 |
+| ------------------ | -------------------------- | ---------------------------------------- | ----------------------- |
+| Routes folder      | `app/_routes/`             | `app/_routes/home.page.tsx`              | `/home`                 |
+| Page file          | `*.page.tsx`               | `index.page.tsx`, `profile.page.tsx`     | `/`, `/profile`         |
+| Dynamic segment    | `[param]/index.page.tsx`   | `app/_routes/blog/[slug]/index.page.tsx` | `/blog/:slug`           |
+| Optional segment   | `_folder/`, `[_param]/`    | `_settings`, `[_locale]`                 | `/`, `/settings`, `/en` |
+| Layout wrapper     | `layout.tsx` in any folder | `app/_routes/about/layout.tsx`           | Applies to `/about/*`   |
+
+
+## Coming Soon
+
+Rasengan.js plans to support:
+
+* **Catch-all routes** with `[...param]`
+* **Param validation & static type inference**
+
+
+## Best Practices
+
+* Always place route files under `app/_routes/`
+* Prefer `index.page.tsx` for folder roots
+* Use layouts to reduce duplication and enhance structure
+* Use optional segments thoughtfully to avoid ambiguous paths
+
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/layouts',
+    label: 'Layouts',
+  }}
+  next={{
+    href: '/docs/routing/linking-and-navigation',
+    label: 'Linking and Navigation',
+  }}
+/>

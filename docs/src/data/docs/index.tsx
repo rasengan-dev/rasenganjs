@@ -356,19 +356,19 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             {
               id: randomId(),
               name: '[name].layout.js',
-              link: '/docs/api-reference/conventions/layout',
+              link: '/docs/api-reference/conventions/layout-component',
               level: 3,
             },
             {
               id: randomId(),
               name: '[name].router.js',
-              link: '/docs/api-reference/conventions/router',
+              link: '/docs/api-reference/conventions/router-component',
               level: 3,
             },
             {
               id: randomId(),
               name: '[name].page.js',
-              link: '/docs/api-reference/conventions/page',
+              link: '/docs/api-reference/conventions/page-component',
               level: 3,
             },
           ],

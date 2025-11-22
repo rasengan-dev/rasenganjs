@@ -1,0 +1,290 @@
+---
+metadata:
+  title: Metadata - Optimizing | Core concepts | Rasengan.js
+  description: Learn how to optimize your application with Metadata API in Rasengan.js
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import Tabs from '@/components/molecules/tab';
+import { Link } from "rasengan";
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Metadata
+
+Rasengan.js has a Metadata API that can be used to define your application metadata (e.g. `meta` and `link` tags inside your HTML `head` element) for improved SEO and web shareability.
+
+## Usage
+
+There is two  ways to use the Metadata API:
+
+- Using [`static`](#using-static-metadata) metadata
+- Using [`dynamic`](#using-dynamic-metadata) metadata
+
+### Using static metadata
+
+<Tabs tabs={[{ title: "TypeScript" }, { title: "JavaScript" }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="home.page.tsx" {3-37, 48} showLineNumbers
+    import { Metadata, PageComponent } from "rasengan";
+
+    const metadata: Metadata = {
+      // Title of the page
+      title: "Home",
+
+      // Description of the page
+      description: "Home page",
+
+      // Defines the meta tags to be added to the head element
+      // (e.g. <meta name="viewport" content="width=device-width, initial-scale=1.0">)
+      metaTags: [{
+        name: "viewport",
+        content: "width=device-width, initial-scale=1.0"
+      }],
+
+      // Defines the link tags to be added to the head element
+      // (e.g. <link rel="icon" href="/favicon.ico">)
+      links: [{
+        rel: "icon",
+        href: "/favicon.ico",
+      }],
+
+      // Used for link previews on social media
+      openGraph: {
+        title: "Rasengan.js",
+        description: "Rasengan"
+        image: "https://example.com/image.jpg",
+        url: "https://example.com",
+      },
+
+      // Used for Twitter link previews
+      twitter: {
+        title: "Rasengan.js",
+        description: "Rasengan.js",
+        image: "https://example.com/image.jpg",
+        card: "summary_large_image",
+      },
+    }
+
+    const HomePage: PageComponent = () => {
+      return (
+        <section>
+          <h1>Home Page</h1>
+        </section>
+      )
+    }
+
+    HomePage.path = "/";
+    HomePage.metadata = metadata;
+
+    export default HomePage;
+    ```
+  </Tabs.Item>
+
+  <Tabs.Item>
+    ```jsx title="home.page.jsx" {1-35, 46} showLineNumbers
+    const metadata = {
+      // Title of the page
+      title: "Home",
+
+      // Description of the page
+      description: "Home page",
+
+      // Defines the meta tags to be added to the head element
+      // (e.g. <meta name="viewport" content="width=device-width, initial-scale=1.0">)
+      metaTags: [{
+        name: "viewport",
+        content: "width=device-width, initial-scale=1.0"
+      }],
+
+      // Defines the link tags to be added to the head element
+      // (e.g. <link rel="icon" href="/favicon.ico">)
+      links: [{
+        rel: "icon",
+        href: "/favicon.ico",
+      }],
+
+      // Used for link previews on social media
+      openGraph: {
+        title: "Rasengan.js",
+        description: "Rasengan.js"
+        image: "https://example.com/image.jpg",
+        url: "https://example.com",
+      },
+
+      // Used for Twitter link previews
+      twitter: {
+        title: "Rasengan.js",
+        description: "Rasengan.js",
+        image: "https://example.com/image.jpg",
+        card: "summary_large_image",
+      },
+    }
+
+    const Home = () => {
+      return (
+        <section>
+          <h1>Home Page</h1>
+        </section>
+      )
+    }
+
+    Home.path = "/";
+    Home.metadata = metadata;
+
+    export default Home;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+### Using dynamic metadata
+
+To use dynamic metadata, you have to rely on `loader` functions.
+
+<Tabs tabs={[{ title: "TypeScript" }, { title: "JavaScript" }]} activeIndex={0}>
+  <Tabs.Item>
+  ```tsx title="home.page.tsx" {12-22} showLineNumbers
+  import { Metadata, PageComponent } from "rasengan";
+
+  const Home: PageComponent = () => {
+    return (
+      <section>
+        <h1>Home Page</h1>
+      </section>
+    )
+  }
+
+  Home.path = "/";
+  Home.loader = async () => {
+    // You can fetch data from an API or a database here
+
+    const metadata: Metadata = {
+      /* Your metaadata here */
+    }
+
+    return {
+      meta: metadata,
+    }
+  }
+
+  export default Home;
+  ```
+  </Tabs.Item>
+  <Tabs.Item>
+  ```jsx title="home.page.jsx" {10-20} showLineNumbers
+  const Home = () => {
+    return (
+      <section>
+        <h1>Home Page</h1>
+      </section>
+    )
+  }
+
+  Home.path = "/";
+  Home.loader = async () => {
+    // You can fetch data from an API or a database here
+
+    const metadata = {
+      /* Your metaadata here */
+    }
+
+    return {
+      meta: metadata,
+    }
+  }
+
+  export default Home;
+  ```
+  </Tabs.Item>
+</Tabs>
+
+The `loader` function must return an object with a `meta` property. The `meta` property must be an object that contains the metadata to be added to the page. <br />
+
+You can decide to mix `static` and `dynamic` metadata, but the dynamic metadata has the highest priority.
+
+## API
+
+### Metadata.title and Metadata.description [#title_description]
+
+| Property      | Type     | Description                 | Optional | Default                    |
+| ------------- | -------- | --------------------------- | -------- | -------------------------- |
+| `title`       | `string` | The title of the page       | true     | Name of the page component |
+| `description` | `string` | The description of the page | true     | -                          |
+
+### Metadata.metaTags [#tags]
+
+An array of meta tags to be added to the head element.
+
+| Property   | Type     | Description                                                             | Optional |
+| ---------- | -------- | ----------------------------------------------------------------------- | -------- |
+| `name`     | `string` | The name of the meta tag.                                               | true     |
+| `property` | `string` | The property of the meta tag. Can replace the `name` property sometimes | true     |
+| `content`  | `string` | The content of the meta tag.                                            | false    |
+
+{/* <AlertBox type="tip">
+  don't use `name` and `property` at the same time, juste one depending on what
+  you want to achieve.
+</AlertBox> */}
+
+### Metadata.links [#links]
+
+An array of link tags to be added to the head element.
+
+| Property | Type     | Description                       | Default     | Optional |
+| -------- | -------- | --------------------------------- | ----------- | -------- |
+| `rel`    | `string` | The relationship of the link tag. | "icon"      | false    |
+| `href`   | `string` | The href of the link tag.         | -           | false    |
+| `type`   | `string` | The type of the link tag.         | "image/png" | true     |
+| `sizes`  | `string` | The sizes of the link tag.        | "32x32"     | true     |
+
+{/* <AlertBox type="tip">
+  `href` can be an absolute path of the icon you want to display, or also a
+  relative path to the one stored inside the
+  [`public`](/docs/core/optimizing/static-assets) directory
+</AlertBox> */}
+
+### Metadata.openGraph [#openGraph]
+
+An object containing the Open Graph metadata for link previews on social media.
+
+| Property      | Type     | Description                          | Default   | Optional |
+| ------------- | -------- | ------------------------------------ | --------- | -------- |
+| `title`       | `string` | The title of the link preview.       | -         | false    |
+| `description` | `string` | The description of the link preview. | -         | false    |
+| `image`       | `string` | The image of the link preview.       | -         | true     |
+| `url`         | `string` | The URL of the link preview.         | -         | true     |
+| `type`        | `string` | The type of the link preview.        | "website" | false    |
+| `width`       | `number` | The width of the image.              | -         | false    |
+| `height`      | `number` | The height of the image.             | -         | false    |
+{/* 
+<AlertBox type="tip">
+  `image` has to be an absolute path of the image you want to display in the
+  link preview
+</AlertBox> */}
+
+### Metadata.twitter [#twitter]
+
+An object containing the Twitter metadata for link previews.
+
+| Property      | Type     | Description                          | Default               | Optional |
+| ------------- | -------- | ------------------------------------ | --------------------- | -------- |
+| `title`       | `string` | The title of the link preview.       | -                     | true     |
+| `description` | `string` | The description of the link preview. | -                     | false    |
+| `image`       | `string` | The image of the link preview.       | -                     | true     |
+| `card`        | `string` | The type of the link preview.        | "summary_large_image" | true     |
+| `site`        | `string` | The site of the link preview.        | -                     | false    |
+| `creator`     | `string` | The creator of the link preview.     | -                     | false    |
+
+
+<Pagination 
+  prev={{
+    href: '/docs/optimizing/images',
+    label: 'Optimizing Images',
+  }}
+  next={{
+    href: '/docs/optimizing/static-assets',
+    label: 'Static Assets',
+  }}
+/>

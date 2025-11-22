@@ -1,0 +1,55 @@
+---
+metadata:
+  title: Environment Variables - Configuring | Core concepts | Rasengan.js
+  description: Environment Variables in Rasengan.js
+toc: true
+---
+
+import Pagination from '@/components/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Environment Variables
+
+Rasengan.js comes with built-in support for environment variables, which allows you to do the following:
+
+- Use `.env` to load environment variables
+- Bundle environment variables for the browser by prefixing with `RASENGAN_`
+
+## Load Environment Variables
+
+Rasengan.js has built-in support for loading environment variables from `.env` into `import.meta.env`.
+
+```txt title=".env" showLineNumbers copy
+RASENGAN_API_URL=https://api.example.com
+RASENGAN_API_KEY=abc123
+RASENGAN_PORT=3000
+```
+
+## Access to Environment Variables
+
+Using environment variables in your application is easy. You can access them like follow:
+
+```js title="src/app/home.page.js" showLineNumbers
+import.meta.env.RASENGAN_API_URL; // 'https://api.example.com'
+import.meta.env.RASENGAN_API_KEY; // 'abc123'
+import.meta.env.RASENGAN_PORT; // '3000'
+```
+
+{/* <AlertBox type="info">
+  Only variables that start with `RASENGAN_` will be available in the browser.
+</AlertBox> */}
+
+<Pagination 
+  prev={{
+    href: '/docs/configuring/typescript',
+    label: 'TypeScript',
+  }}
+  next={{
+    href: '/docs/configuring/modules-aliases',
+    label: 'Modules Aliases',
+  }}
+/>

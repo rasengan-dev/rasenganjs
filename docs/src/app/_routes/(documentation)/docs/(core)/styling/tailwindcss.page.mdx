@@ -1,0 +1,219 @@
+---
+metadata:
+  title: Tailwind CSS - Styling | Core concepts | Rasengan.js
+  description: Tailwind CSS is a utility-first CSS framework packed with classes like flex, pt-4, text-center and rotate-90 that can be composed to build any design, directly in your markup.
+toc: false
+---
+
+import Pagination from '@/components/molecules/pagination';
+import Tabs from '@/components/molecules/tab';
+import StepItem from '@/components/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Tailwind CSS
+
+Tailwind CSS works by scanning all of your HTML files, JavaScript components, and any other templates for class names, generating the corresponding styles and then writing them to a static CSS file.
+
+It's fast, flexible, and reliable — with zero-runtime.
+
+## Installation
+
+To install Tailwind CSS, follow one of the following guides depending on your project specifications:
+
+<Tabs
+  tabs={[
+    { title: "Version 3" },
+    { title: "Version 4" },
+  ]}
+  activeIndex={1}
+>
+<Tabs.Item>
+<StepItem
+  step="01"
+  title="Install Tailwind CSS"
+  content={`
+  Install \`tailwindcss\` and its peer dependencies via npm, and create your \`tailwind.config.js\` file.
+  `}
+>
+```bash title="Terminal" showLineNumbers
+npm install -D tailwindcss@3 postcss autoprefixer
+npx tailwindcss init
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Add Tailwind to your PostCSS configuration"
+  content={`
+  Add \`tailwindcss\` and \`autoprefixer\` to your \`postcss.config.js\`file, or wherever PostCSS is configured in your project.
+  `}
+>
+```js title="postcss.config.js" showLineNumbers {3,4}
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  }
+}
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Configure your template paths"
+  content={`
+  Add the paths to all of your template files in your \`tailwind.config.js\` file.
+  `}
+>
+```js title="tailwind.config.js" showLineNumbers {3}
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+</StepItem>
+
+<StepItem
+  step="04"
+  title="Add the Tailwind directives to your CSS"
+  content={`
+  Add the \`@tailwind\` directives for each of Tailwind’s layers to your main CSS file.
+  `}
+>
+```css title="CSS" showLineNumbers
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+</StepItem>
+
+<StepItem
+  step="05"
+  title="Add Tailwind CSS to your Component page"
+  content={`
+  Use Tailwind CSS \`classes\` to your component page or whatever you want.
+  `}
+>
+```jsx title="home.page.jsx" showLineNumbers {5,6}
+import { Button } from '@/components/button';
+
+export default function Home() {
+  return (
+    <section className="flex flex-col items-center justify-center h-screen">
+      <Button className="bg-primary rounded-lg px-4">Hello World</Button>
+    </section>  
+  )
+}
+
+Home.path = '/'
+```
+</StepItem>
+
+<StepItem
+  step="06"
+  title="Start your app to see the magic"
+  content={`
+  Run your dev server with \`npm run dev\`.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+</Tabs.Item>
+<Tabs.Item>
+<StepItem
+  step="01"
+  title="Install Tailwind CSS"
+  content={`
+  Install \`tailwindcss\` and \`@tailwindcss/vite\` via npm.
+  `}
+>
+```bash title="Terminal" showLineNumbers
+npm install tailwindcss @tailwindcss/vite
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Configure the Vite plugin"
+  content={`
+  Add the \`@tailwindcss/vite\` plugin to your Rasengan configuration.
+  `}
+>
+```js title="rasengan.config.js" showLineNumbers {2,6}
+import { defineConfig } from 'rasengan';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [tailwindcss()],
+  }
+});
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Import Tailwind CSS"
+  content={`
+  Add an \`@import\` to your CSS file that imports Tailwind CSS.
+  `}
+>
+```css title="CSS"
+@import "tailwindcss";
+```
+</StepItem>
+
+<StepItem
+  step="04"
+  title="Add Tailwind CSS to your Component page"
+  content={`
+  Use Tailwind CSS \`classes\` to your component page or whatever you want.
+  `}
+>
+```jsx title="home.page.jsx" showLineNumbers {5,6}
+import { Button } from '@/components/button';
+
+export default function Home() {
+  return (
+    <section className="flex flex-col items-center justify-center h-screen">
+      <Button className="bg-primary rounded-lg px-4">Hello World</Button>
+    </section>  
+  )
+}
+
+Home.path = '/'
+```
+</StepItem>
+
+<StepItem
+  step="05"
+  title="Start your app to see the magic"
+  content={`
+  Run your dev server with \`npm run dev\`.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+</Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/styling/css-modules',
+    label: 'CSS Modules',
+  }}
+  next={{
+    href: '/docs/styling/preprocessors',
+    label: 'CSS Preprocessors',
+  }}
+/>

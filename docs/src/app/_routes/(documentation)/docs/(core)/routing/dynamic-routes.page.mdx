@@ -1,0 +1,273 @@
+---
+metadata:
+  title: Dynamic Routes - Routing | Core concepts | Rasengan.js
+  description: Learn how to create a Dynamic Route in Rasengan.js.
+toc: true
+---
+
+import Tabs from '@/components/molecules/tab';
+import Pagination from '@/components/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Dynamic Routes
+
+
+`Dynamic Routes` are routes that are generated at runtime. This is useful when you have a large number of pages that are similar, but not exactly the same.
+For example, you might want to create a page for each user on your website. Instead of creating a page for each user, you can create a single page that uses a dynamic route to load the user's data.
+
+## Usage
+
+### Creating a Dynamic Route
+
+Here is an example of a `Dynamic Route` to display a user's profile page.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="profile.page.tsx" {11} showLineNumbers
+    import { PageComponent } from "rasengan";
+
+    const Profile: PageComponent = () => {
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="src/app/profile.page.jsx" {9} showLineNumbers
+    const Profile = () => {  
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+In the example above, we have created a `Dynamic Route` to display a user's profile page.
+The `:id` in the route path is a dynamic parameter that can be used to load the user's data based on his `userId`.
+
+### Accessing Dynamic Route Parameters
+
+To access the dynamic route parameters, you can use the `useParams` hook.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="profile.page.tsx" {4,9,14} showLineNumbers /useParams/
+    import { PageComponent, useParams } from "rasengan";
+
+    const Profile: PageComponent = () => {
+      const { id } = useParams();
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+          <p>User ID: {id}</p>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="profile.page.jsx" {4,9,14} showLineNumbers /useParams/ 
+    import { useParams } from "rasengan";
+
+    const Profile = () => {
+      const { id } = useParams();
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+          <p>User ID: {id}</p>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+{/* <AlertBox>
+  `useParams` returns an object containing the dynamic route parameters. You can
+  learn more about `useParams` on [React Router
+  docs](https://reactrouter.com/en/main/hooks/use-params).
+</AlertBox> */}
+
+### Dynamic Route with Optional Parameters
+
+You can also create a `Dynamic Route` with optional parameters.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="profile.page.tsx" {6,15} showLineNumbers
+    import { PageComponent, useParams } from "rasengan";
+
+    const Profile: PageComponent = () => {
+      const { id } = useParams();
+
+      console.log(id) // id can be undefined
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id?";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="profile.page.jsx" {6,15} showLineNumbers
+    import { useParams } from "rasengan";
+
+    const Profile = () => {
+      const { id } = useParams();
+
+      console.log(id) // id can be undefined
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id?";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+
+  </Tabs.Item>
+</Tabs>
+
+In the example above, we have created a `Dynamic Route` with an optional parameter. The `?` at the end of the route parameter makes it optional.
+
+By doing like this, when we access the `/profile` route, the `id` will be `undefined` and we won't get a `404 error`. But in the case where the `id` is not `optional`,
+navigating to `/profile` will result in a `404 error`.
+
+You can have `optional static segments` too.
+
+```ts title="src/app/profile.page.tsx" showLineNumbers /edit?/
+Profile.path = "/profile/:id?/edit?";
+```
+
+### Dynamic Route with Multiple Parameters
+
+You can also create a `Dynamic Route` with multiple parameters.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="profile.page.tsx" {6,15} showLineNumbers
+    import { PageComponent, useParams } from "rasengan";
+
+    const Profile: PageComponent = () => {
+      const { id, name } = useParams();
+
+      console.log(id, name) // id and name can be undefined
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id?/:name?";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="profile.page.jsx" {6,15} showLineNumbers
+   import { useParams } from "rasengan";
+
+    const Profile = () => {
+      const { id, name } = useParams();
+
+      console.log(id, name) // id and name can be undefined
+
+      return (
+        <div>
+          <h1>User Profile</h1>
+        </div>
+      )
+    }
+
+    Profile.path = "/profile/:id?/:name?";
+    Profile.metadata = {
+      title: "Profile",
+      description: "User Profile",
+    }
+
+    export default Profile;
+    ```
+
+  </Tabs.Item>
+</Tabs>
+
+You can chain multiple parameters in a `Dynamic Route` by separating them with a `/`.
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/linking-and-navigation',
+    label: 'Linking and Navigation',
+  }}
+  next={{
+    href: '/docs/routing/active-link',
+    label: 'Active Links',
+  }}
+/>
