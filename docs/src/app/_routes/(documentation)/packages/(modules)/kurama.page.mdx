@@ -10,11 +10,196 @@ toc: true
 </span>
 # Kurama
 
+### The Nine-Tails of State Management — Control Your Chakra, Control Your State.
+
+`@rasenganjs/kurama` is a **lightweight and reactive state management library** designed for **Rasengan.js** and **any React application**.
+Inspired by **Zustand**, **Jotai**, and the raw energy of **Kurama**, it gives developers full control over their application’s chakra (state) — simple, fast, and scalable.
+
+## Features
+
+- **Minimal API** – Simple store creation, no boilerplate.
+- **Reactive Selectors** – Subscribe to specific slices for performance.
+- **Type-safe by Design** – Written in TypeScript, fully inferred.
+- **Persistent Stores** – Save state to `localStorage` or custom drivers.
+- **SSR + Hydration** – Works seamlessly with Rasengan.js server rendering.
+- **Middleware System** – Extend store behavior (logger, persist, devtools, etc.).
+- **Framework Agnostic** – Works in Rasengan.js, Next.js, Remix, React Router & more.
+
+
 ## Installation
+
+```bash title="Terminal"
+pnpm add @rasenganjs/kurama
+```
+
+or
 
 ```bash title="Terminal"
 npm install @rasenganjs/kurama
 ```
+
+## Quick Start
+
+```tsx title="Counter.tsx"
+import { createStore } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+};
+
+const useCounter = createStore<State>((set) => ({
+  count: 0,
+  increment: () => set((s) => ({ count: s.count + 1 })),
+  decrement: () => set((s) => ({ count: s.count - 1 })),
+}));
+
+// Use it anywhere
+function Counter() {
+  const { count, increment, decrement } = useCounter();
+  return (
+    <>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+      Chakra Power: {count}
+    </>
+  );
+}
+```
+
+## API Reference
+
+### createStore
+
+The `createStore` function is the primary entry point for creating a store. It takes a configuration object as its first argument and returns a store instance as a hook.
+
+```tsx title="Counter.tsx"
+import { createStore } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounter = createStore<State>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+}));
+```
+
+### Middleware
+
+`@rasenganjs/kurama` provides a middleware system to extend store behavior. It allows you to add custom logic to your store, such as logging, persisting.
+
+#### logger
+
+```tsx title="Counter.tsx"
+import { createStore, middleware } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounter = createStore<State>(
+  middleware.logger((set) => ({
+    chakra: 100,
+    decrease: () => set((s) => ({ chakra: s.chakra - 10 })),
+  }))
+);
+```
+
+The `logger` middleware logs every action and state change to the console, making it easier to debug and understand the flow of your application.
+
+#### persist
+
+```tsx title="Counter.tsx"
+import { createStore, middleware } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounter = createStore<State>(
+  middleware.persist({ name: 'counter', storage: 'local' })((set) => ({
+    chakra: 100,
+    decrease: () => set((s) => ({ chakra: s.chakra - 10 })),
+  }))
+);
+```
+
+The `persist` middleware allows you to save the state of your store to `localStorage` or custom drivers, making it easier to persist state across page reloads.
+
+By default, the `persist` middleware uses `localStorage` as the storage driver by default, but you can also use `sessionStorage`.
+
+```tsx title="Counter.tsx" /storage: 'session'/
+import { createStore, middleware } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounter = createStore<State>(
+  middleware.persist({ name: 'counter', storage: 'session' })((set) => ({
+    chakra: 100,
+    decrease: () => set((s) => ({ chakra: s.chakra - 10 })),
+  }))
+);
+```
+
+| Option | Description | Type |
+| --- | --- | --- |
+| name | The name of the store used to save the state in `localStorage` or `sessionStorage`. | string |
+| storage | The storage driver to use. | `local`, `session` |
+
+#### compose 
+
+```tsx title="Counter.tsx"
+import { createStore, middleware } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounter = createStore<State>(
+  middleware.compose(
+    middleware.logger,
+    middleware.persist({ name: 'counter', storage: 'session' })
+  )((set) => ({
+    chakra: 100,
+    decrease: () => set((s) => ({ chakra: s.chakra - 10 })),
+  }))
+);
+```
+
+The `compose` middleware allows you to combine multiple middleware functions into a single middleware function, making it easier to reuse middleware logic.
+
+## Roadmap
+
+- [x] Middleware composition
+- [ ] DevTools integration (Kurama Vision)
+- [ ] Store dependency tracking
+- [ ] Multi-tab state synchronization
+- [ ] Asynchronous action queue
+- [ ] Integration with `@rasenganjs/query`
+
+## Philosophy
+
+> “Kurama represents raw, limitless chakra.
+> In Rasengan.js, that chakra is your **state** — energy you can control, share, and master.”
+
+Simple. Reactive. Controlled.
+That’s the power of Kurama.
 
 ## Community
 

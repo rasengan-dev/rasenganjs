@@ -1,7 +1,7 @@
-import { Link } from 'rasengan';
+import { Link, NavLink } from 'rasengan';
 import ThemeButton from '../atoms/buttons/theme-button';
 import { NavigationData } from '@/data/docs';
-import { Coffee, Ellipsis } from 'lucide-react';
+import { Coffee, CupSoda, Ellipsis } from 'lucide-react';
 import { useNavigationStore } from '@/store/navigation';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -33,8 +33,8 @@ export default function Navbar({ className }: Props) {
         <div className="flex items-center gap-2">
           <AppLogo size="lg" />
 
-          <div className="relative">
-            {/* Buy me a coffee button */}
+          {/* Buy me a coffee button */}
+          {/* <div className="relative">
             <Link
               to="https://coff.ee/dilane3"
               target="_blank"
@@ -50,7 +50,7 @@ export default function Navbar({ className }: Props) {
               </Button>
             </Link>
             <div className="w-[60%] h-[60%] bg-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 rounded-full animate-ping"></div>
-          </div>
+          </div> */}
         </div>
 
         <div className="hidden md:flex items-center gap-6">
@@ -61,6 +61,16 @@ export default function Navbar({ className }: Props) {
                   <li>{nav.name}</li>
                 </Link>
               ))}
+              <Link
+                to="https://coff.ee/dilane3"
+                target="_blank"
+                className="relative z-10"
+              >
+                <li className="flex items-center gap-2 text-primary hover:text-primary/80">
+                  <Coffee size={20} />
+                  <span>Support us</span>
+                </li>
+              </Link>
             </ul>
           </nav>
 

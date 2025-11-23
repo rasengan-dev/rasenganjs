@@ -64,8 +64,8 @@ export default function Footer() {
             <div className="w-full lg:w-1/3">
               <AppLogo />
 
-              <div className="relative w-[150px] mt-4">
-                {/* Buy me a coffee button */}
+              {/* Buy me a coffee button */}
+              {/* <div className="relative w-[150px] mt-4">
                 <Link
                   to="https://coff.ee/dilane3"
                   target="_blank"
@@ -81,7 +81,7 @@ export default function Footer() {
                   </Button>
                 </Link>
                 <div className="w-[60%] h-[60%] bg-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 rounded-full animate-ping"></div>
-              </div>
+              </div> */}
             </div>
 
             <div className="w-full lg:w-1/3">
@@ -103,6 +103,16 @@ export default function Footer() {
                   </Link>
                   <Link to="/showcase" className="hover:text-primary">
                     <li>Showcase</li>
+                  </Link>
+                  <Link
+                    to="https://coff.ee/dilane3"
+                    target="_blank"
+                    className="relative z-10"
+                  >
+                    <li className="flex items-center gap-2 text-primary hover:text-primary/80">
+                      <span>Support us</span>
+                      <Coffee size={16} />
+                    </li>
                   </Link>
                 </ul>
               </nav>
