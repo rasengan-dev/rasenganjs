@@ -2,26 +2,59 @@ import { Markdown } from '@rasenganjs/mdx';
 import { ComponentProps, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const codes = [
+const configBasedCodes = [
   {
     id: 1,
-    title: 'main.ts',
-    code: `\`\`\`jsx\nimport "@rasenganjs/image/css";\nimport "@/styles/index.css";\nimport { type AppProps } from "rasengan";\nimport AppRouter from "@/app/app.router";\n\nexport default function App({ Component, children }: AppProps) {\n  return <Component router={AppRouter}>{children}</Component>;\n}\n\`\`\``,
+    title: 'index.ts',
+    code: `\`\`\`js\nimport { renderApp } from 'rasengan/client';\nimport App from './main';\nimport AppRouter from '@/app/app.router';\n\nrenderApp(App, AppRouter, { reactStrictMode: true });\n\`\`\``,
   },
   {
     id: 2,
+    title: 'main.tsx',
+    code: `\`\`\`jsx\nimport "@rasenganjs/image/css";\nimport "@/styles/index.css";\n\nexport default function App({ Component, children }: AppProps) {\n  return <Component>{children}</Component>;\n}\n\`\`\``,
+  },
+  {
+    id: 3,
     title: 'app.router.ts',
     code: `\`\`\`ts\nimport { RouterComponent, defineRouter } from "rasengan";\nimport Home from "@/app/home.page";\nimport AppLayout from "@/app/app.layout";\n\nclass AppRouter extends RouterComponent {}\n\nexport default defineRouter({\n  imports: [],\n  layout: AppLayout,\n  pages: [Home],\n})(AppRouter);\n\`\`\``,
   },
   {
-    id: 3,
+    id: 4,
     title: 'app.layout.tsx',
     code: `\`\`\`jsx\nimport React from "react";\nimport { Outlet, LayoutComponent } from "rasengan";\n\nconst AppLayout: LayoutComponent = () => {\n  return (\n    <React.Fragment>\n      <Outlet />\n    </React.Fragment>\n  );\n};\n\nAppLayout.path = "/";\n\nexport default AppLayout;\n\`\`\``,
   },
   {
-    id: 4,
+    id: 5,
     title: 'home.page.tsx',
-    code: `\`\`\`jsx\nimport { PageComponent, Link } from "rasengan";\nimport logo from "@/assets/logo.svg";\nimport Image from "@rasenganjs/image";\n\nconst Home: PageComponent = () => {\n  return (\n    <section className="w-full h-full">\n      <h1>Home</h1>\n    </section>\n  );\n};\n\nHome.path = "/";\nHome.metadata = {\n  title: "Home",\n  description: "Home page",\n};\n\nexport default Home;\n\`\`\``,
+    code: `\`\`\`jsx\nimport { PageComponent, Link } from "rasengan";\nimport Image from "@rasenganjs/image";\n\nconst Home: PageComponent = () => {\n  return (\n    <section className="w-full h-full">\n      <h1>Home</h1>\n    </section>\n  );\n};\n\nHome.path = "/";\nHome.metadata = {\n  title: "Home",\n  description: "Home page",\n};\n\nexport default Home;\n\`\`\``,
+  },
+];
+
+const fileBasedCodes = [
+  {
+    id: 1,
+    title: 'index.ts',
+    code: `\`\`\`js\nimport { renderApp } from 'rasengan/client';\nimport App from './main';\nimport AppRouter from '@/app/app.router';\n\nrenderApp(App, AppRouter, { reactStrictMode: true });\n\`\`\``,
+  },
+  {
+    id: 2,
+    title: 'main.tsx',
+    code: `\`\`\`jsx\nimport "@rasenganjs/image/css";\nimport "@/styles/index.css";\n\nexport default function App({ Component, children }: AppProps) {\n  return <Component>{children}</Component>;\n}\n\`\`\``,
+  },
+  {
+    id: 3,
+    title: 'app.router.ts',
+    code: `\`\`\`ts\nimport Router from "vitual:rasengan/router";\n\nexport default Router;\n\`\`\``,
+  },
+  {
+    id: 4,
+    title: 'layout.tsx',
+    code: `\`\`\`jsx\nimport React from "react";\nimport { Outlet, LayoutComponent } from "rasengan";\n\nconst RootLayout: LayoutComponent = () => {\n  return (\n    <React.Fragment>\n      <Outlet />\n    </React.Fragment>\n  );\n};\n\nexport default RootLayout;\n\`\`\``,
+  },
+  {
+    id: 5,
+    title: 'index.page.tsx',
+    code: `\`\`\`jsx\nimport { PageComponent, Link } from "rasengan";\nimport Image from "@rasenganjs/image";\n\nconst Page: PageComponent = () => {\n  return (\n    <section className="w-full h-full">\n      <h1>Home</h1>\n    </section>\n  );\n};\n\nPage.metadata = {\n  title: "Home",\n  description: "Home page",\n};\n\nexport default Page;\n\`\`\``,
   },
 ];
 
@@ -31,26 +64,58 @@ export default function Editor({
   ...props
 }: ComponentProps<'div'>) {
   const [activeTab, setActiveTab] = useState(2);
+  const [selectedRouting, setSelectedRouting] = useState<'file' | 'config'>(
+    'file'
+  );
+  // const codes = configBasedCodes;
+  const codes = fileBasedCodes;
 
   const getTabContent = () => {
-    return codes.find((code) => code.id === activeTab);
+    if (selectedRouting === 'config')
+      return configBasedCodes.find((code) => code.id === activeTab);
+
+    return fileBasedCodes.find((code) => code.id === activeTab);
   };
 
   return (
-    <div className="w-full lg:h-[450px] lg:min-w-[600px]">
-      <div className="w-full h-[50px] flex items-center bg-[#10141e] rounded-t-lg px-2 gap-2 overflow-x-auto">
-        {codes.map((code) => (
-          <TabItem
-            key={code.id}
-            title={code.title}
-            active={activeTab === code.id}
-            onClick={() => setActiveTab(code.id)}
-          />
-        ))}
+    <div className="flex flex-col">
+      <div className="w-auto flex items-center justify-center gap-2 text-sm">
+        <div
+          onClick={() => setSelectedRouting('file')}
+          className={twMerge(
+            'rounded-lg border border-border py-2 px-4 cursor-pointer',
+            selectedRouting === 'file' && 'bg-primary'
+          )}
+        >
+          File-based Routing
+        </div>
+        <div
+          onClick={() => setSelectedRouting('config')}
+          className={twMerge(
+            'rounded-lg border border-border py-2 px-4 cursor-pointer',
+            selectedRouting === 'config' && 'bg-primary'
+          )}
+        >
+          Config-based Routing
+        </div>
       </div>
+      <div className="w-full lg:h-[450px] lg:min-w-[600px] mt-4">
+        <div className="w-full h-[50px] flex items-center bg-[#10141e] rounded-t-lg px-2 gap-2 overflow-x-auto">
+          {(selectedRouting === 'file' ? fileBasedCodes : configBasedCodes).map(
+            (code) => (
+              <TabItem
+                key={code.id}
+                title={code.title}
+                active={activeTab === code.id}
+                onClick={() => setActiveTab(code.id)}
+              />
+            )
+          )}
+        </div>
 
-      <div className="h-auto lg:h-[400px] max-h-[400px] min-h-[200px] overflow-auto editor bg-[#1c202a] rounded-b-lg">
-        <Markdown className="p-0" content={getTabContent()?.code ?? ''} />
+        <div className="h-auto lg:h-[400px] max-h-[400px] min-h-[200px] overflow-auto editor bg-[#1c202a] rounded-b-lg">
+          <Markdown className="p-0" content={getTabContent()?.code ?? ''} />
+        </div>
       </div>
     </div>
   );
