@@ -92,7 +92,6 @@ const DocsLayout: LayoutComponent = () => {
   );
 };
 
-DocsLayout.path = '/';
 DocsLayout.metadata = {
   openGraph: {
     title: 'Rasengan.js - Documentation',

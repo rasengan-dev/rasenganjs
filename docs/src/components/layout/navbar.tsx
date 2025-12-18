@@ -1,12 +1,11 @@
-import { Link, NavLink } from 'rasengan';
+import { Link } from 'rasengan';
 import ThemeButton from '../atoms/buttons/theme-button';
 import { NavigationData } from '@/data/docs';
-import { Coffee, CupSoda, Ellipsis } from 'lucide-react';
+import { Coffee, Ellipsis } from 'lucide-react';
 import { useNavigationStore } from '@/store/navigation';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
 import AppLogo from '../atoms/logo';
-import Button from '../atoms/buttons/button';
 import { useBannerStore } from '@/store/banner';
 
 type Props = {
@@ -20,13 +19,13 @@ export default function Navbar({ className }: Props) {
   return (
     <div
       className={twMerge(
-        'fixed top-0 left-0 w-full z-30',
+        'fixed top-0 left-0 w-full z-30 border-b-[1px] border-b-border/60',
         showBanner ? 'top-[60px]' : 'top-0'
       )}
     >
       <header
         className={twMerge(
-          'w-full h-[60px] bg-background/50 border-b-[1px] border-b-border/60 flex items-center justify-between px-2 lg:px-4 backdrop-blur-sm',
+          'w-full h-[60px] bg-background/85 flex items-center justify-between px-2 lg:px-4 backdrop-blur-sm',
           className
         )}
       >

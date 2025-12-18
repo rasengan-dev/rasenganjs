@@ -84,7 +84,7 @@ export default function Editor({
           onClick={() => setSelectedRouting('file')}
           className={twMerge(
             'rounded-lg border border-border py-2 px-4 cursor-pointer',
-            selectedRouting === 'file' && 'bg-primary'
+            selectedRouting === 'file' && 'bg-primary text-primary-foreground'
           )}
         >
           File-based Routing
@@ -93,7 +93,7 @@ export default function Editor({
           onClick={() => setSelectedRouting('config')}
           className={twMerge(
             'rounded-lg border border-border py-2 px-4 cursor-pointer',
-            selectedRouting === 'config' && 'bg-primary'
+            selectedRouting === 'config' && 'bg-primary text-primary-foreground'
           )}
         >
           Config-based Routing

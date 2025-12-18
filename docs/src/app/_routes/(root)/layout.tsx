@@ -14,7 +14,7 @@ const Layout: LayoutComponent = () => {
         showBanner ? 'pt-[60px]' : 'pt-[0px]'
       )}
     >
-      <Navbar className="max-w-[1600px] px-4 xl:px-20" />
+      <Navbar className="max-w-[1600px] mx-auto px-4 xl:px-20" />
 
       <main className="max-w-[1600px] mx-auto">
         <Outlet />
@@ -24,7 +24,5 @@ const Layout: LayoutComponent = () => {
     </section>
   );
 };
-
-Layout.path = '/';
 
 export default Layout;
