@@ -6,6 +6,10 @@ import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig(async () => {
   return {
+    sageMode: {
+      reactCompiler: true,
+    },
+
     vite: {
       plugins: [mdx(), tailwindcss(), rasengan({ adapter: configure() })],
     },

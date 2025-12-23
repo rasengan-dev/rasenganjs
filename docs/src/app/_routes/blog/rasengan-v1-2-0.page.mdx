@@ -23,13 +23,248 @@ import { Link } from 'rasengan';
 
 <br />
 
-In this post, we will talk about the new features of Rasengan v1.2.0 and how you can adopt them into your projects.
+We are excited to announce the release of Rasengan.js v1.2.0 🎉
+This version marks an important step forward for the framework by introducing some highly requested capabilities:
 
-For a list of breaking changes, see the Change log.
+- [**Static Site Generation (SSG) rendering mode**](/blog/rasengan-v1-2-0#static-site-generation-(ssg):-the-3rd-rendering-mode-in-rasengan.js)
+- [**Lazy-loaded routes for File-based routing**](/blog/rasengan-v1-2-0#lazy-loaded-routes-for-file-based-routing)
+- [**Support for React Compiler**](/blog/rasengan-v1-2-0#react-compiler-supports)
+- [**Introduction of Kurama, a state management library**](/blog/rasengan-v1-2-0#introduction-of-kurama)
+- [**Introduction of Kage Demo, a guiding tour utility package to onboard new users**](/blog/rasengan-v1-2-0#introduction-of-kage-demo)
+
+All these features are designed with one goal in mind:
+better performance, better scalability, and more control over how your application is rendered and delivered.
 
 ## What's new in Rasengan v1.2.0?
 
-### Introduction of `SSG` Rendering mode
+### Static Site Generation (SSG): the 3rd rendering mode in Rasengan.js
 
+With **v1.2.0**, Rasengan.js officially introduces **Static Site Generation (SSG)** as its **third rendering mode**, alongside the existing **SPA** and **SSR** modes.
+
+This means Rasengan.js now gives you **full control over how your application is rendered**, depending on your needs:
+
+* **SPA** → client-side rendering for highly interactive apps
+* **SSR** → server-side rendering for dynamic, SEO-critical pages
+* **SSG** → build-time rendering for ultra-fast, static content
+
+SSG is designed for pages that don’t need to be rendered on every request, such as:
+
+* Blogs
+* Documentation
+* Marketing pages
+* Public content
+
+By generating HTML at **build time**, Rasengan.js allows your application to be deployed as **static files**, delivering instant page loads and excellent SEO performance.
+
+
+#### How to enable SSG in Rasengan.js
+
+Enabling SSG in Rasengan.js is intentionally simple and integrates directly into the existing configuration system.
+
+##### Global prerendering
+
+To statically generate **all routes**, you can enable prerendering globally:
+
+```ts title="rasengan.config.js"
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: true,
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+
+##### Selective prerendering (recommended)
+
+You can also **choose exactly which routes should be statically generated** using glob patterns:
+
+```ts title="rasengan.config.js"
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: {
+    routes: ['/', 'blog/**'],
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+This approach is ideal for **hybrid applications**, where:
+
+* Public pages are statically generated
+* Authenticated or dynamic routes remain rendered via SSR or SPA
+
+
+#### One framework, three rendering strategies
+
+What makes this release important is not just the addition of SSG, but how it fits naturally into Rasengan.js’ architecture.
+
+You don’t switch frameworks or mental models.
+You don’t rewrite routes.
+You don’t duplicate logic.
+
+You simply **choose the right rendering mode** for the right use case.
+
+With **SPA, SSR, and now SSG**, Rasengan.js gives you a complete rendering toolbox — all within a single, coherent framework.
+
+
+### Lazy-loaded routes for File-based routing
+
+Another minor improvement in v1.2.0 is **lazy loading for File-based powered routes**.
+
+#### What problem does this solve?
+
+In previous versions, all File-based routes could be bundled eagerly, which could:
+
+* Increase initial bundle size
+* Slow down first page load
+* Load routes that users may never visit
+
+#### What’s new?
+
+With **lazy-loaded on File-based routes**:
+
+* Routes are loaded **only when needed**
+* The initial JavaScript payload is significantly smaller
+* Navigation remains smooth and predictable
+
+This is especially useful for:
+
+* Large applications
+* Admin dashboards
+* Auth-protected areas
+* Feature-based routing
+
+Rasengan.js now intelligently bridges **File-based routing** with **code splitting**, without requiring complex configuration. You don't have to worry about any configure because everything is handled internally.
+
+
+### React Compiler supports
+
+On October 7, 2025 the [React Team](https://react.dev/blog/2025/10/07/react-compiler-1) has released the v1.0 of `React Compiler` which is a build-time tool that optimizes your React app through automatic memoization.
+
+<br />
+Today, Rasengan.js supports that feature through a simple configuration. 
+
+We are glad to introduce you `Sage Mode` into Rasengan.js, that will hold the `React Compiler` and next time the `React Server Component`.
+
+#### How to configure `React Compiler` ?
+
+First, you need to install the following package
+
+npm
+```bash title="Terminal"
+npm install --save-dev --save-exact babel-plugin-react-compiler@latest
+```
+
+pnpm
+
+```bash title="Terminal"
+pnpm add --save-dev --save-exact babel-plugin-react-compiler@latest
+```
+
+yarn
+
+```bash title="Terminal"
+yarn add --dev --exact babel-plugin-react-compiler@latest
+```
+
+Then you have to configure your `rasengan.config.js` file like follow:
+
+```ts title="rasengan.config.js" showLineNumbers {5-7}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  sageMode: {
+    reactCompiler: true
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+Learn more about `React Compiler` in this [documentation](/docs/optimizing/react-compiler).
+
+### Introduction of `Kurama`
+
+We are proud to introduce Kurama (`@rasenganjs/kurama`) a **lightweight and reactive state management library** designed for **Rasengan.js** and **any React application**.
+Inspired by **Zustand**, **Jotai**, and the raw energy of **Kurama**, it gives developers full control over their application’s chakra (state) — simple, fast, and scalable.
+
+<br />
+
+`Kurama` provides a simple and concise API giving you the possibility to handle state globally into your application. 
+The configuration can fit into a simple file and the store created can be used everywhere in your application via the hook created.
+
+#### Usage
+
+First you need to install the it as a dependency
+
+```bash title="Terminal"
+pnpm add @rasenganjs/kurama
+```
+
+Then you can create your store and use it everywhere you want.
+
+```tsx title="Counter.tsx"
+import { createStore } from '@rasenganjs/kurama';
+
+type State = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+};
+
+const useCounter = createStore<State>((set) => ({
+  count: 0,
+  increment: () => set((s) => ({ count: s.count + 1 })),
+  decrement: () => set((s) => ({ count: s.count - 1 })),
+}));
+
+// Use it anywhere
+function Counter() {
+  const { count, increment, decrement } = useCounter();
+  return (
+    <>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+      Chakra Power: {count}
+    </>
+  );
+}
+```
+
+Learn more about Kurama [here](/packages/kurama) 
+
+### Introduction of `Kage Demo`
+
+We are proud to introduce Kage Demo (`@rasenganjs/kage-demo`) a lightweight tool that helps you create guided tours and onboarding experiences for your website.
+
+<br />
+
+`Kage Demo` provides a simple API with which you can play around. Whether you're building a dashboard, a web app, or any site where users might need a little guidance, this package makes it easy to get started.
+
+To start, just install the package as a dependency
+
+```bash title="Terminal"
+pnpm add @rasenganjs/kage-demo
+```
+
+Learn more about how to integrate it into your application [here](/packages/kage-demo) 
+
+<br />
+
+As always, feedback and contributions are welcome.
+
+**Rasengan.js v1.2.0** is another step toward a flexible, modern, and developer-first React framework.
+
+Happy building 🌀
 
 Learn more about [Rasengan.js documentation](/docs/getting-started/introduction) and have fun Ninja!

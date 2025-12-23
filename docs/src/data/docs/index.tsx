@@ -200,6 +200,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               link: '/docs/optimizing/static-assets',
               level: 3,
             },
+            {
+              id: randomId(),
+              name: 'React Compiler',
+              link: '/docs/optimizing/react-compiler',
+              level: 3,
+              isNew: true,
+            },
           ],
         },
         {
