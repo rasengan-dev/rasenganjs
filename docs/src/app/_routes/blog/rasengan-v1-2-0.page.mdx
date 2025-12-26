@@ -13,8 +13,8 @@ metadata:
     image: 'https://rasengan.dev/assets/blog/rasengan-1.2.0.png'
 ---
 
-import BlogDetailsHeader from '@/components/molecules/blog-header-details';
-import { AlertWithLink } from "@/components/atoms/alerts"; 
+import BlogDetailsHeader from '@/components/common/molecules/blog-header-details';
+import { AlertWithLink } from "@/components/common/atoms/alerts"; 
 import { Link } from 'rasengan';
 
 <BlogDetailsHeader />
@@ -65,7 +65,7 @@ Enabling SSG in Rasengan.js is intentionally simple and integrates directly into
 
 To statically generate **all routes**, you can enable prerendering globally:
 
-```ts title="rasengan.config.js"
+```ts title="rasengan.config.js" {5}
 import { defineConfig } from 'rasengan';
 import { rasengan } from 'rasengan/plugin';
 
@@ -82,7 +82,7 @@ export default defineConfig({
 
 You can also **choose exactly which routes should be statically generated** using glob patterns:
 
-```ts title="rasengan.config.js"
+```ts title="rasengan.config.js" {5-7}
 import { defineConfig } from 'rasengan';
 import { rasengan } from 'rasengan/plugin';
 

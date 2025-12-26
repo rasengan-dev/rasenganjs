@@ -1,14 +1,14 @@
-import Navbar from '@/components/layout/navbar';
+import Navbar from '@/components/common/layout/navbar';
 import { Outlet, LayoutComponent } from 'rasengan';
-import SidebarNavigation from '@/components/layout/sidebar';
-import Footer from '@/components/layout/footer';
+import SidebarNavigation from '@/components/common/layout/sidebar';
+import Footer from '@/components/common/layout/footer';
 import { useState, useRef } from 'react';
 import { AlignJustify } from 'lucide-react';
-import ThemeButton from '@/components/atoms/buttons/theme-button';
+import ThemeButton from '@/components/common/atoms/buttons/theme-button';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
-import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
+import { ScrollRestoration } from '@/components/common/molecules/scroll-restoration';
 import { useBannerStore } from '@/store/banner';
 
 const DocsLayout: LayoutComponent = () => {

@@ -53,7 +53,7 @@ metadata:
   description: Discover our new blog posts
 ---
 
-import Button from '@/components/Button';
+import Button from '@/components/common/Button';
 
 # Blog page
 

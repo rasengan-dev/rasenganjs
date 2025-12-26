@@ -4,7 +4,7 @@ import LogoBlack from '@/assets/images/logo/logo-text.svg';
 import { ThemesType, useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { Link } from 'rasengan';
-import Button from '@/components/atoms/buttons/button';
+import Button from '@/components/common/atoms/buttons/button';
 import ThemeButton from '../atoms/buttons/theme-button';
 import { useEffect, useState } from 'react';
 import { newsletterProvider } from '@/api/newsletter';

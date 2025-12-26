@@ -1,7 +1,7 @@
 import { Link, PageComponent } from 'rasengan';
 import Image from '@rasenganjs/image';
 import image from '@/assets/images/illustrations/learn-loading.gif';
-import Button from '@/components/atoms/buttons/button';
+import Button from '@/components/common/atoms/buttons/button';
 
 const Page: PageComponent = () => {
   return (

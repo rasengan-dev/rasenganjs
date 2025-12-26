@@ -5,9 +5,9 @@ metadata:
 toc: false
 ---
 
-import Pagination from '@/components/molecules/pagination';
-import Tabs from '@/components/molecules/tab';
-import StepItem from '@/components/molecules/step-item';
+import Pagination from '@/components/common/molecules/pagination';
+import Tabs from '@/components/common/molecules/tab';
+import StepItem from '@/components/common/molecules/step-item';
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
@@ -101,7 +101,7 @@ module.exports = {
   `}
 >
 ```jsx title="home.page.jsx" showLineNumbers {5,6}
-import { Button } from '@/components/button';
+import { Button } from '@/components/common/button';
 
 export default function Home() {
   return (
@@ -179,7 +179,7 @@ export default defineConfig({
   `}
 >
 ```jsx title="home.page.jsx" showLineNumbers {5,6}
-import { Button } from '@/components/button';
+import { Button } from '@/components/common/button';
 
 export default function Home() {
   return (

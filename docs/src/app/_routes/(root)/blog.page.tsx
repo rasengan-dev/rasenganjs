@@ -1,6 +1,6 @@
-import BlogCard from '@/components/molecules/blog-card';
-import CTA from '@/components/molecules/cta';
-import Heading from '@/components/molecules/heading';
+import BlogCard from '@/components/common/molecules/blog-card';
+import CTA from '@/components/common/molecules/cta';
+import Heading from '@/components/common/molecules/heading';
 import { useBlogStore } from '@/store/blog';
 import { PageComponent } from 'rasengan';
 

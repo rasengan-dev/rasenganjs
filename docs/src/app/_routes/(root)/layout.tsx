@@ -1,6 +1,6 @@
 import { Outlet, LayoutComponent } from 'rasengan';
-import Navbar from '@/components/layout/navbar';
-import Footer from '@/components/layout/footer';
+import Navbar from '@/components/common/layout/navbar';
+import Footer from '@/components/common/layout/footer';
 import { useBannerStore } from '@/store/banner';
 import { twMerge } from 'tailwind-merge';
 

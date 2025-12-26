@@ -6,9 +6,9 @@ import { useNavigationStore } from '@/store/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { NavigationData } from '@/data/docs';
 import { X } from 'lucide-react';
-import ThemeButton from '@/components/atoms/buttons/theme-button';
-import { ScrollRestoration } from '@/components/molecules/scroll-restoration';
-import Banner from '@/components/molecules/banner';
+import ThemeButton from '@/components/common/atoms/buttons/theme-button';
+import { ScrollRestoration } from '@/components/common/molecules/scroll-restoration';
+import Banner from '@/components/common/molecules/banner';
 import { useBannerStore } from '@/store/banner';
 
 const RootLayout: LayoutComponent = () => {

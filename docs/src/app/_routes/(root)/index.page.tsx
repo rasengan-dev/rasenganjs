@@ -1,20 +1,20 @@
-import { AnnonceBadge } from '@/components/atoms/badges/badge';
-import Button from '@/components/atoms/buttons/button';
+import { AnnonceBadge } from '@/components/common/atoms/badges/badge';
+import Button from '@/components/common/atoms/buttons/button';
 import Image from '@rasenganjs/image';
 import { Link, PageComponent } from 'rasengan';
-import Editor from '@/components/molecules/editor';
+import Editor from '@/components/common/molecules/editor';
 import blueLigthIllustration from '@/assets/images/illustrations/blue-light.svg';
 import lock from '@/assets/images/icons/lock.svg';
 import folder from '@/assets/images/icons/folder.svg';
 import speed from '@/assets/images/icons/speed.svg';
-import CopyButton from '@/components/atoms/buttons/copy-button';
-import Heading from '@/components/molecules/heading';
-import FeatureCard from '@/components/molecules/feature-card';
+import CopyButton from '@/components/common/atoms/buttons/copy-button';
+import Heading from '@/components/common/molecules/heading';
+import FeatureCard from '@/components/common/molecules/feature-card';
 import rasenganIllustration from '@/assets/images/icons/rasengan-large.svg';
 import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
-import { ShowcaseCard } from '@/components/molecules/showcase-card';
-import CTA from '@/components/molecules/cta';
+import { ShowcaseCard } from '@/components/common/molecules/showcase-card';
+import CTA from '@/components/common/molecules/cta';
 
 const Page: PageComponent = () => {
   const { isDark } = useTheme();

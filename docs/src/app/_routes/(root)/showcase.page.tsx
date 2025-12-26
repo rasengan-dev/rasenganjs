@@ -1,6 +1,6 @@
-import CTA from '@/components/molecules/cta';
-import Heading from '@/components/molecules/heading';
-import { ShowcaseCard } from '@/components/molecules/showcase-card';
+import CTA from '@/components/common/molecules/cta';
+import Heading from '@/components/common/molecules/heading';
+import { ShowcaseCard } from '@/components/common/molecules/showcase-card';
 import { PageComponent } from 'rasengan';
 
 const Page: PageComponent = () => {
