@@ -36,7 +36,7 @@ import { Languages, Templates, Versions } from './constants/index.js';
 import __dirname from './utils/dirname.js';
 import { logInfo } from './scripts/log-info.js';
 import createProjectFromTemplate from './scripts/template.js';
-import logoAsciiCode from './data/logo.js';
+import logoAsciiCode, { logoTextAsciiCode } from './data/logo.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -68,13 +68,15 @@ program
     // Parse the package.json file
     const parsedPackageJson = JSON.parse(packageJson);
 
-    console.log(chalk.blue(logoAsciiCode));
+    // logoTextAsciiCode
+    console.log(chalk.blue(logoTextAsciiCode));
+    // console.log(chalk.blue(logoAsciiCode));
 
-    consola.info(`${chalk.bold.blue('Welcome to Rasengan!')} 🌀`);
+    consola.info(`${chalk.bold.blue('Welcome to Rasengan.js')}`);
 
     // // Showing the welcome message
     consola.info(
-      `You are using ${chalk.bold.blue(`Create Rasengan CLI ${chalk.bgBlue(chalk.white(`v${parsedPackageJson.version}`))}`)} 🎉\n`
+      `You are using ${chalk.bold.blue(`create-rasengan CLI`)} ${chalk.bold.white(`v${parsedPackageJson.version}`)} 🎉\n`
     );
 
     // Getting the options

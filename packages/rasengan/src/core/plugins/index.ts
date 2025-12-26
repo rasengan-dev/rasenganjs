@@ -7,6 +7,7 @@ import { resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
+import { preRenderApp } from '../../server/node/index.js';
 
 function loadRasenganGlobal(): Plugin {
   return {
@@ -102,7 +103,6 @@ function flatRoutesPlugin(): Plugin {
                 '/src/app/_routes/**/layout.{js,ts,jsx,tsx}',
                 '/src/app/_routes/**/*.page.{md,mdx,js,ts,jsx,tsx}',
               ],
-              // { eager: true }
             );
           });
 
@@ -173,7 +173,6 @@ export interface AdapterConfig {
 
 type RasenganPluginOptions = {
   adapter?: AdapterConfig;
-  prerender?: boolean | string[];
 };
 
 /**
@@ -183,7 +182,6 @@ type RasenganPluginOptions = {
  */
 export function rasengan({
   adapter = { name: Adapters.DEFAULT, prepare: async () => {} },
-  prerender = false,
 }: RasenganPluginOptions = {}): Plugin {
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
@@ -232,17 +230,19 @@ export function rasengan({
 
       // SPA mode only
       if (!config.ssr) {
-        // Generate the template.js file into the dist/assets
-        fs.writeFileSync(
-          path.posix.join(
-            process.cwd(),
-            buildOptions.buildDirectory,
-            buildOptions.assetPathDirectory,
-            'template.js'
-          ),
-          module.code,
-          'utf-8'
-        );
+        if (!config.prerender) {
+          // Generate the template.js file into the dist/assets
+          fs.writeFileSync(
+            path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              buildOptions.assetPathDirectory,
+              'template.js'
+            ),
+            module.code,
+            'utf-8'
+          );
+        }
       }
     },
 
@@ -250,29 +250,11 @@ export function rasengan({
       // We check here if the environment is client has been built because it's the
       // last environment to be built in the Vite build process
       if (this.environment.name === 'client') {
-        // Check if SPA mode is enabled
-        if (!config.ssr) {
-          // Load the template.js file
-          const templatePath = path.posix.join(
-            process.cwd(),
-            buildOptions.buildDirectory,
-            buildOptions.assetPathDirectory,
-            'template.js'
-          );
-
-          const Template = (await import(templatePath)).default;
-
-          // Render the index.html file
-          await renderIndexHTML(Template, {
-            rootPath: process.cwd(),
-            config,
-          });
-        }
-
         // Generate a config.json file into the dist/client/assets or dist/assets
         const minimizedConfig = {
           buildOptions,
           ssr: config.ssr,
+          prerender: !!config.prerender,
           redirects: await config.redirects(),
         };
 
@@ -280,7 +262,9 @@ export function rasengan({
           path.posix.join(
             process.cwd(),
             buildOptions.buildDirectory,
-            config.ssr ? buildOptions.clientPathDirectory : '',
+            config.ssr || config.prerender
+              ? buildOptions.clientPathDirectory
+              : '',
             buildOptions.assetPathDirectory,
             'config.json'
           ),
@@ -288,14 +272,62 @@ export function rasengan({
           'utf-8'
         );
 
-        // Prerender mode only
-        if (prerender) {
-          // Log info
-          console.log('Prerendering mode enabled');
+        // Enable the generation of spa-fallback.html during pre-rendering
+        // Only if every pages are not generated
+        // @default to false - we assume that all pages are not generated
+        let enableIndexFallback = false;
 
-          const routes = Array.isArray(prerender) ? prerender : [];
+        // Handling the prerendering
+        if (config.prerender) {
+          let routes = [];
+          const buildOptions = resolveBuildOptions({
+            serverPathDirectory: 'prerender',
+          });
 
-          console.log(routes);
+          if (typeof config.prerender === 'object') {
+            routes = config.prerender.routes || [];
+          }
+
+          const outDir = `${process.cwd()}/static`;
+
+          const { isIndexPrerendered } = await preRenderApp({
+            build: buildOptions,
+            outDir,
+            routes,
+          });
+
+          enableIndexFallback = isIndexPrerendered;
+        }
+
+        // Check if SPA or SSG mode is enabled
+        if (!config.ssr || config.prerender) {
+          // Load the template.js file
+          let templatePath = '';
+
+          if (config.prerender) {
+            templatePath = path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              'prerender',
+              'template.js'
+            );
+          } else {
+            templatePath = path.posix.join(
+              process.cwd(),
+              buildOptions.buildDirectory,
+              buildOptions.assetPathDirectory,
+              'template.js'
+            );
+          }
+
+          const Template = (await import(templatePath)).default;
+
+          // Render the index.html file
+          await renderIndexHTML(Template, {
+            rootPath: process.cwd(),
+            config,
+            enableIndexFallback,
+          });
         }
 
         // Prepare the app for deployment

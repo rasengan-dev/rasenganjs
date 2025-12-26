@@ -98,13 +98,23 @@ const generateVercelDirectory = async (config: OptimizedAppConfig) => {
 
 const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
   const vercelBuildOptions = getVercelBuildOptions();
+  const buildOptions = resolveBuildOptions({});
+
+  // Check if spa-fallback.html exists
+  let isSpaFallbackExists = false;
+
+  if (config.prerender) {
+    isSpaFallbackExists = fsSync.existsSync(
+      path.posix.join(buildOptions.staticDirectory, 'spa-fallback.html')
+    );
+  }
 
   // Default Vercel configuration
   const vercelConfig = {
     version: 3,
     framework: {
       name: 'rasengan',
-      version: '1.0.0',
+      version: '1.2.0',
     },
     routes: [
       {
@@ -117,7 +127,11 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
       },
       {
         src: '/(.*)',
-        dest: config.ssr ? '/' : '/index.html',
+        dest: config.ssr
+          ? '/'
+          : isSpaFallbackExists
+            ? '/spa-fallback.html'
+            : '/index.html',
       },
     ],
   };
@@ -293,11 +307,17 @@ const copyStaticFiles = async (config: OptimizedAppConfig) => {
   const vercelBuildOptions = getVercelBuildOptions();
   const buildOptions = resolveBuildOptions({});
 
-  // Copy folders and files from dist/client (or dist in spa mode) to .vercel/output/static
+  // Copy folders and files from dist/client (or dist in spa mode) (or static in ssg mode) to .vercel/output/static
   await fs.cp(
     path.posix.join(
-      buildOptions.buildDirectory,
-      config.ssr ? buildOptions.clientPathDirectory : ''
+      config.prerender
+        ? buildOptions.staticDirectory
+        : config.ssr
+          ? path.posix.join(
+              buildOptions.buildDirectory,
+              buildOptions.clientPathDirectory
+            )
+          : buildOptions.buildDirectory
     ),
     path.posix.join(
       vercelBuildOptions.buildDirectory,
@@ -386,7 +406,7 @@ const prepare = async (options: AdapterOptions) => {
   // Copy static files to the Vercel directory
   await copyStaticFiles(config);
 
-  if (config.ssr) {
+  if (config.ssr && !config.prerender) {
     // Copy server files to the Vercel directory
     await copyServerFiles();
 

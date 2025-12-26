@@ -13,15 +13,16 @@ export const renderIndexHTML = async (
   options: {
     rootPath: string;
     config: AppConfig;
+    enableIndexFallback: boolean;
   }
 ) => {
-  const { rootPath, config } = options;
+  const { rootPath, config, enableIndexFallback } = options;
   const buildOptions = resolveBuildOptions({});
 
   const manifest = new ManifestManager(
     path.posix.join(
       buildOptions.buildDirectory,
-      config.ssr ? buildOptions.clientPathDirectory : '',
+      (config.ssr || config.prerender) ? buildOptions.clientPathDirectory : '',
       buildOptions.manifestPathDirectory,
       'manifest.json'
     )
@@ -39,24 +40,27 @@ export const renderIndexHTML = async (
     />
   );
 
-  // Render the html into an index.html file
+  // Render the html into an index.html or spa-fallback.html file
   await fs.writeFile(
     path.posix.join(
       rootPath, 
-      buildOptions.buildDirectory, 
-      'index.html'
+      config.prerender ? buildOptions.staticDirectory : buildOptions.buildDirectory,
+      enableIndexFallback ? "spa-fallback.html" : "index.html"
     ),
     html,
     'utf-8'
   );
+  
 
-  // Delete the dist/assets/template.js file
-  await fs.rm(
-    path.posix.join(
-      rootPath,
-      buildOptions.buildDirectory,
-      buildOptions.assetPathDirectory,
-      'template.js'
-    )
-  );
+  // Delete the dist/assets/template.js or dist/client/assets/template.js file
+  if (!config.prerender) {
+    await fs.rm(
+      path.posix.join(
+        rootPath,
+        buildOptions.buildDirectory,
+        buildOptions.assetPathDirectory,
+        'template.js'
+      )
+    );
+  }
 }
