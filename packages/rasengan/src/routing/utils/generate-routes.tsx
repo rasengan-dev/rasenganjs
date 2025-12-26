@@ -253,365 +253,481 @@ export const generateRoutes = (
   let route: RouteObject;
   let layoutPath: string;
 
-  // Check if the layout is coming from the file-based routing system
-  if ('source' in router.layout) {
-    const layoutNode = router.layout as RouteNode;
-    layoutPath = layoutNode.path;
+  try {
+    // Check if the layout is coming from the file-based routing system
+    if ('source' in router.layout) {
+      const layoutNode = router.layout as RouteNode;
+      layoutPath = layoutNode.path;
 
-    route = {
-      path: !isRoot
-        ? router.useParentLayout
-          ? layoutNode.path.replace(parentLayoutPath + '/', '')
-          : layoutNode.path
-        : layoutNode.path,
-      errorElement: <ErrorBoundary />,
-      lazy: async () => {
-        const Layout = (await layoutNode.module()).default as LayoutComponent;
+      route = {
+        path: !isRoot
+          ? router.useParentLayout
+            ? layoutNode.path.replace(parentLayoutPath + '/', '')
+            : layoutNode.path
+          : layoutNode.path,
+        errorElement: <ErrorBoundary />,
+        lazy: async () => {
+          const Layout = (await layoutNode.module()).default as LayoutComponent;
 
-        if (!Layout) {
-          console.warn(
-            `Layout component is not exported by default from: ${layoutNode.source}}`
-          );
-
-          return {
-            Component() {
-              return <Outlet />;
-            },
-          };
-        }
-
-        return {
-          Component() {
-            // Default data
-            const defaultData = {
-              props: {},
-            };
-
-            // Get SSR data
-            let { props } = (useLoaderData() as LoaderResponse) || defaultData;
-
-            // get params
-            const params = useParams();
-
-            const layoutProps = {
-              ...props,
-              params,
-            };
-
-            // Check if the layout is the root layout and wrap it in a MetadataProvider
-            if (isRoot || !router.useParentLayout) {
-              // Generate metadata mapping
-              // const metadataMapping = generateMetadataMapping(router);
-
-              return (
-                <MetadataProvider>
-                  <Layout {...layoutProps} />
-                </MetadataProvider>
-              );
-            }
-
-            return <Layout {...layoutProps} />;
-          },
-
-          async loader({ params, request }) {
-            // Extract metadata from the layout
-            const metadata: MetadataWithoutTitleAndDescription = {
-              ...Layout.metadata,
-            };
-
-            return createLoaderFunction({
-              loader: Layout.loader,
-              metadata,
-              isLayout: true,
-              source: layoutNode.source,
-            })({
-              params,
-              request,
-            });
-          },
-        };
-      },
-      children: [],
-      nested: router.useParentLayout,
-      hydrateFallbackElement: <></>,
-      // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
-      //   // Only revalidate if navigating to a different route
-      //   return currentUrl.pathname !== nextUrl.pathname;
-      // },
-    };
-  } else {
-    const Layout = router.layout as LayoutComponent;
-    layoutPath = Layout.path;
-
-    route = {
-      path: !isRoot
-        ? router.useParentLayout
-          ? layoutPath.replace(parentLayoutPath + '/', '')
-          : layoutPath
-        : layoutPath,
-      errorElement: <ErrorBoundary />,
-      Component() {
-        // Default data
-        const defaultData = {
-          props: {},
-        };
-
-        // Get SSR data
-        let { props } = (useLoaderData() as LoaderResponse) || defaultData;
-
-        // get params
-        const params = useParams();
-
-        const layoutProps = {
-          ...props,
-          params,
-        };
-
-        // Check if the layout is the root layout and wrap it in a MetadataProvider
-        if (isRoot || !router.useParentLayout) {
-          // Generate metadata mapping
-          // const metadataMapping = generateMetadataMapping(router);
-
-          return (
-            <MetadataProvider>
-              <Layout {...layoutProps} />
-            </MetadataProvider>
-          );
-        }
-
-        return <Layout {...layoutProps} />;
-      },
-      async loader({ params, request }) {
-        // Extract metadata from the layout
-        const metadata: MetadataWithoutTitleAndDescription = {
-          ...Layout.metadata,
-        };
-
-        return createLoaderFunction({
-          loader: Layout.loader,
-          metadata,
-          isLayout: true,
-        })({
-          params,
-          request,
-        });
-      },
-      children: [],
-      nested: router.useParentLayout,
-      hydrateFallbackElement: <></>,
-      // hydrateFallbackElement: <>Loading...</>, // TODO: enable override
-      // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
-      //   // Only revalidate if navigating to a different route
-      //   return currentUrl.pathname !== nextUrl.pathname;
-      // },
-    };
-  }
-
-  // Defining the page not found route
-  if (isRoot || router.notFoundComponent) {
-    route.children.push({
-      path: '*',
-      element: router.notFoundComponent ?? <NotFoundPageComponent />,
-      loader: async () => {
-        return {
-          props: {},
-          meta: defaultMetadata,
-        };
-      },
-    });
-  }
-
-  // Get informations about pages
-  const pages: Array<RouteObject> = router.pages.map(
-    (p: PageComponent | RouteNode) => {
-      // Check if the page is coming from file-based routing system
-      if ('source' in p) {
-        const pageNode = p as RouteNode;
-
-        // /home => home
-        // / => /
-        const pagePathFormated =
-          pageNode.path.startsWith('/') && pageNode.path !== '/'
-            ? pageNode.path.slice(1)
-            : pageNode.path;
-
-        // Get the path of the page
-        const path =
-          pageNode.path === '/'
-            ? layoutPath
-            : layoutPath.length > 1
-              ? pagePathFormated
-              : pageNode.path;
-
-        return {
-          path: path === layoutPath ? undefined : path,
-          index: path === layoutPath,
-          async lazy() {
-            let Page = (await pageNode.module()).default as PageComponent;
-
-            if (!Page) {
-              console.warn(
-                `Page component is not exported by default from: ${pageNode.source}}`
-              );
-
-              return {
-                Component() {
-                  return null;
-                },
-              };
-            }
-
-            // Detech if the page is a MDXPageComponent or not
-            if (isMDXPage(Page)) {
-              // Convert PageComponent to MDXPageComponent (to make ts happy)
-              const mdxPage = Page as unknown as MDXPageComponent;
-
-              // mdxPage.metadata.path = node.path;
-              // mdxPage.metadata.metadata = Page.metadata;
-
-              Page = await convertMDXPageToPageComponent(mdxPage);
-            }
+          if (!Layout) {
+            console.warn(
+              `Layout component is not exported by default from: ${layoutNode.source}}`
+            );
 
             return {
               Component() {
-                // Default data
-                const defaultData = {
-                  props: {
-                    params: {},
-                  },
-                };
+                return <Outlet />;
+              },
+            };
+          }
 
-                const loaderData =
-                  (useLoaderData() as LoaderResponse) || defaultData;
+          return {
+            Component() {
+              // Default data
+              const defaultData = {
+                props: {},
+              };
+
+              // Get SSR data
+              let { props } =
+                (useLoaderData() as LoaderResponse) || defaultData;
+
+              // get params
+              const params = useParams();
+
+              const layoutProps = {
+                ...props,
+                params,
+              };
+
+              // Check if the layout is the root layout and wrap it in a MetadataProvider
+              if (isRoot || !router.useParentLayout) {
+                // Generate metadata mapping
+                // const metadataMapping = generateMetadataMapping(router);
 
                 return (
-                  // <Suspense fallback={<>Loading</>}>
-                  <RasenganPageComponent page={Page} data={loaderData} />
-                  // </Suspense>
+                  <MetadataProvider>
+                    <Layout {...layoutProps} />
+                  </MetadataProvider>
                 );
-              },
+              }
 
-              async loader({ params, request }) {
-                // Extracting metadata from the page
-                const metadata: Metadata = {
-                  ...Page.metadata,
-                };
+              return <Layout {...layoutProps} />;
+            },
 
-                return createLoaderFunction({
-                  loader: Page.loader,
-                  metadata,
-                  source: pageNode.source,
-                })({
-                  params,
-                  request,
-                });
-              },
-            };
-          },
-          errorElement: <ErrorBoundary />,
-          hydrateFallbackElement: <></>,
-          // hydrateFallbackElement: <>Loading...</>,
-          shouldRevalidate: ({
-            currentUrl,
-            nextUrl,
-            defaultShouldRevalidate,
-          }) => {
-            // Only revalidate if navigating to a different route
-            return currentUrl.pathname !== nextUrl.pathname;
-          },
-        };
-      } else {
-        const Page = p as PageComponent;
+            async loader({ params, request }) {
+              // Extract metadata from the layout
+              const metadata: MetadataWithoutTitleAndDescription = {
+                ...Layout.metadata,
+              };
 
-        // /home => home
-        // / => /
-        const pagePathFormated =
-          Page.path.startsWith('/') && Page.path !== '/'
-            ? Page.path.slice(1)
-            : Page.path;
+              return createLoaderFunction({
+                loader: Layout.loader,
+                metadata,
+                isLayout: true,
+                source: layoutNode.source,
+              })({
+                params,
+                request,
+              });
+            },
+          };
+        },
+        children: [],
+        nested: router.useParentLayout,
+        hydrateFallbackElement: <></>,
+        // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+        //   // Only revalidate if navigating to a different route
+        //   return currentUrl.pathname !== nextUrl.pathname;
+        // },
+      };
+    } else {
+      const Layout = router.layout as LayoutComponent;
+      layoutPath = Layout.path;
 
-        // Get the path of the page
-        const path =
-          Page.path === '/'
-            ? layoutPath
-            : layoutPath.length > 1
-              ? pagePathFormated
-              : Page.path;
+      route = {
+        path: !isRoot
+          ? router.useParentLayout
+            ? layoutPath.replace(parentLayoutPath + '/', '')
+            : layoutPath
+          : layoutPath,
+        errorElement: <ErrorBoundary />,
+        Component() {
+          // Default data
+          const defaultData = {
+            props: {},
+          };
 
-        return {
-          path: path === layoutPath ? undefined : path,
-          index: path === layoutPath,
-          async loader({ params, request }) {
-            // Extracting metadata from the page
-            const metadata: Metadata = {
-              ...Page.metadata,
-            };
+          // Get SSR data
+          let { props } = (useLoaderData() as LoaderResponse) || defaultData;
 
-            return createLoaderFunction({
-              loader: Page.loader,
-              metadata,
-            })({
-              params,
-              request,
-            });
-          },
-          Component() {
-            // Default data
-            const defaultData = {
-              props: {
-                params: {},
-              },
-            };
+          // get params
+          const params = useParams();
 
-            const loaderData =
-              (useLoaderData() as LoaderResponse) || defaultData;
+          const layoutProps = {
+            ...props,
+            params,
+          };
+
+          // Check if the layout is the root layout and wrap it in a MetadataProvider
+          if (isRoot || !router.useParentLayout) {
+            // Generate metadata mapping
+            // const metadataMapping = generateMetadataMapping(router);
 
             return (
-              // <Suspense fallback={<>Loading</>}>
-              <RasenganPageComponent page={Page} data={loaderData} />
-              // </Suspense>
+              <MetadataProvider>
+                <Layout {...layoutProps} />
+              </MetadataProvider>
             );
-          },
-          errorElement: <ErrorBoundary />,
-          hydrateFallbackElement: <></>,
-          // hydrateFallbackElement: <>Loading...</>,
-          shouldRevalidate: ({
-            currentUrl,
-            nextUrl,
-            defaultShouldRevalidate,
-          }) => {
-            // Only revalidate if navigating to a different route
-            return currentUrl.pathname !== nextUrl.pathname;
-          },
-        };
+          }
+
+          return <Layout {...layoutProps} />;
+        },
+        async loader({ params, request }) {
+          // Extract metadata from the layout
+          const metadata: MetadataWithoutTitleAndDescription = {
+            ...Layout.metadata,
+          };
+
+          return createLoaderFunction({
+            loader: Layout.loader,
+            metadata,
+            isLayout: true,
+          })({
+            params,
+            request,
+          });
+        },
+        children: [],
+        nested: router.useParentLayout,
+        hydrateFallbackElement: <></>,
+        // hydrateFallbackElement: <>Loading...</>, // TODO: enable override
+        // shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+        //   // Only revalidate if navigating to a different route
+        //   return currentUrl.pathname !== nextUrl.pathname;
+        // },
+      };
+    }
+
+    // Defining the page not found route
+    if (isRoot || router.notFoundComponent) {
+      route.children.push({
+        path: '*',
+        element: router.notFoundComponent ?? <NotFoundPageComponent />,
+        loader: async () => {
+          return {
+            props: {},
+            meta: defaultMetadata,
+          };
+        },
+      });
+    }
+
+    // Get informations about pages
+    const pages: Array<RouteObject> = router.pages.map(
+      (p: PageComponent | RouteNode) => {
+        // Check if the page is coming from file-based routing system
+        if ('source' in p) {
+          const pageNode = p as RouteNode;
+
+          // /home => home
+          // / => /
+          const pagePathFormated =
+            pageNode.path.startsWith('/') && pageNode.path !== '/'
+              ? pageNode.path.slice(1)
+              : pageNode.path;
+
+          // Get the path of the page
+          const path =
+            pageNode.path === '/'
+              ? layoutPath
+              : layoutPath.length > 1
+                ? pagePathFormated
+                : pageNode.path;
+
+          return {
+            path: path === layoutPath ? undefined : path,
+            index: path === layoutPath,
+            async lazy() {
+              let Page = (await pageNode.module()).default as PageComponent;
+
+              if (!Page) {
+                console.warn(
+                  `Page component is not exported by default from: ${pageNode.source}}`
+                );
+
+                return {
+                  Component() {
+                    return null;
+                  },
+                };
+              }
+
+              // Detech if the page is a MDXPageComponent or not
+              if (isMDXPage(Page)) {
+                // Convert PageComponent to MDXPageComponent (to make ts happy)
+                const mdxPage = Page as unknown as MDXPageComponent;
+
+                // mdxPage.metadata.path = node.path;
+                // mdxPage.metadata.metadata = Page.metadata;
+
+                Page = await convertMDXPageToPageComponent(mdxPage);
+              }
+
+              return {
+                Component() {
+                  // Default data
+                  const defaultData = {
+                    props: {
+                      params: {},
+                    },
+                  };
+
+                  const loaderData =
+                    (useLoaderData() as LoaderResponse) || defaultData;
+
+                  return (
+                    // <Suspense fallback={<>Loading</>}>
+                    <RasenganPageComponent page={Page} data={loaderData} />
+                    // </Suspense>
+                  );
+                },
+
+                async loader({ params, request }) {
+                  // Extracting metadata from the page
+                  const metadata: Metadata = {
+                    ...Page.metadata,
+                  };
+
+                  return createLoaderFunction({
+                    loader: Page.loader,
+                    metadata,
+                    source: pageNode.source,
+                  })({
+                    params,
+                    request,
+                  });
+                },
+              };
+            },
+            errorElement: <ErrorBoundary />,
+            hydrateFallbackElement: <></>,
+            // hydrateFallbackElement: <>Loading...</>,
+            shouldRevalidate: ({
+              currentUrl,
+              nextUrl,
+              defaultShouldRevalidate,
+            }) => {
+              // Only revalidate if navigating to a different route
+              return currentUrl.pathname !== nextUrl.pathname;
+            },
+            module: pageNode.module,
+          };
+        } else {
+          const Page = p as PageComponent;
+
+          // /home => home
+          // / => /
+          const pagePathFormated =
+            Page.path.startsWith('/') && Page.path !== '/'
+              ? Page.path.slice(1)
+              : Page.path;
+
+          // Get the path of the page
+          const path =
+            Page.path === '/'
+              ? layoutPath
+              : layoutPath.length > 1
+                ? pagePathFormated
+                : Page.path;
+
+          return {
+            path: path === layoutPath ? undefined : path,
+            index: path === layoutPath,
+            async loader({ params, request }) {
+              // Extracting metadata from the page
+              const metadata: Metadata = {
+                ...Page.metadata,
+              };
+
+              return createLoaderFunction({
+                loader: Page.loader,
+                metadata,
+              })({
+                params,
+                request,
+              });
+            },
+            Component() {
+              // Default data
+              const defaultData = {
+                props: {
+                  params: {},
+                },
+              };
+
+              const loaderData =
+                (useLoaderData() as LoaderResponse) || defaultData;
+
+              return (
+                // <Suspense fallback={<>Loading</>}>
+                <RasenganPageComponent page={Page} data={loaderData} />
+                // </Suspense>
+              );
+            },
+            errorElement: <ErrorBoundary />,
+            hydrateFallbackElement: <></>,
+            // hydrateFallbackElement: <>Loading...</>,
+            shouldRevalidate: ({
+              currentUrl,
+              nextUrl,
+              defaultShouldRevalidate,
+            }) => {
+              // Only revalidate if navigating to a different route
+              return currentUrl.pathname !== nextUrl.pathname;
+            },
+            module: () => Promise.resolve({ default: Page }),
+          };
+        }
+      }
+    );
+
+    // Add pages into children of the current route
+    pages.forEach((page) => {
+      route.children.push(page);
+    });
+
+    // Loop through imported routers in order to apply the same logic like above.
+    for (const importedRouter of router.routers) {
+      const importedRoutes = generateRoutes(importedRouter, false, layoutPath);
+
+      for (const importedRoute of importedRoutes) {
+        if (importedRoute.nested) {
+          route.children.push(importedRoute);
+        } else {
+          routes.push(importedRoute);
+        }
       }
     }
-  );
 
-  // Add pages into children of the current route
-  pages.forEach((page) => {
-    route.children.push(page);
-  });
+    // Make sure to add the route at the beginning of the list
+    routes.unshift(route);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    // Return the formated router
+    return routes;
+  }
+};
 
-  // Loop through imported routers in order to apply the same logic like above.
-  for (const importedRouter of router.routers) {
-    const importedRoutes = generateRoutes(importedRouter, false, layoutPath);
+/**
+ * Recursively extract all full paths from a nested routes tree,
+ * including index routes.
+ */
+export async function getAllRoutesPath(
+  routes: RouteObject[],
+  parentPath: string = ''
+): Promise<{ paths: string[]; error: Set<string> }> {
+  const allPaths: string[] = [];
+  const error = new Set<string>();
 
-    for (const importedRoute of importedRoutes) {
-      if (importedRoute.nested) {
-        route.children.push(importedRoute);
+  for (const route of routes) {
+    // Compute the full path
+    const fullPath = route.path
+      ? pathJoin(parentPath, route.path)
+      : parentPath || '/';
+
+    // If route is an index route, it represents its parent path
+    if (route.index) {
+      if (parentPath.includes(':')) {
+        const { paths: staticPaths, error: staticError } =
+          await getStaticRoutesPath(parentPath, route);
+        allPaths.push(...staticPaths);
+
+        Array.from(staticError).forEach((err) => error.add(err));
       } else {
-        routes.push(importedRoute);
+        allPaths.push(parentPath || '/');
       }
+    }
+
+    // If route has a path and isn't only an index, add it
+    else if (route.path) {
+      if (route.path.includes(':')) {
+        const { paths: staticPaths, error: staticError } =
+          await getStaticRoutesPath(fullPath, route);
+        allPaths.push(...staticPaths);
+
+        Array.from(staticError).forEach((err) => error.add(err));
+      } else {
+        allPaths.push(fullPath);
+      }
+    }
+
+    // Handle children recursively
+    if (route.children?.length) {
+      const { paths: childPaths, error: childError } = await getAllRoutesPath(
+        route.children,
+        fullPath
+      );
+      allPaths.push(...childPaths);
+
+      Array.from(childError).forEach((err) => error.add(err));
     }
   }
 
-  // Make sure to add the route at the beginning of the list
-  routes.unshift(route);
+  // Ensure uniqueness (optional)
+  return { paths: Array.from(new Set(allPaths)), error };
+}
 
-  // Return the formated router
-  return routes;
-};
+async function getStaticRoutesPath(
+  path: string,
+  route: RouteObject
+): Promise<{ paths: string[]; error: Set<string> }> {
+  const allPaths: string[] = [];
+  const error = new Set<string>();
+
+  const module = await route.module();
+  const Page = module.default as PageComponent;
+
+  if (Page.generatePaths) {
+    const { paths } = await Page.generatePaths();
+
+    for (const { params } of paths) {
+      for (const [key, value] of Object.entries(params)) {
+        if (!path.includes(`:${key}`)) {
+          error.add(
+            `[rasengan:router]: Path '${path}' does not have a dynamic segment '${key}'`
+          );
+          continue;
+        }
+
+        // Replace the dynamic segment with the static value
+        allPaths.push(path.replace(`:${key}`, value));
+      }
+    }
+  } else {
+    // If no generatePaths function is provided, show a warning
+    error.add(
+      `[rasengan:router]: Path '${path}' does not have a generatePaths function`
+    );
+  }
+
+  // if (error.size > 0) {
+  //   // Log errors
+  //   Array.from(error).forEach((error) => console.warn(error));
+  // }
+
+  return { paths: allPaths, error };
+}
+
+/**
+ * Helper to safely join URL paths (avoids double slashes)
+ * eg: pathJoin('/admin', 'users') => '/admin/users'
+ */
+function pathJoin(parent: string, child: string): string {
+  if (!parent) return child.startsWith('/') ? child : `/${child}`;
+  return `${parent.replace(/\/+$/, '')}/${child.replace(/^\/+/, '')}`;
+}
 
 /**
  * This function receives a router component and return a mapping from path to metadata

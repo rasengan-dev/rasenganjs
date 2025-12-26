@@ -12,6 +12,9 @@ export default defineConfig({
       tailwindcss(),
       rasengan({
         adapter: configure({}),
+        prerender: {
+          routes: ['/'],
+        },
       }),
     ],
   },

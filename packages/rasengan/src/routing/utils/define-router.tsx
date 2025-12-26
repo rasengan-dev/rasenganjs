@@ -109,16 +109,35 @@ export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
   return false;
 };
 
-const loadMDXRenderer = async (): Promise<
-  React.FunctionComponent<MDXRendererProps>
-> => {
-  try {
-    // @ts-ignore
-    const { MDXRenderer } = await import('@rasenganjs/mdx');
+/**
+ * Load thr MDXRenderer is the dedicated package is installed
+ * @returns
+ */
+const loadMDXRenderer =
+  async (): Promise<React.FunctionComponent<MDXRendererProps> | null> => {
+    try {
+      // Dynamically import only if the package exists
+      const mod = await import('@rasenganjs/mdx');
+      return mod.MDXRenderer;
+    } catch (error: any) {
+      // Handle the case when the package is not installed
+      if (
+        error.code === 'MODULE_NOT_FOUND' ||
+        /Cannot find module '@rasenganjs\/mdx'/.test(error.message)
+      ) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[Rasengan.js] MDX package not found — skipping MDX rendering.'
+          );
+        }
+        return null;
+      }
 
-    return MDXRenderer;
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
-};
+      // Other unexpected errors (e.g. runtime bug in the module)
+      console.error(
+        '[Rasengan.js] Unexpected error while loading MDX module:',
+        error
+      );
+      throw error;
+    }
+  };

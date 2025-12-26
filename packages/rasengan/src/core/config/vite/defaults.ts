@@ -40,18 +40,46 @@ export const createDefaultViteConfig = (
     },
 
     environments: {
+      /**
+       * Client Environment
+       */
       client: {
         build: {
           manifest: true,
-          outDir: config.ssr ? 'dist/client' : 'dist',
+          outDir: config.ssr || config.prerender ? 'dist/client' : 'dist',
           rollupOptions: {
             input: './src/index',
           },
         },
       },
+
+      /**
+       * SSR Environment
+       */
       ssr: {
         build: {
           outDir: 'dist/server',
+          rollupOptions: {
+            input: {
+              'entry.server': join(
+                __dirname,
+                './lib/esm/entries/server/entry.server.js'
+              ),
+              'app.router': './src/app/app.router',
+              main: './src/main',
+              template: './src/template',
+            },
+          },
+          ssrEmitAssets: false,
+        },
+      },
+
+      /**
+       * SSG Environment
+       */
+      ssg: {
+        build: {
+          outDir: 'dist/prerender',
           rollupOptions: {
             input: {
               'entry.server': join(
@@ -82,8 +110,15 @@ export const createDefaultViteConfig = (
     builder: {
       buildApp: async (builder) => {
         if (config.ssr) {
-          await builder.build(builder.environments.ssr);
+          if (!config.prerender) {
+            await builder.build(builder.environments.ssr);
+          }
         }
+
+        if (config.prerender) {
+          await builder.build(builder.environments.ssg);
+        }
+
         await builder.build(builder.environments.client);
       },
     },
