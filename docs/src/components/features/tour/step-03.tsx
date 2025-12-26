@@ -6,7 +6,7 @@ interface Props {
   end: () => void;
 }
 
-export default function Step01({ next, end }: Props) {
+export default function Step03({ next, prev }: Props) {
   return (
     <div className="bg-background border border-border rounded-lg shadow-xl p-6 max-w-md">
       {/* Header */}
@@ -21,16 +21,16 @@ export default function Step01({ next, end }: Props) {
 
       {/* Content */}
       <div className="mb-6">
-        <p className="text-gray-700">This is the LOGO of Rasengan.js.</p>
+        <p className="text-gray-700">This is the Theme Button</p>
       </div>
 
       {/* Actions */}
       <div className="flex justify-between items-center">
         <button
-          onClick={end}
+          onClick={prev}
           className="text-gray-500 hover:text-gray-700 text-sm font-medium"
         >
-          Skip tour
+          Prev
         </button>
         <button
           onClick={next}

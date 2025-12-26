@@ -14,6 +14,7 @@
     "@rasenganjs/serve": "^1.0.0",
     "@rasenganjs/theme": "^1.0.1",
     "@rasenganjs/vercel": "^1.0.0",
+    "@rasenganjs/kage-demo": "workspace:*",
     "@tailwindcss/vite": "^4.*",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.8.3",

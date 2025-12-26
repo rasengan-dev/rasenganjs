@@ -49,6 +49,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
           link: '/docs/getting-started/project-structure',
           level: 2,
         },
+        {
+          id: randomId(),
+          name: 'Upgrading',
+          link: '/docs/getting-started/upgrading',
+          level: 2,
+          isNew: true,
+        },
       ],
     },
     {
@@ -148,7 +155,7 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Prerendering',
               link: '/docs/rendering/prerendering',
               level: 3,
-              visible: false,
+              isNew: true,
             },
           ],
         },
@@ -346,6 +353,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'defineRoutesGroup',
               link: '/docs/api-reference/functions/define-routes-group',
               level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'defineStaticPaths',
+              link: '/docs/api-reference/functions/define-static-paths',
+              level: 3,
+              isNew: true,
             },
             {
               id: randomId(),

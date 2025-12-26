@@ -52,7 +52,7 @@ export default function Navbar({ className }: Props) {
           </div> */}
         </div>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div id="navigation" className="hidden md:flex items-center gap-6">
           <nav>
             <ul className="flex items-center gap-6">
               {NavigationData.navbar.map((nav) => (
@@ -80,6 +80,7 @@ export default function Navbar({ className }: Props) {
           <Link
             to="https://github.com/rasengan-dev/rasenganjs/tree/main/docs"
             target="_blank"
+            id="github"
           >
             <div className="size-8 rounded-full flex items-center justify-center">
               <svg

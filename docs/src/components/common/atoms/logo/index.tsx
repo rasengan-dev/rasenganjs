@@ -10,7 +10,7 @@ export default function AppLogo({ size = 'md' }: Props) {
   const { isDark } = useTheme();
 
   return (
-    <Link to="/">
+    <Link to="/" id="logo">
       <div className="md:hidden">
         <Image
           src={'/rasengan.svg'}

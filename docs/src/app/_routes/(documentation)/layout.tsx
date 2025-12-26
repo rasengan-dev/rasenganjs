@@ -53,6 +53,7 @@ const DocsLayout: LayoutComponent = () => {
           'relative h-auto flex ',
           showBanner ? 'pt-24 lg:pt-20' : 'pt-16 lg:pt-4'
         )}
+        id="sidebar"
       >
         <SidebarNavigation className="hidden lg:block h-auto" />
 

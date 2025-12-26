@@ -16,6 +16,7 @@ export default function ThemeButton({ size = 'normal' }: Props) {
 
   return (
     <motion.button
+      id="theme-button"
       onClick={handleThemeChange}
       className={twMerge(
         'relative  rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center overflow-hidden hover:cursor-pointer',

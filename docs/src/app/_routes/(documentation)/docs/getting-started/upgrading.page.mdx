@@ -1,0 +1,174 @@
+---
+metadata:
+  title: Upgrading | Getting Started | Rasengan.js
+  description: Upgrading to the latest version or a particular one is easy to do with Rasengan.js
+toc: true
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import { AlertWithDescription } from "@/components/common/atoms/alerts"; 
+import StepItem from '@/components/common/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+
+# Upgrading
+
+## Latest Stable version
+
+To update to the latest version of Rasengan.js, you just have to run the following command:
+
+```bash title="Terminal"
+pnpm add rasengan@latest
+```
+
+## Latest Beta version
+
+To update to the latest `beta` version of Rasengan.js, you just have to run the following command:
+
+```bash title="Terminal"
+pnpm add rasengan@beta
+```
+
+## Upgrade from 1.1.x to 1.2.x
+
+If you want to improve the performance of your application — especially as it grows in size — upgrading to **version `1.2.x`** is a great choice.
+
+This version introduces two major features:
+
+### Lazy Loaded Routes
+
+Routes are now loaded **on demand**, based on the page the user is visiting.
+This means your app only loads what it needs, when it needs it — which helps reduce initial load time and makes navigation feel faster.
+
+<br />
+
+Everything is handled automatically, there is no option to opt out this feature.
+
+### SSG (Static Site Generation)
+
+You can now generate **static HTML files** for your pages ahead of time.
+This improves performance, SEO, and allows your site to be served extremely fast, without waiting for server responses or client-side rendering.
+
+<br />
+
+The configuration is simple, inside the `rasengan.config.js` file, you just have to enable the `prerender` option.
+
+```js title="rasengan.config.js" {5}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: true,
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+This is the minimal configuration, it will enable the prerender globally into your application. If you prefer, you can select what you really want to prerender.
+
+```js title="rasengan.config.js" {5-7}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: {
+    routes: ['/', 'blog/**'],
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+This approach is ideal for **hybrid applications**, where:
+
+* Public pages are statically generated
+* Authenticated or dynamic routes remain rendered via SSR or SPA
+
+
+<br />
+So, to upgrade you have to follow the following steps:
+
+<StepItem
+  step="01"
+  title="Install the target dependency"
+  content={`
+    Run the following command to install the correct version of Rasengan.js
+  `}
+  className='mt-8'
+>
+```bash title="Terminal"
+pnpm add rasengan@^1.2.0
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Remove AppRouter from main.tsx file"
+  content={`
+    Get off the AppRouter instance from the main.tsx, because it's not longer important there.
+  `}
+  className='mt-8'
+>
+Before
+```tsx title="main.tsx" {3} /AppRouter/
+import '@/styles/index.css';
+import { type AppProps } from 'rasengan';
+import AppRouter from '@/app/app.router';
+
+export default function App({ Component, children }: AppProps) {
+  return <Component router={AppRouter}>{children}</Component>;
+}
+```
+
+After
+```tsx title="main.tsx"
+import '@/styles/index.css';
+import { type AppProps } from 'rasengan';
+
+export default function App({ Component, children }: AppProps) {
+  return <Component>{children}</Component>;
+}
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Move the AppRouter to the index.ts file"
+  content={`
+    Now import the AppRouter instance into the index.ts file
+  `}
+  className='mt-8'
+>
+Before
+```ts title="index.ts"
+import { renderApp } from 'rasengan/client';
+import App from './main';
+
+renderApp(App, { reactStrictMode: true });
+```
+
+After
+```ts title="index.ts" {3} /AppRouter/
+import { renderApp } from 'rasengan/client';
+import App from './main';
+import AppRouter from '@/app/app.router';
+
+renderApp(App, AppRouter, { reactStrictMode: true });
+```
+</StepItem>
+
+
+<Pagination 
+  prev={{
+    href: '/docs/getting-started/project-structure',
+    label: 'Project Structure',
+  }}
+  next={{
+    href: '/docs/routing/base-concepts',
+    label: 'Routing - Base Concepts',
+  }}
+/>

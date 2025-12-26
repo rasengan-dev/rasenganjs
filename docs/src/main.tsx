@@ -1,5 +1,6 @@
 import '@rasenganjs/image/css';
 import '@rasenganjs/mdx/css';
+import '@rasenganjs/kage-demo/css';
 import '@/styles/index.css';
 import '@/styles/mdx.scss';
 import { type AppProps } from 'rasengan';
