@@ -1,0 +1,52 @@
+{
+  "name": "@rasenganjs/kage-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Kage Demo is a tool that helps developers create interactive feature tours and animated onboarding experiences for React apps",
+  "bugs": {
+    "url": "https://github.com/rasengan-dev/rasenganjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs",
+    "directory": "packages/rasengan-kage-demo"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./css": {
+      "import": "./dist/styles/index.min.css",
+      "require": "./dist/styles/index.min.css"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build:compile": "tsc",
+    "build:clean": "rimraf ./dist",
+    "build:css": "node ./src/scripts/compile-css.js",
+    "build": "pnpm run build:clean & pnpm run build:compile & pnpm run build:css",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta",
+    "pack": "pnpm pack --pack-destination ./release/"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/clean-css": "^4.2.11",
+    "@types/react": "^18.3.1 || ^19.0.0",
+    "@types/react-dom": "^18.3.1 || ^19.0.0",
+    "clean-css": "^5.3.3"
+  },
+  "files": [
+    "dist/",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ]
+}
