@@ -101,7 +101,7 @@ So, to upgrade you have to follow the following steps:
   className='mt-8'
 >
 ```bash title="Terminal"
-pnpm add rasengan@^1.2.0
+pnpm add rasengan@~1.2.0
 ```
 </StepItem>
 
@@ -158,6 +158,19 @@ import App from './main';
 import AppRouter from '@/app/app.router';
 
 renderApp(App, AppRouter, { reactStrictMode: true });
+```
+</StepItem>
+
+<StepItem
+  step="04"
+  title="Start the dev server"
+  content={`
+    Then run the dev command to start the local server
+  `}
+  className='mt-8'
+>
+```bash title="Terminal"
+pnpm run dev
 ```
 </StepItem>
 

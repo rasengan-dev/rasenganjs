@@ -7,14 +7,198 @@ toc: true
 
 import Tabs from '@/components/common/molecules/tab';
 import Pagination from '@/components/common/molecules/pagination';
+import { AlertWithDescription } from "@/components/common/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
 </span>
-# Prerendering
+# Pre-rendering Mode (SSG)
+
+Introduced into the version `1.2.0`, the Pre-rendering mode, also known as **Static Site Generation (SSG)**, allows Rasengan.js to generate HTML pages **ahead of time**, during the build process.
+Instead of rendering pages in the browser (SPA) or on the server at request time (SSR), Rasengan creates static HTML files that can be deployed anywhere—CDN, file storage, or any static hosting provider.
+
+This results in:
+
+* **Faster load times** (no server needed to generate pages)
+* **Better SEO**, since pages are already rendered for search engines
+* **More stability**, because there’s no runtime server to fail
+* **Lower hosting cost**, as static hosting is usually cheaper
 
 
+## How It Works
 
+When building your project, Rasengan.js scans specific routes and **pre-renders them** into static `.html` files.
+These files represent your pages exactly as users will see them, without needing JavaScript to generate the initial view.
+
+But to enable this feature, you have first to configure your `rasengan.config.js` file.
+
+```ts title="rasengan.config.js" {5}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: true,
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+Then run the `build` command.
+
+```bash title="Terminal"
+pnpm run build
+```
+
+After running the build, you’ll get a structure similar to:
+
+```bash
+/static
+  ├─ index.html
+  ├─ about/
+  |  └─ index.html
+  ├─ contact/
+  |  └─ index.html
+  └─ blog/
+       └─ article-1/
+          └─ index.html
+```
+
+Each file is a ready-to-serve static page.
+
+<AlertWithDescription
+  title="Info"
+  description="When the `prerender` is enabled, the production output is located into the `static` folder, instead of the `dist` one"
+  status="info"
+/>
+
+
+## Enabling SSG for a Route
+
+To mark a route for static generation, simply specify the exact route or a generic one to match a set of routes:
+
+```ts title="rasengan.config.js" {5-7}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  prerender: {
+    routes: ['/', 'blog/**'],
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+Rasengan.js will detect this and include them in the pre-rendering process automatically.
+
+
+## Fetching Data Before Rendering
+
+If your page depends on data (like a blog post, product list, or API call), use `loader` to provide data **at build time**:
+
+```jsx title="blog.page.jsx"
+// src/app/_routes/blog.page.jsx => blog.html
+
+export default function Blog({ posts }) {
+  return (
+    <ul>
+      {posts.map(post => <li key={post.id}>{post.title}</li>)}
+    </ul>
+  );
+}
+
+Blog.loader = async () => {
+  const posts = await fetch("https://api.example.com/posts").then(res => res.json());
+  return { props: { posts } };
+}
+```
+
+The data is fetched **once during build**, and the generated HTML ships with the content already rendered.
+
+## Pre-rendering Dynamic Routes
+
+In Rasengan.js, you can statically generate pages that depend on dynamic parameters (like usernames, slugs, or product IDs).
+This is useful for pages such as:
+
+* User profiles (`/users/:username`)
+* Blog posts (`/blog/:slug`)
+* Product pages (`/products/:id`)
+
+Instead of generating these pages when the user visits them, Rasengan.js creates the HTML files **during the build**, one for each parameter.
+
+<br />
+To pre-render dynamic routes, you need to:
+
+1. **Use a dynamic parameter** in your page route
+   (for example: `src/app/_routes/users/[username].page.tsx`)
+2. **Return a list of paths** to generate using `generatePaths`
+3. **Access the parameter in the component** with `useParams()`
+
+
+### Example: User Profile Pages
+
+```tsx 
+// src/app/_routes/users/[username].page.tsx
+import { PageComponent, useParams, defineStaticPaths } from "rasengan";
+
+const Page: PageComponent = () => {
+	const { username } = useParams();
+
+	return (
+		<section className='w-screen h-screen bg-red-300 flex justify-center items-center'>
+			Hello {username}
+		</section>
+	);
+};
+
+// List of dynamic values to pre-render at build time
+Page.generatePaths = async () => {
+	return defineStaticPaths([
+		{ username: "nina" },
+		{ username: "dilane3" },
+		{ username: "michel" },
+		{ username: "adora" },
+		{ username: "donald" },
+	]);
+};
+
+export default Page;
+```
+
+### What Rasengan.js Generates
+
+After running the build, Rasengan.js will create one page for each username:
+
+```yml
+/static/users/nina/index.html
+/static/users/dilane3/index.html
+/static/users/michel/index.html
+/static/users/adora/index.html
+/static/users/donald/index.html
+```
+
+Each page is fully static and ready to be served.
+
+
+## When to Use Pre-rendering
+
+| Scenario                                             | Recommended?          |
+| ---------------------------------------------------- | --------------------- |
+| Marketing pages (Landing, About, Contact)            | ✅ Yes                 |
+| Blogs / Documentation                                | ✅ Yes                 |
+| Content that rarely changes                          | ✅ Yes                 |
+| Dashboard, authenticated routes, user-specific pages | ❌ No (use CSR or SSR) |
+| Real-time data (prices, live feeds, dashboards)      | ⚠️ Not ideal          |
+
+
+## Key Benefits
+
+* **Instant page load** → no waiting for rendering
+* **SEO-friendly** → content is visible immediately
+* **Scales automatically** → no server load per request
+* **Deploy anywhere** → Netlify, Vercel, S3, GitHub Pages, etc.
 
 <Pagination 
   prev={{
