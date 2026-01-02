@@ -26,7 +26,7 @@ const Page: PageComponent = () => {
           <div className="flex justify-center items-center lg:justify-start lg:items-start">
             <Link to="/blog/rasengan-v1-2-0">
               <AnnonceBadge
-                text="Rasengan v1.2.0 is here 🚀"
+                text="Rasengan.js v1.2.0 is here 🚀"
                 className="mb-2 hover:border-primary/30 border border-transparent"
               >
                 <svg
@@ -460,27 +460,27 @@ const Page: PageComponent = () => {
 
         <div className="relative showcase-container mt-10 z-20">
           <ShowcaseCard
+            image="/assets/images/showcase/chunin.png"
+            title="Chunin"
+            link="https://chunin.rasengan.dev"
+            className="a"
+          />
+          <ShowcaseCard
             image="/assets/images/showcase/biccas.png"
             title="Biccas"
             link="https://www.hub.rasengan.dev/templates/rh_landing-biccas"
-            className="a"
+            className="b"
           />
           <ShowcaseCard
             image="/assets/images/showcase/kronix.png"
             title="Kronix"
             link="https://www.hub.rasengan.dev/templates/rh_saas-kronix"
-            className="b"
-          />
-          <ShowcaseCard
-            image="/assets/images/showcase/enver.png"
-            title="Enver"
-            link="https://www.hub.rasengan.dev/templates/rh_landing-enver"
             className="c"
           />
           <ShowcaseCard
-            image="/assets/images/showcase/rasengan.png"
-            title="Rasengan"
-            link="https://www.hub.rasengan.dev/templates/rh_saas-rasengan"
+            image="/assets/images/showcase/rasengan-ui.png"
+            title="Rasengan UI"
+            link="https://ui.rasengan.dev"
             className="d"
           />
           <ShowcaseCard
@@ -490,9 +490,9 @@ const Page: PageComponent = () => {
             className="e"
           />
           <ShowcaseCard
-            image="/assets/images/showcase/hano.png"
-            title="Hano"
-            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
+            image="/assets/images/showcase/rasengan.png"
+            title="Rasengan"
+            link="https://www.hub.rasengan.dev/templates/rh_saas-rasengan"
             className="f"
           />
         </div>

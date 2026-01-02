@@ -70,6 +70,50 @@ export default defineConfig({
 });
 ```
 
+### prerender
+
+Introduced in `v1.2.0`, the `prerender` option lets you configure the pre-rendering mode (SSG) for your application. 
+It's either a boolean or an object containing a `routes` parameter giving you the possibility to set the list of routes you want to pre-render statically.
+
+
+```js title="rasengan.config.js" showLineNumbers
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  prerender: true,
+});
+```
+
+or
+
+
+```js title="rasengan.config.js" showLineNumbers
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  prerender: {
+    routes: ['/', '/about', '/contact', '/blog/**],
+  },
+});
+```
+
+### sageMode
+
+Introduced in `v1.2.0`, the `sageMode` option lets you configure from now the `react compiler` mode.
+
+
+```js title="rasengan.config.js" showLineNumbers
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  sageMode: {
+    reactCompiler: true
+  },
+});
+```
+
+Lean more about [React Compiler](/docs/optimizing/react-compiler).
+
 ### server.development.port
 
 You can use the `server.development.port` option to set the port for the development server by overriding the default port.

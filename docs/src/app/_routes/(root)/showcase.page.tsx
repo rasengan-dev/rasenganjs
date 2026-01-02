@@ -14,6 +14,26 @@ const Page: PageComponent = () => {
 
         <div className="relative showcase-containe grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10 z-20">
           <ShowcaseCard
+            image="/assets/images/showcase/rasenganjs.png"
+            title="Rasengan.js"
+            link="https://rasengan.dev"
+          />
+          <ShowcaseCard
+            image="/assets/images/showcase/rasengan-ui.png"
+            title="Rasengan UI"
+            link="https://ui.rasengan.dev"
+          />
+          <ShowcaseCard
+            image="/assets/images/showcase/rasengan-hub.png"
+            title="Rasengan Hub"
+            link="https://hub.rasengan.dev"
+          />
+          <ShowcaseCard
+            image="/assets/images/showcase/chunin.png"
+            title="Chunin"
+            link="https://chunin.rasengan.dev"
+          />
+          <ShowcaseCard
             image="/assets/images/showcase/biccas.png"
             title="Biccas"
             link="https://www.hub.rasengan.dev/templates/rh_landing-biccas"
@@ -32,11 +52,6 @@ const Page: PageComponent = () => {
             image="/assets/images/showcase/rasengan.png"
             title="Rasengan"
             link="https://www.hub.rasengan.dev/templates/rh_saas-rasengan"
-          />
-          <ShowcaseCard
-            image="/assets/images/showcase/hano.png"
-            title="Hano"
-            link="https://www.hub.rasengan.dev/templates/rh_saas-hano"
           />
           <ShowcaseCard
             image="/assets/images/showcase/hano.png"

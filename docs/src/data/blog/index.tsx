@@ -20,7 +20,7 @@ export const BlogData: Array<BlogDataType> = [
       We are publishing Rasengan v1.2.0, a new version of the framework that introduces you the SSG rendering mode.
     `,
     authors: [Authors[AuthorUsernames.dilaneKombou]],
-    postedAt: 'January 02, 2026',
+    postedAt: 'January 03, 2026',
     link: '/blog/rasengan-v1-2-0',
     image: '/assets/blog/rasengan-1.2.0.png',
     readingTime: '5 min',

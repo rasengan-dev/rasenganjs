@@ -177,8 +177,8 @@ export default function Footer() {
 
         <div className="h-[60px] flex items-center justify-between mt-12 border-t-[1px] border-t-border">
           <p className="text-sm">
-            © {new Date(Date.now()).getFullYear()} Rasengan Labs, All rights
-            reserved.
+            © 2024-{new Date(Date.now()).getFullYear()} Rasengan Labs, All
+            rights reserved.
           </p>
 
           <ThemeButton />

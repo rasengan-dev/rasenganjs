@@ -181,6 +181,27 @@ After running the build, Rasengan.js will create one page for each username:
 
 Each page is fully static and ready to be served.
 
+## How to preview the static pages
+
+To preview the static pages, you have first to run the `build` command.
+
+```bash title="Terminal"
+pnpm run build
+```
+
+Then, you need to add a new script into your `package.json` file or just updating the actual `serve` command in order to consider the new `static` folder as the production output.
+You will always need to use `rasengan-serve` CLI coming from `@rasenganjs/serve` adapter to achieve this. It's the same adapter used to preview `SPA` and `SSR` apps in Rasengan.js.
+
+```json title="package.json"
+{
+  "scripts": {
+    "serve": "rasengan-serve ./static"
+  }
+}
+```
+
+Finally, running `pnpm run serve` will start the server and you can preview your static pages.
+
 
 ## When to Use Pre-rendering
 

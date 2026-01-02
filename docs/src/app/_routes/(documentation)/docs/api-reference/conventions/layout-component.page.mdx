@@ -15,11 +15,16 @@ import Tabs from '@/components/common/molecules/tab';
 </span>
 # Layout Convention naming
 
-In Rasengan.js, to create a `layout`, you have to create a file that follow the following name pattern: 
+In Rasengan.js, to create a `layout`, you have to create a file that follow the following name pattern when you are using `config-based routing` system: 
 
 ```txt title="Layout" showLineNumbers
 [name].layout.js
 ```
+
+Note that, it's not required to follow this convention but, it's recommended to do so.
+<br />
+
+For **`file-based routing` system**, you have to create a file named `layout.tsx` or `layout.jsx` inside the `src/app/_routes` folder.
 
 A `layout` is UI that is shared between routes.
 

@@ -2,6 +2,7 @@ import '@rasenganjs/image/css';
 import '@rasenganjs/mdx/css';
 import '@rasenganjs/kage-demo/css';
 import '@/styles/index.css';
+import '@/styles/global.css';
 import '@/styles/mdx.scss';
 import { type AppProps } from 'rasengan';
 import ThemeProvider from '@rasenganjs/theme';
