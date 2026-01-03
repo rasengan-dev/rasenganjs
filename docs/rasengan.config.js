@@ -6,10 +6,6 @@ import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig(async () => {
   return {
-    // sageMode: {
-    //   reactCompiler: true,
-    // },
-
     prerender: true,
 
     vite: {
@@ -27,11 +23,3 @@ export default defineConfig(async () => {
     },
   };
 });
-
-/**
- * prerender: boolean | string[] | {
- *   routes: string[]
- * }
- */
-
-// git clone https://token@github.com/rasenganjs/docs.git
