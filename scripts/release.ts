@@ -13,6 +13,8 @@ release({
     'rasengan-theme',
     'rasengan-vercel',
     'rasengan-shuriken',
+    'rasengan-kurama',
+    'rasengan-kage-demo',
     'create-rasengan',
   ],
   toTag: (pkg, version) => {
