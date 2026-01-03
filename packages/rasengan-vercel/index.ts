@@ -128,6 +128,10 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
       },
       {
         src: '/(.*)',
+        dest: '/$1',
+      },
+      {
+        src: '/(.*)',
         dest: config.ssr
           ? '/'
           : isSpaFallbackExists
