@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@rasenganjs/image": "^1.0.0",
-    "@rasenganjs/kage-demo": "workspace:*",
+    "@rasenganjs/kage-demo": "1.0.0-beta.0",
     "@rasenganjs/mdx": "^1.1.7",
     "@rasenganjs/serve": "^1.0.0",
     "@rasenganjs/theme": "^1.0.1",
