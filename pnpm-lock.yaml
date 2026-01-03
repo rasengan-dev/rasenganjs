@@ -126,8 +126,8 @@ importers:
         specifier: ^1.0.0
         version: 1.1.3(react@19.1.1)
       '@rasenganjs/serve':
-        specifier: ^1.0.0
-        version: 1.0.1(rasengan@1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))
+        specifier: ^1.2.0
+        version: 1.2.0(rasengan@1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.1.12(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
@@ -141,8 +141,8 @@ importers:
         specifier: ^0.477.0
         version: 0.477.0(react@19.1.1)
       rasengan:
-        specifier: ^1.1.2
-        version: 1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
+        specifier: ^1.2.0
+        version: 1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -181,8 +181,8 @@ importers:
         specifier: ^1.0.0
         version: 1.1.3(react@19.1.1)
       '@rasenganjs/serve':
-        specifier: ^1.0.0
-        version: 1.0.1(rasengan@1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))
+        specifier: ^1.2.0
+        version: 1.2.0(rasengan@1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.1.12(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
@@ -196,8 +196,8 @@ importers:
         specifier: ^0.477.0
         version: 0.477.0(react@19.1.1)
       rasengan:
-        specifier: ^1.1.2
-        version: 1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
+        specifier: ^1.2.0
+        version: 1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -215,10 +215,10 @@ importers:
         specifier: ^24.0.8
         version: 24.3.0
       '@types/react':
-        specifier: ^19.0.0
+        specifier: ^19.2.0
         version: 19.2.7
       '@types/react-dom':
-        specifier: ^19.0.0
+        specifier: ^19.2.0
         version: 19.2.3(@types/react@19.2.7)
       cross-env:
         specifier: ^7.0.3
@@ -669,7 +669,7 @@ importers:
         version: link:../../packages/rasengan-kurama
       '@rasenganjs/serve':
         specifier: ^1.0.0
-        version: 1.0.1(rasengan@packages+rasengan)
+        version: 1.2.0(rasengan@packages+rasengan)
       rasengan:
         specifier: workspace:*
         version: link:../../packages/rasengan
@@ -1180,12 +1180,6 @@ packages:
     peerDependencies:
       react: ^19.1.1
       react-dom: ^19.1.1
-
-  '@rasenganjs/serve@1.0.1':
-    resolution: {integrity: sha512-9US3yXVQqX+CZHXIuPAsyDmGt+UteG66arEsiBtSjHP8LDjj+vB4w+ICyPRk/5FfR+IPJ4xx+WUcnpTJXZK7GA==}
-    hasBin: true
-    peerDependencies:
-      rasengan: ^1.0.0-beta.61
 
   '@rasenganjs/serve@1.2.0':
     resolution: {integrity: sha512-FaMuouxR8Oiw87Eci2drVs2wSEAx9fKLy6I4PtNRFO1MjOBte7raSM6SDv8Qnubfq/EkTMAyqggt7F2FvjbRTw==}
@@ -1839,10 +1833,6 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  chalk@5.4.1:
-    resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-
   chalk@5.5.0:
     resolution: {integrity: sha512-1tm8DTaJhPBG3bIkVeZt1iZM9GfSX2lzOeDVZH9R9ffRHpmHvxZ/QhgQH/aDTkswQVt+YHdXAdS/In/30OjCbg==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
@@ -1943,10 +1933,6 @@ packages:
   compressible@2.0.18:
     resolution: {integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg==}
     engines: {node: '>= 0.6'}
-
-  compression@1.8.0:
-    resolution: {integrity: sha512-k6WLKfunuqCYD3t6AsuPGvQWaKwuLLh2/xHNcX4qE+vIfDNXpSqnrhwA7O53R7WVQUnt8dVAIW+YHr7xTgOgGA==}
-    engines: {node: '>= 0.8.0'}
 
   compression@1.8.1:
     resolution: {integrity: sha512-9mAqGPHLakhCLeNyxPkK4xVo746zQ/czLH1Ky+vkitMnWfWZps8r0qXuwhwizagCRttsL4lfG4pIOvaWLpAP0w==}
@@ -2948,10 +2934,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  morgan@1.10.0:
-    resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}
-    engines: {node: '>= 0.8.0'}
-
   morgan@1.10.1:
     resolution: {integrity: sha512-223dMRJtI/l25dJKWpgij2cMtywuG/WiUKXdvwfbhGKBhy1puASqXwFzmWZ7+K73vUPoR7SS2Qz2cI/g9MKw0A==}
     engines: {node: '>= 0.8.0'}
@@ -3043,10 +3025,6 @@ packages:
 
   on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
-    engines: {node: '>= 0.8'}
-
-  on-headers@1.0.2:
-    resolution: {integrity: sha512-pZAE+FJLoyITytdqK0U5s+FIpjN0JP3OzFi/u8Rx+EV5/W+JTWGXG8xFzevE7AjBfDqHv/8vL8qQsIhHnqRkrA==}
     engines: {node: '>= 0.8'}
 
   on-headers@1.1.0:
@@ -3203,31 +3181,6 @@ packages:
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
-
-  rasengan@1.1.2:
-    resolution: {integrity: sha512-PR5bIXcuMyXdqAtYvVrZtweKeLkcM7tfu8NTXh/F7B7prG+qDn12gPONsVbKlRl4t8aknTH54rpJAxmUAP3EEA==}
-    engines: {node: '>=22.12.0'}
-    hasBin: true
-    peerDependencies:
-      '@rasenganjs/mdx': ^1.1.7
-      '@types/node': ^18.0.0 || >=20.0.0
-      less: '*'
-      react: ^19.1.1
-      react-dom: ^19.1.1
-      sass: '*'
-      stylus: '*'
-      vite: ^7.0.0
-    peerDependenciesMeta:
-      '@rasenganjs/mdx':
-        optional: true
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
 
   rasengan@1.2.0:
     resolution: {integrity: sha512-azxXyGBWkIbtbVK47xIofbce2FkInVB7vljNqbIy6sQDNrl/uvBdNyV/wu0eTeSQIIQBGlIBy1m/9S0jaXJOmA==}
@@ -4296,30 +4249,6 @@ snapshots:
       - rollup
       - supports-color
 
-  '@rasenganjs/serve@1.0.1(rasengan@1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))':
-    dependencies:
-      chalk: 5.4.1
-      compression: 1.8.0
-      express: 4.21.2
-      get-port: 7.1.0
-      morgan: 1.10.0
-      rasengan: 1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
-      source-map-support: 0.5.21
-    transitivePeerDependencies:
-      - supports-color
-
-  '@rasenganjs/serve@1.0.1(rasengan@packages+rasengan)':
-    dependencies:
-      chalk: 5.4.1
-      compression: 1.8.0
-      express: 4.21.2
-      get-port: 7.1.0
-      morgan: 1.10.0
-      rasengan: link:packages/rasengan
-      source-map-support: 0.5.21
-    transitivePeerDependencies:
-      - supports-color
-
   '@rasenganjs/serve@1.2.0(rasengan@1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)))':
     dependencies:
       chalk: 5.5.0
@@ -4328,6 +4257,18 @@ snapshots:
       get-port: 7.1.0
       morgan: 1.10.1
       rasengan: 1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
+      source-map-support: 0.5.21
+    transitivePeerDependencies:
+      - supports-color
+
+  '@rasenganjs/serve@1.2.0(rasengan@packages+rasengan)':
+    dependencies:
+      chalk: 5.5.0
+      compression: 1.8.1
+      express: 4.21.2
+      get-port: 7.1.0
+      morgan: 1.10.1
+      rasengan: link:packages/rasengan
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - supports-color
@@ -4936,8 +4877,6 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  chalk@5.4.1: {}
-
   chalk@5.5.0: {}
 
   character-entities-html4@2.1.0: {}
@@ -5017,18 +4956,6 @@ snapshots:
   compressible@2.0.18:
     dependencies:
       mime-db: 1.54.0
-
-  compression@1.8.0:
-    dependencies:
-      bytes: 3.1.2
-      compressible: 2.0.18
-      debug: 2.6.9
-      negotiator: 0.6.4
-      on-headers: 1.0.2
-      safe-buffer: 5.2.1
-      vary: 1.1.2
-    transitivePeerDependencies:
-      - supports-color
 
   compression@1.8.1:
     dependencies:
@@ -6358,16 +6285,6 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
-  morgan@1.10.0:
-    dependencies:
-      basic-auth: 2.0.1
-      debug: 2.6.9
-      depd: 2.0.0
-      on-finished: 2.3.0
-      on-headers: 1.0.2
-    transitivePeerDependencies:
-      - supports-color
-
   morgan@1.10.1:
     dependencies:
       basic-auth: 2.0.1
@@ -6442,8 +6359,6 @@ snapshots:
   on-finished@2.4.1:
     dependencies:
       ee-first: 1.1.1
-
-  on-headers@1.0.2: {}
 
   on-headers@1.1.0: {}
 
@@ -6604,30 +6519,6 @@ snapshots:
       side-channel: 1.1.0
 
   range-parser@1.2.1: {}
-
-  rasengan@1.1.2(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)):
-    dependencies:
-      '@vitejs/plugin-react': 4.7.0(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0))
-      chalk: 5.5.0
-      commander: 11.1.0
-      compression: 1.8.1
-      execa: 8.0.1
-      express: 4.21.2
-      inquirer: 9.3.7
-      open: 10.2.0
-      ora: 7.0.1
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-      react-router: 7.8.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      vite: 7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)
-    optionalDependencies:
-      '@rasenganjs/mdx': 1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)
-      '@types/node': 24.3.0
-      less: 4.3.0
-      sass: 1.90.0
-      stylus: 0.64.0
-    transitivePeerDependencies:
-      - supports-color
 
   rasengan@1.2.0(@rasenganjs/mdx@1.1.7(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2))(@types/node@24.3.0)(less@4.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.90.0)(stylus@0.64.0)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(less@4.3.0)(lightningcss@1.30.1)(sass@1.90.0)(stylus@0.64.0)(tsx@4.20.4)(yaml@2.8.0)):
     dependencies:

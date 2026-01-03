@@ -1,9 +1,22 @@
 {
   "name": "create-rasengan",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "The Rasengan.js CLI tool to generate a new project with a simple template",
-  "main": "/dist/main.js",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "require": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "default": "./dist/main.js"
+    }
+  },
   "author": {
     "name": "dilane3",
     "email": "komboudilane125@gmail.com",
