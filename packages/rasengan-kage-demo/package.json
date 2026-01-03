@@ -28,7 +28,7 @@
     "build:compile": "tsc",
     "build:clean": "rimraf ./dist",
     "build:css": "node ./src/scripts/compile-css.js",
-    "build": "pnpm run build:clean & pnpm run build:compile & pnpm run build:css",
+    "build": "pnpm run build:clean && pnpm run build:compile && pnpm run build:css",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
