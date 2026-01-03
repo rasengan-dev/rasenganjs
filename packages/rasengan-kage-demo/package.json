@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/kage-demo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Kage Demo is a tool that helps developers create interactive feature tours and animated onboarding experiences for React apps",
   "bugs": {
