@@ -13,15 +13,13 @@ import {
   LoaderResponse,
   Metadata,
   MetadataWithoutTitleAndDescription,
-  PageComponent,
+  type PageComponent,
   MDXPageComponent,
 } from '../types.js';
-import { lazy, Suspense } from 'react';
 import MetadataProvider from '../providers/metadata.js';
 import {
   convertMDXPageToPageComponent,
   isMDXPage,
-  Module,
   RouteNode,
 } from './index.js';
 import { HydrationFallback } from '../components/fallback.js';
