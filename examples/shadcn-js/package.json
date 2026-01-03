@@ -11,14 +11,14 @@
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@rasenganjs/image": "^1.0.0",
-    "@rasenganjs/serve": "^1.0.0",
+    "@rasenganjs/serve": "^1.2.0",
     "@tailwindcss/vite": "^4.*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.477.0",
-    "rasengan": "^1.1.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "rasengan": "^1.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.*"
   },
