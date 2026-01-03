@@ -10,6 +10,8 @@ export default defineConfig(async () => {
     //   reactCompiler: true,
     // },
 
+    prerender: true,
+
     vite: {
       plugins: [mdx(), tailwindcss(), rasengan({ adapter: configure() })],
     },
