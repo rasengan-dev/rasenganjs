@@ -67,8 +67,6 @@ export default function Editor({
   const [selectedRouting, setSelectedRouting] = useState<'file' | 'config'>(
     'file'
   );
-  // const codes = configBasedCodes;
-  const codes = fileBasedCodes;
 
   const getTabContent = () => {
     if (selectedRouting === 'config')
@@ -78,12 +76,12 @@ export default function Editor({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <div className="w-auto flex items-center justify-center gap-2 text-sm">
         <div
           onClick={() => setSelectedRouting('file')}
           className={twMerge(
-            'rounded-lg border border-border py-2 px-4 cursor-pointer',
+            'rounded-lg border border-border py-2 px-4 cursor-pointer text-center text-xs sm:text-sm',
             selectedRouting === 'file' && 'bg-primary text-primary-foreground'
           )}
         >
@@ -92,7 +90,7 @@ export default function Editor({
         <div
           onClick={() => setSelectedRouting('config')}
           className={twMerge(
-            'rounded-lg border border-border py-2 px-4 cursor-pointer',
+            'rounded-lg border border-border py-2 px-4 cursor-pointer text-center text-xs sm:text-sm',
             selectedRouting === 'config' && 'bg-primary text-primary-foreground'
           )}
         >
