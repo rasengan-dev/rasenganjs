@@ -43,11 +43,11 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   return {
     ...baseConfig,
     plugins: [
-      react(
-        rcMode && {
-          babel: rcBabelConfig,
-        }
-      ),
+      rcMode
+        ? react({
+            babel: rcBabelConfig,
+          })
+        : react(),
       ...plugins,
       ...(config.vite?.plugins || []),
     ],
