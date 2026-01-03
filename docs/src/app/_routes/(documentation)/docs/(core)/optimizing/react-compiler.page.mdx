@@ -1,0 +1,85 @@
+---
+metadata:
+  title: React Compiler - Optimizing | Core concepts | Rasengan.js
+  description: React Compiler is a build-time tool that optimizes your React app through automatic memoization
+toc: true
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import Tabs from '@/components/common/molecules/tab';
+import { Link } from "rasengan";
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# React Compiler
+
+Rasengan.js includes support for the [React Compiler](https://react.dev/learn/react-compiler/introduction), a tool designed to improve performance by automatically optimizing component rendering. This reduces the need for manual memoization using `useMemo` and `useCallback`.
+
+## How It Works
+
+The React Compiler runs through a Babel plugin.
+
+To use it, install the `babel-plugin-react-compiler`:
+
+```bash filename="Terminal"
+npm install -D babel-plugin-react-compiler
+```
+
+Then, add `reactCompiler` option in `rasengan.config.js` via the `sageMode` option:
+
+```js title="rasengan.config.js" {6}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  sageMode: {
+    reactCompiler: true
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+## Annotations
+
+You can configure the compiler to run in "opt-in" mode as follows:
+
+```js title="rasengan.config.js" {6-8}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  sageMode: {
+    reactCompiler: {
+      compilationMode: 'annotation';
+    }
+  },
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+Then, you can annotate specific components or hooks with the `"use memo"` directive from React to opt-in:
+
+```ts title="app/_routes/index.page.tsx"
+export default function Page() {
+  'use memo'
+  // ...
+}
+```
+
+> **Note:** You can also use the `"use no memo"` directive from React for the opposite effect, to opt-out a component or hook.
+
+<Pagination 
+  prev={{
+    href: '/docs/optimizing/static-assets',
+    label: 'Static Assets',
+  }}
+  next={{
+    href: '/docs/configuring/typescript',
+    label: 'Typescript',
+  }}
+/>

@@ -1,0 +1,228 @@
+---
+metadata:
+  title: Kage Demo Package - Modules | Packages | Rasengan.js
+  description: Documentation for the Kage demo package - a guiding tour utility package to onboard new users to Rasengan.js applications.
+toc: true
+---
+
+import KageDemoTrial from "@/components/features/tour";
+
+<span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
+  PACKAGES
+</span>
+# Kage Demo
+
+Welcome! This guide will show you how to use **@rasenganjs/kage-demo** in your project.
+
+**@rasenganjs/kage-demo** is a lightweight tool that helps you create guided tours and onboarding experiences for your website. Think of it as a way to walk new users through your app's features, step-by-step, with helpful tips and highlights along the way.
+
+Whether you're building a dashboard, a web app, or any site where users might need a little guidance, this package makes it easy to get started.
+
+
+## Usage
+
+```tsx
+import Step01 from '@/components/common/demo/step-01';
+import Step02 from '@/components/common/demo/step-02';
+import KageDemoContainer, {
+  useKageDemo,
+  KageDemoStep,
+} from '@rasenganjs/kage-demo';
+
+const steps: KageDemoStep[] = [
+  {
+    target: '#get-started',
+    render: (props) => <Step01 {...props} />,
+  },
+  {
+    target: '#end',
+    render: (props) => <Step02 {...props} />,
+  },
+];
+
+export default function Page() {
+  const props = useKageDemo(steps);
+  
+  return (
+    <>
+      <section className="w-screen h-screen bg-blue-300 flex flex-col justify-center items-center">
+        <KageDemoContainer {...props} />
+        <div className="p-4 flex flex-col items-center gap-2">
+          <button id="get-started">Get Started</button>
+          <button
+            onClick={props.start}
+            className="bg-black text-white py-2 px-4 rounded-lg"
+          >
+            Start
+          </button>
+          <p id="end">End demo</p>
+        </div>
+      </section>
+    </>
+  );
+}
+```
+
+And here is the definition of the `Step01` and `Step02` components
+
+```tsx title="step-01.tsx"
+import React from 'react';
+
+interface Step01Props {
+  next: () => void;
+  prev: () => void;
+  end: () => void;
+}
+
+export default function Step01({ next, end }: Step01Props) {
+  return (
+    <div className="bg-white rounded-lg shadow-xl p-6 max-w-md">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Welcome to Our App! 👋
+        </h2>
+        <p className="text-gray-600">
+          Let's take a quick tour to help you get started with the key features.
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="mb-6">
+        <p className="text-gray-700">
+          This is your starting point. Click the "Get Started" button below to
+          begin exploring the amazing features we've built for you.
+        </p>
+      </div>
+
+      {/* Progress indicator */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="h-2 w-2 rounded-full bg-blue-600"></div>
+        <div className="h-2 w-2 rounded-full bg-gray-300"></div>
+        <span className="text-sm text-gray-500 ml-2">Step 1 of 2</span>
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-between items-center">
+        <button
+          onClick={end}
+          className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+        >
+          Skip tour
+        </button>
+        <button
+          onClick={next}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+```tsx title="step-02.tsx"
+import React from 'react';
+
+interface Step02Props {
+  next: () => void;
+  prev: () => void;
+  end: () => void;
+}
+
+export default function Step02({ prev, end }: Step02Props) {
+  return (
+    <div className="bg-white rounded-lg shadow-xl p-6 max-w-md">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          You're All Set! 🎉
+        </h2>
+        <p className="text-gray-600">
+          That's the end of our quick tour. You're ready to dive in!
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="mb-6">
+        <p className="text-gray-700 mb-4">
+          Now you know the basics. Feel free to explore on your own, and remember
+          you can always come back to this tour anytime.
+        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Pro tip:</strong> Check out our documentation for more
+            advanced features and customization options.
+          </p>
+        </div>
+      </div>
+
+      {/* Progress indicator */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="h-2 w-2 rounded-full bg-blue-600"></div>
+        <div className="h-2 w-2 rounded-full bg-blue-600"></div>
+        <span className="text-sm text-gray-500 ml-2">Step 2 of 2</span>
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-between items-center">
+        <button
+          onClick={prev}
+          className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+        >
+          ← Previous
+        </button>
+        <button
+          onClick={end}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+        >
+          Finish Tour
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+But feel free to style them as you want to meet the system design of your application.
+
+<KageDemoTrial />
+
+## Core API
+
+- **`KageDemoContainer`** – The main container component that renders the tour overlay and manages the spotlight effect
+- **`useKageDemo`** – A React hook that initializes the tour system. Pass in an array of steps following the `KageDemoStep` schema
+- **`KageDemoStep`** – Type definition for tour steps:
+  ```ts
+  type KageDemoStep = {
+    target: string;  // CSS selector for the element to highlight
+    render: React.FC<{ next: () => void; prev: () => void; end: () => void }>;
+  }
+  ```
+
+## Why use Kage Demo ?
+
+- **Minimal Setup** – Define your steps and you're ready to go, no complex configuration
+- **Element Targeting** – Highlight any element using CSS selectors
+- **Custom Step Content** – Full control over what's displayed at each step with custom React components
+- **Navigation Controls** – Built-in next, previous, and end functions for seamless tour flow
+- **Lightweight & Performant** – Zero dependencies beyond React
+- **Type-safe** – Written in TypeScript with full type inference
+- **Framework Ready** – Works seamlessly with Rasengan.js and other React frameworks
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a href="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> – Ask questions and share ideas.
+{/* - **Discord** – Chat with the community. */}
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">X (Twitter)</a> – Stay updated with the latest news.
+- <a href="https://www.linkedin.com/company/rasenganjs/" target="_blank" rel="noopener noreferrer">Linkedin</a> – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).
+

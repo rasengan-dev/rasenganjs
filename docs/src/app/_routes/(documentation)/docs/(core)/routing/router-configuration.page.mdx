@@ -1,0 +1,300 @@
+---
+metadata:
+  title: Router Configuration - Routing | Core concepts | Rasengan.js
+  description: Learn how to configure routers in Rasengan.js, including setting up pages and layouts to structure your application effectively.
+toc: true
+---
+
+import StepItem from '@/components/common/molecules/step-item';
+import Tabs from '@/components/common/molecules/tab';
+import Pagination from '@/components/common/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Configuring a Router in Rasengan.js
+
+In this guide, you will learn how to configure routers in Rasengan.js, including setting up pages and layouts to structure your application effectively.
+
+## Understanding Routers in Rasengan.js
+
+A **Router** in Rasengan.js is a collection of pages grouped under a common structure ( `layout` ). It defines how different pages are connected and whether they share a common **Layout**.
+<br />
+Each router:
+- Contains multiple pages.
+- Can import other routers for modularity.
+- Can have an optional layout that wraps all its pages.
+
+## Creating a Router
+
+To define a router, follow these steps:
+
+<StepItem
+  step="01"
+  title="Create the Router Component"
+  content={`
+    A router is a class component that extends \`RouterComponent\`. Paste the following code inside the \`src/app/app.router.ts\` file.
+  `}
+  className='mt-8'
+>
+```typescript title="src/app/app.router.ts" showLineNumbers
+import { RouterComponent } from "rasengan";
+
+class AppRouter extends RouterComponent {}
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Configure the Router"
+  content={`
+    Use the \`defineRouter\` function to configure the router by specifying:
+    - Imported routers (if any)
+    - The layout (optional)
+    - The list of pages  
+  `}
+  className='mt-8'
+>
+```typescript title="src/app/app.router.ts" showLineNumbers /defineRouter/ {5-9}
+import { RouterComponent, defineRouter } from "rasengan";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [], // Import other routers
+  layout: null, // Define a layout if needed
+  pages: [] // Add pages
+})(AppRouter);
+```
+</StepItem>
+
+### Adding a Layout
+
+<Tabs
+  tabs={[
+    {
+      title: "TypeScript",
+    },
+    {
+      title: "JavaScript",
+    },
+  ]}
+  activeIndex={0}
+>
+<Tabs.Item>
+```tsx title="src/app/app.layout.tsx" showLineNumbers
+import React from "react";
+import { LayoutComponent, Outlet } from "rasengan";
+
+const AppLayout: LayoutComponent = () => {
+  return (
+    <div>
+      <header>My Header</header>
+      <Outlet />
+      <footer>My Footer</footer>
+    </div>
+  );
+};
+
+AppLayout.path = "/";
+export default AppLayout;
+```
+</Tabs.Item>
+<Tabs.Item>
+```jsx title="src/app/app.layout.jsx" showLineNumbers
+import React from "react";
+import { Outlet } from "rasengan";
+
+const AppLayout = () => {
+  return (
+    <div>
+      <header>My Header</header>
+      <Outlet />
+      <footer>My Footer</footer>
+    </div>
+  );
+};
+
+AppLayout.path = "/";
+export default AppLayout;
+```
+</Tabs.Item>
+</Tabs>
+
+### Creating a Page
+
+<Tabs
+  tabs={[
+    {
+      title: "TypeScript",
+    },
+    {
+      title: "JavaScript",
+    },
+  ]}
+  activeIndex={0}
+>
+<Tabs.Item>
+```tsx title="src/app/home.page.tsx" showLineNumbers
+import { PageComponent } from "rasengan";
+
+const Home: PageComponent = () => {
+  return <div>Welcome to the Home Page</div>;
+};
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home Page"
+};
+
+export default Home;
+```
+</Tabs.Item>
+<Tabs.Item>
+```javascript title="src/app/home.page.jsx" showLineNumbers
+const Home = () => {
+  return <div>Welcome to the Home Page</div>;
+};
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home Page"
+};
+
+export default Home;
+```
+</Tabs.Item>
+</Tabs>
+
+### Finalizing the Router
+
+Once you have set up your layout and pages, update your `app.router.ts` or `app.router.js` file:
+
+<Tabs
+  tabs={[
+    {
+      title: "TypeScript",
+    },
+    {
+      title: "JavaScript",
+    },
+  ]}
+  activeIndex={0}
+>
+<Tabs.Item>
+```typescript title="src/app/app.router.ts" showLineNumbers {2,3,9,10}
+import { RouterComponent, defineRouter } from "rasengan";
+import AppLayout from "./app.layout";
+import Home from "./home.page";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [],
+  layout: AppLayout,
+  pages: [Home]
+})(AppRouter);
+```
+</Tabs.Item>
+<Tabs.Item>
+```javascript title="src/app/app.router.js" showLineNumbers {2,3,9,10}
+import { RouterComponent, defineRouter } from "rasengan";
+import AppLayout from "./app.layout";
+import Home from "./home.page";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [],
+  layout: AppLayout,
+  pages: [Home]
+})(AppRouter);
+```
+</Tabs.Item>
+</Tabs>
+
+## Sub Routers
+
+`sub routers` are routers that are nested within another router. They are useful for creating modular and complex applications routing structure.
+
+Let's take a situation where you want to create an application with a dashboard and an authentication section. You can create a `DashboardRouter` and an `AuthRouter` and nest them within the `AppRouter`.
+
+### Creating a Sub Router
+
+To create a sub router, you can just define a new router and import it into the parent router.
+
+```typescript title="src/app/dashboard.router.ts" showLineNumbers
+import { RouterComponent, defineRouter } from "rasengan";
+
+class DashboardRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [],
+  layout: null,
+  pages: []
+})(DashboardRouter);
+```
+
+```typescript title="src/app/auth.router.ts" showLineNumbers
+import { RouterComponent, defineRouter } from "rasengan";
+
+class AuthRouter extends RouterComponent {}
+
+export default defineRouter({
+  import: [],
+  layout: null,
+  pages: []
+})(AuthRouter);
+```
+
+### Nesting Sub Routers
+
+To nest the sub routers within the parent router, import the sub routers into the parent router and add them to the `import` property.
+
+```typescript title="src/app/app.router.ts" showLineNumbers {4,5,10}
+import { RouterComponent, defineRouter } from "rasengan";
+import AppLayout from "./app.layout";
+import Home from "./home.page";
+import DashboardRouter from "./dashboard.router";
+import AuthRouter from "./auth.router";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [DashboardRouter, AuthRouter],
+  layout: AppLayout,
+  pages: [Home]
+})(AppRouter);
+```
+
+Now you have two sub routers nested within the `AppRouter`. These sub routers can have their own pages and layouts, making your application structure more modular and organized.
+
+By default, `sub routers` inherit the layout of the parent router. However, you can specify whether or not a sub router should use the parent router's layout by setting the `useParentLayout` property to `true` or `false`.
+
+```typescript title="src/app/dashboard.router.ts" showLineNumbers {9}
+import { RouterComponent, defineRouter } from "rasengan";
+
+class DashboardRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [],
+  layout: null,
+  pages: [],
+  useParentLayout: false // Do not use the parent layout
+})(DashboardRouter);
+```
+
+{/* Add alert here */}
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/base-concepts',
+    label: 'Routing - Base Concepts',
+  }}
+  next={{
+    href: '/docs/routing/routes',
+    label: 'Routes',
+  }}
+/>

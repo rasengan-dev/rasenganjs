@@ -1,0 +1,111 @@
+---
+metadata:
+  title: Configuring Typescript - Configuring | Core concepts | Rasengan.js
+  description: Learn how to configure Typescript in Rasengan.js
+toc: false
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/common/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# TypeScript
+
+Rasengan.js provides a TypeScript-first development experience for building your React application.
+
+It comes with built-in TypeScript support for automatically installing the necessary packages and configuring the proper settings.
+
+## New Project
+
+`create-rasengan` CLI can be used to create a new TypeScript project.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app
+```
+
+During the project creation, you will be prompted to choose the language for your project. Select `TypeScript` to create a TypeScript project.
+
+## Existing Project
+
+If you have an existing project and want to add TypeScript support, you have to follow the following steps:
+
+<StepItem
+  step='01'
+  title='Install dependencies'
+  content={`
+  First, install the following dependencies:
+  `}
+>
+```bash title="Terminal"
+npm install --save-dev typescript @types/react @types/react-dom
+```
+</StepItem>
+
+<StepItem
+  step='02'
+  title='Configure TypeScript'
+  content={`
+  Then, add the following \`tsconfig.json\` file to the root of your project.
+  `}
+>
+```json filename="tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2020",
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+
+    /* Aliases for intellisence */
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "rasengan-env.d.ts"],
+
+  "extends": "./node_modules/rasengan/tsconfig.base.json"
+}
+```
+</StepItem>
+
+<StepItem
+  step='03'
+  title='Add Typescript Types'
+  content={`
+  Finally, add the following \`rasengan-env.d.ts\` file to the root of your project.
+  `}
+>
+```ts filename="rasengan-env.d.ts" showLineNumbers copy
+/// <reference types="rasengan/types/client" />
+```
+</StepItem>
+
+<StepItem
+  step='04'
+  title="Rename files and launch the dev server"
+  content={`
+  Finally, rename your files to \`.tsx\` and \`.ts\` extensions.
+  Then run \`npm run dev\` to start the development server.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+
+<Pagination 
+  prev={{
+    href: '/docs/optimizing/static-assets',
+    label: 'Static Assets',
+  }}
+  next={{
+    href: '/docs/configuring/environment-variables',
+    label: 'Environment Variables',
+  }}
+/>

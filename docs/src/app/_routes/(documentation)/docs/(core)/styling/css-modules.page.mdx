@@ -1,0 +1,235 @@
+---
+metadata:
+  title: CSS Modules - Styling | Core concepts | Rasengan.js
+  description: Built-in support for CSS Modules in Rasengan.js.
+toc: true
+---
+
+import Tabs from '@/components/common/molecules/tab';
+import Pagination from '@/components/common/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# CSS Modules
+
+Rasengan.js provides built-in support for CSS Modules using the `.module.css` extension.
+
+CSS Modules ensure locally scoped styles by automatically generating unique class names. This allows you to reuse class names across different files without worrying about conflicts, making it the preferred approach for styling individual components.
+
+## Importing CSS Modules
+
+CSS Modules can be imported into any file within the `src` directory to style components.
+
+<Tabs
+  tabs={
+    [
+      { title: 'TypeScript' },
+      { title: 'JavaScript' }
+    ]
+  }
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```tsx title="Card.tsx" {1} showLineNumbers
+    import styles from "./layout.module.css";
+
+    type CardProps = {
+      title: string;
+      content: string;
+    };
+
+    export default function Card({ title, content }: CardProps) {
+      return (
+        <div className={styles.card}>
+          <h1 className={styles.card__title}>{title}</h1>
+          <p className={styles.card__content}>{content}</p>
+        </div>
+      );
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="Card.jsx" {1} showLineNumbers
+    import styles from "./layout.module.css";
+
+    export default function Card({ title, content }) {
+      return (
+        <div className={styles.card}>
+          <h1 className={styles.card__title}>{title}</h1>
+          <p className={styles.card__content}>{content}</p>
+        </div>
+      );
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+## Global Styles
+
+Global styles should be placed inside the `src/styles` directory and imported into the [`src/main.tsx`](/docs/api-reference/file-conventions/main) file.
+
+### styles/index.css
+
+```css title="src/styles/index.css" showLineNumbers
+body,
+html {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+```
+
+### Importing Global Styles in src/main.tsx
+
+To apply global styles across your application, import them in `src/main.tsx`.
+
+<Tabs
+  tabs={
+    [
+      { title: 'TypeScript' },
+      { title: 'JavaScript' }
+    ]
+  }
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```tsx title="src/main.tsx" {2} showLineNumbers
+    // Global styles applied to all routes
+    import "@/styles/index.css";
+
+    import { type AppProps } from "rasengan";
+    import AppRouter from "@/app/app.router";
+
+    export default function App({ Component, children }: AppProps) {
+      return <Component router={AppRouter}>{children}</Component>;
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="src/main.jsx" {2} showLineNumbers
+    // Global styles applied to all routes
+    import "@/styles/index.css";
+
+    import AppRouter from "@/app/app.router";
+
+    export default function App({ Component, children }) {
+      return <Component router={AppRouter}>{children}</Component>;
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+## External Stylesheets
+
+Stylesheets from external packages can be imported in `src/main.tsx` or any other file where they are needed.
+
+<Tabs
+  tabs={
+    [
+      { title: 'TypeScript' },
+      { title: 'JavaScript' }
+    ]
+  }
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```tsx filename="src/main.tsx" {1} showLineNumbers copy
+    import "@rasenganjs/image/css";
+
+    import { type AppProps } from "rasengan";
+    import AppRouter from "@/app/app.router";
+
+    export default function App({ Component, children }: AppProps) {
+      return <Component router={AppRouter}>{children}</Component>;
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx filename="src/main.jsx" {1} showLineNumbers copy
+    import "@rasenganjs/image/css";
+
+    import AppRouter from "@/app/app.router";
+
+    export default function App({ Component, children }) {
+      return <Component router={AppRouter}>{children}</Component>;
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+You can also load stylesheets from a CDN into the `src/template.tsx` file.
+
+<Tabs
+  tabs={
+    [
+      { title: 'TypeScript' },
+      { title: 'JavaScript' }
+
+    ]
+  }
+  activeIndex={0}
+>
+  <Tabs.Item>
+  ```tsx title="src/template.tsx" {11} showLineNumbers
+  import { type TemplateProps } from 'rasengan';
+
+  export default function Template({ Head, Body, Script }: TemplateProps) {
+    return (
+      <html lang="en">
+        <Head>
+          <meta charSet="UTF-8" />
+          <link rel="icon" type="image/svg+xml" href="/rasengan.svg" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+        </Head>
+
+        <Body>
+          <Script />
+        </Body>
+      </html>
+    );
+  }
+  ```
+  </Tabs.Item>
+  <Tabs.Item>
+  ```jsx title="src/template.jsx" {9} showLineNumbers
+  export default function Template({ Head, Body, Script }) {
+    return (
+      <html lang="en">
+        <Head>
+          <meta charSet="UTF-8" />
+          <link rel="icon" type="image/svg+xml" href="/rasengan.svg" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+        </Head>
+
+        <Body>
+          <Script />
+        </Body>
+      </html>
+    );
+  }
+  ```
+  </Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/rendering/prerendering',
+    label: 'Pre-rendering',
+  }}
+  next={{
+    href: '/docs/styling/tailwindcss',
+    label: 'Tailwind CSS',
+  }}
+/>

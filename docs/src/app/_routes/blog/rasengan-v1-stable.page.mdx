@@ -1,0 +1,175 @@
+---
+path: /rasengan-v1-stable
+metadata: 
+  title: Rasengan v1 Stable
+  description: Rasengan v1 is now stable and ready for production use. This release includes a lot of new features and code base improvements
+  openGraph:
+    title: Rasengan v1 Stable
+    description: Rasengan v1 is now stable and ready for production use. This release includes a lot of new features and code base improvements
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-stable1.png'
+  twitter:
+    title: Rasengan v1 Stable
+    description: Rasengan v1 is now stable and ready for production use. This release includes a lot of new features and code base improvements
+    card: 'summary_large_image'
+    image: 'https://rasengan.dev/assets/blog/rasengan-stable1.png'
+---
+
+import BlogDetailsHeader from '@/components/common/molecules/blog-header-details';
+
+<BlogDetailsHeader />
+
+Rasengan v1 is now available on [npm](https://www.npmjs.com/package/rasengan).
+
+<br />
+
+In this post, we will talk about the new features of Rasengan v1.0.0 and how you can adopt them into your projects.
+
+For a list of breaking changes, see the Change log.
+
+## What's new in Rasengan v1.0.0?
+
+### Code base refactor
+
+We have refactored the code base to make it more readable and maintainable. At the beginning the project was organized into different github repositories, each one representing a different package.
+Now, the code base is organized into a single repository managed by [`pnpm workspaces`](https://pnpm.io/workspaces) as a `mono-repo`. This allows us to have a single repository with all the packages and dependencies.
+<br />
+
+Also, the initial code base of `rasenganjs` has been rewritten based on the existing logic but by organizing the different features under a specific folder and well structured code, allowing contributors to contribute to the project in a easy way.
+
+So, to contribute to the project, you can clone the repository and run `pnpm install` to install all the dependencies of the different packages and other.
+
+
+### SSR and CSR
+
+Rasengan.js was designed to support `SSR` since the beginning. The main reason for this is that we wanted to empower developers to create high-quality web applications that are fast, performant and `SEO` friendly.
+But we have discovered that there are some limitations with the current implementation of `SSR` in Rasengan.js and also the `SSR` mode is not benefit for all the use cases, that's why we have improved the `SSR` mode and we've introduced the `CSR` mode.
+<br />
+
+Now, you can use `SSR` or `CSR` mode depending on your use case. `SSR` mode is the default mode and it's the best option for most of the use cases. `CSR` mode is the alternative mode and it's the best option for use cases that require more control over the rendering process.
+
+To configure the mode, you can use the `ssr` option into your `rasengan.config.ts` file.
+```js title="rasengan.config.js" {4}
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  ssr: false, // CSR mode. Default: true
+});
+```
+
+#### SSR mode
+
+The `SSR` mode (Server Side Rendering) in Rasengan.js depends on a server part powered by [`express`](https://expressjs.com/en/starter/installing.html) coupled to the [`vite Environment API`](https://vite.dev/guide/api-environment.html), the [`react-dom/server`](https://react.dev/reference/react-dom/server) module and [`React Router Static Router`](https://reactrouter.com/start/data/custom#server-rendering).
+
+The main goal of the `SSR` mode is to provide a fast and performant way to render the application on the server side. This behavior is so useful for SEO purposes and for performance reasons.
+<br />
+
+With `SSR` mode enabled, the application is SEO friendly allowing search engines to index the application pages and to provide a better ranking in search results.
+<br />
+
+Hosting this kind online require a server that can handle the requests and the responses. This is the reason why we have introduced the [`vercel` and `node` adapters](#adapters) to make it easier to deploy the application on a server.
+We plan to add more adapters in the future.
+
+
+#### CSR mode
+
+The `CSR` mode (Client Side Rendering) in Rasengan.js is the alternative mode to the `SSR` mode. This mode is useful when you need to have more control over the rendering process and don't want to rely on the server side or you don't have to worry about SEO.
+<br />
+
+With `CSR` mode enabled, your application's pages are generated on the client side and the server only serves the initial HTML and the JavaScript bundle. All the requests are handled by the client on the browser.
+
+If you want to build application like:
+
+- Single Page Applications (SPA)
+- Administration Dashboard
+- Chatbot
+- etc.
+
+then you should use the `CSR` mode.
+
+
+### Update to React 19, Vite 6 and React Router 7
+
+The initial version of Rasengan.js was built on top of `React 18`, `Vite 5` and `React Router 6`. But now, we have updated the dependencies to the latest versions of `React 19`, `Vite 6` and `React Router 7`.
+
+#### React 19
+
+React 19 is the latest version of React and it brings a lot of improvements and new features. You can read more about the new features in the [React 19 release notes](https://react.dev/blog/2024/12/05/react-19).
+<br />
+
+Actually, Rasengan.js doesn't support all the new features of React 19, like `RSC` (React Server Components), `RC` (React Compiler) and others. But we plan to support them in the future.
+
+#### Vite 6
+
+The more important change of Vite 6 is the `Environment API` that allows us to manage the different environments in Rasengan.js more easily. The `build process` is now more flexible and depending on the mode (SSR or CSR) the build process will be different.
+
+Vite 6 allows Rasengan.js to be very fast and performant.
+
+#### React Router 7
+
+There's no big changes in React Router 7 since the v6 for Rasengan.js. But we have improved the `Static Router` to be more flexible and to support the new features of React Router 7.
+
+### TailwindCSS v4 support
+
+`TailwindCSS` is a popular CSS framework that is used by many developers. It's a great tool to create beautiful and responsive websites.
+<br />
+
+Rasengan.js now supports `TailwindCSS` v4 and can be accessed from the `create-rasengan` CLI directly.
+
+```bash title="Terminal"
+npx create-rasengan@latest
+```
+
+This command will prompt you to select `tailwindcss` as a template and ask you to choose the version (v3 or v4). 
+
+### MDX support
+
+Supporting `MDX` was a big step for Rasengan.js. MDX is a powerful tool that allows you to write your components in a markdown file and use them in your application.
+<br />
+
+We have improved the `MDX` support in Rasengan.js and now you can use `MDX` in your application via the [`@rasenganjs/mdx`](/packages/mdx) package.
+<br />
+
+This new package allows us to rebuild the documentation of Rasengan.js migrating from Next.js to Rasengan.js 🔥.
+
+
+### create-rasengan CLI improvements
+
+We have improved the [`create-rasengan`](/packages/create-rasengan) CLI to be more flexible and to support more templates. Actually, the CLI supports the following templates:
+
+- `blank-ts`
+- `blank-js`
+- `tailwindcss-js-v3`
+- `tailwindcss-ts-v3`
+- `tailwindcss-js-v4`
+- `tailwindcss-ts-v4`
+
+We plan to add more templates in the future.
+
+### new adapters for vercel and node server [#adapters]
+
+Adapters are a way to make it easier to deploy your application. They are just modules that allow your application to work fine on a specific server. 
+
+We have added two new adapters:
+
+- `vercel`: [`@rasenganjs/vercel`](/packages/vercel)
+- `node`: [`@rasenganjs/serve`](/packages/serve)
+
+If you want to deploy your application on `vercel`, using the `vercel` adapter is the best way to do it. It's a simple and fast way to deploy your application on `vercel`.
+
+The `node` adapter is simpler than the `vercel` adapter. It's a good way to deploy your application on a server that you own.
+
+### Image component improvements
+
+Rasengan.js provides a component to display images in your application coming from [`@rasenganjs/image`](/packages/image) package.
+
+For performance optimization and UX Experience we have added some warning messages when the Image component is not well configured. 
+
+We have also added a `fallbackSrc` prop to the Image component to allow you to display a fallback image when the main image is not loaded.
+
+### New documentation
+
+As mentioned above in the `MDX` section, we have migrated the documentation of Rasengan.js from Next.js to Rasengan.js.
+<br />
+
+Learn more about [Rasengan.js documentation](/docs/getting-started/installation) and have fun Ninja!

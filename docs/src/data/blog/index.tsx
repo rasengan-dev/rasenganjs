@@ -15,6 +15,18 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Rasengan v1.2.0 - Introducing SSG Rendering mode',
+    description: `
+      We are publishing Rasengan v1.2.0, a new version of the framework that introduces you the SSG rendering mode.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'January 03, 2026',
+    link: '/blog/rasengan-v1-2-0',
+    image: '/assets/blog/rasengan-1.2.0.png',
+    readingTime: '5 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan v1.1.3 - Introducing ScrollRestoration',
     description: `
       We are publishing Rasengan v1.1.3, a new version of the framework that introduces you the ScrollRestoration component.

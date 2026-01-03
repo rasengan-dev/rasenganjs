@@ -1,0 +1,178 @@
+---
+metadata:
+  title: Base Concepts - Routing | Core concepts | Rasengan.js
+  description: Rasengan.js is a powerful and flexible JavaScript framework for building web applications. This article covers the basics of routing in Rasengan.js.
+toc: true
+---
+
+import Tabs from '@/components/common/molecules/tab';
+import Pagination from '@/components/common/molecules/pagination';
+import { AlertWithLink } from "@/components/common/atoms/alerts"; 
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Rasengan.js Routing Basics
+
+Rasengan.js supports **multi-page application (MPA) routing** by default, powered by <a href="https://reactrouter.com/" target="_blank" rel="noopener noreferrer">`React Router`</a>. This allows you to handle different URLs and render specific components based on the URL, making navigation seamless within your application.
+<br />
+
+Rasengan.js introduces **file-based routing** to make it easier to manage routes. That means you have actually two ways to manage routes:
+
+- **Programmatic or Config-based routing**: This is the default way to manage routes. It is the way to manage routes using code, you have to define routes manually.
+- **File-based routing**: This is the second way to manage routes. It is based on the file structure of your application, routes are automatically generated based on the file structure.
+
+<br />
+
+The whole documentation will follow the `Config-based routing` way.
+
+<AlertWithLink 
+  link="/docs/routing/file-based-routing"
+  title="Learn more about file-based routing in Rasengan.js."
+  status="info"
+/>
+
+## Understanding Routing in Rasengan.js
+Routing in Rasengan.js is managed through **Routers, Layouts, and Pages**:
+
+- **Router**: A collection of pages, optionally grouped under a shared layout.
+- **Layout**: A wrapper component for pages, providing a common structure.
+- **Page**: A React component displayed when a specific URL is accessed.
+
+## Setting Up Routing
+To configure routing in Rasengan.js, you need to define a **Router**, which organizes pages and layouts efficiently.
+
+### 1. Creating a Router
+A **Router** is a collection of pages that can share a layout. You create one by extending `RouterComponent` and configuring it using `defineRouter`.
+
+#### Example: Defining a Router
+
+```javascript title="src/app/app.router.ts" showLineNumbers
+import { RouterComponent, defineRouter } from "rasengan";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  imports: [], // Import other routers
+  layout: null, // Assign a layout (optional)
+  pages: [] // Add page components
+})(AppRouter);
+```
+
+#### Router Configuration Options
+| Property   | Description                 | Type                | Required |
+|------------|-----------------------------|---------------------|----------|
+| `imports`   | Import additional routers   | `RouterComponent[]` | No       |
+| `layout`   | Assign a layout component  | `LayoutComponent`   | No       |
+| `pages`    | Define page components      | `PageComponent[]`   | Yes      |
+
+### 2. Creating a Layout
+A **Layout** wraps around multiple pages, providing a consistent structure (e.g., headers, footers). It is optional but recommended.
+
+#### Example: Defining a Layout
+<Tabs 
+  tabs={[
+    {
+      title: "TypeScript",
+    },
+    {
+      title: "JavaScript",
+    },
+  ]} 
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```tsx title="src/app/app.layout.tsx" showLineNumbers
+    import React from "react";
+    import { LayoutComponent, Outlet } from "rasengan";
+
+    const AppLayout: LayoutComponent = () => {
+      return (
+        <>
+          <Outlet />
+        </>
+      );
+    };
+
+    AppLayout.path = "/";
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="src/app/app.layout.jsx" showLineNumbers
+    import React from "react";
+    import { Outlet } from "rasengan";
+
+    const AppLayout = () => {
+      return (
+        <>
+          <Outlet />
+        </>
+      );
+    };
+
+    AppLayout.path = "/";
+    export default AppLayout;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+### 3. Creating a Page
+A **Page** is a React component that is displayed when a user visits a specific route.
+
+#### Example: Defining a Page
+<Tabs 
+  tabs={[
+    {
+      title: "TypeScript",
+    },
+    {
+      title: "JavaScript",
+    },
+  ]} 
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```tsx title="src/app/home.page.tsx" showLineNumbers
+    import { PageComponent } from "rasengan";
+    
+    const Home: PageComponent = () => {
+      return <div>Home Page</div>;
+    };
+    
+    Home.path = "/";
+    Home.metadata = {
+      title: "Home",
+      description: "Home Page"
+    };
+    
+    export default Home;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="src/app/home.page.jsx" showLineNumbers
+    const Home = () => {
+      return <div>Home Page</div>;
+    };
+    
+    Home.path = "/";
+    Home.metadata = {
+      title: "Home",
+      description: "Home Page"
+    };
+    
+    export default Home;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/getting-started/project-structure',
+    label: 'Project Structure',
+  }}
+  next={{
+    href: '/docs/routing/router-configuration',
+    label: 'Router Configuration',
+  }}
+/>

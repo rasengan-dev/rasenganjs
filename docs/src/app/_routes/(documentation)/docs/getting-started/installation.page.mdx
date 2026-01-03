@@ -1,0 +1,585 @@
+---
+metadata:
+  title: Creating your first Rasengan.js app | Getting Started | Rasengan.js
+  description: Setting up your React project with the Create Rasengan CLI tool in seconds
+toc: false
+---
+
+import StepItem from '@/components/common/molecules/step-item';
+import Tabs from '@/components/common/molecules/tab';
+import Pagination from '@/components/common/molecules/pagination';
+import { AlertWithDescription } from "@/components/common/atoms/alerts"; 
+
+<span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
+  GETTING STARTED
+</span>
+# Get started with Rasengan.js
+
+**Rasengan.js** takes care of all the complex parts of web development —**routing, rendering, optimization, and performance**— so you don’t have to. It scans your React components, automatically applies best practices, and generates the most efficient output for your project.
+
+With **Rasengan.js**, you can **focus on building your app**, while it handles the difficult technical details behind the scenes. It’s —**fast, flexible, and reliable**— with minimal setup and zero hassle. 🚀
+
+## Pre-requisites
+
+- <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">Node.js 20.18</a> or later.
+- macOS, Windows, and Linux are supported.
+
+## Installation
+
+### Automatic Installation
+
+The best way to start a new **Rasengan.js** project is with **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which sets everything up for you automatically. 
+    
+Just follow the following steps to get started:
+
+<StepItem
+  step="01"
+  title="Create a new project"
+  content={`
+    Run the following command to create a new project.
+  `}
+  className='mt-8'
+>
+```bash title="Terminal"
+npx create-rasengan@latest
+```
+</StepItem>
+
+
+<StepItem
+  step="02"
+  title="Follow the prompts"
+  content={`
+    On the installation process, you will see the following prompts:
+  `}
+>
+```bash title="Terminal"
+- What would you like to name your project?
+- Which language would you like to use for your project?
+- Which template would you like to use?
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Install dependencies"
+  content={`
+    After the prompts, \`create-rasengan\` will create a folder with your project name. Move yourself inside and install the required dependencies.
+  `}
+>
+```bash title="Terminal"
+cd my-app
+npm install
+```
+</StepItem>
+
+<StepItem
+  step="04"
+  title="Run the application"
+  content={`
+    Run the following command to start the development server.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+
+### Manual Installation
+
+<AlertWithDescription 
+  title="Warning"
+  description="This method is not recommended for beginners. It is recommended to use the automatic installation method."
+  className="mb-4"
+  status="warning"
+/>
+
+<Tabs 
+  tabs={[
+    {
+      title: "Using JavaScript",
+    },
+    {
+      title: "Using TypeScript",
+    },
+  ]}
+  activeIndex={1}
+>
+<Tabs.Item>
+{/* Javascript */}
+
+The following steps will guide you through setting up a new **Rasengan.js** project manually using `JavaScript`.
+
+<StepItem
+  step="01"
+  title="Install dependencies"
+  content={`
+    Create a new folder first and move yourself inside.
+
+    Then generate a new \`package.json\` file and install the required dependencies.
+  `}
+>
+```bash title="Terminal"
+mkdir my-app
+cd my-app
+npm init -y
+npm install rasengan@latest @rasenganjs/serve@latest react@latest react-dom@latest
+npm install --save-dev cross-env vite@latest
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Add scripts into package.json"
+  content={`
+    Open the \`package.json\` file and add the following scripts.
+  `}
+>
+```json title="package.json"
+"scripts": {
+  "dev": "rasengan dev",
+  "build": "rasengan build",
+  "serve": "rasengan-serve ./dist"
+}
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Create root directories and files"
+  content={`
+    First, create the necessary directories at the root of your project.
+    
+    - \`public\`: Contains static assets like icons and images.
+    - \`src\`: Contains your application’s source code.
+    
+    Then, create the \`rasengan.config.js\` configuration file.
+  `}
+>
+```bash title="Terminal"
+mkdir public src
+touch rasengan.config.js
+```
+</StepItem>
+
+<StepItem 
+  step="04" 
+  title="Configure Rasengan.js" 
+  content={`
+    Open the \`rasengan.config.js\` file and add the following configuration. 
+  `}
+>
+```javascript title="rasengan.config.js" showLineNumbers
+import { defineConfig } from "rasengan";
+
+export default defineConfig({});
+```
+</StepItem>
+
+<StepItem
+  step="05"
+  title="Create sub-directories and files"
+  content={`
+    Inside the \`src\` directory, create an \`app\` folder to store your application's pages.
+
+    Then create a \`home.page.jsx\` and \`app.router.js\` files inside the \`app\` directory.
+
+    Finally create a \`main.jsx\`, \`template.jsx\` and \`index.js\` files inside the \`src\` directory.
+  `}
+>
+```bash title="Terminal"
+mkdir src/app
+
+touch src/app/home.page.jsx src/app/app.router.js
+
+touch src/main.jsx src/template.jsx src/index.js
+```
+</StepItem>
+
+<StepItem
+  step="06"
+  title="Create a simple page"
+  content={`
+    Open the \`home.page.jsx\` file and add the following code to create a simple page.
+  `}
+>
+```jsx title="home.page.jsx" showLineNumbers
+const Home = () => {
+  return (
+    <main>Home Page</main>
+  )
+}
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home page",
+}
+
+export default Home;
+```
+</StepItem>
+
+<StepItem
+  step="07"
+  title="Create a router"
+  content={`
+    Open the \`app.router.js\` file and add the following code to create a router.
+  `}
+>
+```javascript title="app.router.js" showLineNumbers
+import { RouterComponent, defineRouter } from "rasengan";
+import Home from "@/app/home.page";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  pages: [Home]
+})(AppRouter);
+```
+</StepItem>
+
+<StepItem
+  step="08"
+  title="Define the main component"
+  content={`
+    Open the \`main.jsx\` file and add the following code to define the main component.
+  `}
+>
+```jsx title="main.jsx" showLineNumbers 
+import AppRouter from "@/app/app.router";
+
+export default function App({ Component, children }) {
+  return <Component router={AppRouter}>{children}</Component>;
+}
+```
+</StepItem>
+
+<StepItem
+  step="9"
+  title="Define the template HTML"
+  content={`
+    Open the \`template.jsx\` file and add the following code to define the template HTML.
+  `}
+>
+```jsx title="template.jsx" showLineNumbers
+export default function Template({
+  Head,
+  Body,
+  Script
+}) {
+  return (
+    <html lang="en">
+      <Head>
+        <meta charSet="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/rasengan.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+
+      <Body>
+        <Script />
+      </Body>
+    </html>
+  );
+}
+```
+</StepItem>
+
+<StepItem
+  step="10"
+  title="Define the entry point"
+  content={`
+    Open the \`index.js\` file and add the following code to define the entry point.
+  `}
+>
+```jsx title="index.js" showLineNumbers {4}
+import { renderApp } from 'rasengan/client';
+import App from './main';
+
+renderApp(App, { reactStrictMode: true });
+```
+</StepItem>
+
+<StepItem
+  step="11"
+  title="Run the application"
+  content={`
+    Run the following command to start the development server.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+</Tabs.Item>
+
+{/* Typescript */}
+<Tabs.Item>
+
+The following steps will guide you through setting up a new **Rasengan.js** project manually using `TypeScript`.
+
+<StepItem
+  step="01"
+  title="Install dependencies"
+  content={`
+    Create a new folder first and move yourself inside.
+
+    Then generate a new \`package.json\` file and install the required dependencies.
+  `}
+>
+```bash title="Terminal"
+mkdir my-app
+cd my-app
+npm init -y
+npm install rasengan@latest @rasenganjs/serve@latest react@latest react-dom@latest
+npm install --save-dev cross-env vite@latest @types/react @types/react-dom @types/node typescript
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Add scripts into package.json"
+  content={`
+    Open the \`package.json\` file and add the following scripts.
+  `}
+>
+```json title="package.json"
+"scripts": {
+  "dev": "rasengan dev",
+  "build": "rasengan build",
+  "serve": "rasengan-serve ./dist"
+}
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Create root directories and files"
+  content={`
+    First, create the necessary directories at the root of your project.
+    
+    - \`public\`: Contains static assets like icons and images.
+    - \`src\`: Contains your application’s source code.
+    
+    Then, create the \`rasengan.config.js\` configuration file.
+  `}
+>
+```bash title="Terminal"
+mkdir public src
+touch rasengan.config.js
+```
+</StepItem>
+
+<StepItem 
+  step="04" 
+  title="Configure Rasengan.js" 
+  content={`
+    Open the \`rasengan.config.js\` file and add the following configuration. 
+  `}
+>
+```javascript title="rasengan.config.js" showLineNumbers
+import { defineConfig } from "rasengan";
+
+export default defineConfig({});
+```
+</StepItem>
+
+<StepItem
+  step="05"
+  title="Create sub-directories and files"
+  content={`
+    Inside the \`src\` directory, create an \`app\` folder to store your application's pages.
+
+    Then create a \`home.page.tsx\` and \`app.router.ts\` files inside the \`app\` directory.
+
+    Finally create a \`main.tsx\`, \`template.tsx\` and \`index.ts\` files inside the \`src\` directory.
+  `}
+>
+```bash title="Terminal"
+mkdir src/app
+
+touch src/app/home.page.tsx src/app/app.router.ts
+
+touch src/main.tsx src/template.tsx src/index.ts
+```
+</StepItem>
+
+<StepItem
+  step="06"
+  title="Create a simple page"
+  content={`
+    Open the \`home.page.tsx\` file and add the following code to create a simple page.
+  `}
+>
+```jsx title="home.page.tsx" showLineNumbers
+import { type PageComponent } from "rasengan";
+
+const Home: PageComponent = () => {
+  return (
+    <main>Home Page</main>
+  )
+}
+
+Home.path = "/";
+Home.metadata = {
+  title: "Home",
+  description: "Home page",
+}
+
+export default Home;
+```
+</StepItem>
+
+<StepItem
+  step="07"
+  title="Create a router"
+  content={`
+    Open the \`app.router.ts\` file and add the following code to create a router.
+  `}
+>
+```javascript title="app.router.ts" showLineNumbers
+import { RouterComponent, defineRouter } from "rasengan";
+import Home from "@/app/home.page";
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  pages: [Home]
+})(AppRouter);
+```
+</StepItem>
+
+<StepItem
+  step="08"
+  title="Define the main component"
+  content={`
+    Open the \`main.tsx\` file and add the following code to define the main component.
+  `}
+>
+```jsx title="main.tsx" showLineNumbers 
+import { type AppProps } from "rasengan";
+import AppRouter from "@/app/app.router";
+
+export default function App({ Component, children }: AppProps) {
+  return <Component router={AppRouter}>{children}</Component>;
+}
+```
+</StepItem>
+
+<StepItem
+  step="9"
+  title="Define the template HTML"
+  content={`
+    Open the \`template.tsx\` file and add the following code to define the template HTML.
+  `}
+>
+```jsx title="template.tsx" showLineNumbers
+import { type TemplateProps } from "rasengan";
+
+export default function Template({
+  Head,
+  Body,
+  Script
+}: TemplateProps) {
+  return (
+    <html lang="en">
+      <Head>
+        <meta charSet="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/rasengan.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+
+      <Body>
+        <Script />
+      </Body>
+    </html>
+  );
+}
+```
+</StepItem>
+
+<StepItem
+  step="10"
+  title="Define the entry point"
+  content={`
+    Open the \`index.ts\` file and add the following code to define the entry point.
+  `}
+>
+```jsx title="index.ts" showLineNumbers {4}
+import { renderApp } from 'rasengan/client';
+import App from './main';
+
+renderApp(App, { reactStrictMode: true });
+```
+</StepItem>
+
+<StepItem
+  step="11"
+  title="Add extract configuration file for TypeScript."
+  content={`
+    Create new files called \`tsconfig.json\` and \`rasengan-env.d.ts\` at the root of your project.
+  `}
+>
+```bash title="Terminal"
+touch tsconfig.json rasengan-env.d.ts
+```
+</StepItem>
+
+<StepItem
+  step="12"
+  title="Configure TypeScript"
+  content={`
+    Open the \`tsconfig.json\` and \`rasengan-env.d.ts\` files and add the following configuration.
+  `}
+>
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2020",
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+
+    /* Aliases for intellisence */
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "rasengan-env.d.ts"],
+
+  "extends": "./node_modules/rasengan/tsconfig.base.json"
+}
+```
+
+```typescript title="rasengan-env.d.ts"
+/// <reference types="rasengan/types/client" />
+```
+</StepItem>
+
+<StepItem
+  step="13"
+  title="Run the application"
+  content={`
+    Run the following command to start the development server.
+  `}
+>
+```bash title="Terminal"
+npm run dev
+```
+</StepItem>
+</Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/getting-started/introduction',
+    label: 'Introduction',
+  }}
+  next={{
+    href: '/docs/getting-started/project-structure',
+    label: 'Project Structure',
+  }}
+/>

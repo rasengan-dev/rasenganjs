@@ -1,0 +1,85 @@
+---
+metadata:
+  title: Router Convention naming - Conventions | API Reference | Rasengan.js
+  description: Router Convention naming in Rasengan.js
+toc: true
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/common/molecules/step-item';
+import Tabs from '@/components/common/molecules/tab';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Router Convention naming
+
+In Rasengan.js, to create a `router`, you have to create a file that follow the following name pattern:
+
+```txt title="Router" showLineNumbers
+[name].router.js
+```
+
+A `router` is a set of pages grouped under the same `layout` that share it.
+
+## Example
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="app.router.tsx" showLineNumbers
+    import { RouterComponent, defineRouter } from "rasengan";
+    import AppLayout from "@/app/app.layout";
+    import Home from "@/app/home.page";
+    import About from "@/app/about.page";
+
+    /*
+     * This AppRouter is located inside the app.router.tsx file
+     */
+    class AppRouter extends RouterComponent {}
+
+    export default defineRouter({
+      imports: [],
+      layout: AppLayout,
+      pages: [Home, About],
+    })(AppRouter);
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="app.router.jsx" showLineNumbers
+    import { RouterComponent, defineRouter } from "rasengan";
+    import AppLayout from "@/app/app.layout";
+    import Home from "@/app/home.page";
+    import About from "@/app/about.page";
+
+    /*
+     * This AppRouter is located inside the app.router.jsx file
+     */
+    class AppRouter extends RouterComponent {}
+
+    export default defineRouter({
+      imports: [],
+      layout: AppLayout,
+      pages: [Home, About],
+    })(AppRouter);
+    ```
+  </Tabs.Item>
+</Tabs>
+
+Based on the convention, we have juste replace the `[name]` by `app` in the convention name and we got `app.router.js`.
+
+{/* <AlertBox type='error'>
+	It's required to have your main `router` inside the `app/app.router.js` page,
+	because it's considered as an `entry` point.
+</AlertBox> */}
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/conventions/page',
+    label: '[name].page.tsx',
+  }}
+  next={{
+    href: '/docs/api-reference/rasengan-config',
+    label: 'rasengan.config.js',
+  }}
+/>

@@ -1,0 +1,260 @@
+---
+metadata:
+  title: Redirecting - Routing | Core concepts | Rasengan.js
+  description: Redirect your users to other pages.
+toc: true
+---
+
+import Tabs from '@/components/common/molecules/tab';
+import Pagination from '@/components/common/molecules/pagination';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Redirecting
+
+There are a few ways you can handle redirects in Rasengan.js.
+This page will go through each available option, use cases, and how to manage large numbers of redirects.
+
+| Api                        | Description                       | Where to use                              |
+| -------------------------- | --------------------------------- | ----------------------------------------- |
+| `useNavigate`              | Perform a client-side redirection | Event Handlers in Client Components       |
+| `PageComponent.loader()`   | Enable redirection on the server. | During the server-side rendering process. |
+| `LayoutComponent.loader()` | Enable redirection on the server. | During the server-side rendering process. |
+
+## useNavigate hook
+
+The `useNavigate` hook is used to perform client-side redirections.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="src/components/LogoutButton.tsx" {2,5,11} showLineNumbers
+    import React from "react";
+    import { useNavigate } from "rasengan";
+
+    export default function LogoutButton() {
+      const navigate = useNavigate();
+
+      const logout = async () => {
+        try {
+          // Logout logic Here
+
+          navigate("/sign-in");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return (
+        <button onClick={logout}>Logout</button>
+      )
+    }
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```jsx title="src/components/LogoutButton.tsx" {2,5,11} showLineNumbers
+    import React from "react";
+    import { useNavigate } from "rasengan";
+
+    export default function LogoutButton() {
+      const navigate = useNavigate();
+
+      const logout = async () => {
+        try {
+          // Logout logic Here
+
+          navigate("/sign-in");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return (
+        <button onClick={logout}>Logout</button>
+      )
+    }
+    ```
+  </Tabs.Item>
+</Tabs>
+
+{/* <AlertBox>
+  The `useNavigate` hook is used in event handlers in client components to
+  perform client-side redirections. After the logout logic is executed, the
+  `navigate` function is called with the path to redirect to.
+</AlertBox> */}
+
+## PageComponent.loader() function
+
+Similar to `LayoutComponent.loader()`, the `PageComponent.loader()` function is a special function used for `SSR` (Server-Side Rendering) like `getServerSideProps` in `Next.js`.
+
+So, you can perform server-side redirections using this function and it can only be used in `Page Components`.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="src/app/redirection.page.tsx" {19-28} showLineNumbers
+    import React from "react";
+    import { PageComponent, LoaderResponse } from "rasengan";
+
+    const RedirectionPage: PageComponent = () => {
+      return (
+        <div>
+          <h1>Redirecting...</h1>
+        </div>
+      )
+    }
+
+    RedirectionPage.path = "/somewhere";
+    RedirectionPage.metadata = {
+      title: "Redirect",
+      description: "Redirecting to somewhere",
+    }
+
+    // Used to perform server-side operations
+    RedirectionPage.loader = async (): Promise<LoaderResponse> => {
+      /**
+       * You have the possibility to perform some logic here for example, making API calls
+       * checking if the user is authenticated, etc.
+       */
+
+      return {
+        redirect: "/destination"
+      }
+    }
+
+    export default RedirectionPage;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="src/app/redirection.page.jsx" {19-28} showLineNumbers
+    import React from "react";
+    import { LoaderResponse } from "rasengan";
+
+    const RedirectionPage = () => {
+      return (
+        <div>
+          <h1>Redirecting...</h1>
+        </div>
+      )
+    }
+
+    RedirectionPage.path = "/somewhere";
+    RedirectionPage.metadata = {
+      title: "Redirect",
+      description: "Redirecting to somewhere",
+    }
+
+    // Used to perform server-side operations
+    RedirectionPage.loader = async () => {
+      /**
+       * You have the possibility to perform some logic here for example, making API calls
+       * checking if the user is authenticated, etc.
+       */
+
+      return {
+        redirect: "/destination"
+      }
+    }
+
+    export default RedirectionPage;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+{/* <AlertBox type="tip">
+  The `loader` function is not only used for redirections, but it can also be
+  used to perform server-side operations like making API calls, checking if the
+  user is authenticated, etc. and it can pass data to the `PageComponent` as
+  props. Read more about it
+  [here](/docs/api-reference/components/page-component#loader).
+</AlertBox> */}
+
+The `loader` function can receive an object argument containing:
+
+- a `request` instance: The request object from the server.
+- a `param` object: The parameters from the URL.
+
+<Tabs tabs={[{ title: 'TypeScript' }, { title: 'JavaScript' }]} activeIndex={0}>
+  <Tabs.Item>
+    ```tsx title="src/app/redirection.page.tsx" {19-30} showLineNumbers
+    import React from "react";
+    import { PageComponent, LoaderResponse, LoaderOptions } from "rasengan";
+
+    const RedirectionPage: PageComponent = () => {
+      return (
+        <div>
+          <h1>Redirecting...</h1>
+        </div>
+      )
+    }
+
+    RedirectionPage.path = "/somewhere";
+    RedirectionPage.metadata = {
+      title: "Redirect",
+      description: "Redirecting to somewhere",
+    }
+
+    // Used to perform server-side operations
+    RedirectionPage.loader = async ({ params, request }: LoaderOptions): Promise<LoaderResponse> {
+      /**
+        * You have the possibility to perform some logic here for example, making API calls
+        * checking if the user is authenticated, etc.
+        *
+        * You can also access the request object from the server and the params object
+        */
+
+      return {
+        redirect: "/destination"
+      }
+    }
+
+    export default RedirectionPage;
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```tsx title="src/app/redirection.page.jsx" {19-30} showLineNumbers
+    import React from "react";
+    import { PageComponent } from "rasengan";
+
+    const RedirectionPage: PageComponent = () => {
+      return (
+        <div>
+          <h1>Redirecting...</h1>
+        </div>
+      )
+    }
+
+    RedirectionPage.path = "/somewhere";
+    RedirectionPage.metadata = {
+      title: "Redirect",
+      description: "Redirecting to somewhere",
+    }
+
+    // Used to perform server-side operations
+    RedirectionPage.loader = async ({ params, request }) {
+      /**
+        * You have the possibility to perform some logic here for example, making API calls
+        * checking if the user is authenticated, etc.
+        *
+        * You can also access the request object from the server and the params object
+        */
+
+      return {
+        redirect: "/destination"
+      }
+    }
+
+    export default RedirectionPage;
+    ```
+  </Tabs.Item>
+</Tabs>
+
+<Pagination 
+  prev={{
+    href: '/docs/routing/error-handling',
+    label: 'Error Handling',
+  }}
+  next={{
+    href: '/docs/rendering/ssr',
+    label: 'Server-Side Rendering',
+  }}
+/>

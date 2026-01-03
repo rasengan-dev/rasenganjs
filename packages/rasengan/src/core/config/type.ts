@@ -104,6 +104,7 @@ export type AppConfig = {
 };
 
 export type OptimizedAppConfig = {
+  prerender?: AppConfig['prerender'];
   ssr?: AppConfig['ssr'];
   redirects: Redirect[];
   buildOptions: BuildOptions;

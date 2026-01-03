@@ -1,0 +1,77 @@
+---
+metadata:
+  title: Modules Aliases - Configuring | Core concepts | Rasengan.js
+  description: Modules Aliases in Rasengan.js
+toc: true
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/common/molecules/step-item';
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Modules Aliases
+
+Configuring aliases for your modules is a great way to make your code more readable and maintainable. 
+Rasengan.js provides a way to configure aliases for your modules via the `rasengan.config.js` file.
+
+## Configure Aliases
+
+To configure aliases for modules, you have to define first `paths` in `tsconfig.json` or `jsconfig.json` file:
+
+```json title="JSON" showLineNumbers copy
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/app/*"]
+    }
+  }
+}
+```
+
+This first configuration is for intellisense and code navigation. To make it work in runtime, you have to configure `aliases` inside the `rasengan.config.js` file.
+
+```javascript title="rasengan.config.js" showLineNumbers copy
+import { defineConfig } from "rasengan";
+
+export default defineConfig({
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: "@app",
+          replacement: "./src/app",
+        },
+      ],
+    },
+  },
+});
+```
+
+## Use Aliases
+
+Now you can import modules using the alias:
+
+```typescript title="app.router.ts" showLineNumbers copy
+import Home from "@app/home.page.tsx";
+```
+
+{/* <AlertBox>
+  Learn more about [Modules
+  aliases](/docs/api-reference/rasengan-config/aliases).
+</AlertBox> */}
+
+
+<Pagination 
+  prev={{
+    href: '/docs/configuring/environment-variables',
+    label: 'Environment Variables',
+  }}
+  next={{
+    href: '/docs/deploying/vercel',
+    label: 'Deploy to Vercel',
+  }}
+/>

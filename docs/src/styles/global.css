@@ -1,0 +1,49 @@
+/* =========================================
+   GLOBAL SCROLLBAR — LIGHT & DARK MODE
+   ========================================= */
+
+/* Default (Light mode) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f2f2f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c4c7;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a9a9ad;
+}
+
+/* Firefox for Light Mode */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c4c4c7 #f2f2f2;
+}
+
+/* ---- DARK MODE ----
+   Activated when <html class="dark"> or wrapper .dark is applied
+*/
+.dark ::-webkit-scrollbar-track {
+  background: #0f0f10; /* track */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2e2f35; /* thumb */
+  border-radius: 8px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #44454d;
+}
+
+/* Firefox for Dark mode */
+.dark * {
+  scrollbar-color: #2e2f35 #0f0f10;
+}

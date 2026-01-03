@@ -1,0 +1,129 @@
+---
+metadata:
+  title: defineStaticPaths - Functions | API Reference | Rasengan.js
+  description: Generate static paths for dynamic routes in Rasengan.js.
+toc: true
+---
+
+import Pagination from '@/components/common/molecules/pagination';
+import { Link } from "rasengan";
+import StepItem from '@/components/common/molecules/step-item';
+import { AlertWithLink } from "@/components/common/atoms/alerts"; 
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# defineStaticPaths
+
+`defineStaticPaths()` is a utility function used to declare which dynamic routes should be **pre-rendered** when using Rasengan.js in SSG (Static Site Generation) mode.
+
+It allows you to generate a list of parameters (such as usernames, slugs, or IDs) that Rasengan.js will convert into individual static HTML files during the build.
+
+
+## Usage
+
+```tsx title="app/_routes/users/[username].page.tsx" showLineNumbers
+import { defineStaticPaths } from "rasengan";
+
+// Page definition...
+
+Page.generatePaths = () => {
+  return defineStaticPaths([
+    { username: "nina" },
+    { username: "dilane3" },
+    { username: "michel" },
+  ]);
+};
+```
+
+This creates three static pages at build time:
+
+```bash
+/static/users/nina/index.html
+/static/users/dilane3/index.html
+/static/users/michel/index.html
+```
+
+
+## When to Use
+
+Use `defineStaticPaths()` when:
+
+* You have **dynamic routes** (`[slug]`, `[id]`, `[username]`, etc.)
+* You know the list of values **before build time**
+* The pages do **not** need runtime generation
+
+Not recommended for pages that:
+
+* Depend on real-time data
+* Change constantly or need personalization
+* Are behind authentication
+
+
+## Function Signature
+
+```ts
+defineStaticPaths(
+  paths: Array<Record<string, string | number>>
+): { paths: Array<Record<string, string | number>> }
+```
+
+| Parameter | Type                                  | Description                                              |
+| --------- | ------------------------------------- | -------------------------------------------------------- |
+| `paths`   | `Record<string, string \| number>[]`  | A list of dynamic parameters to generate as static pages |
+
+
+## Example with Component
+
+```tsx title="pages/users/[username].tsx" showLineNumbers
+import { PageComponent, useParams, defineStaticPaths } from "rasengan";
+
+const Page: PageComponent = () => {
+  const { username } = useParams();
+  return <h1>Hello {username}</h1>;
+};
+
+Page.generatePaths = async () => {
+  return defineStaticPaths([
+    { username: "nina" },
+    { username: "dilane3" },
+    { username: "michel" },
+    { username: "bros" },
+    { username: "adora" },
+  ]);
+};
+
+export default Page;
+```
+
+## Returned Output Format
+
+`defineStaticPaths()` returns an object with a `paths` property:
+
+```ts
+{
+  paths: [
+    { username: "nina" },
+    { username: "dilane3" },
+    { username: "michel" },
+  ]
+}
+```
+
+<AlertWithLink 
+title="Learn more about dynamic pre-rendering"
+link="/docs/rendering/prerendering#pre-rendering-dynamic-routes"
+status='info'
+/>
+
+
+<Pagination 
+  prev={{
+    href: '/docs/api-reference/functions/define-routes-group',
+    label: 'defineRoutesGroup',
+  }}
+  next={{
+    href: '/docs/api-reference/functions/render-app',
+    label: 'renderApp',
+  }}
+/>
