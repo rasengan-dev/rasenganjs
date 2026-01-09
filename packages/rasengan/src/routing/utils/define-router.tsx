@@ -88,10 +88,14 @@ export const convertMDXPageToPageComponent = async (
   MDXPage: MDXPageComponent
 ) => {
   // Load MDXRenderer from @rasenganjs/mdx
-  const MDXRenderer = await loadMDXRenderer();
+  const { MDXRenderer, mdxConfig } = await loadMDXRenderer();
 
   const Page: PageComponent = () => {
-    return <MDXRenderer className={''}>{MDXPage}</MDXRenderer>;
+    return (
+      <MDXRenderer className={''} config={mdxConfig}>
+        {MDXPage}
+      </MDXRenderer>
+    );
   };
 
   Page.path = MDXPage.metadata.path;
@@ -113,31 +117,38 @@ export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
  * Load thr MDXRenderer is the dedicated package is installed
  * @returns
  */
-const loadMDXRenderer =
-  async (): Promise<React.FunctionComponent<MDXRendererProps> | null> => {
-    try {
-      // Dynamically import only if the package exists
-      const mod = await import('@rasenganjs/mdx');
-      return mod.MDXRenderer;
-    } catch (error: any) {
-      // Handle the case when the package is not installed
-      if (
-        error.code === 'MODULE_NOT_FOUND' ||
-        /Cannot find module '@rasenganjs\/mdx'/.test(error.message)
-      ) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(
-            '[Rasengan.js] MDX package not found — skipping MDX rendering.'
-          );
-        }
-        return null;
+const loadMDXRenderer = async (): Promise<{
+  MDXRenderer: React.FunctionComponent<MDXRendererProps>;
+  mdxConfig: any;
+} | null> => {
+  try {
+    // Dynamically import only if the package exists
+    const mod = await import('@rasenganjs/mdx');
+    //@ts-ignore
+    const mdxConfig = await import('virtual:rasengan/mdx-components');
+    return {
+      MDXRenderer: mod.MDXRenderer,
+      mdxConfig: mdxConfig.default,
+    };
+  } catch (error: any) {
+    // Handle the case when the package is not installed
+    if (
+      error.code === 'MODULE_NOT_FOUND' ||
+      /Cannot find module '@rasenganjs\/mdx'/.test(error.message)
+    ) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[Rasengan.js] MDX package not found — skipping MDX rendering.'
+        );
       }
-
-      // Other unexpected errors (e.g. runtime bug in the module)
-      console.error(
-        '[Rasengan.js] Unexpected error while loading MDX module:',
-        error
-      );
-      throw error;
+      return null;
     }
-  };
+
+    // Other unexpected errors (e.g. runtime bug in the module)
+    console.error(
+      '[Rasengan.js] Unexpected error while loading MDX module:',
+      error
+    );
+    throw error;
+  }
+};

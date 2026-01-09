@@ -4,9 +4,6 @@ import { CodeBlock } from './codeblock.js';
 import { Table } from './table.js';
 import { Heading } from './heading.js';
 import TableOfContents from './toc.js';
-
-// @ts-ignore
-import config from 'virtual:rasengan/mdx-components';
 import createHeading from '../utils/create-heading.js';
 
 /**
@@ -20,6 +17,7 @@ import createHeading from '../utils/create-heading.js';
 const MDXRenderer = ({
   children: MDXContent,
   className,
+  config,
 }: MDXRendererProps): React.ReactElement => {
   const { components = {}, toc = undefined } = config;
 
