@@ -6,7 +6,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #2a7fff;
+  --color-primary: #111;
   --color-border: #eee;
 
   --font-urbanist: Urbanist, sans-serif;

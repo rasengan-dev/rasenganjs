@@ -68,16 +68,12 @@ export type NavigationStructure = {
   children?: NavigationStructure[];
 };
 
-type HeadingConfigProps = { fullText: string; text: string; id: string };
 type TOCConfig = (toc: Array<TOCItem>) => React.ReactNode;
 
 type ComponentConfig = {
-  h1?: (value: HeadingConfigProps) => React.ReactNode;
-  h2?: (value: HeadingConfigProps) => React.ReactNode;
-  h3?: (value: HeadingConfigProps) => React.ReactNode;
-  h4?: (value: HeadingConfigProps) => React.ReactNode;
-  h5?: (value: HeadingConfigProps) => React.ReactNode;
-  h6?: (value: HeadingConfigProps) => React.ReactNode;
+  [Key in Extract<React.ElementType, string>]?: React.ElementType<
+    React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>
+  >;
 };
 
 export type MDXConfigProps = {

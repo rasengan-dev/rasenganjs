@@ -111,3 +111,39 @@ export default async function plugin(): Promise<{
     },
   };
 }
+
+export function loadMDXComponentsPlugin() {
+  const virtualModuleId = 'virtual:rasengan/mdx-components';
+  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+
+  return {
+    name: 'vite-plugin-rasengan-mdx-components',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedVirtualModuleId) {
+        return `
+          const modules = import.meta.glob(
+            [
+              '/mdx-components.{js,jsx,ts,tsx}',
+            ],
+            { eager: true }
+          );
+          let config = {};
+
+          const modulesArray = Object.entries(modules);
+
+          if (modulesArray.length > 0) {
+            const [filePath, mod] = modulesArray[0];
+            config = mod.default;
+          }
+
+          export default config;
+        `;
+      }
+    },
+  };
+}

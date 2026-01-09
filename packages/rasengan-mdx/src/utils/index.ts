@@ -1,7 +1,5 @@
-import mdxPlugin from './plugin.js';
-import polyfill from './polyfill.js';
-// import { generateNavigation } from './generate-navigation.js';
+import mdxPlugin, { loadMDXComponentsPlugin } from './plugin.js';
 
-const plugin = () => [mdxPlugin(), polyfill()];
+const plugin = () => [mdxPlugin(), loadMDXComponentsPlugin()];
 
-export { plugin };
+export default plugin;

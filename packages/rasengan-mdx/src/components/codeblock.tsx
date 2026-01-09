@@ -17,7 +17,7 @@ import { renderToString } from 'react-dom/server';
  * @returns {React.ReactElement} - The rendered code block component.
  */
 export const CodeBlock = ({
-  children,
+  children = '',
   className = '',
   ...rest
 }: CodeBlockProps): React.ReactElement => {
