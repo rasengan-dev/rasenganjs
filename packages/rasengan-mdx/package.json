@@ -16,6 +16,9 @@
       "import": "./lib/utils/index.js",
       "require": "./lib/utils/index.js",
       "types": "./lib/utils/index.d.ts"
+    },
+    "./types/client": {
+      "types": "./types/client.d.ts"
     }
   },
   "author": {
