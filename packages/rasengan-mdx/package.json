@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/mdx",
   "private": false,
-  "version": "1.1.7",
+  "version": "1.2.0-beta.0",
   "description": "RasenganJS plugin for MDX support",
   "type": "module",
   "main": "lib/index.js",
@@ -13,9 +13,9 @@
     },
     "./css": "./lib/styles/rasengan-mdx.min.css",
     "./plugin": {
-      "import": "./lib/utils/plugin.js",
-      "require": "./lib/utils/plugin.js",
-      "types": "./lib/utils/plugin.d.ts"
+      "import": "./lib/utils/index.js",
+      "require": "./lib/utils/index.js",
+      "types": "./lib/utils/index.d.ts"
     }
   },
   "author": {
@@ -40,27 +40,27 @@
   },
   "devDependencies": {
     "@types/clean-css": "^4.2.11",
-    "@types/micromatch": "^4.0.7",
-    "@types/node": "^22.7.4",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1",
+    "@types/micromatch": "^4.0.10",
+    "@types/node": "^22.19.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "clean-css": "^5.3.3"
   },
   "dependencies": {
-    "@mdx-js/rollup": "^3.0.1",
+    "@mdx-js/rollup": "^3.1.1",
     "gray-matter": "^4.0.3",
-    "micromatch": "^4.0.7",
+    "micromatch": "^4.0.8",
     "path-browserify": "^1.0.1",
-    "prism-react-renderer": "^2.4.0",
-    "react-markdown": "^9.0.1",
-    "rehype-pretty-code": "^0.14.0",
+    "prism-react-renderer": "^2.4.1",
+    "react-markdown": "^10.1.0",
+    "rehype-pretty-code": "^0.14.1",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
-    "remark-gfm": "^4.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
-    "remark-rehype": "^11.1.1",
+    "remark-rehype": "^11.1.2",
     "remark-toc": "^9.0.0",
-    "shiki": "^1.24.2",
+    "shiki": "^1.29.2",
     "unified": "^11.0.5"
   },
   "peerDependencies": {

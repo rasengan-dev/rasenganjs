@@ -29,9 +29,7 @@ function Markdown({
         rehypePlugins={[
           remarkRehype,
           rehypeStringify,
-          // [rehypePrettyCode, {
-
-          // }]
+          // rehypePrettyCode
         ]}
         components={{
           code: CodeBlock2,

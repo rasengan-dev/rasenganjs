@@ -63,7 +63,7 @@
   margin-right: auto;
   display: grid;
   width: 100%;
-  max-width: 42rem; /* 2xl */
+  /* max-width: 42rem; /* 2xl */
   grid-template-columns: 1fr;
   gap: 2.5rem; /* 40px */
   padding-left: 2.5rem;
@@ -86,8 +86,7 @@
 .rasengan-toc > .table-of-contents {
   position: sticky;
   top: 3.5rem; /* top-14 (56px) */
-  max-height: calc(100svh - 3.5rem);
-  /* max-h-[calc(100svh-3.5rem)] */
+  max-height: calc(100vh - 3.5rem);
   overflow-x: hidden;
   padding-left: 1.5rem; /* px-6 (24px) */
   padding-right: 1.5rem; /* px-6 (24px) */
@@ -153,32 +152,44 @@
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h1) {
   margin-bottom: 1rem;
+  font-size: var(--text-3xl);
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h2) {
+  font-size: var(--text-2xl);
   border-bottom: 1px solid var(--border);
   margin-bottom: 1rem;
   margin-top: 2rem;
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h3) {
+  font-size: var(--text-xl);
   margin-bottom: var(--mb-xl);
   margin-top: 2rem;
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h4) {
+  font-size: var(--text-lg);
   margin-bottom: var(--mb-lg);
   margin-top: 2rem;
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h5) {
+  font-size: var(--text-md);
   margin-bottom: var(--mb-md);
   margin-top: 2rem;
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper:has(h6) {
+  font-size: var(--text-sm);
   margin-bottom: var(--mb-sm);
   margin-top: 2rem;
+  font-weight: bold;
 }
 
 .rasengan-markdown-body .ra-heading-wrapper a {
@@ -221,69 +232,11 @@
   transform: scale(1.1);
 }
 
-.rasengan-markdown-body h1 {
-  font-size: var(--text-3xl);
-  color: var(--fg);
-  font-weight: 700;
-  margin: 0;
-}
-
-.rasengan-markdown-body h2 {
-  font-size: var(--text-2xl);
-  color: var(--fg);
-  font-weight: 700;
-  margin-bottom: var(--mb-2xl);
-}
-
-.rasengan-markdown-body h3 {
-  font-size: var(--text-xl);
-  color: var(--fg);
-  font-weight: 700;
-  margin-bottom: var(--mb-xl);
-}
-
-.rasengan-markdown-body h4 {
-  font-size: var(--text-lg);
-  color: var(--fg);
-  font-weight: 700;
-  margin-bottom: var(--mb-lg);
-}
-
-.rasengan-markdown-body h5 {
-  font-size: var(--text-md);
-  color: var(--fg);
-  font-weight: 700;
-  margin-bottom: var(--mb-md);
-}
-
-.rasengan-markdown-body h6 {
-  font-size: var(--text-sm);
-  color: var(--fg);
-  font-weight: 700;
-  margin-bottom: var(--mb-sm);
-}
-
 .rasengan-markdown-body h2:hover::after,
 .rasengan-markdown-body h3:hover::after,
 .rasengan-markdown-body h4:hover::after {
   opacity: 1;
   cursor: pointer;
-}
-
-.rasengan-markdown-body p {
-  font-size: var(--text-sm);
-  color: var(--fg);
-  margin: var(--mb-sm) 0;
-  line-height: 2;
-}
-
-.rasengan-markdown-body a {
-  color: var(--fg-accent);
-  text-decoration: none;
-}
-
-.rasengan-markdown-body a:hover {
-  text-decoration: underline;
 }
 
 /* Divider */
@@ -434,7 +387,7 @@
   overflow-x: auto;
 }
 
-.rasengan-markdown-body table {
+.rasengan-markdown-body .ra-table-wrapper table {
   border-collapse: collapse;
   color: var(--fg);
   margin: 0.67em 0;
@@ -443,29 +396,29 @@
   overflow-x: auto;
 }
 
-.rasengan-markdown-body th {
+.rasengan-markdown-body .ra-table-wrapper th {
   background-color: transparent;
   color: var(--fg);
   font-weight: 700;
 }
 
-.rasengan-markdown-body th,
-.rasengan-markdown-body td {
+.rasengan-markdown-body .ra-table-wrapper th,
+.rasengan-markdown-body .ra-table-wrapper td {
   padding: 10px 20px;
   border: 1px solid var(--border);
   transition: all 0.3s;
   cursor: pointer;
 }
 
-.rasengan-markdown-body tr:nth-child(even) {
+.rasengan-markdown-body .ra-table-wrapper tr:nth-child(even) {
   background-color: var(--bg-light);
 }
 
-.rasengan-markdown-body tr:nth-child(odd) {
+.rasengan-markdown-body .ra-table-wrapper tr:nth-child(odd) {
   background-color: transparent;
 }
 
-.rasengan-markdown-body tr:hover {
+.rasengan-markdown-body .ra-table-wrapper tr:hover {
   background-color: var(--bg-light);
 }
 
@@ -519,7 +472,7 @@
 @media (min-width: 1280px) {
   /* xl */
   .rasengan-wrapper-with-toc {
-    max-width: 80rem; /* 5xl */
+    /* max-width: 80rem; 5xl */
     grid-template-columns: minmax(0, 1fr) var(--container-2xs);
   }
 
@@ -538,7 +491,7 @@
 
   .rasengan-wrapper-with-toc {
     display: block;
-    max-width: 60rem;
+    /* max-width: 60rem; */
     padding-left: 0;
   }
 }

@@ -15,7 +15,7 @@ import { SimpleBlock } from './codeblock.js';
  * @returns {React.ReactElement} - The rendered code block component.
  */
 export const CodeBlock2 = ({
-  children,
+  children = '',
   className = '',
 }: CodeBlockProps): React.ReactElement => {
   const language = className.replace(/language-/, '');
