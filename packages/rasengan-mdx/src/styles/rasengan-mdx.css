@@ -426,9 +426,9 @@
 
 .rasengan-markdown-body ul,
 .rasengan-markdown-body ol {
-  margin: 0.67em 0;
-  color: var(--fg);
-  padding-left: 15px;
+  /* margin: 0.67em 0; */
+  /* color: var(--fg); */
+  /* padding-left: 15px; */
 }
 
 .rasengan-markdown-body ul {
@@ -441,8 +441,8 @@
 
 .rasengan-markdown-body ul li,
 .rasengan-markdown-body ol li {
-  margin: 0.67em 0;
-  color: var(--fg);
+  /* margin: 0.67em 0; */
+  /* color: var(--fg); */
 }
 
 .rasengan-markdown-body ul li input,

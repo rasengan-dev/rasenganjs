@@ -1,4 +1,4 @@
-import { generateAnchor } from './extract-toc';
+import { generateAnchor } from './extract-toc.js';
 import { MDXConfigProps } from '../types/index.js';
 
 export default function createHeading(
