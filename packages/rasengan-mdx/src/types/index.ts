@@ -44,6 +44,9 @@ export type MDXRendererProps = {
 
   // Used to customise the mdx visual aspect
   config?: MDXConfigProps;
+
+  // Used to send the toc to the renderer extract from the MDX Page component content
+  toc?: Array<TOCItem>;
 };
 
 /**

@@ -90,7 +90,7 @@ export const convertMDXPageToPageComponent = async (MDXPage: {
 }) => {
   const Page: PageComponent = () => {
     return (
-      <MDXPage.Renderer config={MDXPage.config}>
+      <MDXPage.Renderer config={MDXPage.config} toc={MDXPage.toc}>
         {MDXPage.Content}
       </MDXPage.Renderer>
     );

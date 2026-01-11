@@ -109,7 +109,7 @@ export default defineMDXConfig({
     const [activeId] = useActiveTocItem(toc);
 
     return (
-      <div className="sticky top-[64px] max-h-screen overflow-y-auto flex flex-col gao-8">
+      <div className="sticky top-[64px] hidden xl:flex max-h-screen overflow-y-auto flex-col gao-8">
         {/* <TableOfContents items={toc} /> */}
 
         <div className="mt-8">

@@ -102,7 +102,6 @@ export default async function plugin(): Promise<{
 
       return {
         code: `
-          import { createElement } from "react";
           import { MDXRenderer } from "@rasenganjs/mdx";
           import mdxConfig from "virtual:rasengan/mdx-components";
 

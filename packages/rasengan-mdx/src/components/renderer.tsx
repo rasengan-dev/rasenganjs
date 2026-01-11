@@ -18,15 +18,16 @@ const MDXRenderer = ({
   children: MDXContent,
   className,
   config,
-}: MDXRendererProps): React.ReactElement => {
-  const { components = {}, toc = undefined } = config;
 
-  console.log({ config, MDXContent });
+  // TOC Extracted from the original MDX file
+  toc: originalTocData,
+}: MDXRendererProps): React.ReactElement => {
+  const { components = {}, toc: customTocFunction = undefined } = config;
 
   return (
     <section
       className={
-        MDXContent.toc ? 'rasengan-wrapper-with-toc' : 'rasengan-wrapper'
+        originalTocData ? 'rasengan-wrapper-with-toc' : 'rasengan-wrapper'
       }
     >
       <section className={'rasengan-markdown-body ' + className}>
@@ -57,11 +58,11 @@ const MDXRenderer = ({
         />
       </section>
 
-      {MDXContent.toc &&
-        (toc ? (
-          toc(MDXContent.toc)
+      {originalTocData &&
+        (customTocFunction ? (
+          customTocFunction(originalTocData)
         ) : (
-          <TableOfContents items={MDXContent.toc} />
+          <TableOfContents items={originalTocData} />
         ))}
     </section>
   );
