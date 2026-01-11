@@ -143,7 +143,6 @@ export function createFakeRasenganRequest(
     body,
   } = options ?? {};
 
-  // --- Fake Request ---
   const req = {
     originalUrl: pathname.startsWith('/') ? pathname : `/${pathname}`,
     method,
@@ -158,24 +157,20 @@ export function createFakeRasenganRequest(
     },
   } as any;
 
-  // If a body exists, attach it as a readable stream (like Express req)
   if (body) {
     const readable = Readable.from([body]);
     Object.assign(req, readable);
   }
 
-  // --- Fake Response ---
   const res = new EventEmitter() as any;
-  res.on = res.addListener; // mimic Express style
+
+  res.on = res.addListener;
   res.write = () => true;
+
   res.end = () => {
     res.emit('finish');
+    // DO NOT emit "close"
   };
-
-  // Utility to simulate stream end
-  process.nextTick(() => {
-    res.emit('close');
-  });
 
   return { req, res };
 }

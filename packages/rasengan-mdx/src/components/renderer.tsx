@@ -21,6 +21,8 @@ const MDXRenderer = ({
 }: MDXRendererProps): React.ReactElement => {
   const { components = {}, toc = undefined } = config;
 
+  console.log({ config, MDXContent });
+
   return (
     <section
       className={

@@ -96,15 +96,33 @@ export default async function plugin(): Promise<{
         },
       };
 
+      let newCode = result.code;
+
+      newCode = newCode.replace(/export default\s+/, 'const MDXContent = ');
+
       return {
         code: `
-          ${result.code}
+          import { createElement } from "react";
+          import { MDXRenderer } from "@rasenganjs/mdx";
+          import mdxConfig from "virtual:rasengan/mdx-components";
+
+          ${newCode}
+
           const metadata = ${JSON.stringify(metadata)};
           const toc = ${isTocVisible ? JSON.stringify(toc) : undefined};
-          
-          MDXContent.metadata = metadata;
-          MDXContent.toc = toc;
-          MDXContent.type = "MDXPageComponent"; // important for the defineRouter function
+
+
+          const MDXWrapper = {
+            metadata,
+            toc,
+            type: "MDXPageComponent", // Helps to differentiate PageComponent from MDXPageComponent
+            Content: MDXContent, // The content of the MDX file
+            Renderer: MDXRenderer, // The renderer component
+            config: mdxConfig, // The MDX config coming from mdx-components virtual module
+          };
+
+
+          export default MDXWrapper;
         `,
         map: result.map,
       };

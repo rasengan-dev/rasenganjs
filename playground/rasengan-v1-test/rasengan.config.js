@@ -5,7 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig({
-  ssr: true,
+  ssr: false,
+  prerender: true,
   vite: {
     plugins: [
       mdx(),
