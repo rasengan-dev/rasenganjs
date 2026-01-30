@@ -6,7 +6,6 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypePrettyCode from 'rehype-pretty-code';
 import { extractTOC } from './extract-toc.js';
-
 /**
  * A Vite plugin that transforms MDX files into a format that can be used in a RasenganJs application.
  *
@@ -35,9 +34,22 @@ export default async function plugin(): Promise<{
 
   let config: unknown;
   const filter = createFilter('**/*.md?(x)');
+
   const mdxInstance = mdx({
     remarkPlugins: [remarkParse, remarkGfm],
-    rehypePlugins: [remarkRehype, rehypeStringify, rehypePrettyCode],
+    rehypePlugins: [
+      remarkRehype,
+      rehypeStringify,
+      [
+        rehypePrettyCode,
+        {
+          themes: {
+            light: 'one-light',
+            dark: 'one-dark-pro',
+          },
+        },
+      ],
+    ],
   });
 
   return {

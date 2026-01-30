@@ -31,7 +31,7 @@ npm init -y
 
 Ensuite, installez Express.js :
 
-```sh
+```sh showLineNumbers {1}
 npm install express
 ```
 
@@ -41,7 +41,7 @@ npm install express
 
 Créez un fichier `server.js` à la racine de votre projet et ajoutez le code suivant :
 
-```javascript
+```javascript title="Test"
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;

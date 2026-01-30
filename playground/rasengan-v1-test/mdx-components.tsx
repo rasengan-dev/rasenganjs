@@ -58,7 +58,6 @@ export default defineMDXConfig({
       <p className="mt-2 mb-2 text-foreground/20" children={children} />
     ),
     a: ({ children, href }: any) => {
-      console.log({ children, href });
       return (
         <a
           href={href}
@@ -67,19 +66,19 @@ export default defineMDXConfig({
         />
       );
     },
-    code: ({ children, ...rest }: any) => {
-      console.log({ children, rest });
+    // code: ({ children, ...rest }: any) => {
+    //   console.log({ children, rest });
 
-      if (rest['data-language']) {
-        return <CodeBlock children={children} {...rest} />;
-      }
+    //   if (rest['data-language']) {
+    //     return <CodeBlock children={children} {...rest} />;
+    //   }
 
-      return (
-        <code className="bg-[#eee] px-1 py-0.5 rounded text-sm">
-          {children}
-        </code>
-      );
-    },
+    //   return (
+    //     <code className="bg-[#eee] px-1 py-0.5 rounded text-sm">
+    //       {children}
+    //     </code>
+    //   );
+    // },
     img: (props: any) => (
       <Image
         src={props.src}

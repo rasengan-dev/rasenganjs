@@ -17,6 +17,7 @@ import { SimpleBlock } from './codeblock.js';
 export const CodeBlock2 = ({
   children = '',
   className = '',
+  ...rest
 }: CodeBlockProps): React.ReactElement => {
   const language = className.replace(/language-/, '');
   const [hover, setHover] = React.useState(false);
@@ -24,6 +25,8 @@ export const CodeBlock2 = ({
   if (!language) {
     return <SimpleBlock>{children}</SimpleBlock>;
   }
+
+  console.log({ children, className, rest });
 
   return (
     <Highlight

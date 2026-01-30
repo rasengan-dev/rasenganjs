@@ -63,7 +63,6 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "remark-toc": "^9.0.0",
-    "shiki": "^1.29.2",
     "unified": "^11.0.5"
   },
   "peerDependencies": {

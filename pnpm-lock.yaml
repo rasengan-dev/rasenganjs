@@ -454,9 +454,6 @@ importers:
       remark-toc:
         specifier: ^9.0.0
         version: 9.0.0
-      shiki:
-        specifier: ^1.29.2
-        version: 1.29.2
       unified:
         specifier: ^11.0.5
         version: 11.0.5
