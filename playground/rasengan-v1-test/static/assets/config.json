@@ -1,0 +1,14 @@
+{
+  "buildOptions": {
+    "buildDirectory": "./dist",
+    "staticDirectory": "static",
+    "manifestPathDirectory": ".vite",
+    "assetPathDirectory": "assets",
+    "clientPathDirectory": "client",
+    "serverPathDirectory": "server",
+    "entryServerPath": "entry.server.js"
+  },
+  "ssr": false,
+  "prerender": true,
+  "redirects": [{ "source": "/", "destination": "/home", "permanent": true }]
+}
