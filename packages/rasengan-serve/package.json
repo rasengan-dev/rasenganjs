@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/serve",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "description": "Production application server for Rasengan",
   "bugs": {
