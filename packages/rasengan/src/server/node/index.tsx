@@ -10,7 +10,6 @@ import {
   generateRoutes,
   getAllRoutesPath,
   preloadMatches,
-  // generateSSRRoutes,
 } from '../../routing/utils/index.js';
 import {
   createStaticHandler,
@@ -26,7 +25,6 @@ import createRasenganRequest, {
 import {
   extractHeadersFromRRContext,
   extractMetaFromRRContext,
-  generateRandomPort,
   isRedirectResponse,
   isStaticRedirectFromConfig,
 } from '../dev/utils.js';
@@ -34,12 +32,6 @@ import { handleRedirectRequest } from '../dev/handlers.js';
 import { OptimizedAppConfig } from '../../core/config/type.js';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
-import {
-  createServerModuleRunner,
-  createServer as createViteServer,
-} from 'vite';
-import { RouterComponent } from '../../routing/interfaces.js';
-import { FunctionComponent } from 'react';
 import ora from 'ora';
 import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
 import chalk from 'chalk';
@@ -212,8 +204,14 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     const start = Date.now();
     const createSpinner = spinner('Starting static pre-rendering...');
 
+    // Ensure .rasengan directory exists
+    const logDir = '.rasengan';
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+
     // Redirect console.log to a file
-    const logStream = fs.createWriteStream('.rasengan/prerender.log', {
+    const logStream = fs.createWriteStream(`${logDir}/prerender.log`, {
       flags: 'a',
     });
 

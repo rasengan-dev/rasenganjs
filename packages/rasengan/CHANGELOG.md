@@ -1,5 +1,25 @@
 ## Unreleased
 
+## 1.2.0 (2026-01-03)
+
+## 1.2.0 (2026-01-03)
+
+## 1.2.0-beta.9 (2026-01-03)
+
+## 1.2.0-beta.8 (2026-01-03)
+
+## 1.2.0-beta.7 (2026-01-03)
+
+## 1.2.0-beta.6 (2026-01-03)
+
+## 1.2.0-beta.5 (2026-01-03)
+
+## 1.2.0-beta.4 (2026-01-02)
+
+## 1.2.0-beta.3 (2026-01-02)
+
+## 1.2.0-beta.2 (2026-01-02)
+
 ## 1.2.0-beta.1 (2025-09-19)
 
 - fix(rasengan): falling back to route.data if route.loaderData is undefined [3cc418](https://github.com/rasengan-dev/rasenganjs/3cc4186e34a5d115e6ef69e8c8b36538aa8562ed)

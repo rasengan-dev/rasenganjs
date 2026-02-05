@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
-import { resolveBuildOptions } from '../../server.js';
+import { detectRuntime, resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
@@ -330,8 +330,14 @@ export function rasengan({
           });
         }
 
-        // Prepare the app for deployment
-        await prepareToDeploy(adapter);
+        // Detect runtime environment
+        const runtime = detectRuntime();
+        console.log(`Detected runtime: ${runtime}`);
+
+        if (runtime !== 'local' && runtime !== 'unknown') {
+          // Prepare the app for deployment
+          await prepareToDeploy(adapter);
+        }
       }
     },
 

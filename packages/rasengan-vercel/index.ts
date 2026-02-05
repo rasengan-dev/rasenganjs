@@ -64,7 +64,8 @@ const generateVercelDirectory = async (config: OptimizedAppConfig) => {
     { recursive: true }
   );
 
-  if (config.ssr) {
+  // We only need serverless functions if SSR is enabled and prerendering is disabled
+  if (config.ssr && !config.prerender) {
     // Create a new .vercel/output/functions directory
     await fs.mkdir(
       path.posix.join(
@@ -124,6 +125,10 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
       {
         src: '/assets/(.*)',
         dest: '/assets/$1',
+      },
+      {
+        src: '/(.*)',
+        dest: '/$1',
       },
       {
         src: '/(.*)',

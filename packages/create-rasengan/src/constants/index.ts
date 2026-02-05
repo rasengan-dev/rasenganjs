@@ -25,11 +25,11 @@ export const Versions: {
   stable: string;
   beta: string | null;
 } = {
-  stable: '^1.1.0',
+  stable: '^1.2.0',
   beta: null,
 };
 
-/**
+/*
  * Template github url
  * @type {string}
  */
