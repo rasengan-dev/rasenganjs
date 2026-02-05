@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "rasengan dev",
     "build": "rasengan build",
-    "serve": "rasengan-serve ./dist"
+    "serve": "rasengan-serve ./static"
   },
   "dependencies": {
     "@rasenganjs/image": "workspace:*",
