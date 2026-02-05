@@ -14,7 +14,7 @@
     "@rasenganjs/mdx": "^1.1.7",
     "@rasenganjs/serve": "^1.2.0",
     "@rasenganjs/theme": "^1.0.1",
-    "@rasenganjs/vercel": "^1.1.1",
+    "@rasenganjs/vercel": "^1.1.2",
     "@tailwindcss/vite": "^4.*",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.8.3",
