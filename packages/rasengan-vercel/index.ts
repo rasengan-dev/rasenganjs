@@ -124,6 +124,9 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
       version: '1.2.0',
     },
     routes: [
+      // Custom redirects coming from the rasengan.config.js file
+      // We define them just before the final route definitation
+      ...customRedirects,
       {
         src: '/favicon.ico',
         dest: '/favicon.ico',
@@ -136,11 +139,6 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
         src: '/(.*)',
         dest: '/$1',
       },
-
-      // Custom redirects coming from the rasengan.config.js file
-      // We define them just before the final route definitation
-      ...customRedirects,
-
       {
         src: '/(.*)',
         dest: config.ssr
