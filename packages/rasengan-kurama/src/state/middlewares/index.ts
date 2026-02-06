@@ -1,5 +1,5 @@
 import type { CreateStateFn } from '../type.js';
-import { persist } from '../utils';
+import { persist } from '../utils/index.js';
 
 /**
  * The middleware object contains various middleware functions for state management
