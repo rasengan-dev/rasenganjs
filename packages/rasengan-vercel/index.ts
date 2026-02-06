@@ -126,7 +126,7 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
     },
     routes: [
       // 1. Custom redirects coming from the rasengan.config.js file
-      // We define them just before the final route definitation
+      // We define them just before the final route definition
       ...customRedirects,
 
       // 2. Let Vercel serve real files if they exist
