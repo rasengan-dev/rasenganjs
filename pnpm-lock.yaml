@@ -483,6 +483,15 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
+  packages/rasengan-netlify:
+    dependencies:
+      execa:
+        specifier: ^8.0.1
+        version: 8.0.1
+      rasengan:
+        specifier: workspace:^
+        version: link:../rasengan
+
   packages/rasengan-serve:
     dependencies:
       chalk:
@@ -578,6 +587,9 @@ importers:
       '@rasenganjs/mdx':
         specifier: workspace:*
         version: link:../../packages/rasengan-mdx
+      '@rasenganjs/netlify':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-netlify
       '@rasenganjs/serve':
         specifier: workspace:*
         version: link:../../packages/rasengan-serve
