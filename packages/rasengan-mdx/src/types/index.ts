@@ -80,6 +80,12 @@ type ComponentConfig = {
 };
 
 export type MDXConfigProps = {
+  // List of custom components
   components?: ComponentConfig;
+
+  // Table of content config function
   toc?: TOCConfig;
+
+  // Layout component that defines how the MDX page looks like
+  layout?: React.FC<{ children: React.ReactNode; toc?: React.ReactNode }>;
 };

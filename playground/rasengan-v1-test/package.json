@@ -12,6 +12,7 @@
     "@rasenganjs/image": "workspace:*",
     "@rasenganjs/mdx": "workspace:*",
     "@rasenganjs/serve": "workspace:*",
+    "@rasenganjs/theme": "^1.0.1",
     "@rasenganjs/vercel": "workspace:*",
     "@tailwindcss/vite": "^4.*",
     "lucide-react": "^0.477.0",

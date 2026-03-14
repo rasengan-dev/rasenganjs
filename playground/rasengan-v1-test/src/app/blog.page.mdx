@@ -22,7 +22,7 @@ Avant de commencer, assurez-vous d'avoir Node.js installé sur votre machine. Si
 
 Créez un nouveau dossier pour votre projet et initialisez un projet Node.js :
 
-```sh
+```bash title="Terminal"
 mkdir my-api && cd my-api
 npm init -y
 ```
@@ -31,7 +31,7 @@ npm init -y
 
 Ensuite, installez Express.js :
 
-```sh showLineNumbers {1}
+```bash title="Terminal" showLineNumbers {1}
 npm install express
 ```
 
@@ -41,7 +41,7 @@ npm install express
 
 Créez un fichier `server.js` à la racine de votre projet et ajoutez le code suivant :
 
-```javascript title="Test"
+```js title="app.js" showLineNumbers {1-4}
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,12 +57,23 @@ app.listen(PORT, () => {
 });
 ```
 
+```bash npm="npm install rasengan" yarn="yarn add rasengan" pnpm="pnpm add rasengan" bun="bun add rasengan"
+let g = 0;
+```
+
 ### Démarrage du serveur
 
 Lancez votre serveur avec la commande :
 
-```sh
+```bash title="Terminal"
 node server.js
+```
+
+```json title="rasengan.json"
+{
+  "version": "1.2.0",
+  "framework": "rasengan.js"
+}
 ```
 
 Vous devriez voir `Serveur démarré sur http://localhost:3000` dans votre terminal et pouvoir accéder à l'URL `http://localhost:3000` depuis votre navigateur.

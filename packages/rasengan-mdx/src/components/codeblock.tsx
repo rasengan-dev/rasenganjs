@@ -76,7 +76,16 @@ export const CodeBlock = ({
       onMouseLeave={() => setHover(false)}
     >
       {hover ? (
-        <button className="copy-button" onClick={handleCopy}>
+        <button
+          onClick={handleCopy}
+          style={{
+            position: 'absolute',
+            top: '15px',
+            right: '15px',
+            transition: 'all 0.2s',
+            zIndex: 10,
+          }}
+        >
           {copied ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +135,17 @@ export const CodeBlock = ({
           )}
         </button>
       ) : (
-        <span className="lang">{language}</span>
+        <span
+          style={{
+            position: 'absolute',
+            top: '15px',
+            right: '15px',
+            transition: 'all 0.2s',
+            zIndex: 10,
+          }}
+        >
+          {language}
+        </span>
       )}
       <code
         className={`${className} code-block`}

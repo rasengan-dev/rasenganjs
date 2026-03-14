@@ -4,8 +4,20 @@ import remarkGfm from 'remark-gfm';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
-import rehypePrettyCode from 'rehype-pretty-code';
+import rehypePrettyCode, { Options } from 'rehype-pretty-code';
 import { extractTOC } from './extract-toc.js';
+import { PluggableList } from 'unified';
+import type { Plugin } from 'vite';
+
+export type MDXConfig = {
+  remarkPlugins?: PluggableList;
+  rehypePlugins?: PluggableList;
+  code?: {
+    theme?: Options['theme'];
+    keepBackground?: Options['keepBackground'];
+  };
+};
+
 /**
  * A Vite plugin that transforms MDX files into a format that can be used in a RasenganJs application.
  *
@@ -17,38 +29,39 @@ import { extractTOC } from './extract-toc.js';
  *
  * The transformed MDX content can then be used in the RasenganJs application, with the `metadata` object providing additional information about the content.
  */
-export default async function plugin(): Promise<{
-  name: string;
-  enforce: string;
-  config(config: unknown, env: any): void;
-  configResolved(resolvedConfig: unknown): void;
-  transform(
-    code: string,
-    id: string
-  ): Promise<{
-    code: string;
-    map: any;
-  }>;
-}> {
+export async function plugin(options?: MDXConfig): Promise<Plugin> {
   const mdx = (await import('@mdx-js/rollup')).default;
+
+  const userConfig = {
+    rehypePlugins: options?.rehypePlugins ?? [],
+    remarkPlugins: options?.rehypePlugins ?? [],
+    code: {
+      theme: options?.code?.theme ?? {
+        light: 'one-light',
+        dark: 'one-dark-pro',
+      },
+      keepBackground: options?.code?.keepBackground ?? true,
+    },
+  };
 
   let config: unknown;
   const filter = createFilter('**/*.md?(x)');
 
   const mdxInstance = mdx({
-    remarkPlugins: [remarkParse, remarkGfm],
+    remarkPlugins: [remarkParse, remarkGfm, ...userConfig.remarkPlugins],
     rehypePlugins: [
       remarkRehype,
       rehypeStringify,
       [
         rehypePrettyCode,
         {
-          themes: {
-            light: 'one-light',
-            dark: 'one-dark-pro',
-          },
+          theme: userConfig.code.theme,
+          keepBackground: userConfig.code.keepBackground,
         },
       ],
+
+      // Developer rehype plugin list
+      ...userConfig.rehypePlugins,
     ],
   });
 

@@ -3,6 +3,14 @@ import { MDXRenderer } from './renderer.js';
 import { Markdown } from './markdown.js';
 import { TableOfContents } from './toc.js';
 import { CodeBlock } from './codeblock.js';
+import { Icons, getIconForLanguageExtension } from './icons.js';
 
 // Export statements
-export { Markdown, MDXRenderer, TableOfContents, CodeBlock };
+export {
+  Markdown,
+  MDXRenderer,
+  TableOfContents,
+  CodeBlock,
+  Icons,
+  getIconForLanguageExtension,
+};

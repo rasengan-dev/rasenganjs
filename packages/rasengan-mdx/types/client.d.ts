@@ -1,4 +1,4 @@
-import { type MDXConfigProps } from '../lib/types/index.js';
+import { type MDXConfigProps } from '../dist/index.js';
 
 declare module 'virtual:rasengan/mdx-components' {
   const config: MDXConfigProps;

@@ -1,17 +1,23 @@
+import ThemeButton from '@/components/theme-button';
 import Image from '@rasenganjs/image';
+import { useTheme } from '@rasenganjs/theme';
 import { BookOpen, Box, LayoutTemplate } from 'lucide-react';
 import { Outlet, LayoutComponent, useFetcher, useMatch } from 'rasengan';
 
 const AppLayout: LayoutComponent = () => {
-  // console.log(g);
+  const { isDark } = useTheme();
 
   return (
-    <section className="w-full bg-background font-inter overflow-auto h-screen">
+    <section
+      className={`w-full bg-background font-inter overflow-auto h-screen ${isDark && 'dark'}`}
+    >
       <header className="border-b-[1px] border-b-border h-[60px] w-full bg-white fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-2">
         <div className="flex items-center gap-2 text-foreground">
           <Image src={'/rasengan.svg'} alt="Logo of rasengan" width={50} />
           <span className="text-xl">Rasengan.js</span>
         </div>
+
+        <ThemeButton />
       </header>
 
       <main className="w-full flex mt-8">

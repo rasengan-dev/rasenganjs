@@ -9,7 +9,14 @@ export default defineConfig({
   prerender: true,
   vite: {
     plugins: [
-      mdx(),
+      mdx({
+        code: {
+          theme: {
+            light: 'vitesse-light',
+            dark: 'vitesse-dark',
+          },
+        },
+      }),
       tailwindcss(),
       rasengan({
         adapter: configure({}),
