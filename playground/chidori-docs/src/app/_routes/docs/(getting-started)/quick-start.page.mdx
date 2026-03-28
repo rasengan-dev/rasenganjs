@@ -1,0 +1,63 @@
+---
+metadata:
+  title: Introduction
+  description: Introduction to Chidori
+toc: true
+---
+
+# Quick Start
+
+Get your documentation site running in under 2 minutes.
+
+<Note title="Note">
+  `Chidori` is made simply via the{' '}
+  <Link
+    to="https://rasengan.dev/packages/create-rasengan"
+    className="underline underline-offset-4 font-bold"
+    target="_blank"
+  >
+    create-rasengan
+  </Link>{' '}
+  CLI.
+</Note>
+
+## 1. Create a new project
+
+```bash title="Terminal"
+npx create-rasengan@latest my-docs --chidori
+```
+
+## 2. Navigate into your project
+
+```bash title="Terminal"
+cd my-docs
+```
+
+## 3. Install dependencies
+
+```bash title="Terminal"
+pnpm i
+```
+
+## 3. Start the development server
+
+```bash title="Terminal"
+pnpm dev
+```
+
+## 4. Open your browser
+
+Visit the following link in your browser: <Link to="http://localhost:3000">http://localhost:5320</Link>
+
+You should now see your Chidori documentation site running locally ⚡
+
+<Pagination
+  previous={{
+    to: '/docs/overview',
+    label: 'Overview',
+  }}
+  next={{
+    to: '/docs/resources/changelog',
+    label: 'Change Log',
+  }}
+/>

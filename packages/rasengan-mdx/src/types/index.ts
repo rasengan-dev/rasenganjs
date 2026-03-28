@@ -47,6 +47,9 @@ export type MDXRendererProps = {
 
   // Used to send the toc to the renderer extract from the MDX Page component content
   toc?: Array<TOCItem>;
+
+  // Original markdown content
+  raw?: string;
 };
 
 /**

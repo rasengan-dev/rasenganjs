@@ -36,7 +36,7 @@ export const defineRouter = (option: RouterProps) => {
           }
 
           // When p is a MDXPageComponent
-          // type property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
+          // the "type" property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
           if (isMDXPage(page as { type: string; [key: string]: any })) {
             const Page = await convertMDXPageToPageComponent(
               page as { type: string; [key: string]: any }
@@ -84,13 +84,23 @@ export const defineRouter = (option: RouterProps) => {
   };
 };
 
+/**
+ * This function helps to convert the data provided by @rasenganjs/mdx into a PageComponent component
+ * The MDXPage arg has to follow exactly the type returned by the @rasenganjs/mdx plugin
+ * @param MDXPage
+ * @returns
+ */
 export const convertMDXPageToPageComponent = async (MDXPage: {
   type: string;
   [key: string]: any;
 }) => {
   const Page: PageComponent = () => {
     return (
-      <MDXPage.Renderer config={MDXPage.config} toc={MDXPage.toc}>
+      <MDXPage.Renderer
+        config={MDXPage.config}
+        toc={MDXPage.toc}
+        raw={MDXPage.raw}
+      >
         {MDXPage.Content}
       </MDXPage.Renderer>
     );

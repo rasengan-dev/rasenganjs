@@ -134,9 +134,13 @@ export async function plugin(options?: MDXConfig): Promise<Plugin> {
 
           const metadata = ${JSON.stringify(metadata)};
           const toc = ${isTocVisible ? JSON.stringify(toc) : undefined};
+          const raw = ${content};
 
 
+          // This object is handled by packages/rasengan itself
+          // It will turn it into a PageComponent component
           const MDXWrapper = {
+            raw,
             metadata,
             toc,
             type: "MDXPageComponent", // Helps to differentiate PageComponent from MDXPageComponent

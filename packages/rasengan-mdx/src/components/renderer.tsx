@@ -19,6 +19,9 @@ const MDXRenderer = ({
 
   // TOC Extracted from the original MDX file
   toc: originalTocData,
+
+  // Original markdown content
+  raw,
 }: MDXRendererProps): React.ReactElement => {
   const {
     components = {},

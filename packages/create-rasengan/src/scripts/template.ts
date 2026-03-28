@@ -1,6 +1,6 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 import { rimraf } from 'rimraf';
-import { TEMPLATE_GITHUB_URL } from '../constants/index.js';
+import { githubTemplatesURL, GithubTemplatesURL } from '../constants/index.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ora from 'ora';
@@ -18,15 +18,22 @@ const spinner = (text: string) =>
     color: 'blue',
   });
 
-export default async function createProjectFromTemplate(
-  projectPath: string,
-  templateName: string,
-  option: {
-    currentDirectory: boolean;
-  }
-) {
+export default async function createProjectFromTemplate(options: {
+  projectPath: string;
+  templateName: string;
+  repository?: GithubTemplatesURL;
+  subDirectory?: string;
+  currentDirectory: boolean;
+}) {
   // Start timer
   const start = Date.now();
+
+  const {
+    projectPath,
+    templateName,
+    repository = githubTemplatesURL.rasengan,
+    subDirectory = 'examples',
+  } = options;
 
   // Get the temporary folder path, the place where the repository will be cloned
   const tmpFolder = path.join(projectPath, '.tmp');
@@ -56,19 +63,15 @@ export default async function createProjectFromTemplate(
     createSpinner.start();
 
     await sleep(1000);
-    createSpinner.text = 'Cloning the template...';
+    createSpinner.text = 'Cloning the project...';
 
     try {
       // Clone the template repository
-      await git.clone(TEMPLATE_GITHUB_URL, '.tmp', [
-        '--no-checkout',
-        '--depth',
-        '1',
-      ]);
+      await git.clone(repository, '.tmp', ['--no-checkout', '--depth', '1']);
     } catch (error) {
       createSpinner.fail(
         chalk.red(
-          'Error while cloning the template, please check your internet connection!'
+          'Error while cloning the project, please check your internet connection!'
         )
       );
 
@@ -85,12 +88,24 @@ export default async function createProjectFromTemplate(
     await git.raw(['sparse-checkout', 'init', '--cone']);
 
     // Add the examples folder to the sparse-checkout
-    await git.raw(['sparse-checkout', 'set', `examples/${templateName}`]);
+    await git.raw([
+      'sparse-checkout',
+      'set',
+      `${subDirectory}/${templateName}`,
+    ]);
 
     // Extract the examples folder
-    await git.raw(['checkout', 'HEAD', '--', `examples/${templateName}`]);
+    await git.raw([
+      'checkout',
+      'HEAD',
+      '--',
+      `${subDirectory}/${templateName}`,
+    ]);
 
-    const templatePath = path.posix.join(tmpFolder, `examples/${templateName}`);
+    const templatePath = path.posix.join(
+      tmpFolder,
+      `${subDirectory}/${templateName}`
+    );
 
     // // Add the template path to the sparse-checkout
     // await git.raw(['sparse-checkout', 'set', templatePath]);
@@ -104,9 +119,7 @@ export default async function createProjectFromTemplate(
     } catch (err) {
       createSpinner.fail(
         chalk.red(
-          `Template with name ${chalk.bold.blue(
-            `"${templateName}"`
-          )} not found!`
+          `Project with name ${chalk.bold.blue(`"${templateName}"`)} not found!`
         )
       );
 
@@ -117,7 +130,7 @@ export default async function createProjectFromTemplate(
     }
 
     await sleep(2000);
-    createSpinner.text = 'Copying the template files...';
+    createSpinner.text = 'Copying the project files...';
 
     // Copying the template files to the project directory
     ncp(templatePath, projectPath, async (err) => {
