@@ -1,6 +1,6 @@
 {
   "name": "create-rasengan",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "The Rasengan.js CLI tool to generate a new project with a simple template",
   "type": "module",
   "exports": {
