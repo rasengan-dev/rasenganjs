@@ -9,7 +9,11 @@ export default defineConfig(async () => {
     prerender: true,
 
     vite: {
-      plugins: [mdx(), tailwindcss(), rasengan({ adapter: configure() })],
+      plugins: [
+        mdx({ code: { keepBackground: false } }),
+        tailwindcss(),
+        rasengan({ adapter: configure() }),
+      ],
     },
 
     async redirects() {

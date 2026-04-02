@@ -22,7 +22,7 @@ const DocsLayout: LayoutComponent = () => {
   return (
     <section
       className={twMerge(
-        'docs w-full h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
+        'w-screen h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
         isDark ? 'dark' : ''
       )}
       ref={targetRef}
@@ -44,13 +44,13 @@ const DocsLayout: LayoutComponent = () => {
         </div>
 
         <div className="flex md:hidden">
-          <ThemeButton size="small" />
+          <ThemeButton />
         </div>
       </div>
 
       <section
         className={twMerge(
-          'relative h-auto flex ',
+          'w-full relative h-auto flex ',
           showBanner ? 'pt-24 lg:pt-20' : 'pt-16 lg:pt-4'
         )}
         id="sidebar"
@@ -82,7 +82,7 @@ const DocsLayout: LayoutComponent = () => {
           )}
         </AnimatePresence>
 
-        <main className="w-full lg:w-(--main-width) h-fulld mt-10 ">
+        <main className="w-full lg:w-(--main-width) h-full mt-10 ">
           <div className="px-0 w-full">
             <Outlet />
           </div>

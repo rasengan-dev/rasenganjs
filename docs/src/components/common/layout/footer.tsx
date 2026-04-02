@@ -9,7 +9,7 @@ import ThemeButton from '../atoms/buttons/theme-button';
 import { useEffect, useState } from 'react';
 import { newsletterProvider } from '@/api/newsletter';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle, Coffee, XCircle } from 'lucide-react';
+import { ArrowUpRight, CheckCircle, Coffee, XCircle } from 'lucide-react';
 import AppLogo from '../atoms/logo';
 // import { checkEmail } from 'utils/check';
 
@@ -59,32 +59,13 @@ export default function Footer() {
       )}
     >
       <div className="max-w-[1500px] mx-auto">
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-x-2 gap-y-8">
-          <div className="w-7/10 flex flex-col lg:flex-row gap-8">
-            <div className="w-full lg:w-1/3">
+        <div className="flex flex-col xl:flex-row items-start justify-between gap-x-2 gap-y-8">
+          <div className="w-full xl:w-7/10 flex flex-col lg:flex-row gap-8">
+            <div className="w-full lg:w-1/4">
               <AppLogo />
-
-              {/* Buy me a coffee button */}
-              {/* <div className="relative w-[150px] mt-4">
-                <Link
-                  to="https://coff.ee/dilane3"
-                  target="_blank"
-                  className="relative z-10"
-                >
-                  <Button
-                    hover
-                    tap
-                    className="bg-primary flex items-center justify-center text-primary-foreground font-lexend-light h-[35px] rounded-full px-4 w-[150px]"
-                  >
-                    <Coffee size={18} className="mr-2" />
-                    <span className="text-sm">Support us</span>
-                  </Button>
-                </Link>
-                <div className="w-[60%] h-[60%] bg-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 rounded-full animate-ping"></div>
-              </div> */}
             </div>
 
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/4">
               <h3 className="text-lg font-lexend-medium">Resources</h3>
 
               <nav className="mt-4 text-sm">
@@ -118,7 +99,66 @@ export default function Footer() {
               </nav>
             </div>
 
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/4">
+              <h3 className="text-lg font-lexend-medium">Products</h3>
+
+              <nav className="mt-4 text-sm">
+                <ul className="flex flex-col gap-2">
+                  <Link
+                    to="https://ui.rasengan.dev"
+                    className="hover:text-primary"
+                    target="_blank"
+                  >
+                    <li className="flex items-center gap-2">
+                      <span>Rasengan UI</span>
+                      <ArrowUpRight size={16} />
+                    </li>
+                  </Link>
+                  <Link
+                    to="https://hub.rasengan.dev"
+                    className="hover:text-primary"
+                    target="_blank"
+                  >
+                    <li className="flex items-center gap-2">
+                      <span>Rasengan Hub</span>
+                      <ArrowUpRight size={16} />
+                    </li>
+                  </Link>
+                  <Link
+                    to="https://chidori.rasengan.dev"
+                    className="hover:text-primary"
+                    target="_blank"
+                  >
+                    <li className="flex items-center gap-2">
+                      <span>Chidori</span>
+                      <ArrowUpRight size={16} />
+                    </li>
+                  </Link>
+                  <Link
+                    to="https://nindo.rasengan.dev"
+                    className="hover:text-primary"
+                    target="_blank"
+                  >
+                    <li className="flex items-center gap-2">
+                      <span>Nindo</span>
+                      <ArrowUpRight size={16} />
+                    </li>
+                  </Link>
+                  <Link
+                    to="https://chunin.rasengan.dev"
+                    className="hover:text-primary"
+                    target="_blank"
+                  >
+                    <li className="flex items-center gap-2">
+                      <span>Chunin</span>
+                      <ArrowUpRight size={16} />
+                    </li>
+                  </Link>
+                </ul>
+              </nav>
+            </div>
+
+            <div className="w-full lg:w-1/4">
               <h3 className="text-lg font-lexend-medium">Community</h3>
 
               <nav className="mt-4 text-sm">
@@ -145,7 +185,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="w-full lg:w-3/10 lg:min-w-[200px] max-w-[400px]">
+          <div className="w-full xl:w-3/10 xl:min-w-[200px] max-w-[400px]">
             <h3 className="text-lg font-lexend-medium">
               Subscribe to the Newsletter
             </h3>

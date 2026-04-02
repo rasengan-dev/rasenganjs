@@ -18,7 +18,7 @@ type TabMenuItemProps = {
   onClick: () => void;
 };
 
-const Tab: TabComponent = ({ children, activeIndex, tabs }) => {
+const Tabs: TabComponent = ({ children, activeIndex, tabs }) => {
   const [active, setActive] = React.useState(activeIndex ?? 0);
 
   React.useEffect(() => {
@@ -30,8 +30,8 @@ const Tab: TabComponent = ({ children, activeIndex, tabs }) => {
   };
 
   return (
-    <section className="w-full flex-col">
-      <div className="relative w-full flex items-center gap-4 mb-8">
+    <section className="w-full flex-col my-4">
+      <div className="relative w-full flex items-center gap-4 mb-4">
         {tabs.map((tab, index) => (
           <TabMenuItem
             key={index}
@@ -56,14 +56,14 @@ const Tab: TabComponent = ({ children, activeIndex, tabs }) => {
   );
 };
 
-Tab.Item = ({ children }: { children: React.ReactNode }) => {
+Tabs.Item = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
 const TabMenuItem = ({ title, active, onClick }: TabMenuItemProps) => {
   return (
     <div
-      className={`z-10 cursor-pointer ${active ? 'text-primary border-b-primary hover:border-b-primary hover:text-primary' : 'text-body hover:border-b-primary/70'} font-lexend-medium py-4 border-b-[1px] border-b-border transition-all`}
+      className={`z-10 cursor-pointer text-sm ${active ? 'text-primary border-b-primary hover:border-b-primary hover:text-primary' : 'text-body hover:border-b-primary/70'} font-medium py-2 border-b-[1px] border-b-border transition-all`}
       onClick={onClick}
     >
       {title}
@@ -71,4 +71,4 @@ const TabMenuItem = ({ title, active, onClick }: TabMenuItemProps) => {
   );
 };
 
-export default Tab;
+export { Tabs };

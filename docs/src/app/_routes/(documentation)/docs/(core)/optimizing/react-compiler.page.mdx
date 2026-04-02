@@ -5,9 +5,6 @@ metadata:
 toc: true
 ---
 
-import Pagination from '@/components/common/molecules/pagination';
-import Tabs from '@/components/common/molecules/tab';
-import { Link } from "rasengan";
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
@@ -19,7 +16,6 @@ Rasengan.js includes support for the [React Compiler](https://react.dev/learn/re
 ## How It Works
 
 The React Compiler runs through a Babel plugin.
-
 To use it, install the `babel-plugin-react-compiler`:
 
 ```bash filename="Terminal"
@@ -28,7 +24,7 @@ npm install -D babel-plugin-react-compiler
 
 Then, add `reactCompiler` option in `rasengan.config.js` via the `sageMode` option:
 
-```js title="rasengan.config.js" {6}
+```js title="rasengan.config.js" {6} showLineNumbers
 import { defineConfig } from 'rasengan';
 import { rasengan } from 'rasengan/plugin';
 
@@ -46,7 +42,7 @@ export default defineConfig({
 
 You can configure the compiler to run in "opt-in" mode as follows:
 
-```js title="rasengan.config.js" {6-8}
+```js title="rasengan.config.js" {6-8} showLineNumbers
 import { defineConfig } from 'rasengan';
 import { rasengan } from 'rasengan/plugin';
 
@@ -71,7 +67,11 @@ export default function Page() {
 }
 ```
 
-> **Note:** You can also use the `"use no memo"` directive from React for the opposite effect, to opt-out a component or hook.
+> 
+
+<Note title="Note">
+You can also use the `"use no memo"` directive from React for the opposite effect, to opt-out a component or hook.
+</Note>
 
 <Pagination 
   prev={{

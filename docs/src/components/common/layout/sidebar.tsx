@@ -4,6 +4,7 @@ import {
   NavigationItem,
   NavigationType,
 } from '@/data/docs';
+import { cn } from '@/lib/utils';
 import {
   BookOpen,
   Box,
@@ -50,11 +51,11 @@ export default function SidebarNavigation({ className, onClose }: Props) {
   return (
     <aside
       className={twMerge(
-        'w-[280px] border-r-[1px] border-r-border/60 text-foreground',
+        'relative w-[280px] shrink-0 text-foreground',
         className
       )}
     >
-      <section className="lg:sticky lg:top-8 w-full h-(--mobile-main-height) lg:h-full max-h-[calc(100vh)] overflow-y-auto pb-16 lg:pt-16 p-6">
+      <section className="lg:sticky lg:top-8 w-full h-(--mobile-main-height) lg:h-full max-h-[calc(100vh)] overflow-y-auto hide-scrollbar pb-16 lg:pt-16 p-6">
         <div className="flex flex-col gap-4 text-sm border-b-[1px] border-b-border pb-8">
           <div className="flex items-center mb-6 gap-2">
             <div className="size-10 rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center">
@@ -69,10 +70,10 @@ export default function SidebarNavigation({ className, onClose }: Props) {
 
           <Link to="/docs/getting-started/introduction">
             <div
-              className={twMerge(
+              className={cn(
                 'flex items-center gap-4 hover:cursor-pointer hover:text-primary transition-all',
                 isActive('/docs')
-                  ? 'text-primary font-lexend-medium'
+                  ? 'text-primary font-semibold'
                   : 'text-foreground/90'
               )}
               onClick={() => {
@@ -87,10 +88,10 @@ export default function SidebarNavigation({ className, onClose }: Props) {
 
           <Link to="/packages">
             <div
-              className={twMerge(
+              className={cn(
                 'flex items-center gap-4 hover:cursor-pointer hover:text-primary transition-all',
                 isActive('/packages')
-                  ? 'text-primary font-lexend-medium'
+                  ? 'text-primary font-semibold'
                   : 'text-foreground/90'
               )}
               onClick={() => {
@@ -149,6 +150,9 @@ export default function SidebarNavigation({ className, onClose }: Props) {
               </div>
             );
           })}
+
+        {/* Vertical ligne */}
+        <div className="absolute top-0 bottom-0 right-0 w-px bg-linear-to-b from-transparent via-border to-transparent"></div>
       </section>
     </aside>
   );
@@ -200,11 +204,11 @@ export const NavItem = ({
   return item.link ? (
     <Link to={item.link} onClick={() => onClose && onClose()}>
       <div
-        className={twMerge(
+        className={cn(
           'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border  cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all duration-300',
           className,
           isActive(item.link)
-            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
+            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-semibold'
             : 'text-foreground/90',
           item.isComingSoon && 'text-foreground/40 hover:text-foreground/40'
         )}
@@ -277,11 +281,11 @@ export const NavItem = ({
   ) : (
     <div>
       <div
-        className={twMerge(
+        className={cn(
           'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border text-foreground/90 cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all',
           className,
           hasActiveChild()
-            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
+            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-medium'
             : 'text-foreground/90'
         )}
         onClick={() => setIsOpen((prev) => !prev)}

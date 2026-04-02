@@ -40,12 +40,12 @@ export default function BlogDetailsHeader({}: Props) {
         <span className="no-underline text-md">Back to Blog</span>
       </div>
 
-      <div className="flex flex-col-reverse md:flex-row items-start w-full md:items-start md:justify-between gap-4 md:gap-8 mt-8">
+      <div className="flex flex-col-reverse items-start w-full gap-2 mt-8">
         <h1 className="text-[2.5rem]">{title}</h1>
 
         <span
           className={twMerge(
-            'text-sm font-light w-[160px] text-nowrap md:mt-4 text-neutral'
+            'text-sm font-light w-[160px] text-nowrap text-neutral'
           )}
         >
           posted on {postedAt}
