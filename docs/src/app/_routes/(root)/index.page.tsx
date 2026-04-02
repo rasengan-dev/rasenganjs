@@ -153,17 +153,26 @@ const Page: PageComponent = () => {
           </div>
         </div>
 
-        <div className="relative lg:h-full z-20 w-full lg:w-1/2">
+        {/* <div className="relative lg:h-full z-20 w-full lg:w-1/2">
           <div className="lg:absolute lg:top-0 lg:right-0 lg:left-0 lg:bottom-0 flex items-center">
             <Editor />
           </div>
-        </div>
+        </div> */}
 
-        <div className="z-0 absolute top-0 right-0">
+        {/* <div className="z-0 absolute top-0 right-0">
           <Image
             src={blueLigthIllustration}
             alt="Blue light illustration"
             className="w-full"
+          />
+        </div> */}
+
+        <div className="absolute top-1/2 -translate-y-1/2 right-0 dark:opacity-40 hidden lg:block">
+          <Image
+            src={rasenganIllustration}
+            alt="Rasengan.js"
+            width={700}
+            height={'auto'}
           />
         </div>
       </section>

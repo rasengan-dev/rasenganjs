@@ -138,7 +138,7 @@ export default defineMDXConfig({
             flex items-center gap-2
             px-5 py-2.5
             border-b border-b-border
-            text-sm font-bold
+            text-sm font-medium
             bg-(--code-block-bg)!
             text-[var(--fg-code)]
             [&_svg]:size-4 [&_svg]:opacity-70

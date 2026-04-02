@@ -38,7 +38,7 @@ export default function Navbar({ className }: Props) {
           className
         )}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
           <AppLogo size="sm" />
 
           <nav className="hidden lg:block">
