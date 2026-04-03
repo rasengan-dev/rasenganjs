@@ -134,7 +134,7 @@ export async function plugin(options?: MDXConfig): Promise<Plugin> {
 
           const metadata = ${JSON.stringify(metadata)};
           const toc = ${isTocVisible ? JSON.stringify(toc) : undefined};
-          const raw = ${content};
+          const raw = ${JSON.stringify(content)};
 
 
           // This object is handled by packages/rasengan itself
