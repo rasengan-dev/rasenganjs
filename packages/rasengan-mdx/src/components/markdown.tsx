@@ -1,5 +1,4 @@
 import React from 'react';
-import { Table } from './table.js';
 import { Heading } from './heading.js';
 
 import MarkdownComponent from 'react-markdown';
@@ -7,7 +6,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
-// import rehypePrettyCode from "rehype-pretty-code";
 import { CodeBlock2 } from './codeblock2.js';
 
 function Markdown({
@@ -26,14 +24,9 @@ function Markdown({
       <MarkdownComponent
         children={content}
         remarkPlugins={[remarkParse, remarkGfm]}
-        rehypePlugins={[
-          remarkRehype,
-          rehypeStringify,
-          // rehypePrettyCode
-        ]}
+        rehypePlugins={[remarkRehype, rehypeStringify]}
         components={{
           code: CodeBlock2,
-          table: Table,
           h1: Heading({ variant: 'h1' }),
           h2: Heading({ variant: 'h2' }),
           h3: Heading({ variant: 'h3' }),

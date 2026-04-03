@@ -1,4 +1,4 @@
-import { FileIcon, Terminal } from 'lucide-react';
+import { FileIcon } from 'lucide-react';
 
 type IconProps = React.HTMLAttributes<SVGElement>;
 
@@ -209,6 +209,7 @@ export function getIconForLanguageExtension(language: string) {
     case 'css':
       return <Icons.css className="fill-foreground" />;
     case 'js':
+    case 'javascript':
     case 'jsx':
     case 'ts':
     case 'tsx':

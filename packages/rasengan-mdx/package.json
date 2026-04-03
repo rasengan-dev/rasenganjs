@@ -54,7 +54,6 @@
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.477.0",
     "micromatch": "^4.0.8",
-    "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.4.1",
     "react-markdown": "^10.1.0",
     "rehype-pretty-code": "^0.14.1",
@@ -63,7 +62,6 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
-    "remark-toc": "^9.0.0",
     "unified": "^11.0.5"
   },
   "peerDependencies": {
