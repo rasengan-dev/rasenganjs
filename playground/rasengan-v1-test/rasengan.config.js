@@ -5,27 +5,32 @@ import tailwindcss from '@tailwindcss/vite';
 import { configure } from '@rasenganjs/vercel';
 
 export default defineConfig({
-  ssr: true,
+  ssr: false,
+  prerender: true,
   vite: {
     plugins: [
-      mdx(),
+      mdx({
+        code: {
+          theme: {
+            light: 'vitesse-light',
+            dark: 'vitesse-dark',
+          },
+        },
+      }),
       tailwindcss(),
       rasengan({
         adapter: configure({}),
-        prerender: {
-          routes: ['/'],
-        },
       }),
     ],
   },
 
-  // redirects: () => {
-  //   return [
-  //     {
-  //       source: '/',
-  //       destination: '/dashboard',
-  //       permanent: true,
-  //     },
-  //   ];
-  // },
+  redirects: () => {
+    return [
+      {
+        source: '/',
+        destination: '/home',
+        permanent: true,
+      },
+    ];
+  },
 });

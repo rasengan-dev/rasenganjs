@@ -44,6 +44,12 @@ export type MDXRendererProps = {
 
   // Used to customise the mdx visual aspect
   config?: MDXConfigProps;
+
+  // Used to send the toc to the renderer extract from the MDX Page component content
+  toc?: Array<TOCItem>;
+
+  // Original markdown content
+  raw?: string;
 };
 
 /**
@@ -68,19 +74,21 @@ export type NavigationStructure = {
   children?: NavigationStructure[];
 };
 
-type HeadingConfigProps = { fullText: string; text: string; id: string };
 type TOCConfig = (toc: Array<TOCItem>) => React.ReactNode;
 
 type ComponentConfig = {
-  h1?: (value: HeadingConfigProps) => React.ReactNode;
-  h2?: (value: HeadingConfigProps) => React.ReactNode;
-  h3?: (value: HeadingConfigProps) => React.ReactNode;
-  h4?: (value: HeadingConfigProps) => React.ReactNode;
-  h5?: (value: HeadingConfigProps) => React.ReactNode;
-  h6?: (value: HeadingConfigProps) => React.ReactNode;
+  [Key in Extract<React.ElementType, string>]?: React.ElementType<
+    React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement>
+  >;
 };
 
 export type MDXConfigProps = {
+  // List of custom components
   components?: ComponentConfig;
+
+  // Table of content config function
   toc?: TOCConfig;
+
+  // Layout component that defines how the MDX page looks like
+  layout?: React.FC<{ children: React.ReactNode; toc?: React.ReactNode }>;
 };

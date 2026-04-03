@@ -1,10 +1,5 @@
 import { DefaultLayout } from '../components/template.js';
-import {
-  RouterProps,
-  PageComponent,
-  MDXPageComponent,
-  MDXRendererProps,
-} from '../types.js';
+import { RouterProps, PageComponent } from '../types.js';
 import { RouterComponent } from '../interfaces.js';
 import { RouteNode } from './index.js';
 
@@ -40,9 +35,11 @@ export const defineRouter = (option: RouterProps) => {
             continue;
           }
 
-          if (isMDXPage(page as MDXPageComponent)) {
+          // When p is a MDXPageComponent
+          // the "type" property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
+          if (isMDXPage(page as { type: string; [key: string]: any })) {
             const Page = await convertMDXPageToPageComponent(
-              page as MDXPageComponent
+              page as { type: string; [key: string]: any }
             );
 
             pageComponentList.push(Page);
@@ -61,8 +58,11 @@ export const defineRouter = (option: RouterProps) => {
       }
 
       // When p is a MDXPageComponent
-      if (isMDXPage(p as MDXPageComponent)) {
-        const Page = await convertMDXPageToPageComponent(p as MDXPageComponent);
+      // type property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
+      if (isMDXPage(p as { type: string; [key: string]: any })) {
+        const Page = await convertMDXPageToPageComponent(
+          p as { type: string; [key: string]: any }
+        );
 
         pageComponentList.push(Page);
       } else {
@@ -84,14 +84,26 @@ export const defineRouter = (option: RouterProps) => {
   };
 };
 
-export const convertMDXPageToPageComponent = async (
-  MDXPage: MDXPageComponent
-) => {
-  // Load MDXRenderer from @rasenganjs/mdx
-  const MDXRenderer = await loadMDXRenderer();
-
+/**
+ * This function helps to convert the data provided by @rasenganjs/mdx into a PageComponent component
+ * The MDXPage arg has to follow exactly the type returned by the @rasenganjs/mdx plugin
+ * @param MDXPage
+ * @returns
+ */
+export const convertMDXPageToPageComponent = async (MDXPage: {
+  type: string;
+  [key: string]: any;
+}) => {
   const Page: PageComponent = () => {
-    return <MDXRenderer className={''}>{MDXPage}</MDXRenderer>;
+    return (
+      <MDXPage.Renderer
+        config={MDXPage.config}
+        toc={MDXPage.toc}
+        raw={MDXPage.raw}
+      >
+        {MDXPage.Content}
+      </MDXPage.Renderer>
+    );
   };
 
   Page.path = MDXPage.metadata.path;
@@ -100,7 +112,9 @@ export const convertMDXPageToPageComponent = async (
   return Page;
 };
 
-export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
+export const isMDXPage = (
+  page: { type: string; [key: string]: any } | PageComponent<any>
+) => {
   // Check if page is a MDX Page Component or not
   if (page.type === 'MDXPageComponent') {
     return true;
@@ -108,36 +122,3 @@ export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
 
   return false;
 };
-
-/**
- * Load thr MDXRenderer is the dedicated package is installed
- * @returns
- */
-const loadMDXRenderer =
-  async (): Promise<React.FunctionComponent<MDXRendererProps> | null> => {
-    try {
-      // Dynamically import only if the package exists
-      const mod = await import('@rasenganjs/mdx');
-      return mod.MDXRenderer;
-    } catch (error: any) {
-      // Handle the case when the package is not installed
-      if (
-        error.code === 'MODULE_NOT_FOUND' ||
-        /Cannot find module '@rasenganjs\/mdx'/.test(error.message)
-      ) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(
-            '[Rasengan.js] MDX package not found — skipping MDX rendering.'
-          );
-        }
-        return null;
-      }
-
-      // Other unexpected errors (e.g. runtime bug in the module)
-      console.error(
-        '[Rasengan.js] Unexpected error while loading MDX module:',
-        error
-      );
-      throw error;
-    }
-  };

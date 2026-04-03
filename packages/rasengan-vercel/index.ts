@@ -110,6 +110,13 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
     );
   }
 
+  // Redirections coming from rasengan.config.js file
+  const customRedirects = config.redirects.map((r) => ({
+    src: r.source,
+    dest: r.destination,
+    status: r.permanent ? 301 : 302,
+  }));
+
   // Default Vercel configuration
   const vercelConfig = {
     version: 3,
@@ -118,18 +125,16 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
       version: '1.2.0',
     },
     routes: [
+      // 1. Custom redirects coming from the rasengan.config.js file
+      // We define them just before the final route definition
+      ...customRedirects,
+
+      // 2. Let Vercel serve real files if they exist
       {
-        src: '/favicon.ico',
-        dest: '/favicon.ico',
+        handle: 'filesystem',
       },
-      {
-        src: '/assets/(.*)',
-        dest: '/assets/$1',
-      },
-      {
-        src: '/(.*)',
-        dest: '/$1',
-      },
+
+      // 3. SPA / SSR fallback
       {
         src: '/(.*)',
         dest: config.ssr

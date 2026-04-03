@@ -1,6 +1,6 @@
 {
   "name": "create-rasengan",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "The Rasengan.js CLI tool to generate a new project with a simple template",
   "type": "module",
   "exports": {
@@ -48,7 +48,7 @@
     "ncp": "^2.0.0",
     "ora": "^7.0.1",
     "rimraf": "^6.0.1",
-    "simple-git": "^3.24.0"
+    "simple-git": "^3.32.3"
   },
   "devDependencies": {
     "@types/ncp": "^2.0.6",

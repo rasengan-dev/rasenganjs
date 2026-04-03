@@ -207,6 +207,15 @@ async function run() {
     // Parse the config.json file
     const config: OptimizedAppConfig = JSON.parse(configData);
 
+    // Handle custom redirections
+    for (const redirect of config.redirects) {
+      if ((req.url || req.originalUrl).includes(redirect.source)) {
+        return res
+          .status(redirect.permanent ? 301 : 302)
+          .redirect(redirect.destination);
+      }
+    }
+
     if (config.ssr) {
       const requestHandler = createRequestHandler({
         build: buildOptions,

@@ -8,9 +8,10 @@
 
 // Import statements
 import { extractTOC } from './utils/extract-toc.js';
-// import { defineMDXConfig } from "./utils/define-mdx-config.js";
+import { defineMDXConfig } from './utils/define-mdx-config.js';
 
 // Export statements
 export * from './types/index.js';
 export * from './components/index.js';
-export { extractTOC };
+export { extractTOC, defineMDXConfig };
+export { useActiveTocItem } from './hooks/use-toc-observer.js';
