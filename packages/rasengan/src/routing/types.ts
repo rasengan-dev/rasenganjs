@@ -281,6 +281,7 @@ export type MDXPageComponent = FunctionComponent & {
  */
 export type MDXRendererProps = {
   children: MDXPageComponent;
+  config?: any;
   className?: string;
 };
 

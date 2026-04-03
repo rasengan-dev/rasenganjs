@@ -35,3 +35,11 @@ export const Versions: {
  */
 export const TEMPLATE_GITHUB_URL: string =
   'https://github.com/rasengan-dev/rasenganjs.git';
+
+export const githubTemplatesURL = {
+  rasengan: 'https://github.com/rasengan-dev/rasenganjs.git',
+  chidori: 'https://github.com/rasengan-dev/chidori.git',
+} as const;
+
+export type GithubTemplatesURL =
+  (typeof githubTemplatesURL)[keyof typeof githubTemplatesURL];
