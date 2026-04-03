@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Markdown } from '@rasenganjs/mdx';
+// import { Markdown } from '@rasenganjs/mdx';
 import { ComponentProps, ReactNode } from 'react';
 
 type Props = {
@@ -22,7 +22,8 @@ export function StepItem({ children, step, title, content, className }: Props) {
         </div>
 
         <span className="text-sm">
-          <Markdown content={content} overwriteStyle={true} />
+          {/* <Markdown content={content} overwriteStyle={true} /> */}
+          {content}
         </span>
       </div>
       <div className="w-full">{children}</div>

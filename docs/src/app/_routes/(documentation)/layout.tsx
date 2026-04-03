@@ -43,9 +43,9 @@ const DocsLayout: LayoutComponent = () => {
           <AlignJustify size={20} className="text-foreground/90" />
         </div>
 
-        <div className="flex md:hidden">
+        {/* <div className="flex md:hidden">
           <ThemeButton />
-        </div>
+        </div> */}
       </div>
 
       <section

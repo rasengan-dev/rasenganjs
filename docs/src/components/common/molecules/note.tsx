@@ -1,17 +1,9 @@
 import { CheckCircle2, XCircle, TriangleAlert, Info } from 'lucide-react';
-import { ComponentProps } from 'react';
 
 type Props = {
   title: string;
   type?: 'success' | 'error' | 'warning' | 'info';
   children: React.ReactNode;
-};
-
-type AlertProps = {
-  title: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  className?: ComponentProps<'div'>['className'];
-  children?: React.ReactNode;
 };
 
 export function Note({ title, type = 'info', children }: Props) {

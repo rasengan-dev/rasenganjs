@@ -401,9 +401,9 @@ export default defineMDXConfig({
 
   layout: ({ children, toc }) => {
     return (
-      <section className="w-full px-10 py-10 flex gap-10">
+      <section className="w-full px-4 lg:px-10 py-10 flex gap-10">
         <div className="w-full flex flex-col items-center">
-          <div className="max-w-[600px] mx-auto w-fulld">{children}</div>
+          <div className="max-w-[600px] mx-auto w-full">{children}</div>
         </div>
 
         {toc && toc}

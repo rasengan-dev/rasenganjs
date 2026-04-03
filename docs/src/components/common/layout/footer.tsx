@@ -66,7 +66,7 @@ export default function Footer() {
             </div>
 
             <div className="w-full lg:w-1/4">
-              <h3 className="text-lg font-lexend-medium">Resources</h3>
+              <h3 className="text-lg font-medium">Resources</h3>
 
               <nav className="mt-4 text-sm">
                 <ul className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ export default function Footer() {
             </div>
 
             <div className="w-full lg:w-1/4">
-              <h3 className="text-lg font-lexend-medium">Products</h3>
+              <h3 className="text-lg font-medium">Products</h3>
 
               <nav className="mt-4 text-sm">
                 <ul className="flex flex-col gap-2">
@@ -159,7 +159,7 @@ export default function Footer() {
             </div>
 
             <div className="w-full lg:w-1/4">
-              <h3 className="text-lg font-lexend-medium">Community</h3>
+              <h3 className="text-lg font-medium">Community</h3>
 
               <nav className="mt-4 text-sm">
                 <ul className="flex flex-col gap-2">
@@ -186,9 +186,7 @@ export default function Footer() {
           </div>
 
           <div className="w-full xl:w-3/10 xl:min-w-[200px] max-w-[400px]">
-            <h3 className="text-lg font-lexend-medium">
-              Subscribe to the Newsletter
-            </h3>
+            <h3 className="text-lg font-medium">Subscribe to the Newsletter</h3>
 
             <p className="mt-4 text-sm">
               Stay informed to the news about rasengan.js including new

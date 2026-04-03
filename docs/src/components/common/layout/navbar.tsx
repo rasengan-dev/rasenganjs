@@ -179,7 +179,7 @@ export default function Navbar({ className }: Props) {
           <Link
             to="https://buymeacoffee.com/dilane3"
             target="_blank"
-            className="h-8 hidden sm:flex"
+            className="h-8"
           >
             <Button className="h-8">
               <Coffee />
