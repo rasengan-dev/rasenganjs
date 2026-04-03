@@ -462,9 +462,14 @@ export const generateRoutes = (
               }
 
               // Detech if the page is a MDXPageComponent or not
+              // When Page is a MDXPageComponent
+              // type property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
               if (isMDXPage(Page)) {
                 // Convert PageComponent to MDXPageComponent (to make ts happy)
-                const mdxPage = Page as unknown as MDXPageComponent;
+                const mdxPage = Page as unknown as {
+                  type: string;
+                  [key: string]: any;
+                };
 
                 // mdxPage.metadata.path = node.path;
                 // mdxPage.metadata.metadata = Page.metadata;
