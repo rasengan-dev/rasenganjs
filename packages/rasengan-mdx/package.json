@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/mdx",
   "private": false,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "RasenganJS plugin for MDX support",
   "type": "module",
   "main": "dist/index.js",

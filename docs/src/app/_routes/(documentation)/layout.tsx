@@ -10,6 +10,7 @@ import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { ScrollRestoration } from '@/components/common/molecules/scroll-restoration';
 import { useBannerStore } from '@/store/banner';
+import { cn } from '@/lib/utils';
 
 const DocsLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
@@ -22,13 +23,18 @@ const DocsLayout: LayoutComponent = () => {
   return (
     <section
       className={twMerge(
-        'docs w-full h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
+        'w-screen h-screen overflow-y-auto bg-background font-lexend-light text-foreground',
         isDark ? 'dark' : ''
       )}
       ref={targetRef}
     >
       <ScrollRestoration target={targetRef} />
-      <Navbar />
+      <Navbar
+        className={cn(
+          'fixed top-0 left-0 right-0 z-30 mx-auto px-4',
+          showBanner && 'top-[60px]'
+        )}
+      />
 
       <div
         className={twMerge(
@@ -43,14 +49,14 @@ const DocsLayout: LayoutComponent = () => {
           <AlignJustify size={20} className="text-foreground/90" />
         </div>
 
-        <div className="flex md:hidden">
-          <ThemeButton size="small" />
-        </div>
+        {/* <div className="flex md:hidden">
+          <ThemeButton />
+        </div> */}
       </div>
 
       <section
         className={twMerge(
-          'relative h-auto flex ',
+          'w-full relative h-auto flex ',
           showBanner ? 'pt-24 lg:pt-20' : 'pt-16 lg:pt-4'
         )}
         id="sidebar"
@@ -82,7 +88,7 @@ const DocsLayout: LayoutComponent = () => {
           )}
         </AnimatePresence>
 
-        <main className="w-full lg:w-(--main-width) h-fulld mt-10 ">
+        <main className="w-full lg:w-(--main-width) h-full mt-10 ">
           <div className="px-0 w-full">
             <Outlet />
           </div>

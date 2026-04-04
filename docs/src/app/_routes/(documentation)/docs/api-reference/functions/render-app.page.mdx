@@ -5,9 +5,6 @@ metadata:
 toc: true
 ---
 
-import Pagination from '@/components/common/molecules/pagination';
-import { Link } from "rasengan";
-import StepItem from '@/components/common/molecules/step-item';
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   API REFERENCE
@@ -21,8 +18,9 @@ import StepItem from '@/components/common/molecules/step-item';
 ```js title="index.js" showLineNumbers 
 import { renderApp } from 'rasengan/client';
 import App from "./main";
+import AppRouter from '@/app/app.router';
 
-renderApp(App, { reactStrictMode: true });
+renderApp(App, AppRouter, { reactStrictMode: true });
 ```
 
 ## Options
@@ -38,7 +36,7 @@ renderApp(App, { reactStrictMode: true });
     label: 'defineStaticPaths',
   }}
   next={{
-    href: '/docs/api-reference/conventions/layout',
+    href: '/docs/api-reference/conventions/layout-component',
     label: '[name].layout.tsx',
   }}
 />

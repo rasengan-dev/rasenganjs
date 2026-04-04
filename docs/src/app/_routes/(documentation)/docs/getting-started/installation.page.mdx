@@ -2,20 +2,16 @@
 metadata:
   title: Creating your first Rasengan.js app | Getting Started | Rasengan.js
   description: Setting up your React project with the Create Rasengan CLI tool in seconds
-toc: false
+toc: true
 ---
 
-import StepItem from '@/components/common/molecules/step-item';
-import Tabs from '@/components/common/molecules/tab';
-import Pagination from '@/components/common/molecules/pagination';
-import { AlertWithDescription } from "@/components/common/atoms/alerts"; 
 
 <span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
   GETTING STARTED
 </span>
 # Get started with Rasengan.js
 
-**Rasengan.js** takes care of all the complex parts of web development —**routing, rendering, optimization, and performance**— so you don’t have to. It scans your React components, automatically applies best practices, and generates the most efficient output for your project.
+**Rasengan.js** takes care of all the complex parts of web development — **routing, rendering, optimization, and performance** — so you don’t have to. It scans your React components, automatically applies best practices, and generates the most efficient output for your project.
 
 With **Rasengan.js**, you can **focus on building your app**, while it handles the difficult technical details behind the scenes. It’s —**fast, flexible, and reliable**— with minimal setup and zero hassle. 🚀
 
@@ -87,12 +83,9 @@ npm run dev
 
 ### Manual Installation
 
-<AlertWithDescription 
-  title="Warning"
-  description="This method is not recommended for beginners. It is recommended to use the automatic installation method."
-  className="mb-4"
-  status="warning"
-/>
+<Note title="Warning">
+This method is not recommended for beginners. It is recommended to use the automatic installation method.
+</Note>
 
 <Tabs 
   tabs={[
@@ -150,7 +143,7 @@ npm install --save-dev cross-env vite@latest
   content={`
     First, create the necessary directories at the root of your project.
     
-    - \`public\`: Contains static assets like icons and images.
+    - **public**: Contains static assets like icons and images.
     - \`src\`: Contains your application’s source code.
     
     Then, create the \`rasengan.config.js\` configuration file.

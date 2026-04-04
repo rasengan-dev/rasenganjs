@@ -1,52 +1,32 @@
-import { useTheme } from '@rasenganjs/theme';
-import { Moon, Sun } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { twMerge } from 'tailwind-merge';
+import { Button } from '@/components/ui/button';
+import { useTheme, Themes } from '@rasenganjs/theme';
 
-type Props = {
-  size?: 'normal' | 'small';
-};
-
-export default function ThemeButton({ size = 'normal' }: Props) {
-  const { setTheme, isDark } = useTheme();
-
-  const handleThemeChange = () => {
-    setTheme(isDark ? 'light' : 'dark');
-  };
+export default function ThemeButton() {
+  const { isDark, setTheme } = useTheme();
 
   return (
-    <motion.button
-      id="theme-button"
-      onClick={handleThemeChange}
-      className={twMerge(
-        'relative  rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center overflow-hidden hover:cursor-pointer',
-        size === 'small' ? 'size-7' : 'size-8'
-      )}
-      whileHover={{ scale: 1.05 }}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(isDark ? Themes.light : Themes.dark)}
+      className="text-foreground"
     >
-      <AnimatePresence>
-        {isDark ? (
-          <motion.div
-            key="moon"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          >
-            <Moon size={20} className="text-primary" />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="sun"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          >
-            <Sun size={20} className="text-primary" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.button>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="size-4"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <path
+          d="M12 2a10 10 0 0 1 0 20"
+          fill="currentColor"
+          stroke="none"
+        ></path>
+      </svg>
+    </Button>
   );
 }

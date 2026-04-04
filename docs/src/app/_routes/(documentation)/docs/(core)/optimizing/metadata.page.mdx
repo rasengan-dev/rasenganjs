@@ -5,9 +5,6 @@ metadata:
 toc: true
 ---
 
-import Pagination from '@/components/common/molecules/pagination';
-import Tabs from '@/components/common/molecules/tab';
-import { Link } from "rasengan";
 
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
@@ -27,7 +24,7 @@ There is two  ways to use the Metadata API:
 
 <Tabs tabs={[{ title: "TypeScript" }, { title: "JavaScript" }]} activeIndex={0}>
   <Tabs.Item>
-    ```tsx title="home.page.tsx" {3-37, 48} showLineNumbers
+    ```tsx title="home.page.tsx" {3-39, 50} showLineNumbers
     import { Metadata, PageComponent } from "rasengan";
 
     const metadata: Metadata = {

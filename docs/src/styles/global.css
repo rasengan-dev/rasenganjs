@@ -47,3 +47,12 @@
 .dark * {
   scrollbar-color: #2e2f35 #0f0f10;
 }
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

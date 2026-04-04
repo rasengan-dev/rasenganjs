@@ -6,9 +6,6 @@ toc: true
 ---
 
 
-import { AlertWithDescription } from "@/components/common/atoms/alerts"; 
-import Pagination from '@/components/common/molecules/pagination';
-
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
 </span>
@@ -23,7 +20,7 @@ The file and folder structure under this directory determines your app’s routi
 
 ## Directory Structure Example
 
-``` bash
+``` txt
 app/
 ├── _routes/
 │   ├── index.page.tsx             # → /
@@ -42,7 +39,10 @@ app/
 │       └── home.page.tsx          # → /home, /en/home, /fr/home, etc.
 └── app.router.ts                  # Entry point to register the routes
 ```
-> Note: The `app.router.ts` file is the entry point to register the routes.
+
+<Note title="Note">
+The `app.router.ts` file is the entry point to register the routes.
+</Note>
 
 ## Router 
 
@@ -53,11 +53,10 @@ To integrate this generated router into your app, create a file at:
 ```txt 
 src/app/app.router.ts
 ```
-<AlertWithDescription 
-  title="Warning"
-  description="`app.router.ts` is a required file, you have to place it at the src/app/ folder."
-  status="warning"
-/>
+
+<Note title="Warning" type="warning">
+`app.router.ts` is a required file, you have to place it at the src/app/ folder.
+</Note>
 
 And add the following:
 
@@ -96,7 +95,10 @@ Every file ending with `.page.tsx` defines a route.
 | `blog/[_slug].page.tsx`   | `/blog/:slug?`    | Optional dynamic route on file page |
 | `[_locale]/home.page.tsx` | `/:locale?/home`  | Optional dynamic route on folder    |
 
-> 🖱 Only files located in `app/_routes/` are considered valid route definitions.
+
+<Note title="Note">
+Only files located in `app/_routes/` are considered valid route definitions.
+</Note>
 
 Page components have to be exported as default in order to be registered as routes.
 
@@ -116,11 +118,9 @@ Home.metadata = {
 export default Home;
 ```
 
-<AlertWithDescription 
-  title="Page Component"
-  description="Don't define `path` manually onto the page definition, because it's directly extracted from the file and folder structure."
-  status="info"
-/>
+<Note type="info" title="Note: Page Component">
+Don't define `path` manually onto the page definition, because it's directly extracted from the file and folder structure.
+</Note>
 
 
 ## Layouts
@@ -131,7 +131,7 @@ Use `layout.tsx` files to define reusable structures (headers, sidebars, wrapper
 
 pages located at the same level of the layout or deeper will be wrapped by the layout.
 
-```bash
+```txt
 app/
 ├── _routes/
 │   ├── layout.tsx                 # Root Layout for all pages
@@ -173,11 +173,10 @@ export default AppLayout;
 | `app/_routes/layout.tsx`       | All routes            |
 | `app/_routes/about/layout.tsx` | Routes under `/about` |
 
-<AlertWithDescription
-  title="Path Definition"
-  description="When using `file based routing`, you don't need to define `path` manually onto the page and layout definition, because it's directly extracted from the file and folder structure."
-  status="info"
-></AlertWithDescription>
+
+<Note type="info" title="Note: Path Definition">
+When using `file based routing`, you don't need to define `path` manually onto the page and layout definition, because it's directly extracted from the file and folder structure.
+</Note>
 
 
 ## Dynamic Routes

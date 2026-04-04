@@ -12,7 +12,7 @@ type Props = {
   };
 };
 
-export default function Pagination({ next, prev }: Props) {
+export function Pagination({ next, prev }: Props) {
   return (
     <section className="pagination w-full flex flex-col sm:flex-row items-center justify-between gap-4 mt-10">
       <Link

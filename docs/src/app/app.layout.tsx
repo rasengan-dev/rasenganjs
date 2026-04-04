@@ -34,7 +34,7 @@ const AppLayout: LayoutComponent = () => {
   return (
     <section
       className={twMerge(
-        'w-screen min-h-screen overflow-y-auto overflow-x-hidden bg-background font-lexend-light text-foreground',
+        'w-screen min-h-screen overflow-y-auto overflow-x-hidden bg-background font-raleway text-foreground',
         isDark ? 'dark' : ''
       )}
     >

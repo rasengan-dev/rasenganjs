@@ -5,10 +5,6 @@ metadata:
 toc: true
 ---
 
-import Pagination from '@/components/common/molecules/pagination';
-import { Link } from 'rasengan';
-import { AlertWithDescription, AlertWithLink } from "@/components/common/atoms/alerts"; 
-
 <span className="text-[12px] font-mono-regular text-foreground/60">
   CORE CONCEPTS
 </span>
@@ -65,11 +61,9 @@ export default function ActiveLink({ to, children }: Props) {
 }
 ```
 
-<AlertWithDescription
-  title="Active state"
-  description="The `NavLink` component becomes active when the current route start with the `to` prop value."
-  status="info"
-/>
+<Note type="info" title="Note: Active state">
+The `NavLink` component becomes active when the current route start with the `to` prop value.
+</Note>
 
 ```txt
 When to="/docs"
