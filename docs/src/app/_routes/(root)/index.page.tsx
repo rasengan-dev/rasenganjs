@@ -25,9 +25,9 @@ const Page: PageComponent = () => {
       <section className="w-full relative px-4 xl:px-20 lg:h-screen lg:max-h-[800px] lg:min-h-[800px] flex flex-col lg:flex-row justify-start lg:justify-between items-center gap-8 pt-[60px] overflow-hidden">
         <div className="w-full lg:w-1/2 mt-20 lg:mt-0 z-20">
           <div className="flex justify-center items-center lg:justify-start lg:items-start">
-            <Link to="/blog/rasengan-v1-2-0">
+            <Link to="/blog/rasengan-v1-2-1">
               <AnnonceBadge
-                text="Rasengan.js v1.2.0 is here 🚀"
+                text="Rasengan.js v1.2.1 is here 🚀"
                 className="mb-2 hover:border-primary/30 border border-transparent"
               >
                 <svg
@@ -363,10 +363,10 @@ const Page: PageComponent = () => {
             description="Rasengan.js is an ecosytem that brings a lot of utility packages to make your development experience better."
             icon={<PencilRuler className="text-primary" />}
           />
-          <Link to="/blog/rasengan-v1-2-0">
+          <Link to="/blog/rasengan-v1-2-1">
             <FeatureCard
-              title="Rasengan 1.2.0"
-              description="Rasengan 1.2.0, built for creating high-quality web apps."
+              title="Rasengan 1.2.1"
+              description="Rasengan 1.2.1, built for creating high-quality web apps."
               icon={
                 <svg
                   width="18"

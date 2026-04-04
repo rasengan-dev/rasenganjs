@@ -24,8 +24,8 @@ export default function FeatureCard({
       <span className="size-12 flex items-center justify-center bg-primary/10 rounded-full">
         {icon}
       </span>
-      <h3 className="font-lexend-medium text-2xl text-foreground">{title}</h3>
-      <p className="font-lexend-light text-foreground/70">{description}</p>
+      <h3 className="font-semibold text-2xl text-foreground">{title}</h3>
+      <p className="font-normal text-foreground/70">{description}</p>
     </article>
   );
 }
