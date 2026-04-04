@@ -54,17 +54,17 @@ importers:
         specifier: 1.0.1
         version: 1.0.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@rasenganjs/mdx':
-        specifier: 1.2.0-beta.8
-        version: 1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
+        specifier: 1.2.1
+        version: 1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
       '@rasenganjs/serve':
         specifier: ^1.2.0
-        version: 1.2.0(rasengan@1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))
+        version: 1.2.0(rasengan@1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))
       '@rasenganjs/theme':
         specifier: ^1.0.1
         version: 1.0.1(react@19.1.1)
       '@rasenganjs/vercel':
         specifier: ^1.1.3
-        version: 1.1.3(rasengan@1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))
+        version: 1.1.3(rasengan@1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.1.18(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
@@ -85,19 +85,25 @@ importers:
         version: 0.477.0(react@19.1.1)
       motion:
         specifier: ^12.4.10
-        version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.38.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       rasengan:
         specifier: 1.2.1
-        version: 1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
+        version: 1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
       react:
         specifier: ^19.1.1
         version: 19.1.1
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
+      rehype-katex:
+        specifier: ^7.0.1
+        version: 7.0.1
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.3.1
@@ -128,7 +134,7 @@ importers:
         version: 1.97.2
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^7.0.0
         version: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -183,7 +189,7 @@ importers:
         version: 1.4.0
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^7.0.0
         version: 7.3.1(@types/node@24.10.4)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -244,7 +250,7 @@ importers:
         version: 1.4.0
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^7.0.0
         version: 7.3.1(@types/node@24.10.4)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -268,7 +274,7 @@ importers:
         version: 7.0.1
       rimraf:
         specifier: ^6.0.1
-        version: 6.0.1
+        version: 6.1.3
       simple-git:
         specifier: ^3.32.3
         version: 3.33.0
@@ -278,7 +284,7 @@ importers:
         version: 2.0.8
       '@types/node':
         specifier: ^20.8.6
-        version: 20.19.27
+        version: 20.19.39
 
   packages/rasengan:
     dependencies:
@@ -546,7 +552,7 @@ importers:
         version: 7.0.1
       rimraf:
         specifier: ^6.0.1
-        version: 6.0.1
+        version: 6.1.3
       simple-git:
         specifier: ^3.32.3
         version: 3.33.0
@@ -556,7 +562,7 @@ importers:
         version: 2.0.8
       '@types/node':
         specifier: ^20.8.6
-        version: 20.19.27
+        version: 20.19.39
 
   packages/rasengan-theme:
     dependencies:
@@ -706,7 +712,7 @@ importers:
         version: 7.0.3
       typescript:
         specifier: ^5.8.2
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^6.2.6
         version: 6.4.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -749,7 +755,7 @@ importers:
         version: 7.0.3
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^6.2.6
         version: 6.4.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -786,7 +792,7 @@ importers:
         version: 7.0.3
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^7.0.0
         version: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -844,7 +850,7 @@ importers:
         version: 8.5.6
       typescript:
         specifier: ^5.1.3
-        version: 5.9.2
+        version: 5.9.3
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
@@ -2196,6 +2202,13 @@ packages:
       react-dom: ^19.1.1
       vite: ^7.*
 
+  '@rasenganjs/mdx@1.2.1':
+    resolution: {integrity: sha512-awDjTsNsAg/Fe6kcnzkS+vNVYsVMeDQMAz7DHGw6b6fXKhTluWvjkWD/XsnaN8GGGi3BeyiOo6YMpqe2SdYw3g==}
+    peerDependencies:
+      react: ^19.1.1
+      react-dom: ^19.1.1
+      vite: ^7.*
+
   '@rasenganjs/serve@1.2.0':
     resolution: {integrity: sha512-FaMuouxR8Oiw87Eci2drVs2wSEAx9fKLy6I4PtNRFO1MjOBte7raSM6SDv8Qnubfq/EkTMAyqggt7F2FvjbRTw==}
     hasBin: true
@@ -2503,6 +2516,9 @@ packages:
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
 
+  '@types/katex@0.16.8':
+    resolution: {integrity: sha512-trgaNyfU+Xh2Tc+ABIb44a5AYUpicB3uwirOioeOkNPPbmgRNtcWyDeeFRzjPZENO9Vq8gvVqfhaaXWLlevVwg==}
+
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
@@ -2523,9 +2539,6 @@ packages:
 
   '@types/ncp@2.0.8':
     resolution: {integrity: sha512-pLNWVLCVWBLVM4F2OPjjK6FWFtByFKD7LhHryF+MbVLws7ENj09mKxRFlhkGPOXfJuaBAG+2iADKJsZwnAbYDw==}
-
-  '@types/node@20.19.27':
-    resolution: {integrity: sha512-N2clP5pJhB2YnZJ3PIHFk5RkygRX5WO/5f0WC08tp0wd+sv0rsJk3MqWn3CbNmT2J505a5336jaQj4ph1AdMug==}
 
   '@types/node@20.19.39':
     resolution: {integrity: sha512-orrrD74MBUyK8jOAD/r0+lfa1I2MO6I+vAkmAWzMYbCcgrN4lCrmK52gRFQq/JRxfYPfonkr4b0jcY7Olqdqbw==}
@@ -2737,9 +2750,6 @@ packages:
     resolution: {integrity: sha512-7rAxByjUMqQ3/bHJy7D6OGXvx/MMc4IqBn/X0fcM1QUcAItpZrBEYhWGem+tzXH90c+G01ypMcYJBO9Y30203g==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
 
-  brace-expansion@2.0.1:
-    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
-
   brace-expansion@2.0.2:
     resolution: {integrity: sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==}
 
@@ -2894,6 +2904,10 @@ packages:
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
+
+  commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
 
   compare-func@2.0.0:
     resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
@@ -3246,20 +3260,6 @@ packages:
   fraction.js@5.3.4:
     resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
-  framer-motion@12.23.12:
-    resolution: {integrity: sha512-6e78rdVtnBvlEVgu6eFEAgG9v3wLnYEboM8I5O5EXvfKC8gxGQB8wXJdhkMy10iVcn05jl6CNw7/HTsTCfwcWg==}
-    peerDependencies:
-      '@emotion/is-prop-valid': '*'
-      react: ^19.1.1
-      react-dom: ^19.1.1
-    peerDependenciesMeta:
-      '@emotion/is-prop-valid':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-
   framer-motion@12.38.0:
     resolution: {integrity: sha512-rFYkY/pigbcswl1XQSb7q424kSTQ8q6eAC+YUsSKooHQYuLdzdHjrt6uxUC+PRAO++q5IS7+TamgIw1AphxR+g==}
     peerDependencies:
@@ -3325,12 +3325,6 @@ packages:
     deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
-  glob@11.0.2:
-    resolution: {integrity: sha512-YT7U7Vye+t5fZ/QMkBFrTJ7ZQxInIUjwyAjVj84CYXqgBdv30MFUPGnBR6sQaVq6Is15wYJUsnzTuWaGRBhBAQ==}
-    engines: {node: 20 || >=22}
-    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
-    hasBin: true
-
   glob@13.0.6:
     resolution: {integrity: sha512-Wjlyrolmm8uDpm/ogGyXZXb1Z+Ca2B8NbJwqBVg0axK9GbBeoS7yGV6vjXnYdGm6X53iehEuxxbyiKp8QmN4Vw==}
     engines: {node: 18 || 20 || >=22}
@@ -3367,11 +3361,20 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  hast-util-from-dom@5.0.1:
+    resolution: {integrity: sha512-N+LqofjR2zuzTjCPzyDUdSshy4Ma6li7p/c3pA78uTwzFgENbgbUrm2ugwsOdcjI1muO+o6Dgzp9p8WHtn/39Q==}
+
+  hast-util-from-html-isomorphic@2.0.0:
+    resolution: {integrity: sha512-zJfpXq44yff2hmE0XmwEOzdWin5xwH+QIhMLOScpX91e/NSGPsAzNCvLQDIEPyO2TXi+lBmU6hjLIhV8MwP2kw==}
+
   hast-util-from-html@2.0.3:
     resolution: {integrity: sha512-CUSRHXyKjzHov8yKsQjGOElXy/3EKpyX56ELnkHH34vDVw1N1XSQ1ZcAvTyAPtGqLTuKP/uxM+aLkSPqF/EtMw==}
 
   hast-util-from-parse5@8.0.3:
     resolution: {integrity: sha512-3kxEVkEKt0zvcZ3hCRYI8rqrgwtlIOFMWkbclACvjlDw8Li9S2hk/d51OI0nr/gIpdMHNepwgOKqZ/sy0Clpyg==}
+
+  hast-util-is-element@3.0.0:
+    resolution: {integrity: sha512-Val9mnv2IWpLbNPqc/pUem+a7Ipj2aHacCwgNfTiK0vJKl0LF+4Ba4+v1oPHFpf3bLYmreq0/l3Gud9S5OH42g==}
 
   hast-util-parse-selector@4.0.0:
     resolution: {integrity: sha512-wkQCkSYoOGCRKERFWcxMVMOcYE2K1AaNLU8DXS9arxnLOUEWbOXKXiJUNzEpqZ3JOKpnha3jkFrumEjVliDe7A==}
@@ -3387,6 +3390,9 @@ packages:
 
   hast-util-to-string@3.0.1:
     resolution: {integrity: sha512-XelQVTDWvqcl3axRfI0xSeoVKzyIFPwsAGSLIsKdJKQMXDYJS4WYrBNF/8J7RdhIcFI2BOHgAifggsvsxp/3+A==}
+
+  hast-util-to-text@4.0.2:
+    resolution: {integrity: sha512-KK6y/BN8lbaq654j7JgBydev7wuNMcID54lkRav1P0CaE1e47P72AWWPiGKXTJU271ooYzcvTAn/Zt0REnvc7A==}
 
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
@@ -3560,10 +3566,6 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jackspeak@4.1.1:
-    resolution: {integrity: sha512-zptv57P3GpL+O0I7VdMJNBZCu+BPHVQUk55Ft8/QCJjTVxrnJHuVuX/0Bl2A6/+2oyR/ZMEuFKwmzqqZ/U5nPQ==}
-    engines: {node: 20 || >=22}
-
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
@@ -3587,6 +3589,10 @@ packages:
   json5@2.2.3:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
+    hasBin: true
+
+  katex@0.16.44:
+    resolution: {integrity: sha512-EkxoDTk8ufHqHlf9QxGwcxeLkWRR3iOuYfRpfORgYfqc8s13bgb+YtRY59NK5ZpRaCwq1kqA6a5lpX8C/eLphQ==}
     hasBin: true
 
   kind-of@6.0.3:
@@ -3773,6 +3779,9 @@ packages:
   mdast-util-gfm@3.1.0:
     resolution: {integrity: sha512-0ulfdQOM3ysHhCJ1p06l0b0VKlhU0wuQs3thxZQagjcjPrlFRqY215uZGHHJan9GEAXd9MbfPjFJz+qMkVR6zQ==}
 
+  mdast-util-math@3.0.0:
+    resolution: {integrity: sha512-Tl9GBNeG/AhJnQM221bJR2HPvLOSnLE/T9cJI9tlc6zwQk2nPk/4f0cHkOdEixQPC/j8UtKDdITswvLAy1OZ1w==}
+
   mdast-util-mdx-expression@2.0.1:
     resolution: {integrity: sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==}
 
@@ -3841,6 +3850,9 @@ packages:
 
   micromark-extension-gfm@3.0.0:
     resolution: {integrity: sha512-vsKArQsicm7t0z2GugkCKtZehqUm31oeGBV/KVSorWSy8ZlNAv7ytjFhvaryUiCUJYqs+NoE6AFhpQvBTM6Q4w==}
+
+  micromark-extension-math@3.1.0:
+    resolution: {integrity: sha512-lvEqd+fHjATVs+2v/8kg9i5Q0AP2k85H0WUOwpIVvUML8BapsMvh1XAogmQjOCsLpoKRCVQqEkQBB3NhVBcsOg==}
 
   micromark-extension-mdx-expression@3.0.1:
     resolution: {integrity: sha512-dD/ADLJ1AeMvSAKBwO22zG22N4ybhe7kFIZ3LsDI0GlsNr2A3KYxb0LdC1u5rj4Nw+CHKY0RVdnHX8vj8ejm4Q==}
@@ -3956,10 +3968,6 @@ packages:
     resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
     engines: {node: '>=18'}
 
-  minimatch@10.0.1:
-    resolution: {integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==}
-    engines: {node: 20 || >=22}
-
   minimatch@10.2.5:
     resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
     engines: {node: 18 || 20 || >=22}
@@ -3990,31 +3998,11 @@ packages:
     resolution: {integrity: sha512-223dMRJtI/l25dJKWpgij2cMtywuG/WiUKXdvwfbhGKBhy1puASqXwFzmWZ7+K73vUPoR7SS2Qz2cI/g9MKw0A==}
     engines: {node: '>= 0.8.0'}
 
-  motion-dom@12.23.12:
-    resolution: {integrity: sha512-RcR4fvMCTESQBD/uKQe49D5RUeDOokkGRmz4ceaJKDBgHYtZtntC/s2vLvY38gqGaytinij/yi3hMcWVcEF5Kw==}
-
   motion-dom@12.38.0:
     resolution: {integrity: sha512-pdkHLD8QYRp8VfiNLb8xIBJis1byQ9gPT3Jnh2jqfFtAsWUA3dEepDlsWe/xMpO8McV+VdpKVcp+E+TGJEtOoA==}
 
-  motion-utils@12.23.6:
-    resolution: {integrity: sha512-eAWoPgr4eFEOFfg2WjIsMoqJTW6Z8MTUCgn/GZ3VRpClWBdnbjryiA3ZSNLyxCTmCQx4RmYX6jX1iWHbenUPNQ==}
-
   motion-utils@12.36.0:
     resolution: {integrity: sha512-eHWisygbiwVvf6PZ1vhaHCLamvkSbPIeAYxWUuL3a2PD/TROgE7FvfHWTIH4vMl798QLfMw15nRqIaRDXTlYRg==}
-
-  motion@12.23.12:
-    resolution: {integrity: sha512-8jCD8uW5GD1csOoqh1WhH1A6j5APHVE15nuBkFeRiMzYBdRwyAHmSP/oXSuW0WJPZRXTFdBoG4hY9TFWNhhwng==}
-    peerDependencies:
-      '@emotion/is-prop-valid': '*'
-      react: ^19.1.1
-      react-dom: ^19.1.1
-    peerDependenciesMeta:
-      '@emotion/is-prop-valid':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
 
   motion@12.38.0:
     resolution: {integrity: sha512-uYfXzeHlgThchzwz5Te47dlv5JOUC7OB4rjJ/7XTUgtBZD8CchMN8qEJ4ZVsUmTyYA44zjV0fBwsiktRuFnn+w==}
@@ -4174,10 +4162,6 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
-
-  path-scurry@2.0.0:
-    resolution: {integrity: sha512-ypGJsmGtdXUOeM5u93TyeIEfEhM6s+ljAhrk5vAvSx8uyY/02OvrZnA0YNGUrPXfpJMgI1ODd3nwz8Npx4O4cg==}
-    engines: {node: 20 || >=22}
 
   path-scurry@2.0.2:
     resolution: {integrity: sha512-3O/iVVsJAPsOnpwWIeD+d6z/7PmqApyQePUtCndjatj/9I5LylHvt5qluFaBT3I5h3r1ejfR056c+FCv+NnNXg==}
@@ -4456,6 +4440,9 @@ packages:
   regex@5.1.1:
     resolution: {integrity: sha512-dN5I359AVGPnwzJm2jN1k0W9LPZ+ePvoOeVMMfqIMFz53sSwXkxaJoxr50ptnsC771lK95BnTrVSZxq0b9yCGw==}
 
+  rehype-katex@7.0.1:
+    resolution: {integrity: sha512-OiM2wrZ/wuhKkigASodFoo8wimG3H12LWQaH8qSPVJn9apWKFSH3YOCtbKpBorTVw/eI7cuT21XBbvwEswbIOA==}
+
   rehype-parse@9.0.1:
     resolution: {integrity: sha512-ksCzCD0Fgfh7trPDxr2rSylbwq9iYDkSn8TCDmEJ49ljEUBxDVCzCHv7QNzZOfODanX4+bWQ4WZqLCRWYLfhag==}
 
@@ -4473,6 +4460,9 @@ packages:
 
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
+
+  remark-math@6.0.0:
+    resolution: {integrity: sha512-MMqgnP74Igy+S3WwnhQ7kqGlEerTETXMvJhrUzDikVZ2/uogJCb+WHUg97hK9/jcfc0dkD73s3LN8zU49cTEtA==}
 
   remark-mdx@3.1.0:
     resolution: {integrity: sha512-Ngl/H3YXyBV9RcRNdlYsZujAmhsxwzxpDzpDEhFBVAGthS4GDgnctpDjgFl/ULx5UEDzqtW1cyBSNKqYYrqLBA==}
@@ -4513,11 +4503,6 @@ packages:
 
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
-
-  rimraf@6.0.1:
-    resolution: {integrity: sha512-9dkvaxAsk/xNXSJzMgFqqMCuFgt2+KsOFek3TMLfo8NCPfWpBmqwyNn5Y+NX56QUYfCtsyhF3ayiboEoUmJk/A==}
-    engines: {node: 20 || >=22}
-    hasBin: true
 
   rimraf@6.1.3:
     resolution: {integrity: sha512-LKg+Cr2ZF61fkcaK1UdkH2yEBBKnYjTyWzTJT6KNPcSPaiT7HSdhtMXQuN5wkTX0Xu72KQ1l8S42rlmexS2hSA==}
@@ -4832,11 +4817,6 @@ packages:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
@@ -4859,6 +4839,9 @@ packages:
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
+  unist-util-find-after@5.0.0:
+    resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==}
+
   unist-util-is@6.0.1:
     resolution: {integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==}
 
@@ -4867,6 +4850,9 @@ packages:
 
   unist-util-position@5.0.0:
     resolution: {integrity: sha512-fucsC7HjXvkB5R3kTCO7kUjRdrS0BJt3M/FPxmHMBOm8JQi2BsHAHFsy27E0EolP8rp0NzXsJ+jNPyDWvOJZPA==}
+
+  unist-util-remove-position@5.0.0:
+    resolution: {integrity: sha512-Hp5Kh3wLxv0PHj9m2yZhhLt58KzPtEYKQQ4yxfYFEO7EvHwzyDYnduhHnY1mDxoqr7VUwVuHXk9RXKIiYS1N8Q==}
 
   unist-util-stringify-position@4.0.0:
     resolution: {integrity: sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ==}
@@ -6439,13 +6425,12 @@ snapshots:
       - shiki
       - supports-color
 
-  '@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))':
+  '@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))':
     dependencies:
       '@mdx-js/rollup': 3.1.1(acorn@8.15.0)(rollup@4.46.2)
       gray-matter: 4.0.3
       lucide-react: 0.477.0(react@19.1.1)
       micromatch: 4.0.8
-      path-browserify: 1.0.1
       prism-react-renderer: 2.4.1(react@19.1.1)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
@@ -6456,7 +6441,6 @@ snapshots:
       remark-gfm: 4.0.1
       remark-parse: 11.0.0
       remark-rehype: 11.1.2
-      remark-toc: 9.0.0
       unified: 11.0.5
       vite: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
     transitivePeerDependencies:
@@ -6466,14 +6450,14 @@ snapshots:
       - shiki
       - supports-color
 
-  '@rasenganjs/serve@1.2.0(rasengan@1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))':
+  '@rasenganjs/serve@1.2.0(rasengan@1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))':
     dependencies:
       chalk: 5.6.2
       compression: 1.8.1
       express: 4.22.1
       get-port: 7.1.0
       morgan: 1.10.1
-      rasengan: 1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
+      rasengan: 1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - supports-color
@@ -6518,10 +6502,10 @@ snapshots:
     dependencies:
       react: 19.1.1
 
-  '@rasenganjs/vercel@1.1.3(rasengan@1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))':
+  '@rasenganjs/vercel@1.1.3(rasengan@1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))':
     dependencies:
       execa: 8.0.1
-      rasengan: 1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
+      rasengan: 1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
@@ -6801,6 +6785,8 @@ snapshots:
 
   '@types/http-errors@2.0.4': {}
 
+  '@types/katex@0.16.8': {}
+
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -6822,10 +6808,6 @@ snapshots:
   '@types/ncp@2.0.8':
     dependencies:
       '@types/node': 24.10.4
-
-  '@types/node@20.19.27':
-    dependencies:
-      undici-types: 6.21.0
 
   '@types/node@20.19.39':
     dependencies:
@@ -7061,10 +7043,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  brace-expansion@2.0.1:
-    dependencies:
-      balanced-match: 1.0.2
-
   brace-expansion@2.0.2:
     dependencies:
       balanced-match: 1.0.2
@@ -7199,6 +7177,8 @@ snapshots:
   commander@13.1.0: {}
 
   commander@4.1.1: {}
+
+  commander@8.3.0: {}
 
   compare-func@2.0.0:
     dependencies:
@@ -7613,15 +7593,6 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
-  framer-motion@12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      motion-dom: 12.23.12
-      motion-utils: 12.23.6
-      tslib: 2.8.1
-    optionalDependencies:
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-
   framer-motion@12.38.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
       motion-dom: 12.38.0
@@ -7681,15 +7652,6 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  glob@11.0.2:
-    dependencies:
-      foreground-child: 3.3.1
-      jackspeak: 4.1.1
-      minimatch: 10.0.1
-      minipass: 7.1.2
-      package-json-from-dist: 1.0.1
-      path-scurry: 2.0.0
-
   glob@13.0.6:
     dependencies:
       minimatch: 10.2.5
@@ -7728,6 +7690,19 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hast-util-from-dom@5.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      hastscript: 9.0.1
+      web-namespaces: 2.0.1
+
+  hast-util-from-html-isomorphic@2.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      hast-util-from-dom: 5.0.1
+      hast-util-from-html: 2.0.3
+      unist-util-remove-position: 5.0.0
+
   hast-util-from-html@2.0.3:
     dependencies:
       '@types/hast': 3.0.4
@@ -7747,6 +7722,10 @@ snapshots:
       vfile: 6.0.3
       vfile-location: 5.0.3
       web-namespaces: 2.0.1
+
+  hast-util-is-element@3.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
 
   hast-util-parse-selector@4.0.0:
     dependencies:
@@ -7810,6 +7789,13 @@ snapshots:
   hast-util-to-string@3.0.1:
     dependencies:
       '@types/hast': 3.0.4
+
+  hast-util-to-text@4.0.2:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/unist': 3.0.3
+      hast-util-is-element: 3.0.0
+      unist-util-find-after: 5.0.0
 
   hast-util-whitespace@3.0.0:
     dependencies:
@@ -8004,10 +7990,6 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jackspeak@4.1.1:
-    dependencies:
-      '@isaacs/cliui': 8.0.2
-
   jiti@2.6.1: {}
 
   joycon@3.1.1: {}
@@ -8022,6 +8004,10 @@ snapshots:
   jsesc@3.1.0: {}
 
   json5@2.2.3: {}
+
+  katex@0.16.44:
+    dependencies:
+      commander: 8.3.0
 
   kind-of@6.0.3: {}
 
@@ -8253,6 +8239,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mdast-util-math@3.0.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      longest-streak: 3.1.0
+      mdast-util-from-markdown: 2.0.2
+      mdast-util-to-markdown: 2.1.2
+      unist-util-remove-position: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   mdast-util-mdx-expression@2.0.1:
     dependencies:
       '@types/estree-jsx': 1.0.5
@@ -8430,6 +8428,16 @@ snapshots:
       micromark-extension-gfm-tagfilter: 2.0.0
       micromark-extension-gfm-task-list-item: 2.1.0
       micromark-util-combine-extensions: 2.0.1
+      micromark-util-types: 2.0.2
+
+  micromark-extension-math@3.1.0:
+    dependencies:
+      '@types/katex': 0.16.8
+      devlop: 1.1.0
+      katex: 0.16.44
+      micromark-factory-space: 2.0.1
+      micromark-util-character: 2.1.1
+      micromark-util-symbol: 2.0.1
       micromark-util-types: 2.0.2
 
   micromark-extension-mdx-expression@3.0.1:
@@ -8640,10 +8648,6 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
-  minimatch@10.0.1:
-    dependencies:
-      brace-expansion: 2.0.1
-
   minimatch@10.2.5:
     dependencies:
       brace-expansion: 5.0.5
@@ -8677,25 +8681,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  motion-dom@12.23.12:
-    dependencies:
-      motion-utils: 12.23.6
-
   motion-dom@12.38.0:
     dependencies:
       motion-utils: 12.36.0
 
-  motion-utils@12.23.6: {}
-
   motion-utils@12.36.0: {}
-
-  motion@12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      framer-motion: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      tslib: 2.8.1
-    optionalDependencies:
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
 
   motion@12.38.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
@@ -8852,11 +8842,6 @@ snapshots:
       lru-cache: 10.4.3
       minipass: 7.1.2
 
-  path-scurry@2.0.0:
-    dependencies:
-      lru-cache: 11.1.0
-      minipass: 7.1.2
-
   path-scurry@2.0.2:
     dependencies:
       lru-cache: 11.1.0
@@ -9009,7 +8994,7 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  rasengan@1.2.1(@rasenganjs/mdx@1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)):
+  rasengan@1.2.1(@rasenganjs/mdx@1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)))(@types/node@25.0.3)(less@4.5.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.97.2)(stylus@0.64.0)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)):
     dependencies:
       '@vitejs/plugin-react': 4.7.0(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
       chalk: 5.6.2
@@ -9025,7 +9010,7 @@ snapshots:
       react-router: 7.12.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       vite: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0)
     optionalDependencies:
-      '@rasenganjs/mdx': 1.2.0-beta.8(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
+      '@rasenganjs/mdx': 1.2.1(@types/react@19.2.7)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rollup@4.46.2)(shiki@1.29.2)(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.97.2)(stylus@0.64.0)(tsx@4.21.0)(yaml@2.8.0))
       '@types/node': 25.0.3
       less: 4.5.1
       sass: 1.97.2
@@ -9219,6 +9204,16 @@ snapshots:
     dependencies:
       regex-utilities: 2.3.0
 
+  rehype-katex@7.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/katex': 0.16.8
+      hast-util-from-html-isomorphic: 2.0.0
+      hast-util-to-text: 4.0.2
+      katex: 0.16.44
+      unist-util-visit-parents: 6.0.2
+      vfile: 6.0.3
+
   rehype-parse@9.0.1:
     dependencies:
       '@types/hast': 3.0.4
@@ -9256,6 +9251,15 @@ snapshots:
       micromark-extension-gfm: 3.0.0
       remark-parse: 11.0.0
       remark-stringify: 11.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+
+  remark-math@6.0.0:
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-math: 3.0.0
+      micromark-extension-math: 3.1.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
@@ -9324,11 +9328,6 @@ snapshots:
       signal-exit: 4.1.0
 
   rfdc@1.4.1: {}
-
-  rimraf@6.0.1:
-    dependencies:
-      glob: 11.0.2
-      package-json-from-dist: 1.0.1
 
   rimraf@6.1.3:
     dependencies:
@@ -9700,8 +9699,6 @@ snapshots:
       media-typer: 0.3.0
       mime-types: 2.1.35
 
-  typescript@5.9.2: {}
-
   typescript@5.9.3: {}
 
   ufo@1.6.3: {}
@@ -9723,6 +9720,11 @@ snapshots:
       trough: 2.2.0
       vfile: 6.0.3
 
+  unist-util-find-after@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+
   unist-util-is@6.0.1:
     dependencies:
       '@types/unist': 3.0.3
@@ -9734,6 +9736,11 @@ snapshots:
   unist-util-position@5.0.0:
     dependencies:
       '@types/unist': 3.0.3
+
+  unist-util-remove-position@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-visit: 5.0.0
 
   unist-util-stringify-position@4.0.0:
     dependencies:

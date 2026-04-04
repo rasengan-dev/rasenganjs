@@ -27,14 +27,14 @@ export default function Navbar({ className }: Props) {
   return (
     <div
       className={twMerge(
-        'fixed top-0 left-0 w-full z-30 border-b-[1px] border-b-border/60',
+        'fixedd top-0d left-0d w-full z-30 border-b-[1px] border-b-border/60',
         showBanner ? 'top-[60px]' : 'top-0'
       )}
     >
       <header
         id="navbar"
         className={twMerge(
-          'fixed top-0 left-0 right-0 z-30 bg-background/70 backdrop-blur-md w-full h-[60px] flex items-center justify-between px-4',
+          'fixedd top-0d left-0d right-0d z-30 bg-background/70 backdrop-blur-md w-full h-[60px] flex items-center justify-between px-4',
           className
         )}
       >

@@ -41,7 +41,7 @@ export default function BlogDetailsHeader({}: Props) {
       </div>
 
       <div className="flex flex-col-reverse items-start w-full gap-2 mt-8">
-        <h1 className="text-[2.5rem]">{title}</h1>
+        <h1 className="text-[2.5rem] font-semibold">{title}</h1>
 
         <span
           className={twMerge(

@@ -3,6 +3,8 @@ import { rasengan } from 'rasengan/plugin';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@rasenganjs/mdx/plugin';
 import { configure } from '@rasenganjs/vercel';
+// import remarkMath from 'remark-math';
+// import rehypeKatex from 'rehype-katex';
 
 export default defineConfig(async () => {
   return {
@@ -10,7 +12,11 @@ export default defineConfig(async () => {
 
     vite: {
       plugins: [
-        mdx({ code: { keepBackground: false } }),
+        mdx({
+          // rehypePlugins: [rehypeKatex],
+          // remarkPlugins: [remarkMath],
+          code: { keepBackground: false },
+        }),
         tailwindcss(),
         rasengan({ adapter: configure() }),
       ],

@@ -1,166 +1,44 @@
 ---
-metadata:
-  title: Rasengan MDX Package - Modules | Packages | Rasengan.js
-  description: Documentation for the Rasengan MDX package.
-toc: true
+metadata: 
+  title: Rasengan v1.2.1
+  description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+  openGraph:
+    title: Rasengan v1.2.1
+    description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.1.png'
+  twitter:
+    title: Rasengan v1.2.1
+    description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.1.png'
 ---
 
 
-<span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
-  PACKAGES
-</span>
-# Rasengan MDX
+<BlogDetailsHeader />
 
-The `@rasenganjs/mdx` package allows you to use MDX (Markdown + JSX) files as pages in your Rasengan.js project. This enables you to write content using Markdown while embedding React components seamlessly.
+`Rasengan v1.2.1` is now available on [npm](https://www.npmjs.com/package/rasengan).
 
-## Installation
 
-```bash title="Terminal"
-npm install @rasenganjs/mdx
-```
+We are excited to announce the release of Rasengan.js v1.2.1 🎉
+This version is a patch version of v1.2.x that aims to support the new version of `@rasenganjs/mdx` which introduces custom MDX components under the hood.
 
-## Configuration
+## What's new in Rasengan v1.2.1?
 
-Before you can use MDX pages in your Rasengan.js project, you need to configure the `mdx` plugin in your `rasengan.config.js` file.
-
-```javascript title="rasengan.config.js" showLineNumbers {2,6}
-import { defineConfig } from 'rasengan';
-import mdx from '@rasenganjs/mdx/plugin';
-
-export default defineConfig({
-  vite: {
-    plugins: [mdx()],
-  }
-});
-```
-
-## Usage
-
-### From Markdown files to MDX Pages
-
-Follow these steps to create an MDX page in your Rasengan.js project:
-
-<StepItem
-  step="01"
-  title="Create an MDX Page"
-  content={`
-    Place an \`.mdx\` or \`.md\` file inside the \`app\` directory with the format \`[name].page.mdx\` or \`[name].page.md\`. For example, you can create a \`blog.page.mdx\` file with the following content:
-  `}
->
-```mdx title="blog.page.mdx"
----
-path: /blog
-metadata:
-  title: Blog Page
-  description: Discover our new blog posts
----
-
-# Blog Page
-
-This is a `blog` page.
-```
-</StepItem>
-
-<StepItem
-  step="02"
-  title="Register the MDX Page in the Router"
-  content={`
-    Import the MDX page component you just created, then add it to your router configuration. For example:
-  `}
->
-```typescript title="app.router.ts" showLineNumbers {3,10}
-import { RouterComponent, defineRouter } from 'rasengan';
-import AppLayout from '@app/app.layout';
-import Blog from '@app/blog.page.mdx';
-
-class AppRouter extends RouterComponent {}
-
-export default defineRouter({
-  imports: [],
-  layout: AppLayout,
-  pages: [Blog],
-})(AppRouter);
-```
-</StepItem>
-
-<StepItem
-  step="03"
-  title="Load the MDX Styles"
-  content={`
-    To ensure proper styling for your MDX pages, import the CSS file from \`@rasenganjs/mdx\` in your \`main.ts\` file. For example:
-  `}
->
-```typescript title="main.ts" showLineNumbers {1}
-import "@rasenganjs/mdx/css";
-import { type AppProps } from "rasengan";
-import AppRouter from "@/app/app.router";
-
-export default function App({ children, Component }: AppProps) {
-  return <Component router={AppRouter}>{children}</Component>;
-}
-```
-</StepItem>
-
-<StepItem
-  step="04"
-  title="Run the Project and Visit /blog"
-  content={`
-    Start your development server and navigate to the URL of the MDX page you created. For example:
-  `}
->
-```bash title="Terminal"
-npm run dev
-```
-</StepItem>
-
-### From Markdown string to MDX Component
-
-You can also use the `Markdown` component to render markdown content from a string. This is useful when you want to render dynamic content or when you need to render markdown content from an API response.
-
-<StepItem
-  step="01"
-  title="Load the MDX Styles"
-  content={`
-    To ensure proper styling for your MDX pages, import the CSS file from \`@rasenganjs/mdx\` in your \`main.ts\` file. For example:
-  `}
->
-```typescript title="main.ts" showLineNumbers {1}
-import "@rasenganjs/mdx/css";
-import { type AppProps } from "rasengan";
-import AppRouter from "@/app/app.router";
-
-export default function App({ children, Component }: AppProps) {
-  return <Component router={AppRouter}>{children}</Component>;
-}
-```
-</StepItem>
-
-<StepItem
-  step="02"
-  title="Create an MDX Component"
-  content={`
-    Use the \`Markdown\` component from \`@rasengan/mdx\` to render markdown content from a string. For example:
-  `}
->
-```tsx title="MDX Component" showLineNumbers {1,4}
-import { Markdown } from '@rasengan/mdx';
-
-const mdContent = "# Hello, World!";
-const MyComponent = () => <Markdown content={mdContent} />;
-```
-</StepItem>
-
-## Custom MDX Components
+Rasengan v1.2.1 introduces just one key feature: `Custom MDX components via @rasenganjs/mdx package`
 
 The `@rasenganjs/mdx` package now supports custom MDX components, allowing you to completely customize how your MDX content is rendered. This powerful feature gives you full control over the styling, behavior, and layout of your markdown content.
 
-### How it works
+<Note type="info" title="Info">
+Learn more about the <Link to="/packages/mdx">@rasenganjs/mdx</Link> package that support **Markdown** into Rasengan.js
+</Note>
+
+## How it works
 
 The MDX system automatically detects a `mdx-components.{js,jsx,ts,tsx}` file in your project root and uses it to configure how MDX content is rendered. This file exports a configuration object created using the `defineMDXConfig` function.
 
-### Setting up custom MDX components
+## Setting up custom MDX components
 
-#### 1. Create the configuration file
+### 1. Create the configuration file
 
 Create a `mdx-components.tsx` (or `.jsx`) file in your project root:
 
@@ -180,7 +58,7 @@ export default defineMDXConfig({
 });
 ```
 
-#### 2. Customize markdown elements
+### 2. Customize markdown elements
 
 You can override any standard markdown element by providing custom React components:
 
@@ -250,7 +128,7 @@ export default defineMDXConfig({
 });
 ```
 
-#### 3. Enhanced code block styling
+### 3. Enhanced code block styling
 
 The system provides special handling for code blocks with language detection and syntax highlighting:
 
@@ -306,7 +184,7 @@ export default defineMDXConfig({
 });
 ```
 
-#### 4. Custom table of contents
+### 4. Custom table of contents
 
 Create a custom table of contents with active section tracking:
 
@@ -369,7 +247,7 @@ export default defineMDXConfig({
 });
 ```
 
-#### 5. Custom layout component
+### 5. Custom layout component
 
 Define the overall layout structure for your MDX pages:
 
@@ -392,7 +270,7 @@ export default defineMDXConfig({
 });
 ```
 
-#### 6. Adding custom components
+### 6. Adding custom components
 
 You can also add completely custom components that can be used directly in your MDX files:
 
@@ -440,7 +318,7 @@ Now you can use these components directly in your MDX:
 </Callout>
 ```
 
-### Available utilities
+## Available utilities
 
 The `@rasenganjs/mdx` package provides several utility functions:
 
@@ -449,7 +327,7 @@ The `@rasenganjs/mdx` package provides several utility functions:
 - `getIconForLanguageExtension(language)` - Gets icon for code block languages
 - `extractTOC(content)` - Extracts table of contents from markdown content
 
-### Configuration options
+## Configuration options
 
 The `defineMDXConfig` function accepts the following options:
 
@@ -473,7 +351,7 @@ type MDXConfigProps = {
 };
 ```
 
-### Automatic detection
+## Automatic detection
 
 The MDX system automatically:
 - Detects `mdx-components.{js,jsx,ts,tsx}` in your project root
@@ -482,120 +360,4 @@ The MDX system automatically:
 - Handles both client-side and server-side rendering
 
 This feature makes it incredibly easy to create consistent, beautifully styled documentation sites with Rasengan.js!
-
-## API
-
-### defineMDXConfig
-
-The `defineMDXConfig` function is used to create the MDX configuration object.
-
-```tsx title="mdx-components.jsx" showLineNumbers
-import { defineMDXConfig } from '@rasenganjs/mdx';
-
-export default defineMDXConfig({
-  components: {
-    // Custom components
-  },
-  toc: (toc) => {
-    // Custom TOC rendering
-  },
-  layout: ({ children, toc }) => {
-    // Custom layout
-  },
-});
-```
-
-### Markdown
-
-The `Markdown` component is used to render markdown content from a string.
-
-```tsx title="Markdown.tsx"
-import { Markdown } from '@rasengan/mdx';
-```
-
-#### Props
-
-| Name     | Type     | Description                 |
-|----------|----------|-----------------------------|
-| content  | string   | The markdown content to render. |
-| className | string | The class name to apply to the rendered markdown content. |
-
-### mdx() Plugin
-
-The `mdx()` plugin is used to enable MDX support in your Rasengan.js project.
-
-```javascript title="rasengan.config.js" showLineNumbers {2,6}
-import { defineConfig } from 'rasengan';
-import mdx from '@rasengan/mdx/plugin';
-
-export default defineConfig({
-  vite: {
-    plugins: [mdx()],
-  }
-});
-```
-
-#### Options
-
-The `mdx()` plugin accepts the following configuration options:
-
-```typescript title="MDX Plugin Options"
-type MDXConfig = {
-  remarkPlugins?: PluggableList;
-  rehypePlugins?: PluggableList;
-  code?: {
-    theme?: Options['theme'];
-    keepBackground?: Options['keepBackground'];
-  };
-};
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `remarkPlugins` | `PluggableList` | Array of [remark plugins](https://remark.js.org/) to process the markdown. Defaults to `[]`. |
-| `rehypePlugins` | `PluggableList` | Array of [rehype plugins](https://rehypejs.org/) to process the HTML. Defaults to `[]`. |
-| `code.theme` | `Options['theme']` | Syntax highlighting theme for code blocks. Defaults to `{ light: 'one-light', dark: 'one-dark-pro' }`. |
-| `code.keepBackground` | `Options['keepBackground']` | Whether to keep the original background color in code blocks. Defaults to `true`. |
-
-#### Example with custom options
-
-```javascript title="rasengan.config.js" showLineNumbers {2,11}
-import { defineConfig } from 'rasengan';
-import mdx from '@rasengan/mdx/plugin';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-
-export default defineConfig({
-  vite: {
-    plugins: [
-      mdx({
-        remarkPlugins: [remarkMath],
-        rehypePlugins: [rehypeKatex],
-        code: {
-          theme: {
-            light: 'github-light',
-            dark: 'github-dark',
-          },
-          keepBackground: false,
-        },
-      }),
-    ],
-  }
-});
-```
-
-## Community
-
-Join the Rasengan.js community to get support, ask questions, and share your projects:
-
-- <a href="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> – Ask questions and share ideas.
-{/* - **Discord** – Chat with the community. */}
-- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">X (Twitter)</a> – Stay updated with the latest news.
-- <a href="https://www.linkedin.com/company/rasenganjs/" target="_blank" rel="noopener noreferrer">Linkedin</a> – Follow the company page.
-
-Let's build something amazing with Rasengan.js! 🚀
-
-## License
-
-This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).
 

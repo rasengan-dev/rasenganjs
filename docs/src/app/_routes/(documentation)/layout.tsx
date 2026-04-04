@@ -10,6 +10,7 @@ import { useTheme } from '@rasenganjs/theme';
 import { twMerge } from 'tailwind-merge';
 import { ScrollRestoration } from '@/components/common/molecules/scroll-restoration';
 import { useBannerStore } from '@/store/banner';
+import { cn } from '@/lib/utils';
 
 const DocsLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
@@ -28,7 +29,12 @@ const DocsLayout: LayoutComponent = () => {
       ref={targetRef}
     >
       <ScrollRestoration target={targetRef} />
-      <Navbar />
+      <Navbar
+        className={cn(
+          'fixed top-0 left-0 right-0 z-30 mx-auto px-4',
+          showBanner && 'top-[60px]'
+        )}
+      />
 
       <div
         className={twMerge(

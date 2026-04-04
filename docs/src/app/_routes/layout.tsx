@@ -44,13 +44,11 @@ const RootLayout: LayoutComponent = () => {
         <Link
           to="https://ui.rasengan.dev"
           target="_blank"
-          className="hover:underline"
+          className="hover:underline underline-offset-4 text-white"
         >
-          <div className="text-white/80">
-            We are introducing{' '}
-            <strong className="text-white">Rasengan UI Kit</strong> - Get{' '}
-            <span className="text-white">40% discount</span> for the first{' '}
-            <span className="text-white">100 shinobis 🚀</span>
+          <div className="">
+            Rasengan UI is now{' '}
+            <strong className="text-white">Free and Open Source</strong>
           </div>
         </Link>
       </Banner>
