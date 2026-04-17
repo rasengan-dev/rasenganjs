@@ -44,7 +44,7 @@ const Home = () => {
           <p className="text-sm mt-4 font-Lexend text-center">
             To get started, edit the file{' '}
             <code className="ml-1 font-azeret font-light italic">
-              src/app/home.page.jsx
+              src/app/_routes/index.page.jsx
             </code>
           </p>
         </div>
@@ -128,7 +128,6 @@ const InfoCard = ({ title, desc, link, linkText }) => (
   </div>
 );
 
-Home.path = '/';
 Home.metadata = {
   title: 'Home',
   description: 'Home page',

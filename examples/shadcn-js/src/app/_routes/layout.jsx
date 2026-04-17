@@ -1,14 +1,12 @@
 import React from 'react';
-import { Outlet, LayoutComponent } from 'rasengan';
+import { Outlet } from 'rasengan';
 
-const AppLayout: LayoutComponent = () => {
+const AppLayout = () => {
   return (
     <React.Fragment>
       <Outlet />
     </React.Fragment>
   );
 };
-
-AppLayout.path = '/';
 
 export default AppLayout;
