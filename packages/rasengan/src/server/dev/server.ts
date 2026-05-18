@@ -212,6 +212,7 @@ async function createDevNodeServer({
       hmr: {
         // TODO: Find a way to use a random port
         port: generateRandomPort(),
+        overlay: false,
       },
     },
     base,

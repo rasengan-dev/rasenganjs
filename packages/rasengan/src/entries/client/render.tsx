@@ -8,6 +8,7 @@ import {
   preloadMatches,
 } from '../../routing/utils/generate-routes.js';
 import { createBrowserRouter, RouterProvider } from 'react-router';
+import { ErrorOverlayProvider } from '../../routing/error-overlay/index.js';
 
 const isSpaMode = Boolean(window.__RASENGAN_SPA_MODE__);
 
@@ -46,8 +47,13 @@ export default async function renderApp(
   // Generate client router
   const ClientRouter = () => <RouterProvider router={router} />;
 
+  // Detect dev mode
+  const devMode =
+    typeof import.meta !== 'undefined' &&
+    (import.meta as { env?: { DEV?: boolean } }).env?.DEV === true;
+
   // Generate app tree
-  const appTree = options.reactStrictMode ? (
+  const appContent = options.reactStrictMode ? (
     <StrictMode>
       <App
         Component={(props) => (
@@ -59,6 +65,10 @@ export default async function renderApp(
     <App
       Component={(props) => <RootComponent {...props} Router={ClientRouter} />}
     />
+  );
+
+  const appTree = (
+    <ErrorOverlayProvider devMode={devMode}>{appContent}</ErrorOverlayProvider>
   );
 
   // Render app

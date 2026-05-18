@@ -8,6 +8,7 @@ import {
 } from 'react-router';
 import { useEffect, useRef } from 'react';
 import { RasenganPageComponentProps } from '../types.js';
+import { errorStore } from '../error-overlay/error-store.js';
 
 // Extract the environment variables
 const extractEnv = () => {
@@ -80,123 +81,27 @@ export function ErrorBoundary() {
       </section>
     );
 
-  if (isRouteErrorResponse(error)) {
-    return (
-      <section
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 100,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          width: '100vw',
-          gap: 10,
-          backgroundColor: '#fff',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '18px',
-          }}
-        >
-          Application Error
-        </p>
-        <h1
-          style={{
-            fontSize: '18px',
-          }}
-        >
-          {error.status} {error.statusText}
-        </h1>
-        <p
-          style={{
-            fontSize: '18px',
-          }}
-        >
-          {error.data}
-        </p>
-      </section>
-    );
-  } else if (error instanceof Error) {
-    return (
-      <section
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 100,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'start',
-          alignItems: 'start',
-          height: '100vh',
-          width: '100vw',
-          padding: 20,
-          backgroundColor: '#fff',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '1.4rem',
-            fontWeight: 'bold',
-            marginBottom: 5,
-          }}
-        >
-          Application Error
-        </h1>
-        <p
-          style={{
-            fontSize: '1rem',
-            marginBottom: 10,
-          }}
-        >
-          {error.message}
-        </p>
+  useEffect(() => {
+    if (!DEV) return;
 
-        <div
-          style={{
-            marginTop: 20,
-            overflow: 'auto',
-            width: '100%',
-            maxHeight: '100vh',
-            padding: '10px 20px',
-            borderRadius: 10,
-            backgroundColor: '#f5f5f5',
-          }}
-        >
-          <p
-            style={{
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-              color: '#000',
-            }}
-          >
-            The stack trace is:
-          </p>
-          <pre
-            style={{
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word',
-              fontSize: '1rem',
-              color: '#ff0000aa',
-            }}
-          >
-            {error.stack}
-          </pre>
-        </div>
-      </section>
-    );
-  } else {
-    return <h1>Unknown Error</h1>;
-  }
+    const err =
+      error instanceof Error
+        ? error
+        : isRouteErrorResponse(error)
+          ? new Error(`${error.status} ${error.statusText}: ${error.data}`)
+          : new Error(String(error));
+
+    errorStore.addError(err, 'route');
+  }, [error, DEV]);
+
+  return (
+    <div className="rasengan-route-error">
+      <span>&#9888;&#65039; Route Error</span>
+      <span className="rasengan-route-error-detail">
+        Check error overlay for details
+      </span>
+    </div>
+  );
 }
 
 /**
