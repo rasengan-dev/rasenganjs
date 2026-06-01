@@ -12,33 +12,32 @@ import { preRenderApp } from '../../server/node/index.js';
 function loadRasenganGlobal(): Plugin {
   return {
     name: 'vite-plugin-rasengan-config',
-    async config(_, { command }) {
-      if (command !== 'build') return;
+    async config() {
+      let version = '';
 
-      const packageJsonPath = resolve(process.cwd(), 'package.json');
+      try {
+        const rasenganPkgPath = resolve(
+          process.cwd(),
+          'node_modules/rasengan/package.json'
+        );
 
-      if (!fs.existsSync(packageJsonPath)) {
-        throw new Error(`Package.json file not found at: ${packageJsonPath}`);
-      }
-
-      const packageJsonRaw = fs.readFileSync(packageJsonPath, {
-        encoding: 'utf-8',
-      });
-      const packageJson = JSON.parse(packageJsonRaw);
+        if (fs.existsSync(rasenganPkgPath)) {
+          const raw = fs.readFileSync(rasenganPkgPath, { encoding: 'utf-8' });
+          version = JSON.parse(raw).version || '';
+        }
+      } catch {}
 
       const rasenganConfig = {
-        version: packageJson.version,
+        version,
         ssr: true,
       };
 
-      // Inject the configuration as a global constant
       return {
         define: {
           ['Rasengan']: JSON.stringify(rasenganConfig),
         },
       };
     },
-    apply: 'build',
   };
 }
 

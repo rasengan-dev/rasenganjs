@@ -50,4 +50,5 @@ declare module 'virtual:rasengan/router' {
 interface Window {
   __staticRouterHydrationData: any;
   __RASENGAN_SPA_MODE__: boolean;
+  __RASENGAN_SSR_ERROR__?: { message: string; stack?: string; name: string };
 }
