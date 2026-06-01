@@ -15,6 +15,18 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Rasengan v1.2.2 - Error overlay, LLM support & agent skills',
+    description: `
+      We are publishing Rasengan v1.2.2, a new version of the framework that introduces a developer-friendly error overlay, LLM support files, and agent skills for AI-powered development.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'June 01, 2026',
+    link: '/blog/rasengan-v1-2-2',
+    image: '/assets/blog/rasengan-1.2.2.png',
+    readingTime: '4 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan v1.2.1 - Introducing custom MDX components',
     description: `
       We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.

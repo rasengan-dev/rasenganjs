@@ -1,0 +1,112 @@
+---
+metadata: 
+  title: Rasengan v1.2.2
+  description: We are publishing Rasengan v1.2.2, a new version of the framework that introduces a developer-friendly error overlay, LLM support files, and agent skills for AI-powered development.
+  openGraph:
+    title: Rasengan v1.2.2
+    description: We are publishing Rasengan v1.2.2, a new version of the framework that introduces a developer-friendly error overlay, LLM support files, and agent skills for AI-powered development.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.2.png'
+  twitter:
+    title: Rasengan v1.2.2
+    description: We are publishing Rasengan v1.2.2, a new version of the framework that introduces a developer-friendly error overlay, LLM support files, and agent skills for AI-powered development.
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.2.png'
+---
+
+
+<BlogDetailsHeader />
+
+`Rasengan v1.2.2` is now available on [npm](https://www.npmjs.com/package/rasengan).
+
+<br />
+
+We are excited to announce the release of Rasengan.js v1.2.2 🎉
+
+This version focuses on **developer experience** and **AI-assisted development**, introducing:
+
+- [**Error Overlay System**](/blog/rasengan-v1-2-2#error-overlay-system)
+- [**LLM Support Files**](/blog/rasengan-v1-2-2#llm-support-files)
+- [**Agent Skills for AI-Powered Development**](/blog/rasengan-v1-2-2#agent-skills)
+
+## What's new in Rasengan v1.2.2?
+
+### Error Overlay System
+
+Rasengan v1.2.2 introduces a **completely redesigned error handling experience** with a developer-friendly overlay that catches errors from every source:
+
+- **React rendering errors** — Caught by a class-based `ErrorBoundaryFallback` component wrapping your application tree
+- **Route loader errors** — Every route is automatically wrapped with an error boundary that feeds into the overlay
+- **Global unhandled errors and rejections** — `window.onerror` and `window.onunhandledrejection` are registered and captured
+- **Vite HMR errors** — Errors during hot module replacement are displayed in the overlay
+- **SSR errors** — Server-side rendering errors are serialized into `window.__RASENGAN_SSR_ERROR__` and forwarded to the client overlay after hydration
+
+#### Developer-first features
+
+The overlay is **dark-themed** and designed for rapid debugging:
+
+- **Error navigation** — When multiple errors occur, you can paginate through them with previous/next controls
+- **Source code preview** — The overlay fetches source context from the Vite dev server via `?raw` and displays a code snippet around the error location
+- **Component stack** — Shows the React component stack alongside the native JavaScript stack trace
+- **Minimizable** — Click the minimize button to collapse the overlay into a small FAB (floating action button) that shows the error count
+
+<AlertWithLink status="info" title="Note" link="/docs/routing/error-handling">
+  Learn more about the new error handling system in the documentation.
+</AlertWithLink>
+
+#### Production safety
+
+In production, the overlay is replaced by a minimal, user-friendly fallback message, ensuring your users never see debugging internals.
+
+### LLM Support Files
+
+Rasengan v1.2.2 adds first-class support for **AI-powered development** by introducing:
+
+- **`llms.txt`** — A comprehensive LLM-readable documentation file at `docs/public/llms.txt` that covers the entire framework: routing, rendering modes, configuration, packages, API reference, and quick-start guides. This file follows the [llms.txt](https://llmstxt.org) standard, making the entire Rasengan documentation available to coding agents and LLMs in a single, structured document.
+
+- **`AGENTS.md`** — A detailed AI agent codebase guide at the monorepo root that provides complete context about the project structure, architecture, data flow, conventions, and key types. This file is auto-loaded by compatible coding agents when working with Rasengan.js projects.
+
+<Note type="info" title="Info">
+  These files enable AI coding assistants to understand your Rasengan.js project deeply, leading to more accurate code generation and contextual assistance.
+</Note>
+
+### Agent Skills
+
+Rasengan v1.2.2 introduces **Agent Skills** — specialized, installable packages that teach AI coding agents how to work with specific parts of the framework. These skills are available from the dedicated [agent-skills](https://github.com/rasengan-dev/agent-skills) repository.
+
+The following skills are available:
+
+| Skill | Description | Install |
+|-------|-------------|---------|
+| `rasengan-pages` | Page/layout components, metadata, MDX pages, entry points, navigation, 404 | `npx skills add rasengan-dev/agent-skills@rasengan-pages` |
+| `rasengan-routing` | Router definition, config-based/file-based routing, dynamic routes | `npx skills add rasengan-dev/agent-skills@rasengan-routing` |
+| `rasengan-config` | Project configuration, SSR/SSG/SPA modes, CLI commands, env vars | `npx skills add rasengan-dev/agent-skills@rasengan-config` |
+| `rasengan-data-fetching` | Loader functions, SSG static paths, loading states | `npx skills add rasengan-dev/agent-skills@rasengan-data-fetching` |
+| `rasengan-styling` | CSS Modules, Tailwind CSS, Sass/Less/Stylus | `npx skills add rasengan-dev/agent-skills@rasengan-styling` |
+| `rasengan-project-setup` | Project scaffolding, create-rasengan CLI, file structure | `npx skills add rasengan-dev/agent-skills@rasengan-project-setup` |
+| `rasengan-optimizing` | Static assets, metadata/SEO, Sage Mode / React Compiler | `npx skills add rasengan-dev/agent-skills@rasengan-optimizing` |
+| `rasengan-deployment` | Vercel adapter, Node.js self-hosting, build output | `npx skills add rasengan-dev/agent-skills@rasengan-deployment` |
+| `rasengan-ecosystem` | Kurama, Image, Theme, i18n, Kage Demo, MDX | `npx skills add rasengan-dev/agent-skills@rasengan-ecosystem` |
+
+#### Install all skills
+
+```bash
+npx skills add rasengan-dev/agent-skills --all
+```
+
+#### Install individual skills
+
+```bash
+npx skills add rasengan-dev/agent-skills@rasengan-<skill-name> -g -y
+```
+
+These skills are automatically loaded by compatible coding agents when you open a Rasengan.js project, providing **context-aware code generation, explanations, and best practices** tailored to the framework.
+
+---
+
+As always, feedback and contributions are welcome.
+
+**Rasengan.js v1.2.2** — making development smoother with better error handling and smarter AI assistance.
+
+Happy building 🌀
+
+[Upgrade now](/docs/getting-started/upgrading#upgrade-from-1.2.x-to-1.2.2) and have fun Ninja!
