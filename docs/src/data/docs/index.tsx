@@ -21,6 +21,7 @@ export type NavigationItem = {
   isNew?: boolean;
   isComingSoon?: boolean;
   isBeta?: boolean;
+  external?: boolean;
 };
 
 export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
@@ -55,6 +56,14 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
           link: '/docs/getting-started/upgrading',
           level: 2,
           isNew: true,
+        },
+        {
+          id: randomId(),
+          name: 'llms.txt',
+          link: '/llms.txt',
+          level: 2,
+          isNew: true,
+          external: true,
         },
       ],
     },
@@ -526,6 +535,12 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
       name: 'Docs',
       level: 1,
       link: '/docs/getting-started/introduction',
+    },
+    {
+      id: randomId(),
+      name: 'Skills',
+      level: 1,
+      link: '/skills',
     },
     {
       id: randomId(),

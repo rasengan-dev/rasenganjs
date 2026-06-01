@@ -52,7 +52,7 @@ const RootLayout: LayoutComponent = () => {
           </div>
         </Link>
       </Banner>
-      <div className="relative w-screen lh-screen">
+      <div className="relative w-screen overflow-x-hidden">
         <Outlet />
       </div>
 
