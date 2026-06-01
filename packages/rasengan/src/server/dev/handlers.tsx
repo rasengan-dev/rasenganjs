@@ -128,11 +128,6 @@ export async function handleDocumentRequest(
       //   });
       // }
 
-      // Set headers
-      res.writeHead(context.statusCode, {
-        ...Object.fromEntries(headers),
-      });
-
       const Router = (
         <StaticRouterProvider
           router={router}
@@ -144,6 +139,8 @@ export async function handleDocumentRequest(
       // If stream mode enabled, render the page as a plain text
       return await render(Router, res, {
         metadata,
+        statusCode: context.statusCode,
+        responseHeaders: Object.fromEntries(headers),
       });
     }
 
