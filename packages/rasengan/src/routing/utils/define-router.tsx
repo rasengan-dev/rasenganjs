@@ -29,7 +29,7 @@ export const defineRouter = (option: RouterProps) => {
       // Check if p is an array
       if (Array.isArray(p)) {
         for (let page of p) {
-          if ('source' in page) {
+          if ((page as RouteNode).source) {
             pageComponentList.push(page as RouteNode);
 
             continue;
@@ -51,7 +51,7 @@ export const defineRouter = (option: RouterProps) => {
         continue;
       }
 
-      if ('source' in p) {
+      if ((p as RouteNode).source) {
         pageComponentList.push(p as RouteNode);
 
         continue;

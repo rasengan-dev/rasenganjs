@@ -2,9 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "include": ["."],
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "NodeNext",
     "target": "ES2020",
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     "strict": true,
     "esModuleInterop": true,

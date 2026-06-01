@@ -1,0 +1,472 @@
+:root {
+  --re-bg: #0d1117;
+  --re-surface: #161b22;
+  --re-surface-subtle: #21262d;
+  --re-border: #30363d;
+  --re-text: #e6edf3;
+  --re-text-secondary: #8b949e;
+  --re-error: #f85149;
+  --re-error-hover: #ff7b72;
+  --re-accent: #2f81f7;
+}
+
+.rasengan-error-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 4, 9, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 99998;
+  animation: re-fade-in 0.2s ease;
+}
+
+.rasengan-error-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  width: 92%;
+  max-width: 840px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--re-bg);
+  border: 1px solid var(--re-border);
+  border-radius: 12px;
+  color: var(--re-text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+    Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: re-overlay-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes re-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes re-overlay-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes re-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(248, 81, 73, 0.15);
+  }
+}
+
+@keyframes re-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 6px 2px rgba(63, 185, 80, 0.3);
+  }
+}
+
+.rasengan-error-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--re-surface);
+  border-bottom: 1px solid var(--re-border);
+  border-left: 3px solid var(--re-error);
+  flex-shrink: 0;
+}
+
+.rasengan-error-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rasengan-error-version-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--re-text-secondary);
+  font-weight: 500;
+  user-select: none;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  padding: 0 8px;
+}
+
+.rasengan-error-version-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3fb950;
+  animation: re-dot-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.rasengan-error-pagination-btn {
+  background: transparent;
+  border: 1px solid var(--re-border);
+  color: var(--re-text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-family: inherit;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+  line-height: 1;
+}
+
+.rasengan-error-pagination-btn:hover:not(:disabled) {
+  background: var(--re-surface-subtle);
+  color: var(--re-text);
+  border-color: var(--re-text-secondary);
+}
+
+.rasengan-error-pagination-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.rasengan-error-pagination-text {
+  font-size: 12px;
+  color: var(--re-text-secondary);
+  min-width: 64px;
+  text-align: center;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.rasengan-error-overlay-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.rasengan-error-overlay-close {
+  background: transparent;
+  border: 1px solid var(--re-border);
+  color: var(--re-text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.rasengan-error-overlay-close:hover {
+  background: var(--re-surface-subtle);
+  color: var(--re-text);
+  border-color: var(--re-text-secondary);
+}
+
+.rasengan-error-overlay-body {
+  flex: 1;
+  overflow: auto;
+  padding: 24px 24px 20px;
+}
+
+.rasengan-error-overlay-source {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--re-text-secondary);
+  margin-bottom: 4px;
+}
+
+.rasengan-error-overlay-message {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--re-error);
+  margin-bottom: 20px;
+  line-height: 1.6;
+  word-break: break-word;
+  /* animation: re-glow-pulse 2.5s ease-in-out infinite; */
+}
+
+.rasengan-error-code-preview {
+  margin-bottom: 20px;
+  border: 1px solid var(--re-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--re-surface);
+}
+
+.rasengan-error-code-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--re-surface-subtle);
+  border-bottom: 1px solid var(--re-border);
+  font-size: 12px;
+  color: var(--re-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rasengan-error-code-preview-file {
+  font-weight: 500;
+  color: var(--re-text);
+}
+
+.rasengan-error-code-preview-line {
+  color: var(--re-text-secondary);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.rasengan-error-code-preview-content {
+  padding: 8px 0;
+  overflow-x: auto;
+  font-family:
+    'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.rasengan-error-code-line {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 12px;
+  line-height: 1.6;
+  color: var(--re-text);
+}
+
+.rasengan-error-code-line.error {
+  background: rgba(248, 81, 73, 0.08);
+  border-left: 2px solid var(--re-error);
+}
+
+.rasengan-error-code-line-number {
+  min-width: 30px;
+  text-align: right;
+  padding-right: 12px;
+  color: var(--re-text-secondary);
+  user-select: none;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.rasengan-error-code-line-arrow {
+  color: var(--re-error);
+  margin-right: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.rasengan-error-code-line-content {
+  white-space: pre;
+  tab-size: 2;
+}
+
+.rasengan-error-overlay-section {
+  margin-top: 16px;
+  border: 1px solid var(--re-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--re-surface);
+}
+
+.rasengan-error-overlay-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--re-text-secondary);
+  padding: 8px 14px;
+  background: var(--re-surface-subtle);
+  border-bottom: 1px solid var(--re-border);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+
+/* .rasengan-error-overlay-section-title::-webkit-details-marker {
+  display: none;
+} */
+
+/* .rasengan-error-overlay-section-title::before {
+  content: '\203A';
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--re-text-secondary);
+  transition: transform 0.2s;
+}
+
+.rasengan-error-overlay-section[open] > .rasengan-error-overlay-section-title::before {
+  transform: rotate(90deg);
+} */
+
+.rasengan-error-overlay-section-title:hover {
+  color: var(--re-text);
+}
+
+.rasengan-error-overlay-stack {
+  margin: 0;
+  padding: 14px 16px;
+  font-family:
+    'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--re-text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  tab-size: 2;
+  background: var(--re-bg);
+}
+
+.rasengan-error-overlay-stack::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.rasengan-error-overlay-stack::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rasengan-error-overlay-stack::-webkit-scrollbar-thumb {
+  background: var(--re-border);
+  border-radius: 3px;
+}
+
+.rasengan-error-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 99999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--re-error);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(248, 81, 73, 0.35);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+  animation: re-fab-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rasengan-error-fab:hover {
+  transform: scale(1.08);
+  background: var(--re-error-hover);
+  box-shadow: 0 6px 24px rgba(248, 81, 73, 0.45);
+}
+
+.rasengan-error-fab:active {
+  transform: scale(0.95);
+}
+
+.rasengan-error-fab-icon {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rasengan-error-fab-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--re-text);
+  color: var(--re-bg);
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+    Arial, sans-serif;
+}
+
+.rasengan-route-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--re-surface);
+  border-bottom: 1px solid var(--re-border);
+  border-left: 3px solid var(--re-error);
+  color: var(--re-error);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+    Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.rasengan-route-error-detail {
+  color: var(--re-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+@keyframes re-fab-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

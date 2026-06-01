@@ -62,7 +62,8 @@
   "scripts": {
     "build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
     "build:clean": "rimraf ./lib",
-    "build": "pnpm run build:clean & pnpm run build:compile",
+    "build:copy-assets": "mkdir -p lib/esm/routing/error-overlay && cp src/routing/error-overlay/error-overlay.css lib/esm/routing/error-overlay/",
+    "build": "pnpm run build:clean & pnpm run build:compile && pnpm run build:copy-assets",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"

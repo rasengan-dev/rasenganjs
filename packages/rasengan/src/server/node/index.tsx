@@ -167,11 +167,6 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
 
         const headers = extractHeadersFromRRContext(context);
 
-        // Set headers
-        res.writeHead(context.statusCode, {
-          ...Object.fromEntries(headers),
-        });
-
         const Router = (
           <StaticRouterProvider router={router} context={context} />
         );
@@ -181,6 +176,8 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
           metadata,
           assets,
           buildOptions,
+          statusCode: context.statusCode,
+          responseHeaders: Object.fromEntries(headers),
         });
       }
 

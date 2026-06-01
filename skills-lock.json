@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "rasengan-pages": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan-pages/SKILL.md",
+      "computedHash": "f4cc5bd6be8fe253b1c7e0fa3e5499ffa58a045a392a85dee46270f795751bcc"
+    }
+  }
+}
