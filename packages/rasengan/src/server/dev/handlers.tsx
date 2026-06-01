@@ -20,6 +20,7 @@ import {
   extractHeadersFromRRContext,
 } from './utils.js';
 import { ModuleRunner } from 'vite/module-runner';
+import { renderErrorPage } from '../../entries/server/error-template.js';
 import { renderToString } from '../node/rendering.js';
 import { TemplateLayout } from '../../entries/server/index.js';
 
@@ -148,8 +149,15 @@ export async function handleDocumentRequest(
 
     return context;
   } catch (error) {
-    // Just log the error for now
     console.error(error);
+
+    if (!res.headersSent) {
+      const html = renderErrorPage(error);
+
+      res.status(500);
+      res.setHeader('Content-Type', 'text/html');
+      return res.send(html);
+    }
   }
 }
 

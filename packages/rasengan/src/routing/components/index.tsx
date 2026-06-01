@@ -94,14 +94,7 @@ export function ErrorBoundary() {
     errorStore.addError(err, 'route');
   }, [error, DEV]);
 
-  return (
-    <div className="rasengan-route-error">
-      <span>&#9888;&#65039; Route Error</span>
-      <span className="rasengan-route-error-detail">
-        Check error overlay for details
-      </span>
-    </div>
-  );
+  return null;
 }
 
 /**

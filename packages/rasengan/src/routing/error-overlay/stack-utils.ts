@@ -35,6 +35,24 @@ export function parseStackFrame(stack: string): StackFrame | null {
 }
 
 /**
+ * Vite plugin transforms may wrap a file's original source in
+ * `export default "..."` with escape sequences. Detect and unwrap.
+ */
+function unwrapExportDefaultString(source: string): string {
+  const match = source.match(/^export default\s+"((?:[^"\\]|\\.)*)"/s);
+
+  if (match) {
+    try {
+      return JSON.parse('"' + match[1] + '"');
+    } catch {
+      return source;
+    }
+  }
+
+  return source;
+}
+
+/**
  * Fetch the source file from the Vite dev server (using ?raw to get original
  * source) and return a snippet of lines surrounding the error line.
  *
@@ -48,7 +66,7 @@ export function parseStackFrame(stack: string): StackFrame | null {
 export async function fetchSourceSnippet(
   file: string,
   errorLine: number,
-  contextLines = 3
+  contextLines = 2
 ): Promise<{
   snippet: string;
   errorLineIndex: number;
@@ -60,7 +78,12 @@ export async function fetchSourceSnippet(
 
     if (!response.ok) return null;
 
-    const source = await response.text();
+    let source = await response.text();
+
+    // Some Vite transforms wrap the source in `export default "..."`,
+    // escaping newlines and quotes. Detect and unescape it.
+    source = unwrapExportDefaultString(source);
+
     const lines = source.split('\n');
     const totalLines = lines.length;
     const start = Math.max(0, errorLine - contextLines - 1);

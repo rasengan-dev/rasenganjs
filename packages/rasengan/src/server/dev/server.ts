@@ -36,6 +36,7 @@ import {
   generateRoutes,
   preloadMatches,
 } from '../../routing/utils/generate-routes.js';
+import { renderErrorPage } from '../../entries/server/error-template.js';
 
 type ServerError = Error & { code: string };
 
@@ -108,8 +109,15 @@ async function devRequestHandler(
 
     return res.status(404).send('Not found');
   } catch (error) {
-    // Just log the error for now
     console.error(error);
+
+    if (res.headersSent) return;
+
+    const html = renderErrorPage(error);
+
+    res.status(500);
+    res.setHeader('Content-Type', 'text/html');
+    return res.send(html);
   }
 }
 
