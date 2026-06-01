@@ -12,6 +12,7 @@ import {
   TemplateProps,
 } from '../../routing/types.js';
 import { isServerMode, ServerMode } from '../../server/runtime/mode.js';
+import { ErrorBoundaryFallback } from '../../routing/error-overlay/ErrorBoundaryFallback.js';
 
 export const TemplateLayout = ({
   StaticRouterComponent,
@@ -100,9 +101,11 @@ export const TemplateLayout = ({
           asChild={App ? true : false}
           AppContent={
             App && (
-              <App Component={(props) => <RootComponent {...props} />}>
-                {StaticRouterComponent}
-              </App>
+              <ErrorBoundaryFallback>
+                <App Component={(props) => <RootComponent {...props} />}>
+                  {StaticRouterComponent}
+                </App>
+              </ErrorBoundaryFallback>
             )
           }
         >

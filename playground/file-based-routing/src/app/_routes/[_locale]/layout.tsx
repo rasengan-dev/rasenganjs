@@ -1,5 +1,5 @@
 import { LayoutComponent, NavLink, Outlet, useParams, Link } from 'rasengan';
-
+// r
 const AppLayout: LayoutComponent = () => {
   const { locale = 'fr' } = useParams();
 

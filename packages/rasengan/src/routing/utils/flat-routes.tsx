@@ -242,7 +242,7 @@ async function generateRouter(tree: RouteNode[]) {
 
   // Get layout if defined
   if (root.isLayout) {
-    if ('source' in root) {
+    if (root.source) {
       layout = root as RouteNode;
     } else {
       layout = root.component as LayoutComponent;
@@ -287,7 +287,7 @@ async function generateRoutes(tree: RouteNode[]) {
       if (node.isLayout) {
         let layout: LayoutComponent | RouteNode;
 
-        if ('source' in node) {
+        if (node.source) {
           layout = node;
         } else {
           layout = node.component as LayoutComponent;
@@ -341,7 +341,7 @@ async function generateRoutes(tree: RouteNode[]) {
   } catch (error) {
     console.error(error);
 
-    // TODO: Handle error
+    throw error;
   }
 }
 
@@ -392,8 +392,17 @@ export async function flatRoutes(
       )
     );
 
+    const isRootLayoutExists = Object.keys(layoutModulesMap).find((path) =>
+      [
+        `${basePath}layout.ts`,
+        `${basePath}layout.tsx`,
+        `${basePath}layout.jsx`,
+        `${basePath}layout.js`,
+      ].includes(path)
+    );
+
     // Handle the case where modules are empty
-    if (layoutModulesMap.size === 0) {
+    if (!isRootLayoutExists) {
       insertNodeToTree(tree, ['_'], {
         component: DefaultLayout,
         metadata: {},
@@ -427,7 +436,5 @@ export async function flatRoutes(
     console.error(error);
 
     throw error;
-
-    // TODO: Handle error
   }
 }

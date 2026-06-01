@@ -22,6 +22,8 @@ export type RenderStreamFunction = (
     };
     assets?: JSX.Element[]; // Usefull for the production build
     buildOptions?: BuildOptions;
+    statusCode?: number;
+    responseHeaders?: Record<string, string>;
   },
   stream?: boolean
 ) => Promise<void | string>;
@@ -83,7 +85,11 @@ export const render: RenderStreamFunction = async (
         App={App}
         Template={Template}
       />,
-      res
+      res,
+      {
+        statusCode: options.statusCode,
+        responseHeaders: options.responseHeaders,
+      }
     );
   } else {
     const html = renderToString(

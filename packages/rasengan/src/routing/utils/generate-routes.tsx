@@ -253,7 +253,7 @@ export const generateRoutes = (
 
   try {
     // Check if the layout is coming from the file-based routing system
-    if ('source' in router.layout) {
+    if (router.layout.source) {
       const layoutNode = router.layout as RouteNode;
       layoutPath = layoutNode.path;
 
@@ -425,7 +425,7 @@ export const generateRoutes = (
     const pages: Array<RouteObject> = router.pages.map(
       (p: PageComponent | RouteNode) => {
         // Check if the page is coming from file-based routing system
-        if ('source' in p) {
+        if (p.source) {
           const pageNode = p as RouteNode;
 
           // /home => home
@@ -617,6 +617,7 @@ export const generateRoutes = (
     routes.unshift(route);
   } catch (error) {
     console.error(error);
+    throw error;
   } finally {
     // Return the formated router
     return routes;
