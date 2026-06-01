@@ -64,7 +64,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
 
             <div className="flex flex-col gap-1">
               <span>Using stable version</span>
-              <span className="text-[12px] text-foreground/60">v1.2.1</span>
+              <span className="text-[12px] text-foreground/60">v1.2.2</span>
             </div>
           </div>
 
@@ -202,7 +202,11 @@ export const NavItem = ({
   };
 
   return item.link ? (
-    <Link to={item.link} onClick={() => onClose && onClose()}>
+    <Link
+      to={item.link}
+      onClick={() => onClose && onClose()}
+      target={item.external ? '_blank' : '_self'}
+    >
       <div
         className={cn(
           'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border  cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all duration-300',

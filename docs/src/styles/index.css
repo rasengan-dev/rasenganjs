@@ -151,6 +151,7 @@
 body,
 html {
   width: 100%;
+  overflow-x: hidden;
 }
 
 input[type='search']::-webkit-search-decoration,

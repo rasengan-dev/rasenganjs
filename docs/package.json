@@ -23,7 +23,7 @@
     "lucide-react": "^0.477.0",
     "motion": "^12.4.10",
     "radix-ui": "^1.4.3",
-    "rasengan": "1.2.1",
+    "rasengan": "1.2.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "rehype-katex": "^7.0.1",
