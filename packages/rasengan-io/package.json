@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/io",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "description": "Real-time communication for Rasengan.JS applications using Socket.IO",
   "type": "module",
   "main": "dist/index.js",
