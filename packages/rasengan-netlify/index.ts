@@ -10,67 +10,17 @@ import fsSync from 'node:fs';
 /* -------------------------------------------------------------------------- */
 
 interface NetlifyBuildOptions {
-  baseDirectory: string; // .netlify
-  versionDirectory: string; // .netlify/v1
-  functionsDirectory: string; // .netlify/v1/functions
-  edgeFunctionsDirectory: string; // .netlify/v1/edge-functions
-  staticDirectory: string; // public/static assets
-  configFile: string; // .netlify/v1/config.json
+  functionsDirectory: string;
 }
 
 const getNetlifyBuildOptions = (): NetlifyBuildOptions => ({
-  baseDirectory: '.netlify',
-  versionDirectory: '.netlify/v1',
-  functionsDirectory: '.netlify/v1/functions',
-  edgeFunctionsDirectory: '.netlify/v1/edge-functions',
-  staticDirectory: '.netlify/v1/static',
-  configFile: 'config.json',
+  functionsDirectory: 'netlify/functions',
 });
 
-const checkNetlifyDirectory = async (options: NetlifyBuildOptions) => {
-  try {
-    await fs.access(options.baseDirectory);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-/* -------------------------------------------------------------------------- */
-/*                            DIRECTORY GENERATION                            */
-/* -------------------------------------------------------------------------- */
-
-const generateNetlifyDirectory = async (config: OptimizedAppConfig) => {
+const generateNetlifyDirectory = async () => {
   const opts = getNetlifyBuildOptions();
 
-  if (await checkNetlifyDirectory(opts)) {
-    await fs.rm(opts.baseDirectory, { recursive: true });
-  }
-
-  await fs.mkdir(opts.versionDirectory, { recursive: true });
   await fs.mkdir(opts.functionsDirectory, { recursive: true });
-  await fs.mkdir(opts.edgeFunctionsDirectory, { recursive: true });
-  await fs.mkdir(opts.staticDirectory, { recursive: true });
-};
-
-/* -------------------------------------------------------------------------- */
-/*                           STATIC FILES COPY                                */
-/* -------------------------------------------------------------------------- */
-
-const copyStaticFiles = async (config: OptimizedAppConfig) => {
-  const opts = getNetlifyBuildOptions();
-  const buildOptions = resolveBuildOptions({});
-
-  const sourceDir = config.prerender
-    ? buildOptions.staticDirectory
-    : config.ssr
-      ? path.posix.join(
-          buildOptions.buildDirectory,
-          buildOptions.clientPathDirectory
-        )
-      : buildOptions.buildDirectory;
-
-  await fs.cp(sourceDir, opts.staticDirectory, { recursive: true });
 };
 
 /* -------------------------------------------------------------------------- */
@@ -83,7 +33,7 @@ const copyServerFiles = async (config: OptimizedAppConfig) => {
   const opts = getNetlifyBuildOptions();
   const buildOptions = resolveBuildOptions({});
 
-  // Copy dist/server — needed for SSR handler
+  // Copy dist/server → netlify/functions/ssr-server
   await fs.cp(
     path.posix.join(
       buildOptions.buildDirectory,
@@ -93,7 +43,7 @@ const copyServerFiles = async (config: OptimizedAppConfig) => {
     { recursive: true }
   );
 
-  // Copy dist/client — hydration / manifest
+  // Copy dist/client → netlify/functions/ssr-client
   await fs.cp(
     path.posix.join(
       buildOptions.buildDirectory,
@@ -188,6 +138,24 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
             statusCode = code;
             this.statusCode = code;
             return this;
+          },
+
+          send(body) {
+            if (body !== undefined && body !== null) {
+              if (typeof body === 'object') {
+                body = JSON.stringify(body);
+                this.setHeader('content-type', 'application/json');
+              }
+              this.write(Buffer.from(String(body)));
+            }
+            this.end();
+          },
+
+          json(body) {
+            const json = JSON.stringify(body);
+            this.setHeader('content-type', 'application/json');
+            this.write(Buffer.from(json));
+            this.end();
           },
 
           setHeader(key, value) {
@@ -290,49 +258,6 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                         NETLIFY CONFIG.JSON GENERATION                     */
-/* -------------------------------------------------------------------------- */
-
-const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
-  const opts = getNetlifyBuildOptions();
-
-  const netlifyConfig = {
-    version: 1,
-    functions: {
-      directory: opts.functionsDirectory,
-      included_files: [
-        'ssr-server/**',
-        'ssr-client/**',
-        'node_modules/**',
-        'package.json',
-      ],
-    },
-    redirects: [
-      {
-        from: '/assets/*',
-        to: '/.netlify/v1/static/assets/:splat',
-        status: 200,
-      },
-      {
-        from: '/*',
-        to: config.ssr
-          ? '/.netlify/functions/rasengan-ssr'
-          : '/.netlify/v1/static/index.html',
-        status: 200,
-      },
-    ],
-    edge_functions: [],
-    preferStatic: true,
-    nodeVersion: '22',
-  };
-
-  await fs.writeFile(
-    path.posix.join(opts.versionDirectory, opts.configFile),
-    JSON.stringify(netlifyConfig, null, 2)
-  );
-};
-
-/* -------------------------------------------------------------------------- */
 /*                         LOAD RASENGAN CONFIG.JSON                          */
 /* -------------------------------------------------------------------------- */
 
@@ -363,25 +288,23 @@ const loadRasenganConfig = async (): Promise<OptimizedAppConfig> => {
 /*                             PREPARE BUILD                                  */
 /* -------------------------------------------------------------------------- */
 
-const prepare = async (options: AdapterOptions) => {
+const prepare = async (_options: AdapterOptions) => {
   const config = await loadRasenganConfig();
 
-  await generateNetlifyDirectory(config);
-  await copyStaticFiles(config);
+  await generateNetlifyDirectory();
   await copyServerFiles(config);
   await generateSSRHandler(config);
-  await generateNetlifyConfigFile(config);
 };
 
 /* -------------------------------------------------------------------------- */
 /*                              EXPORT ADAPTER                                */
 /* -------------------------------------------------------------------------- */
 
-export const configure = (options: AdapterOptions): AdapterConfig => {
+export const configure = (_options: AdapterOptions): AdapterConfig => {
   return {
     name: Adapters.NETLIFY,
     prepare: async () => {
-      await prepare(options);
+      await prepare(_options);
     },
   };
 };

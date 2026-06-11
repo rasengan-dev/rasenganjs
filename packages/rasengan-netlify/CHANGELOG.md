@@ -1,23 +1,11 @@
 ## Unreleased
 
-## 1.0.0-beta.15 (2026-06-11)
-
-### Bug Fixes
-
-- return an instance of Response via the netlify handler a21b7bb
-
-## 1.0.0-beta.14 (2026-06-11)
-
-### Bug Fixes
-
-- remove \_\_dirname identifier d592cd8
-
-## 1.0.0-beta.13 (2026-06-11)
-
-- fix: rewrite SSR handler with Express mock bridge for Netlify Functions compatibility
-- fix: enable static file copying for prerender/ssr/spa modes
+- fix: rewrite SSR handler with Express mock bridge for Netlify Functions v2
+- fix: add `send()` and `json()` methods to mock Express `res`
+- fix: switch output directory from `.netlify/v1/functions` to `netlify/functions`
 - fix: correct build script (`&` → `&&`)
-- fix: update config.json paths to match adapter output structure
+- chore: migrate build from `tsc` to `tsup`
+- docs: rewrite CHANGELOG
 
 ## 1.0.0-beta.12 (2025-04-26)
 
