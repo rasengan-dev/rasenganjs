@@ -14,7 +14,7 @@ interface NetlifyBuildOptions {
   versionDirectory: string; // .netlify/v1
   functionsDirectory: string; // .netlify/v1/functions
   edgeFunctionsDirectory: string; // .netlify/v1/edge-functions
-  // staticDirectory: string; // public/static assets
+  staticDirectory: string; // public/static assets
   configFile: string; // .netlify/v1/config.json
 }
 
@@ -23,7 +23,7 @@ const getNetlifyBuildOptions = (): NetlifyBuildOptions => ({
   versionDirectory: '.netlify/v1',
   functionsDirectory: '.netlify/v1/functions',
   edgeFunctionsDirectory: '.netlify/v1/edge-functions',
-  // staticDirectory: '.netlify/v1/static',
+  staticDirectory: '.netlify/v1/static',
   configFile: 'config.json',
 });
 
@@ -50,26 +50,28 @@ const generateNetlifyDirectory = async (config: OptimizedAppConfig) => {
   await fs.mkdir(opts.versionDirectory, { recursive: true });
   await fs.mkdir(opts.functionsDirectory, { recursive: true });
   await fs.mkdir(opts.edgeFunctionsDirectory, { recursive: true });
-  // await fs.mkdir(opts.staticDirectory, { recursive: true });
+  await fs.mkdir(opts.staticDirectory, { recursive: true });
 };
 
 /* -------------------------------------------------------------------------- */
 /*                           STATIC FILES COPY                                */
 /* -------------------------------------------------------------------------- */
 
-// const copyStaticFiles = async (config: OptimizedAppConfig) => {
-//   const opts = getNetlifyBuildOptions();
-//   const buildOptions = resolveBuildOptions({});
+const copyStaticFiles = async (config: OptimizedAppConfig) => {
+  const opts = getNetlifyBuildOptions();
+  const buildOptions = resolveBuildOptions({});
 
-//   await fs.cp(
-//     path.posix.join(
-//       buildOptions.buildDirectory,
-//       config.ssr ? buildOptions.clientPathDirectory : ''
-//     ),
-//     opts.staticDirectory,
-//     { recursive: true }
-//   );
-// };
+  const sourceDir = config.prerender
+    ? buildOptions.staticDirectory
+    : config.ssr
+      ? path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory
+        )
+      : buildOptions.buildDirectory;
+
+  await fs.cp(sourceDir, opts.staticDirectory, { recursive: true });
+};
 
 /* -------------------------------------------------------------------------- */
 /*                         SERVER FILES FOR SSR                               */
@@ -115,44 +117,173 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     import { resolveBuildOptions, createRequestHandler } from "rasengan/server";
     import { Readable } from "node:stream";
     import path from "node:path";
+    import { EventEmitter } from "node:events";
+
+    const __dirname = import.meta.dirname;
 
     const buildOptions = resolveBuildOptions({
-      buildDirectory: path.posix.join(process.cwd(), 'dist'),
+      buildDirectory: __dirname,
+      serverPathDirectory: 'ssr-server',
+      clientPathDirectory: 'ssr-client',
     });
 
-    const handler = createRequestHandler({
+    const requestHandler = createRequestHandler({
       build: buildOptions,
     });
 
     export default async (event, context) => {
-      console.log({ event, context });
-      const res = await handler(event);
+      try {
+        // --- Build mock Express req from Netlify event ---
+        const host = event.headers?.['host'] || 'localhost';
+        const protocol = event.headers?.['x-forwarded-proto'] || 'https';
+        const queryStr = event.rawQuery
+          ? '?' + event.rawQuery
+          : event.queryStringParameters
+            ? '?' + new URLSearchParams(
+                Object.entries(event.queryStringParameters).map(([k, v]) => [k, String(v)])
+              ).toString()
+            : '';
+        const pathname = event.path || '/';
+        const originalUrl = pathname + queryStr;
+        const url = new URL(protocol + '://' + host + pathname + queryStr);
 
-      let body = undefined;
+        const req = {
+          originalUrl,
+          method: event.httpMethod || 'GET',
+          protocol: url.protocol.replace(':', ''),
+          hostname: url.hostname,
+          headers: { ...(event.headers || {}) },
+          get(name) {
+            const key = name.toLowerCase();
+            const val = this.headers[key];
+            return Array.isArray(val) ? val.join(', ') : (val ?? undefined);
+          },
+        };
 
-      // Handle streaming HTML
-      if (res.body) {
-        try {
-          // Convert Web ReadableStream → Node.js Readable
-          body = Readable.fromWeb(res.body);
-        } catch {
-          // Fallback for environments without fromWeb()
-          const reader = res.body.getReader();
-          body = new Readable({
-            async read() {
-              const { value, done } = await reader.read();
-              if (done) return this.push(null);
-              this.push(Buffer.from(value));
-            },
-          });
+        // Attach body stream for POST/PUT/PATCH/DELETE
+        if (
+          event.body &&
+          event.httpMethod !== 'GET' &&
+          event.httpMethod !== 'HEAD'
+        ) {
+          const bodyBuffer = Buffer.from(
+            event.body,
+            event.isBase64Encoded ? 'base64' : 'utf8'
+          );
+          Object.assign(req, Readable.from([bodyBuffer]));
         }
-      }
 
-      return {
-        statusCode: res.status,
-        headers: Object.fromEntries(res.headers.entries()),
-        body,
-      };
+        // --- Build capturing mock Express res ---
+        const chunks = [];
+        let statusCode = 200;
+        let statusMessage = 'OK';
+        const responseHeaders = {};
+        let headersSent = false;
+        const eventEmitter = new EventEmitter();
+
+        const res = {
+          statusCode,
+          statusMessage,
+          headersSent,
+
+          status(code) {
+            statusCode = code;
+            this.statusCode = code;
+            return this;
+          },
+
+          setHeader(key, value) {
+            responseHeaders[key] = value;
+          },
+
+          getHeader(key) {
+            return responseHeaders[key];
+          },
+
+          append(key, value) {
+            const existing = responseHeaders[key];
+            if (existing) {
+              responseHeaders[key] = Array.isArray(existing)
+                ? [...existing, value]
+                : [existing, value];
+            } else {
+              responseHeaders[key] = value;
+            }
+          },
+
+          writeHead(status, headers) {
+            statusCode = status;
+            statusMessage = 'OK';
+            this.statusCode = status;
+            this.statusMessage = 'OK';
+            headersSent = true;
+            this.headersSent = true;
+            if (headers) {
+              for (const [k, v] of Object.entries(headers)) {
+                if (v !== undefined) responseHeaders[k] = v;
+              }
+            }
+          },
+
+          write(chunk) {
+            chunks.push(
+              Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+            );
+            return true;
+          },
+
+          end(chunk) {
+            if (chunk) {
+              chunks.push(
+                Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+              );
+            }
+            this.emit('finish');
+          },
+
+          destroy(err) {
+            if (err) this.emit('error', err);
+            this.emit('close');
+          },
+
+          flushHeaders() {},
+
+          writable: true,
+
+          on: eventEmitter.on.bind(eventEmitter),
+          once: eventEmitter.once.bind(eventEmitter),
+          emit: eventEmitter.emit.bind(eventEmitter),
+          addListener: eventEmitter.addListener.bind(eventEmitter),
+          removeListener: eventEmitter.removeListener.bind(eventEmitter),
+        };
+
+        // --- Call request handler and wait for finish ---
+        await new Promise((resolve, reject) => {
+          res.on('finish', resolve);
+          res.on('error', reject);
+          requestHandler(req, res).catch(reject);
+        });
+
+        // --- Build Netlify response ---
+        const flatHeaders = {};
+        for (const [k, v] of Object.entries(responseHeaders)) {
+          flatHeaders[k] = Array.isArray(v) ? v.join(', ') : String(v);
+        }
+
+        return {
+          statusCode,
+          headers: flatHeaders,
+          body: Buffer.concat(chunks).toString('utf-8'),
+          isBase64Encoded: false,
+        };
+      } catch (error) {
+        console.error('Rasengan SSR Error:', error);
+        return {
+          statusCode: 500,
+          headers: { 'content-type': 'text/plain' },
+          body: 'Internal Server Error',
+        };
+      }
     };
   `;
 
@@ -170,19 +301,27 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
   const opts = getNetlifyBuildOptions();
 
   const netlifyConfig = {
+    version: 1,
     functions: {
       directory: opts.functionsDirectory,
-      included_files: ['dist/server/**', 'node_modules/**', 'package.json'],
+      included_files: [
+        'ssr-server/**',
+        'ssr-client/**',
+        'node_modules/**',
+        'package.json',
+      ],
     },
     redirects: [
       {
         from: '/assets/*',
-        to: config.ssr ? '/client/assets/:splat' : '/assets/:splat',
+        to: '/.netlify/v1/static/assets/:splat',
         status: 200,
       },
       {
         from: '/*',
-        to: config.ssr ? '/.netlify/functions/rasengan-ssr' : '/index.html',
+        to: config.ssr
+          ? '/.netlify/functions/rasengan-ssr'
+          : '/.netlify/v1/static/index.html',
         status: 200,
       },
     ],
@@ -232,7 +371,7 @@ const prepare = async (options: AdapterOptions) => {
   const config = await loadRasenganConfig();
 
   await generateNetlifyDirectory(config);
-  // await copyStaticFiles(config);
+  await copyStaticFiles(config);
   await copyServerFiles(config);
   await generateSSRHandler(config);
   await generateNetlifyConfigFile(config);
@@ -244,8 +383,7 @@ const prepare = async (options: AdapterOptions) => {
 
 export const configure = (options: AdapterOptions): AdapterConfig => {
   return {
-    name: Adapters.VERCEL,
-    // name: Adapters.NETLIFY,
+    name: Adapters.NETLIFY,
     prepare: async () => {
       await prepare(options);
     },
