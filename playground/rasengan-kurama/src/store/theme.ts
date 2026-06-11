@@ -8,8 +8,10 @@ interface Actions {
   toggle: () => void;
 }
 
-export const useThemeStore = createStore<State & Actions>((set) => ({
-  mode: 'light',
-  toggle: () =>
-    set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
-}));
+export const useThemeStore = createStore<State & Actions>(
+  middleware.persist({ name: 'theme' })((set) => ({
+    mode: 'light',
+    toggle: () =>
+      set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
+  }))
+);

@@ -30,7 +30,7 @@ export const defineConfig = async (
       config = loadedConfig;
     }
 
-    const { ssr, sageMode, server, vite, redirects } = config;
+    const { ssr, prerender, sageMode, server, vite, redirects } = config;
 
     const defaultSageModeConfig = {
       reactCompiler: sageMode?.reactCompiler ?? false,
@@ -60,6 +60,7 @@ export const defineConfig = async (
     try {
       const config: AppConfig = {
         ssr: ssr ?? true,
+        prerender: prerender ?? false,
         server: defaultServerConfig,
         sageMode: defaultSageModeConfig,
         vite: {
@@ -81,6 +82,7 @@ export const defineConfig = async (
     } catch (error) {
       return {
         ssr: true,
+        prerender: false,
         sageMode: {
           reactCompiler: false,
         },

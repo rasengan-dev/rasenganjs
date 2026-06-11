@@ -34,11 +34,11 @@
     "deploy": "pnpm publish --access public"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.2.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "ncp": "^2.0.0"
   }
 }

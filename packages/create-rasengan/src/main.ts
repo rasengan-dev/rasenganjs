@@ -32,11 +32,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import ncp from 'ncp';
 import { consola } from 'consola';
-import { Languages, Templates, Versions } from './constants/index.js';
+import {
+  githubTemplatesURL,
+  Languages,
+  Templates,
+  Versions,
+} from './constants/index.js';
 import __dirname from './utils/dirname.js';
 import { logInfo } from './scripts/log-info.js';
 import createProjectFromTemplate from './scripts/template.js';
-import logoAsciiCode from './data/logo.js';
+import { logoTextAsciiCode } from './data/logo.js';
 
 // Spinner
 const spinner = (text: string) =>
@@ -58,6 +63,7 @@ program
   // .option('--template <template-name>', 'Choose a template')
   .option('--language <language-name>', 'Choose a language')
   .option('--with-shadcn', 'Use shadcn template')
+  .option('--chidori', 'Create a documentation website with chidori')
   .action(async (projectName, options) => {
     // Read the package.json file
     const packageJson = await fs.readFile(
@@ -68,13 +74,15 @@ program
     // Parse the package.json file
     const parsedPackageJson = JSON.parse(packageJson);
 
-    console.log(chalk.blue(logoAsciiCode));
+    // logoTextAsciiCode
+    console.log(chalk.blue(logoTextAsciiCode));
+    // console.log(chalk.blue(logoAsciiCode));
 
-    consola.info(`${chalk.bold.blue('Welcome to Rasengan!')} 🌀`);
+    consola.info(`${chalk.bold.blue('Welcome to Rasengan.js')}`);
 
     // // Showing the welcome message
     consola.info(
-      `You are using ${chalk.bold.blue(`Create Rasengan CLI ${chalk.bgBlue(chalk.white(`v${parsedPackageJson.version}`))}`)} 🎉\n`
+      `You are using ${chalk.bold.blue(`create-rasengan CLI`)} ${chalk.bold.white(`v${parsedPackageJson.version}`)} 🎉\n`
     );
 
     // Getting the options
@@ -84,6 +92,7 @@ program
       language,
       git: initGit,
       withShadcn,
+      chidori,
     } = options;
 
     if (experimental) {
@@ -199,7 +208,22 @@ program
             : 'js'
           : 'ts';
 
-        await createProjectFromTemplate(projectPath, `shadcn-${languageCode}`, {
+        await createProjectFromTemplate({
+          projectPath,
+          templateName: `shadcn-${languageCode}`,
+          currentDirectory: nameOfProject === '' ? true : false,
+        });
+
+        return;
+      }
+
+      // Chidori template
+      if (chidori) {
+        await createProjectFromTemplate({
+          projectPath,
+          templateName: `chidori`,
+          repository: githubTemplatesURL.chidori,
+          subDirectory: 'apps',
           currentDirectory: nameOfProject === '' ? true : false,
         });
 

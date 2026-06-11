@@ -3,15 +3,22 @@ import { renderToPipeableStream } from 'react-dom/server';
 import type * as Express from 'express';
 import { isServerMode, ServerMode } from '../runtime/mode.js';
 
+type StreamOptions = {
+  statusCode?: number;
+  responseHeaders?: Record<string, string>;
+};
+
 /**
  * Render a React component to a stream.
  * @param Component
  * @param res
+ * @param options
  * @returns
  */
 export const renderToStream = async (
   Component: React.ReactNode,
-  res: Express.Response
+  res: Express.Response,
+  options?: StreamOptions
 ) => {
   const ABORT_DELAY = 10_000;
 
@@ -32,6 +39,10 @@ export const renderToStream = async (
       onShellReady() {
         shellRendered = true;
 
+        if (!res.headersSent && options?.responseHeaders) {
+          res.writeHead(options.statusCode ?? 200, options.responseHeaders);
+        }
+
         resolve(res);
 
         pipe(res);
@@ -40,11 +51,9 @@ export const renderToStream = async (
         reject(error);
       },
       onError(error: unknown) {
-        // Log streaming rendering errors from inside the shell.  Don't log
-        // errors encountered during initial shell rendering since they'll
-        // reject and get logged in handleDocumentRequest.
         if (shellRendered) {
           console.error(error);
+          abort();
         }
       },
     });
@@ -56,8 +65,5 @@ export const renderToStream = async (
 export const renderToString = (Component: React.ReactNode) => {
   const html = ReactDOM.renderToString(Component);
 
-  return `
-    <!DOCTYPE html>
-    ${html}
-  `;
+  return `<!DOCTYPE html>\n${html}`;
 };

@@ -1,10 +1,5 @@
 import { DefaultLayout } from '../components/template.js';
-import {
-  RouterProps,
-  PageComponent,
-  MDXPageComponent,
-  MDXRendererProps,
-} from '../types.js';
+import { RouterProps, PageComponent } from '../types.js';
 import { RouterComponent } from '../interfaces.js';
 import { RouteNode } from './index.js';
 
@@ -34,15 +29,17 @@ export const defineRouter = (option: RouterProps) => {
       // Check if p is an array
       if (Array.isArray(p)) {
         for (let page of p) {
-          if ('source' in page) {
+          if ((page as RouteNode).source) {
             pageComponentList.push(page as RouteNode);
 
             continue;
           }
 
-          if (isMDXPage(page as MDXPageComponent)) {
+          // When p is a MDXPageComponent
+          // the "type" property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
+          if (isMDXPage(page as { type: string; [key: string]: any })) {
             const Page = await convertMDXPageToPageComponent(
-              page as MDXPageComponent
+              page as { type: string; [key: string]: any }
             );
 
             pageComponentList.push(Page);
@@ -54,15 +51,18 @@ export const defineRouter = (option: RouterProps) => {
         continue;
       }
 
-      if ('source' in p) {
+      if ((p as RouteNode).source) {
         pageComponentList.push(p as RouteNode);
 
         continue;
       }
 
       // When p is a MDXPageComponent
-      if (isMDXPage(p as MDXPageComponent)) {
-        const Page = await convertMDXPageToPageComponent(p as MDXPageComponent);
+      // type property holds the "MDXPageComponent" value, coming from @rasenganjs/mdx plugin
+      if (isMDXPage(p as { type: string; [key: string]: any })) {
+        const Page = await convertMDXPageToPageComponent(
+          p as { type: string; [key: string]: any }
+        );
 
         pageComponentList.push(Page);
       } else {
@@ -84,14 +84,26 @@ export const defineRouter = (option: RouterProps) => {
   };
 };
 
-export const convertMDXPageToPageComponent = async (
-  MDXPage: MDXPageComponent
-) => {
-  // Load MDXRenderer from @rasenganjs/mdx
-  const MDXRenderer = await loadMDXRenderer();
-
+/**
+ * This function helps to convert the data provided by @rasenganjs/mdx into a PageComponent component
+ * The MDXPage arg has to follow exactly the type returned by the @rasenganjs/mdx plugin
+ * @param MDXPage
+ * @returns
+ */
+export const convertMDXPageToPageComponent = async (MDXPage: {
+  type: string;
+  [key: string]: any;
+}) => {
   const Page: PageComponent = () => {
-    return <MDXRenderer className={''}>{MDXPage}</MDXRenderer>;
+    return (
+      <MDXPage.Renderer
+        config={MDXPage.config}
+        toc={MDXPage.toc}
+        raw={MDXPage.raw}
+      >
+        {MDXPage.Content}
+      </MDXPage.Renderer>
+    );
   };
 
   Page.path = MDXPage.metadata.path;
@@ -100,25 +112,13 @@ export const convertMDXPageToPageComponent = async (
   return Page;
 };
 
-export const isMDXPage = (page: MDXPageComponent | PageComponent<any>) => {
+export const isMDXPage = (
+  page: { type: string; [key: string]: any } | PageComponent<any>
+) => {
   // Check if page is a MDX Page Component or not
   if (page.type === 'MDXPageComponent') {
     return true;
   }
 
   return false;
-};
-
-const loadMDXRenderer = async (): Promise<
-  React.FunctionComponent<MDXRendererProps>
-> => {
-  try {
-    // @ts-ignore
-    const { MDXRenderer } = await import('@rasenganjs/mdx');
-
-    return MDXRenderer;
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
 };

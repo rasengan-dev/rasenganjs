@@ -68,7 +68,19 @@ export type SageModeConfig = {
 };
 
 export type AppConfig = {
+  /**
+   * Enable ssr mode
+   */
   ssr?: boolean;
+
+  /**
+   * Enable pre-rendering or not
+   */
+  prerender?:
+    | boolean
+    | {
+        routes: string[];
+      };
 
   /**
    * Enable much power by enabling reactCompiler and rsc features
@@ -92,6 +104,7 @@ export type AppConfig = {
 };
 
 export type OptimizedAppConfig = {
+  prerender?: AppConfig['prerender'];
   ssr?: AppConfig['ssr'];
   redirects: Redirect[];
   buildOptions: BuildOptions;

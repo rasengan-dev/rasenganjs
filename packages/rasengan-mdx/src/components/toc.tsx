@@ -1,68 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { TOCItem } from '../types/index.js';
+import { useActiveTocItem } from '../hooks/use-toc-observer.js';
 
 interface TableOfContentsProps {
   items: TOCItem[];
 }
 
 export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  useEffect(() => {
-    // Create an Intersection Observer to track which section is in view
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.4, // Trigger when 40% of the section is visible
-    };
-
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const rect = entry.boundingClientRect;
-
-          if (rect.top >= 0) {
-            // Scrolling Down: Set the first intersecting element as active
-            setActiveId(entry.target.id);
-          }
-        }
-      });
-
-      // Sort entries by bottom position when scrolling down
-      const sortedEntries = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.boundingClientRect.top - a.boundingClientRect.top);
-
-      if (sortedEntries.length > 0) {
-        setActiveId(sortedEntries[0].target.id);
-      }
-    }, observerOptions);
-
-    // Observe all sections with IDs matching TOC anchors
-    items.forEach((item) => {
-      // Observe items of level 2
-      const element = document.getElementById(item.anchor.id);
-      if (element && observerRef.current) {
-        observerRef.current.observe(element);
-      }
-
-      // Observe items of level 3
-      item.children.forEach((item) => {
-        const element = document.getElementById(item.anchor.id);
-        if (element && observerRef.current) {
-          observerRef.current.observe(element);
-        }
-      });
-    });
-
-    // Cleanup observer on unmount
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [items]);
+  const [activeId, setActiveId] = useActiveTocItem(items);
 
   const renderTOCItems = useCallback(
     (items: TOCItem[]) => {
@@ -81,15 +26,12 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items }) => {
   );
 
   return (
-    <div className="table-of-contents">
-      <h2 className="title">ON THIS PAGE</h2>
-      <div className="items-container">{renderTOCItems(items)}</div>
-
-      <div
-        className="w-full h-[500px] mt-10 bg-red-200"
-        style={{ height: 500 }}
-      ></div>
-    </div>
+    <aside className="rasengan-toc">
+      <div className="table-of-contents">
+        <h2 className="title">ON THIS PAGE</h2>
+        <div className="items-container">{renderTOCItems(items)}</div>
+      </div>
+    </aside>
   );
 };
 

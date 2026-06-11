@@ -25,13 +25,21 @@ export const Versions: {
   stable: string;
   beta: string | null;
 } = {
-  stable: '^1.1.0',
+  stable: '^1.2.1',
   beta: null,
 };
 
-/**
+/*
  * Template github url
  * @type {string}
  */
 export const TEMPLATE_GITHUB_URL: string =
   'https://github.com/rasengan-dev/rasenganjs.git';
+
+export const githubTemplatesURL = {
+  rasengan: 'https://github.com/rasengan-dev/rasenganjs.git',
+  chidori: 'https://github.com/rasengan-dev/chidori.git',
+} as const;
+
+export type GithubTemplatesURL =
+  (typeof githubTemplatesURL)[keyof typeof githubTemplatesURL];

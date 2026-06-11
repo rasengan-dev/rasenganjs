@@ -1,0 +1,27 @@
+{
+  "include": ["src", "types"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "emitDeclarationOnly": false,
+    "rootDir": "src",
+    "outDir": "dist",
+
+    "target": "ESNext",
+    "lib": ["ES2015", "ESNext", "dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "sourceMap": true
+  }
+}

@@ -6,7 +6,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #2a7fff;
+  --color-primary: #111;
   --color-border: #eee;
 
   --font-urbanist: Urbanist, sans-serif;
@@ -29,4 +29,18 @@ html {
   overflow: hidden;
   font-family: 'Inter';
   /* font-weight: 100; */
+}
+
+code[data-theme*=' '],
+code[data-theme*=' '] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  code[data-theme*=' '],
+  code[data-theme*=' '] span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
 }

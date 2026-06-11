@@ -15,5 +15,5 @@ export const resolvePath = (pathValue: string) => {
     return `file:///${path.normalize(pathValue)}`;
   }
 
-  return path.normalize(pathValue);
+  return path.resolve(path.normalize(pathValue));
 };

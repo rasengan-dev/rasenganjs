@@ -21,6 +21,7 @@ export type NavigationItem = {
   isNew?: boolean;
   isComingSoon?: boolean;
   isBeta?: boolean;
+  external?: boolean;
 };
 
 export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
@@ -48,6 +49,21 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
           name: 'Project Structure',
           link: '/docs/getting-started/project-structure',
           level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'Upgrading',
+          link: '/docs/getting-started/upgrading',
+          level: 2,
+          isNew: true,
+        },
+        {
+          id: randomId(),
+          name: 'llms.txt',
+          link: '/llms.txt',
+          level: 2,
+          isNew: true,
+          external: true,
         },
       ],
     },
@@ -148,7 +164,7 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Prerendering',
               link: '/docs/rendering/prerendering',
               level: 3,
-              visible: false,
+              isNew: true,
             },
           ],
         },
@@ -199,6 +215,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
               name: 'Static Assets',
               link: '/docs/optimizing/static-assets',
               level: 3,
+            },
+            {
+              id: randomId(),
+              name: 'React Compiler',
+              link: '/docs/optimizing/react-compiler',
+              level: 3,
+              isNew: true,
             },
           ],
         },
@@ -342,6 +365,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             },
             {
               id: randomId(),
+              name: 'defineStaticPaths',
+              link: '/docs/api-reference/functions/define-static-paths',
+              level: 3,
+              isNew: true,
+            },
+            {
+              id: randomId(),
               name: 'renderApp',
               link: '/docs/api-reference/functions/render-app',
               level: 3,
@@ -356,19 +386,19 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
             {
               id: randomId(),
               name: '[name].layout.js',
-              link: '/docs/api-reference/conventions/layout',
+              link: '/docs/api-reference/conventions/layout-component',
               level: 3,
             },
             {
               id: randomId(),
               name: '[name].router.js',
-              link: '/docs/api-reference/conventions/router',
+              link: '/docs/api-reference/conventions/router-component',
               level: 3,
             },
             {
               id: randomId(),
               name: '[name].page.js',
-              link: '/docs/api-reference/conventions/page',
+              link: '/docs/api-reference/conventions/page-component',
               level: 3,
             },
           ],
@@ -426,17 +456,15 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
         {
           id: randomId(),
           name: 'Kurama',
-          link: '#',
-          // link: '/packages/kurama',
+          link: '/packages/kurama',
           level: 2,
           // visible: false,
-          isComingSoon: true,
+          isNew: true,
         },
         {
           id: randomId(),
           name: 'Query',
           link: '#',
-          // link: '/packages/kurama',
           level: 2,
           // visible: false,
           isComingSoon: true,
@@ -444,17 +472,15 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
         {
           id: randomId(),
           name: 'Kage Demo',
-          link: '#',
-          // link: '/packages/kurama',
+          link: '/packages/kage-demo',
           level: 2,
           // visible: false,
-          isComingSoon: true,
+          isNew: true,
         },
         {
           id: randomId(),
           name: 'Sitemap',
           link: '#',
-          // link: '/packages/kurama',
           level: 2,
           // visible: false,
           isComingSoon: true,
@@ -464,8 +490,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
           name: 'I18n',
           link: '/packages/i18n',
           level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'IO',
+          link: '/packages/io',
+          level: 2,
           isNew: true,
-          isBeta: true,
         },
         {
           id: randomId(),
@@ -509,6 +540,12 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
       name: 'Docs',
       level: 1,
       link: '/docs/getting-started/introduction',
+    },
+    {
+      id: randomId(),
+      name: 'Skills',
+      level: 1,
+      link: '/skills',
     },
     {
       id: randomId(),

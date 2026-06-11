@@ -22,7 +22,7 @@ export default function MetadataProvider({
         meta: Metadata;
       }>;
 
-      handleInjectMetadata(loadersData);
+      handleInjectMetadata(loadersData.filter(Boolean)); // Sometimes, loadersData contains `undefined` values, the filter(Boolean) is there to remove all falsy values
     })();
   }, [location]);
 

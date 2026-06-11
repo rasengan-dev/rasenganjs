@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "rasengan-config": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/config/SKILL.md",
+      "computedHash": "7b7f20af150f3bb371c47abed7958bc5954c8512f14a681036d62e208f6a158f"
+    },
+    "rasengan-data-fetching": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/data-fetching/SKILL.md",
+      "computedHash": "378b9f0abacbcc4e24f9b6d7311369f21f702531a0f267b82fe5b280b04b1deb"
+    },
+    "rasengan-deployment": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/deployment/SKILL.md",
+      "computedHash": "902b6375a648d39a672a56d788fe508e6ce05fbee3d37ada7bf5211c9e759f79"
+    },
+    "rasengan-ecosystem": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/ecosystem/SKILL.md",
+      "computedHash": "9b8a4f1b6e37ff8d9c2dc3c3d363b71a346dea3c116cdeb11530320b269d7a9f"
+    },
+    "rasengan-optimizing": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/optimizing/SKILL.md",
+      "computedHash": "b5022be8c2934b00874592248d0fe97689d18a461f16092fd69b9981b63f1521"
+    },
+    "rasengan-pages": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/pages/SKILL.md",
+      "computedHash": "7cee381f5ce5ea980b0088fe7d62939e7df22033f098ee12c73a99e43a05b769"
+    },
+    "rasengan-project-setup": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/project-setup/SKILL.md",
+      "computedHash": "bb38680bee81cfe4ea84f03098bcc4bd2ee3d40301a8e8e0efb836bdb12a7e01"
+    },
+    "rasengan-routing": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/routing/SKILL.md",
+      "computedHash": "37afb88f5e102b3d5d517d8981a40a682eb384386ae996c30fdf63f520dc25f1"
+    },
+    "rasengan-styling": {
+      "source": "rasengan-dev/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rasengan/styling/SKILL.md",
+      "computedHash": "01e5cf453c82ea1469c668ebb69ed7f15f453c679280c2c287cffdeb1c99e4e5"
+    }
+  }
+}

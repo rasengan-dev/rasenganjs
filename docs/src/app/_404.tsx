@@ -1,4 +1,4 @@
-import Button from '@/components/atoms/buttons/button';
+import Button from '@/components/common/atoms/buttons/button';
 import { Link } from 'rasengan';
 
 export default function NotFound() {

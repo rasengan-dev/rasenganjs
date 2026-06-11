@@ -10,11 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+static
 *.local
 
 # Cache
 .vite
 .rasengan
+static
 
 # Editor directories and files
 .vscode/*

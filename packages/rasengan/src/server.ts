@@ -1,7 +1,14 @@
 import { createRequestHandler } from './server/node/index.js';
 import { resolveBuildOptions } from './server/build/index.js';
+import { detectRuntime } from './server/runtime/detect-runtime.js';
 import compression from 'compression';
 import express from 'express';
 
 export * from './server/build/manifest.js';
-export { createRequestHandler, resolveBuildOptions, express, compression };
+export {
+  createRequestHandler,
+  resolveBuildOptions,
+  express,
+  compression,
+  detectRuntime,
+};

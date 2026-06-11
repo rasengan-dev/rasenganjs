@@ -138,4 +138,8 @@ export class ManifestManager {
 
 		return [...scriptTags, ...styleTags];
 	}
+
+	public findEntry(source: string) {
+		return this._manifest[source];
+	}
 }
