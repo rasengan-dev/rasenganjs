@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.0.0-beta.13 (2026-06-11)
+
 - fix: rewrite SSR handler with Express mock bridge for Netlify Functions compatibility
 - fix: enable static file copying for prerender/ssr/spa modes
 - fix: correct build script (`&` → `&&`)

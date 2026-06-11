@@ -64,6 +64,7 @@ release({
     'rasengan-serve',
     'rasengan-theme',
     'rasengan-vercel',
+    'rasengan-netlify',
     'rasengan-shuriken',
     'rasengan-kurama',
     'rasengan-kage-demo',
