@@ -263,24 +263,22 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
         });
 
         // --- Build Netlify response ---
-        const flatHeaders = {};
+        const flatHeaders = new Headers();
         for (const [k, v] of Object.entries(responseHeaders)) {
-          flatHeaders[k] = Array.isArray(v) ? v.join(', ') : String(v);
+          const val = Array.isArray(v) ? v.join(', ') : String(v);
+          flatHeaders.set(k, val);
         }
 
-        return {
-          statusCode,
+        return new Response(Buffer.concat(chunks).toString('utf-8'), {
+          status: statusCode,
           headers: flatHeaders,
-          body: Buffer.concat(chunks).toString('utf-8'),
-          isBase64Encoded: false,
-        };
+        });
       } catch (error) {
         console.error('Rasengan SSR Error:', error);
-        return {
-          statusCode: 500,
+        return new Response('Internal Server Error', {
+          status: 500,
           headers: { 'content-type': 'text/plain' },
-          body: 'Internal Server Error',
-        };
+        });
       }
     };
   `;
