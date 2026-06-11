@@ -119,10 +119,8 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     import path from "node:path";
     import { EventEmitter } from "node:events";
 
-    const __dirname = import.meta.dirname;
-
     const buildOptions = resolveBuildOptions({
-      buildDirectory: __dirname,
+      buildDirectory: import.meta.dirname,
       serverPathDirectory: 'ssr-server',
       clientPathDirectory: 'ssr-client',
     });
