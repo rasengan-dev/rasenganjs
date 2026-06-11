@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2020",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "rasengan-env.d.ts"],
+  "extends": "./node_modules/rasengan/tsconfig.base.json"
+}

@@ -15,6 +15,18 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: '@rasenganjs/i18n Stable & Introducing @rasenganjs/io',
+    description: `
+      We are excited to announce the stable release of @rasenganjs/i18n and introduce @rasenganjs/io, a new real-time communication package for Rasengan.js.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'June 11, 2026',
+    link: '/blog/rasengan-i18n-stable-and-io',
+    image: '/assets/blog/rasengan-i18n-io.png',
+    readingTime: '3 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan v1.2.2 - Error overlay, LLM support & agent skills',
     description: `
       We are publishing Rasengan v1.2.2, a new version of the framework that introduces a developer-friendly error overlay, LLM support files, and agent skills for AI-powered development.

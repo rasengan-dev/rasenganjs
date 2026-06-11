@@ -490,8 +490,13 @@ export const NavigationData: Record<NavigationType, Array<NavigationItem>> = {
           name: 'I18n',
           link: '/packages/i18n',
           level: 2,
+        },
+        {
+          id: randomId(),
+          name: 'IO',
+          link: '/packages/io',
+          level: 2,
           isNew: true,
-          isBeta: true,
         },
         {
           id: randomId(),

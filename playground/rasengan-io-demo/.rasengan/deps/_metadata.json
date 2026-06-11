@@ -1,0 +1,67 @@
+{
+  "hash": "89d8c04e",
+  "configHash": "37f49445",
+  "lockfileHash": "de7eb93f",
+  "browserHash": "ca93f143",
+  "optimized": {
+    "react": {
+      "src": "../../../../node_modules/.pnpm/react@19.1.1/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "348bbcfd",
+      "needsInterop": true
+    },
+    "react-dom": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/index.js",
+      "file": "react-dom.js",
+      "fileHash": "7e9d98a7",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../../../node_modules/.pnpm/react@19.1.1/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "97ac45c2",
+      "needsInterop": true
+    },
+    "react/jsx-runtime": {
+      "src": "../../../../node_modules/.pnpm/react@19.1.1/node_modules/react/jsx-runtime.js",
+      "file": "react_jsx-runtime.js",
+      "fileHash": "4ab9cb37",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "0c5d1bcd",
+      "needsInterop": true
+    },
+    "react-dom/server": {
+      "src": "../../../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/server.browser.js",
+      "file": "react-dom_server.js",
+      "fileHash": "6829562f",
+      "needsInterop": true
+    },
+    "react-router": {
+      "src": "../../../../node_modules/.pnpm/react-router@7.12.0_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/index.mjs",
+      "file": "react-router.js",
+      "fileHash": "423efa4d",
+      "needsInterop": false
+    },
+    "socket.io-client": {
+      "src": "../../../../node_modules/.pnpm/socket.io-client@4.8.3/node_modules/socket.io-client/build/esm/index.js",
+      "file": "socket__io-client.js",
+      "fileHash": "c93a5add",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-BTNRKHLG": {
+      "file": "chunk-BTNRKHLG.js"
+    },
+    "chunk-OWF4UUX6": {
+      "file": "chunk-OWF4UUX6.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}

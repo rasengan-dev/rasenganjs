@@ -1,0 +1,159 @@
+---
+metadata: 
+  title: '@rasenganjs/i18n Stable & Introducing @rasenganjs/io'
+  description: We are excited to announce the stable release of @rasenganjs/i18n and introduce @rasenganjs/io, a new real-time communication package for Rasengan.js.
+  openGraph:
+    title: '@rasenganjs/i18n Stable & Introducing @rasenganjs/io'
+    description: We are excited to announce the stable release of @rasenganjs/i18n and introduce @rasenganjs/io, a new real-time communication package for Rasengan.js.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-i18n-io.png'
+  twitter:
+    title: '@rasenganjs/i18n Stable & Introducing @rasenganjs/io'
+    description: We are excited to announce the stable release of @rasenganjs/i18n and introduce @rasenganjs/io, a new real-time communication package for Rasengan.js.
+    image: 'https://rasengan.dev/assets/blog/rasengan-i18n-io.png'
+---
+
+
+<BlogDetailsHeader />
+
+Two important updates for the Rasengan.js ecosystem:
+
+- [**@rasenganjs/i18n**](#rasenganjs-i18n-stable-release) is now **stable**
+- [**@rasenganjs/io**](#introducing-rasenganjs-io) is a brand new package for **real-time communication**
+
+<br />
+
+## @rasenganjs/i18n — Stable Release
+
+Since its beta launch, `@rasenganjs/i18n` has been used in production by several projects across the community. We have received valuable feedback that helped us refine the API, fix edge cases, and improve documentation.
+
+Today we are removing the beta tag and releasing **@rasenganjs/i18n v1.0.0**.
+
+### What's changed since beta?
+
+- **Stable API** — No breaking changes from the beta. Your existing code continues to work.
+- **Improved error handling** — Better error messages when locale files are missing or misconfigured.
+- **Documentation improvements** — New examples for namespace-based translations, locale switching with `useLocale`, and file-based routing integration.
+- **Performance** — Optimized resource loading with `import.meta.glob` for faster locale resolution.
+
+### Quick recap
+
+```bash title="Terminal"
+npm install @rasenganjs/i18n
+```
+
+Configure the plugin in `rasengan.config.js`, register the `RasenganI18nProvider` in your root layout, and use `useTranslation` / `useLocale` hooks throughout your app.
+
+```tsx title="src/components/greeting.tsx" showLineNumbers
+import { useTranslation } from '@rasenganjs/i18n';
+
+function Greeting() {
+  const t = useTranslation();
+
+  return <h1>{t('greeting')}</h1>;
+}
+```
+
+Learn more in the [i18n documentation](/packages/i18n).
+
+<br />
+
+## Introducing @rasenganjs/io
+
+We are proud to introduce `@rasenganjs/io` — a new package that brings **real-time communication** to Rasengan.js applications using **Socket.IO**.
+
+### Why @rasenganjs/io?
+
+Modern web applications often need real-time features: chat, live notifications, collaborative editing, live dashboards, and more. While Socket.IO is a battle-tested library, integrating it into a React application with proper type safety and lifecycle management can be repetitive.
+
+`@rasenganjs/io` provides a clean, **typed React layer** on top of Socket.IO:
+
+- **Type-safe events** — Define your server and client event types once, and get full IntelliSense everywhere
+- **Connection lifecycle** — Auto-connect, auto-disconnect, reconnection handling — all managed by the provider
+- **Named connections** — Handle multiple socket connections (chat, notifications, etc.) with separate names
+- **SSR-safe** — Gracefully handles server-side rendering without crashing
+- **Auto-cleanup** — Event listeners are automatically removed when components unmount
+
+### Getting started
+
+```bash title="Terminal"
+npm install @rasenganjs/io
+```
+
+#### 1. Wrap your app with the provider
+
+```tsx title="src/main.tsx" showLineNumbers
+import { RasenganIOProvider } from '@rasenganjs/io';
+
+export default function App({ Component, children }) {
+  return (
+    <RasenganIOProvider url="http://localhost:4000">
+      <Component>{children}</Component>
+    </RasenganIOProvider>
+  );
+}
+```
+
+#### 2. Define your event types
+
+```tsx showLineNumbers
+type ServerEvents = {
+  'chat:message': (data: { id: string; user: string; text: string; timestamp: number }) => void;
+};
+
+type ClientEvents = {
+  'chat:message': (data: { text: string }) => void;
+};
+```
+
+#### 3. Use the hooks
+
+```tsx showLineNumbers
+import { useConnection, useEvent, useEmit } from '@rasenganjs/io';
+
+function Chat() {
+  const { isConnected } = useConnection();
+  const emit = useEmit<ClientEvents>();
+
+  useEvent<ServerEvents, 'chat:message'>('chat:message', (data) => {
+    console.log(`${data.user}: ${data.text}`);
+  });
+
+  const handleSend = () => {
+    emit('chat:message', { text: 'Hello!' });
+  };
+
+  return <>{/* your UI */}</>;
+}
+```
+
+### Use cases
+
+- **Live chat** — Real-time messaging with typing indicators and presence
+- **Notifications** — Push notifications and alerts
+- **Collaborative editing** — Sync state across multiple clients
+- **Live dashboards** — Real-time data updates and charts
+- **Multiplayer games** — Low-latency event broadcasting
+
+Learn more in the [IO documentation](/packages/io).
+
+<br />
+
+## What's next?
+
+Both packages are available now on npm. We are actively working on:
+
+- **Query** (`@rasenganjs/query`) — Data fetching and cache management (coming soon)
+- **Sitemap** (`@rasenganjs/sitemap`) — Automatic sitemap generation (coming soon)
+- **More adapters** — Netlify adapter, Cloudflare Workers support
+
+As always, feedback and contributions are welcome.
+
+Try them out and let us know what you think!
+
+```bash
+npm install @rasenganjs/i18n
+npm install @rasenganjs/io
+```
+
+[Explore all packages](/packages) and happy building, Ninja! 🌀
