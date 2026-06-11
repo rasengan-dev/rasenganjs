@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.15 (2026-06-11)
+
+### Bug Fixes
+
+- return an instance of Response via the netlify handler a21b7bb
+
 ## 1.0.0-beta.14 (2026-06-11)
 
 ### Bug Fixes
