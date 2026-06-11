@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.17 (2026-06-11)
+
+### Bug Fixes
+
+- ajust netlify config ca58edc
+
 ## 1.0.0-beta.16 (2026-06-11)
 
 ### Bug Fixes
