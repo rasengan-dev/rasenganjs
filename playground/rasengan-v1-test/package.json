@@ -11,6 +11,7 @@
   "dependencies": {
     "@rasenganjs/image": "workspace:*",
     "@rasenganjs/mdx": "workspace:*",
+    "@rasenganjs/netlify": "workspace:*",
     "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/theme": "^1.0.1",
     "@rasenganjs/vercel": "workspace:*",
