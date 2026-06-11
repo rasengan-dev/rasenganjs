@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.14 (2026-06-11)
+
+### Bug Fixes
+
+- remove \_\_dirname identifier d592cd8
+
 ## 1.0.0-beta.13 (2026-06-11)
 
 - fix: rewrite SSR handler with Express mock bridge for Netlify Functions compatibility
