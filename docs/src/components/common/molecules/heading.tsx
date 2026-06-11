@@ -9,8 +9,10 @@ type Props = {
 export default function Heading({ title, description, className = '' }: Props) {
   return (
     <div className={twMerge('w-full flex flex-col', className)}>
-      <h1 className="text-lg text-primary">{title}</h1>
-      <p className="text-[36px] md:text-[46px] md:leading-[50px] font-medium text-foreground max-w-[700px] mt-4">
+      <h2 className="text-sm font-semibold text-primary tracking-wider uppercase">
+        {title}
+      </h2>
+      <p className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold text-foreground max-w-[700px] mt-3 leading-tight">
         {description}
       </p>
     </div>

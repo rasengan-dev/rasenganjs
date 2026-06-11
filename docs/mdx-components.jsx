@@ -3,7 +3,6 @@ import {
   defineMDXConfig,
   useActiveTocItem,
   getIconForLanguageExtension,
-  Icons,
 } from '@rasenganjs/mdx';
 import { Link } from 'rasengan';
 import { AdsCard } from '@/components/common/molecules/ads';

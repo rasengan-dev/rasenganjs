@@ -1,0 +1,211 @@
+---
+metadata:
+  title: IO Package - Modules | Packages | Rasengan.js
+  description: Documentation for the IO package.
+toc: true
+---
+
+
+<span className="text-[12px] font-mono-regular text-foreground/60" style={{ fontSize: 12 }}>
+  PACKAGES
+</span>
+# Rasengan IO
+
+The `@rasenganjs/io` package brings real-time communication to your Rasengan.js applications using **Socket.IO**. It provides a clean, typed React API for managing WebSocket connections, events, and connection state — with full TypeScript support.
+
+## Installation
+
+`@rasenganjs/io` lists `socket.io-client` as a **peer dependency**, so you need to install it alongside the package.
+
+```bash title="Terminal"
+npm install @rasenganjs/io socket.io-client
+```
+
+## Features
+
+- **Typed events** — Full type safety for server and client events
+- **Named connections** — Manage multiple socket connections with different names
+- **Connection lifecycle** — Auto-connect on mount, clean disconnect on unmount
+- **SSR-safe** — Gracefully handles server-side rendering environments
+- **Auto-cleanup** — Event listeners are automatically removed on unmount
+
+## Usage
+
+### Provider Setup
+
+Wrap your application with `RasenganIOProvider` to establish a WebSocket connection:
+
+```tsx title="src/main.tsx" showLineNumbers
+import { type AppProps } from 'rasengan';
+import { RasenganIOProvider } from '@rasenganjs/io';
+
+export default function App({ Component, children }: AppProps) {
+  return (
+    <RasenganIOProvider url="http://localhost:4000" autoConnect={true}>
+      <Component>{children}</Component>
+    </RasenganIOProvider>
+  );
+}
+```
+
+### Define your event types
+
+```tsx showLineNumbers
+type ServerEvents = {
+  'chat:message': (data: { id: string; user: string; text: string }) => void;
+  'user:joined': (data: { name: string }) => void;
+};
+
+type ClientEvents = {
+  'chat:message': (data: { text: string }) => void;
+};
+```
+
+### Receive events
+
+```tsx showLineNumbers
+import { useEvent } from '@rasenganjs/io';
+
+function ChatRoom() {
+  useEvent<ServerEvents, 'chat:message'>('chat:message', (data) => {
+    console.log(data.user, data.text); // fully typed
+  });
+}
+```
+
+### Send events
+
+```tsx showLineNumbers
+import { useEmit } from '@rasenganjs/io';
+
+function ChatInput() {
+  const emit = useEmit<ClientEvents>();
+
+  const handleSend = () => {
+    emit('chat:message', { text: 'Hello!' }); // type-checked
+  };
+}
+```
+
+### Track connection state
+
+```tsx showLineNumbers
+import { useConnection } from '@rasenganjs/io';
+
+function Status() {
+  const { isConnected, isConnecting, error, connect, disconnect } = useConnection();
+
+  return (
+    <div>
+      {isConnected && <span>Connected</span>}
+      {isConnecting && <span>Connecting...</span>}
+      {error && <span>Error: {error.message}</span>}
+    </div>
+  );
+}
+```
+
+### Access the raw socket
+
+```tsx showLineNumbers
+import { useSocket } from '@rasenganjs/io';
+
+function ChatRoom() {
+  const socket = useSocket<ServerEvents, ClientEvents>();
+
+  useEffect(() => {
+    socket?.emit('chat:message', { text: 'Hello' });
+  }, []);
+}
+```
+
+### Named connections
+
+You can manage multiple socket connections with different names:
+
+```tsx title="src/main.tsx" showLineNumbers
+<RasenganIOProvider name="chat" url="ws://chat:4000" autoConnect={true}>
+  <RasenganIOProvider name="notifications" url="ws://notify:4001" autoConnect={true}>
+    <App />
+  </RasenganIOProvider>
+</RasenganIOProvider>
+```
+
+```tsx showLineNumbers
+const chatSocket = useSocket('chat');            // chat connection
+const notifSocket = useSocket('notifications');  // notifications connection
+
+useEvent('chat', 'chat:message', handler);       // event on chat socket
+const emit = useEmit('chat');                    // emit on chat socket
+const { isConnected } = useConnection('chat');   // chat connection state
+```
+
+## API Reference
+
+### RasenganIOProvider
+
+The root component that manages the Socket.IO connection lifecycle.
+
+| Prop          | Type      | Default     | Description                               |
+|---------------|-----------|-------------|-------------------------------------------|
+| name          | `string`  | `'default'` | Unique identifier for this connection     |
+| url           | `string`  | —           | WebSocket server URL                      |
+| options       | `object`  | `{}`        | Socket.IO client options (transports, etc.) |
+| autoConnect   | `boolean` | `true`      | Automatically connect on mount            |
+| children      | `ReactNode` | —         | Child components                          |
+
+### useSocket
+
+```ts
+useSocket<ServerEvents, ClientEvents>(name?: string): Socket | null
+```
+
+Returns the typed Socket.IO instance, or `null` during SSR.
+
+### useEvent
+
+```ts
+// Default connection
+useEvent<Events, Event>(event, handler, deps?): void
+
+// Named connection
+useEvent<Events, Event>(name, event, handler, deps?): void
+```
+
+Registers an event listener that is automatically cleaned up on unmount. Uses a ref to always call the latest handler without re-registering.
+
+### useConnection
+
+```ts
+useConnection(name?: string): {
+  isConnected: boolean;
+  isConnecting: boolean;
+  error: Error | null;
+  connect: () => void;
+  disconnect: () => void;
+}
+```
+
+Tracks the WebSocket connection state and provides `connect`/`disconnect` controls.
+
+### useEmit
+
+```ts
+useEmit<ClientEvents>(name?: string): (event, ...args) => void
+```
+
+Returns a typed emit function for sending events to the server.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a href="https://github.com/rasengan-dev/rasenganjs/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> – Ask questions and share ideas.
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">X (Twitter)</a> – Stay updated with the latest news.
+- <a href="https://www.linkedin.com/company/rasenganjs/" target="_blank" rel="noopener noreferrer">Linkedin</a> – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).
