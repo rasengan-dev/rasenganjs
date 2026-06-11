@@ -67,6 +67,7 @@ release({
     'rasengan-shuriken',
     'rasengan-kurama',
     'rasengan-kage-demo',
+    'rasengan-io',
     'create-rasengan',
   ],
   toTag: (pkg, version) => {

@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 1.2.2 (2026-06-01)
+
+### Features
+
+- add custom ErrorBoundary d419e67
+
+### Bug Fixes
+
+- add error templates and fix flat-routes error regarding the default layout 333414d
+- catch error occuring in component definition 62d6d51
+
 ## 1.2.1 (2026-04-03)
 
 ## 1.2.1-beta.4 (2026-01-11)
