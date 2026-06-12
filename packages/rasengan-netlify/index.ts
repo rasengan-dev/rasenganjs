@@ -10,20 +10,20 @@ import fsSync from 'node:fs';
 /* -------------------------------------------------------------------------- */
 
 interface NetlifyBuildOptions {
-  baseDirectory: string; // netlify
-  versionDirectory: string; // netlify
-  functionsDirectory: string; // netlify/functions
-  edgeFunctionsDirectory: string; // netlify/edge-functions
+  baseDirectory: string; // .netlify
+  versionDirectory: string; // .netlify/v1
+  functionsDirectory: string; // .netlify/v1/functions
+  edgeFunctionsDirectory: string; // .netlify/v1/edge-functions
   staticDirectory: string; // public/static assets
-  configFile: string; // netlify/config.json
+  configFile: string; // .netlify/v1/config.json
 }
 
 const getNetlifyBuildOptions = (): NetlifyBuildOptions => ({
-  baseDirectory: 'netlify',
-  versionDirectory: 'netlify',
-  functionsDirectory: 'netlify/functions',
-  edgeFunctionsDirectory: 'netlify/edge-functions',
-  staticDirectory: 'netlify/static',
+  baseDirectory: '.netlify',
+  versionDirectory: '.netlify/v1',
+  functionsDirectory: '.netlify/v1/functions',
+  edgeFunctionsDirectory: '.netlify/v1/edge-functions',
+  staticDirectory: '.netlify/v1/static',
   configFile: 'config.json',
 });
 
@@ -47,7 +47,7 @@ const generateNetlifyDirectory = async (config: OptimizedAppConfig) => {
     await fs.rm(opts.baseDirectory, { recursive: true });
   }
 
-  // await fs.mkdir(opts.versionDirectory, { recursive: true });
+  await fs.mkdir(opts.versionDirectory, { recursive: true });
   await fs.mkdir(opts.functionsDirectory, { recursive: true });
   await fs.mkdir(opts.edgeFunctionsDirectory, { recursive: true });
   await fs.mkdir(opts.staticDirectory, { recursive: true });
@@ -118,6 +118,11 @@ const generateSSRHandler = async (config: OptimizedAppConfig) => {
     import { Readable } from "node:stream";
     import path from "node:path";
     import { EventEmitter } from "node:events";
+    import fs from "node:fs";
+
+    // read the current dir via fs and log
+    console.log('Current dir:', import.meta.dirname);
+    console.log('Files:', fs.readdirSync(import.meta.dirname));
 
     const buildOptions = resolveBuildOptions({
       buildDirectory: import.meta.dirname,
