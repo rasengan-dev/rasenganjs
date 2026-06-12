@@ -10,20 +10,20 @@ import fsSync from 'node:fs';
 /* -------------------------------------------------------------------------- */
 
 interface NetlifyBuildOptions {
-  baseDirectory: string; // .netlify
-  versionDirectory: string; // .netlify/v1
-  functionsDirectory: string; // .netlify/v1/functions
-  edgeFunctionsDirectory: string; // .netlify/v1/edge-functions
+  baseDirectory: string; // netlify
+  versionDirectory: string; // netlify
+  functionsDirectory: string; // netlify/functions
+  edgeFunctionsDirectory: string; // netlify/edge-functions
   staticDirectory: string; // public/static assets
-  configFile: string; // .netlify/v1/config.json
+  configFile: string; // netlify/config.json
 }
 
 const getNetlifyBuildOptions = (): NetlifyBuildOptions => ({
-  baseDirectory: '.netlify',
-  versionDirectory: '.netlify/v1',
-  functionsDirectory: '.netlify/v1/functions',
-  edgeFunctionsDirectory: '.netlify/v1/edge-functions',
-  staticDirectory: '.netlify/v1/static',
+  baseDirectory: 'netlify',
+  versionDirectory: 'netlify',
+  functionsDirectory: 'netlify/functions',
+  edgeFunctionsDirectory: 'netlify/edge-functions',
+  staticDirectory: 'netlify/static',
   configFile: 'config.json',
 });
 
@@ -47,7 +47,7 @@ const generateNetlifyDirectory = async (config: OptimizedAppConfig) => {
     await fs.rm(opts.baseDirectory, { recursive: true });
   }
 
-  await fs.mkdir(opts.versionDirectory, { recursive: true });
+  // await fs.mkdir(opts.versionDirectory, { recursive: true });
   await fs.mkdir(opts.functionsDirectory, { recursive: true });
   await fs.mkdir(opts.edgeFunctionsDirectory, { recursive: true });
   await fs.mkdir(opts.staticDirectory, { recursive: true });
