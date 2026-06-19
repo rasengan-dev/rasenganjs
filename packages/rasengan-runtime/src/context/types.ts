@@ -1,0 +1,69 @@
+/**
+ * Context types — the core types that flow through every
+ * middleware and handler.
+ *
+ * The design follows WinterCG conventions:
+ *   - `request` is a standard Web API Request
+ *   - `params` holds path parameters extracted by the router
+ *   - `runtime` carries environment info (env vars, platform)
+ *   - `state` is a mutable bag for passing data between
+ *     middlewares (e.g. auth → handler, logger → error handler)
+ */
+
+/**
+ * Runtime environment information.
+ * This is the only platform-specific concept in Context.
+ * It lets the same handler code run in Node, Bun, Deno,
+ * Cloudflare Workers, etc. by carrying env vars and
+ * (optionally) platform bindings.
+ */
+export interface RuntimeContext {
+  env?: Record<string, string>;
+}
+
+/**
+ * Request-scoped context that every middleware and handler
+ * receives.
+ *
+ * `state` replaces the ad-hoc pattern of decorating the
+ * request object.  Middlewares write to it (auth sets
+ * `state.user`), handlers and later middlewares read it.
+ */
+export interface Context {
+  /** The incoming Web API Request */
+  request: Request;
+
+  /** URL path parameters extracted by the Router */
+  params: Record<string, string>;
+
+  /** Runtime environment info */
+  runtime: RuntimeContext;
+
+  /**
+   * Shared mutable state — the primary channel for
+   * middleware-to-middleware and middleware-to-handler
+   * communication.
+   *
+   * @example
+   * ```ts
+   * // auth middleware
+   * app.use(async (ctx, next) => {
+   *   ctx.set('user', await authenticate(ctx.request));
+   *   return next();
+   * });
+   *
+   * // handler
+   * app.get('/me', async (ctx) => {
+   *   const user = ctx.get('user');
+   *   return json(user);
+   * });
+   * ```
+   */
+  state: Record<string, unknown>;
+
+  /** Store a value on the context state bag */
+  set<T = unknown>(key: string, value: T): void;
+
+  /** Retrieve a value from the context state bag */
+  get<T = unknown>(key: string): T | undefined;
+}

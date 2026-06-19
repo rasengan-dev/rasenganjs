@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@rasenganjs/runtime": "../../packages/rasengan-runtime/dist/index.js"
+  }
+}
