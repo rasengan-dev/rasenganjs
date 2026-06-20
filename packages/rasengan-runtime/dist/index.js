@@ -181,7 +181,12 @@ var Router = class {
     if (options.middlewares) {
       this.stack.push(...options.middlewares);
     }
-    const subRouter = new SubRouter(this, prefix, outerDepth, this.stack.length);
+    const subRouter = new SubRouter(
+      this,
+      prefix,
+      outerDepth,
+      this.stack.length
+    );
     callback(subRouter);
     this.stack.length = outerDepth;
     return this;
@@ -283,7 +288,12 @@ var SubRouter = class _SubRouter extends Router {
         this.parent.use(mw);
       }
     }
-    const child = new _SubRouter(this.parent, combinedPrefix, this.outerDepth, this.parent["stack"].length);
+    const child = new _SubRouter(
+      this.parent,
+      combinedPrefix,
+      this.outerDepth,
+      this.parent["stack"].length
+    );
     callback(child);
     this.parent["stack"].length = this.outerDepth;
     return this;
@@ -645,8 +655,14 @@ function cors(options = {}) {
     if (ctx.request.method === "OPTIONS") {
       const headers = new Headers();
       headers.set("Access-Control-Allow-Origin", allowOrigin);
-      headers.set("Access-Control-Allow-Methods", options.methods || DEFAULT_METHODS);
-      headers.set("Access-Control-Allow-Headers", options.allowedHeaders || DEFAULT_ALLOWED_HEADERS);
+      headers.set(
+        "Access-Control-Allow-Methods",
+        options.methods || DEFAULT_METHODS
+      );
+      headers.set(
+        "Access-Control-Allow-Headers",
+        options.allowedHeaders || DEFAULT_ALLOWED_HEADERS
+      );
       if (options.credentials) {
         headers.set("Access-Control-Allow-Credentials", "true");
       }
@@ -745,7 +761,10 @@ function compress(options = {}) {
     const response = await next();
     if (response.headers.get("Content-Encoding")) return response;
     if (response.body === null) return response;
-    const contentLength = parseInt(response.headers.get("content-length") ?? "0", 10);
+    const contentLength = parseInt(
+      response.headers.get("content-length") ?? "0",
+      10
+    );
     if (contentLength > 0 && contentLength < threshold) return response;
     const acceptEncoding = ctx.request.headers.get("accept-encoding") ?? "";
     let chosenEncoding = null;
@@ -798,7 +817,9 @@ async function compressBody(body, encoding) {
 
 // src/response/cookies.ts
 function serializeCookie(name, value, options = {}) {
-  const parts = [`${encodeURIComponent(name)}=${encodeURIComponent(value)}`];
+  const parts = [
+    `${encodeURIComponent(name)}=${encodeURIComponent(value)}`
+  ];
   if (options.maxAge !== void 0) {
     parts.push(`Max-Age=${Math.floor(options.maxAge)}`);
   }
@@ -906,7 +927,9 @@ async function createWebRequest(req) {
   let body = null;
   if (req.method !== "GET" && req.method !== "HEAD") {
     if (req.body !== void 0 && req.body !== null) {
-      body = new Blob([JSON.stringify(req.body)]).stream();
+      body = new Blob([
+        JSON.stringify(req.body)
+      ]).stream();
     } else if (typeof req.on === "function") {
       body = nodeReadableToWebStream(req);
     }

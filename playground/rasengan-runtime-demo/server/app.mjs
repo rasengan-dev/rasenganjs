@@ -50,6 +50,7 @@ demo.group("/api", (api) => {
 });
 
 demo.post("/echo", async (ctx) => {
+  console.log(ctx);
   const body = ctx.get("parsedBody");
   return json({ echo: body });
 });

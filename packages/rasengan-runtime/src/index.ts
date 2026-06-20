@@ -76,3 +76,6 @@ export {
 
 // ── Types ─────────────────────────────────────────────────────
 export type { FetchHandler } from './types.js';
+
+// ── Runtime Adapter ───────────────────────────────────────────
+export type { RuntimeAdapter, ServeOptions } from './runtime-adapter/index.js';

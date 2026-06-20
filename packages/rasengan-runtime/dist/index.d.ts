@@ -88,7 +88,7 @@ interface Context {
  */
 type Middleware = (ctx: Context, next: () => Promise<Response>) => Promise<Response>;
 
-type HTTPMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 interface Route {
     method: HTTPMethod;
     pattern: string;
@@ -208,7 +208,7 @@ declare class Router {
  * ```
  */
 /** All recognised hook names */
-type HookName = "beforeRequest" | "afterResponse" | "onError";
+type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
 /** A hook handler function — signature varies by hook name */
 type HookHandler = (...args: unknown[]) => void | Promise<void>;
 /**
@@ -731,7 +731,7 @@ interface CookieOptions {
     /** Whether the cookie requires HTTPS */
     secure?: boolean;
     /** SameSite policy */
-    sameSite?: "Strict" | "Lax" | "None";
+    sameSite?: 'Strict' | 'Lax' | 'None';
     /** Explicit expiration date */
     expires?: Date;
 }
@@ -984,14 +984,87 @@ declare class InternalServerError extends HttpError {
 }
 
 /**
+ * Options shared by all platform adapters' serve() method.
+ * Platform-specific packages may extend this interface.
+ */
+interface ServeOptions {
+    /**
+     * Configure a file watcher that starts automatically
+     * when the server starts.
+     *
+     * The callback fires (after debounce) when any watched
+     * file changes.  Use this to rebuild, restart, or notify
+     * the dev server.
+     */
+    watch?: {
+        /** File or directory path(s) to watch */
+        path: string | string[];
+        /** Called when a watched file changes */
+        callback: () => void;
+        /** Debounce window in milliseconds (default 100) */
+        debounceMs?: number;
+    };
+}
+
+/**
+ * RuntimeAdapter — platform-agnostic interface for serving HTTP,
+ * watching files, and accessing assets.
+ *
+ * Every platform package (@rasenganjs/runtime-node,
+ * @rasenganjs/runtime-bun, etc.) implements this interface so
+ * the Application can run anywhere without changing its code.
+ *
+ * Methods marked with ? are optional — a production adapter
+ * may omit watch(), and a serverless adapter may implement
+ * assets differently.
+ */
+interface RuntimeAdapter {
+    /**
+     * Start an HTTP server and dispatch incoming requests to
+     * the given Application.
+     *
+     * If `options.watch` is provided and the platform supports
+     * file watching, the watcher starts automatically and runs
+     * until the server closes.
+     *
+     * The returned Promise resolves when the server closes.
+     */
+    serve(app: Application, options?: ServeOptions): Promise<void>;
+    /**
+     * Watch a file or directory for changes.
+     *
+     * Returns a dispose function that stops the watcher.
+     * Implementations should debounce rapid change events.
+     */
+    watch?(path: string, callback: () => void): () => void;
+    /**
+     * Platform-specific asset storage abstraction.
+     *
+     * In Node this reads/writes the local filesystem.
+     * In serverless environments this could map to S3, R2, etc.
+     * All paths are relative to the platform's configured root.
+     */
+    assets: {
+        /** Read a file. Returns null if not found. */
+        get(path: string): Promise<Uint8Array | null>;
+        /** Write a file, creating parent directories if needed. */
+        write(path: string, data: Uint8Array): Promise<void>;
+        /** Delete a file or empty directory. No-op if missing. */
+        delete(path: string): Promise<void>;
+        /** List all entries under a prefix/directory. */
+        list(prefix: string): Promise<string[]>;
+    };
+}
+
+/**
  * A FetchHandler is the fundamental request handler primitive.
- * It accepts a Context (wrapping a Web-standard Request) and
+ * It accepts a Request and a optional Runtime Adapter and
  * returns a Promise<Response>.
  *
  * This is the lowest-level building block — every middleware,
  * route handler, and error handler ultimately conforms to this
  * shape (though middleware additionally calls next()).
  */
-type FetchHandler = (context: Context) => Promise<Response>;
+type FetchHandler = (request: Request, runtime?: RuntimeAdapter) => Promise<Response>;
 
-export { Application, type BodyParserOptions, type CORSOptions, type CompressOptions, type Context, type CookieOptions, type FetchHandler, type HTTPMethod, type HookHandler, type HookName, HookSystem, HttpError, InternalServerError, type LoggerOptions, MethodNotAllowedError, type Middleware, NotFoundError, type RequestIdOptions, type Route, Router, type RouterGroupOptions, type RuntimeContext, bodyParser, clearCookie, compose, compress, cors, createContext, getCookie, getPathname, getQueryParam, getQueryParams, html, json, logger, matchPath, nodeStreamToResponse, notFound, parseBody, parseCookies, parseFormData, parseJson, parseQueryString, parseText, parseUrlEncoded, redirect, requestId, serializeCookie, setCookie, status, streamResponse, text, toExpressHandler, toWinterCgHandler };
+export { Application, type BodyParserOptions, type CORSOptions, type CompressOptions, type Context, type CookieOptions, type FetchHandler, type HTTPMethod, type HookHandler, type HookName, HookSystem, HttpError, InternalServerError, type LoggerOptions, MethodNotAllowedError, type Middleware, NotFoundError, type RequestIdOptions, type Route, Router, type RouterGroupOptions, type RuntimeAdapter, type RuntimeContext, type ServeOptions, bodyParser, clearCookie, compose, compress, cors, createContext, getCookie, getPathname, getQueryParam, getQueryParams, html, json, logger, matchPath, nodeStreamToResponse, notFound, parseBody, parseCookies, parseFormData, parseJson, parseQueryString, parseText, parseUrlEncoded, redirect, requestId, serializeCookie, setCookie, status, streamResponse, text, toExpressHandler, toWinterCgHandler };
