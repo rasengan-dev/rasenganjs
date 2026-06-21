@@ -48,6 +48,12 @@ export interface RuntimeAdapter {
     /** Read a file. Returns null if not found. */
     get(path: string): Promise<Uint8Array | null>;
 
+    /**
+     * Read a file and decode its content as UTF-8 text.
+     * Returns null if not found.
+     */
+    load(path: string): Promise<string | null>;
+
     /** Write a file, creating parent directories if needed. */
     write(path: string, data: Uint8Array): Promise<void>;
 

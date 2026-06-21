@@ -47,6 +47,16 @@ export class NodeAssets {
   }
 
   /**
+   * Read a file and decode its content as UTF-8 text.
+   * Returns `null` if the file does not exist or is a directory.
+   */
+  async load(path: string): Promise<string | null> {
+    const data = await this.get(path);
+    if (data === null) return null;
+    return new TextDecoder().decode(data);
+  }
+
+  /**
    * Write a file to the local filesystem.
    * Creates parent directories if they do not exist.
    */

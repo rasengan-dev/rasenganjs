@@ -65,6 +65,20 @@ export class NodeDevAdapter implements RuntimeAdapter {
   async serve(app: Application | null, options?: ServeOptions): Promise<void> {
     this.serveOptions = options ?? {};
 
+    // ── Child-process mode (nodemon-style) ──────────────────
+    if (options?.autoRestart && options.autoRestart.process !== false) {
+      if (app) {
+        console.warn(
+          '[rasengan] both an Application and autoRestart.entry were provided; ' +
+            'ignoring entry and using in-process mode. ' +
+            'Pass null as the first argument to use child-process mode.'
+        );
+      } else {
+        return this.serveChildProcess(options);
+      }
+    }
+
+    // ── In-process mode ─────────────────────────────────────
     if (!app) {
       throw new Error(
         'Application is required — provide it directly or via autoRestart.entry'
@@ -73,8 +87,21 @@ export class NodeDevAdapter implements RuntimeAdapter {
 
     this.currentApp = app;
 
+    // Start file watcher (in-process restarts via cache-busted import)
     if (options?.watch) {
-      this.setupWatcher(options);
+      const { path, callback, debounceMs } = options.watch;
+      const paths = Array.isArray(path) ? path : [path];
+      const disposes = paths.map((p) =>
+        this.watcher.watch(
+          p,
+          () => {
+            callback?.();
+            if (options.autoRestart) this.restartInProcess();
+          },
+          debounceMs
+        )
+      );
+      this.disposeWatcher = () => disposes.forEach((d) => d());
     }
 
     this.startServer(app);

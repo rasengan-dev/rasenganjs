@@ -44,7 +44,7 @@ export function startNodeServer(
   app: Application,
   options: NodeServerOptions = {}
 ): NodeServerHandle {
-  const port = options.port ?? 5320;
+  const port = options.port ?? 5200;
   const host = options.host ?? '0.0.0.0';
 
   const server = http.createServer(async (req, res) => {

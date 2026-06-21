@@ -42,6 +42,7 @@ export interface NodeProdAdapterOptions {
 export class NodeProdAdapter implements RuntimeAdapter {
   readonly assets: {
     get(path: string): Promise<Uint8Array | null>;
+    load(path: string): Promise<string | null>;
     write(path: string, data: Uint8Array): Promise<void>;
     delete(path: string): Promise<void>;
     list(prefix: string): Promise<string[]>;
@@ -59,6 +60,19 @@ export class NodeProdAdapter implements RuntimeAdapter {
           const s = await stat(fullPath);
           if (!s.isFile()) return null;
           return await readFile(fullPath);
+        } catch (error: unknown) {
+          if (isNotFound(error)) return null;
+          throw error;
+        }
+      },
+
+      load: async (path: string) => {
+        const fullPath = resolvePath(rootDir, path);
+        try {
+          const s = await stat(fullPath);
+          if (!s.isFile()) return null;
+          const data = await readFile(fullPath);
+          return new TextDecoder().decode(data);
         } catch (error: unknown) {
           if (isNotFound(error)) return null;
           throw error;
