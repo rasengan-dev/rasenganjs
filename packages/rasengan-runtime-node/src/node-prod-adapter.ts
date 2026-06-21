@@ -21,17 +21,14 @@
  * ```
  */
 
-import { createContext } from '@rasenganjs/runtime';
 import type {
   Application,
   RuntimeAdapter,
   ServeOptions,
 } from '@rasenganjs/runtime';
-import type { FetchHandler } from '@rasenganjs/runtime';
 
 import { startNodeServer, type NodeServerHandle } from './serve/node-server.js';
-import { writeFile, mkdir, unlink } from 'node:fs/promises';
-import { join, dirname, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import type { Dirent } from 'node:fs';
 import { relative } from 'node:path';
@@ -95,11 +92,6 @@ export class NodeProdAdapter implements RuntimeAdapter {
   }
 
   async serve(app: Application, _options?: ServeOptions): Promise<void> {
-    // const wrapped = (request: Request): Promise<Response> => {
-    //   const ctx = createContext(request, {}, { env: process.env as Record<string, string> });
-    //   return handler(ctx);
-    // };
-
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host,

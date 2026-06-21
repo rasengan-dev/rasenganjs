@@ -1000,9 +1000,45 @@ interface ServeOptions {
         /** File or directory path(s) to watch */
         path: string | string[];
         /** Called when a watched file changes */
-        callback: () => void;
+        callback?: () => void;
         /** Debounce window in milliseconds (default 100) */
         debounceMs?: number;
+    };
+    /**
+     * Automatically restart the server when watched files
+     * change.
+     *
+     * Requires `watch` to also be set.  When `process` is
+     * true (default), the adapter spawns `node <entry>` as a
+     * child process and restarts it on file changes — this
+     * matches nodemon's model and avoids all ESM caching /
+     * global state issues.
+     *
+     * The `serve()` promise stays pending until `close()`
+     * is called, regardless of how many restarts happen.
+     */
+    autoRestart?: {
+        /**
+         * Path to the entry script passed to `node <entry>`.
+         *
+         * The script is responsible for creating its own HTTP
+         * server.  The adapter forwards the port via the
+         * `PORT` environment variable.
+         *
+         * @example "./src/dev-server.js"
+         */
+        entry: string;
+        /**
+         * Use child-process mode (default: true).
+         *
+         * When true, the adapter spawns `node <entry>` as an
+         * external process — the cleanest form of reload since
+         * the OS handles full teardown.  Set to false to fall
+         * back to in-process cache-busted import.
+         */
+        process?: boolean;
+        /** Extra arguments passed to the entry script. */
+        args?: string[];
     };
 }
 
@@ -1023,13 +1059,16 @@ interface RuntimeAdapter {
      * Start an HTTP server and dispatch incoming requests to
      * the given Application.
      *
+     * `app` may be omitted if `options.autoRestart.entry` is
+     * provided — the adapter loads the entry module itself.
+     *
      * If `options.watch` is provided and the platform supports
      * file watching, the watcher starts automatically and runs
      * until the server closes.
      *
      * The returned Promise resolves when the server closes.
      */
-    serve(app: Application, options?: ServeOptions): Promise<void>;
+    serve(app?: Application | null, options?: ServeOptions): Promise<void>;
     /**
      * Watch a file or directory for changes.
      *

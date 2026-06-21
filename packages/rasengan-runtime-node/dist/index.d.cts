@@ -47,23 +47,29 @@ declare class NodeAssets {
  * NodeDevAdapter — RuntimeAdapter for Node.js development.
  *
  * Features:
- *   - HTTP server on configurable port/host
- *   - File watcher with debounce for HMR / auto-reload
+ *   - In-process HTTP server (when Application is passed directly)
+ *   - Child-process spawning (nodemon-style) for `autoRestart`
+ *   - File watcher with debounce + auto-restart on change
  *   - Local filesystem assets (read/write/delete/list)
  *
  * @example
  * ```ts
+ * // ── In-process mode ──
  * import { Application } from "@rasenganjs/runtime";
  * import { NodeDevAdapter } from "@rasenganjs/runtime-node";
  *
  * const app = new Application();
- * app.get("/hello", (ctx) => new Response("Hello from dev!"));
+ * app.get("/hello", (ctx) => new Response("Hello!"));
  *
  * const adapter = new NodeDevAdapter({ port: 3000 });
+ * await adapter.serve(app);
  *
- * // With auto-starting watcher
- * await adapter.serve(app, {
- *   watch: { path: "src/", callback: () => console.log("rebuilding...") }
+ * // ── Child-process mode (nodemon-style) ──
+ * // Your entry script creates its own server.
+ * // The adapter spawns `node <entry>` and restarts it on changes.
+ * await adapter.serve(null, {
+ *   watch: { path: "src/" },
+ *   autoRestart: { entry: "./src/dev-server.mjs" }
  * });
  * ```
  */
@@ -79,11 +85,24 @@ declare class NodeDevAdapter implements RuntimeAdapter {
     readonly assets: NodeAssets;
     private serverHandle;
     private disposeWatcher;
+    private serveResolve;
+    private childProcess;
     constructor(options?: NodeDevAdapterOptions);
-    serve(app: Application, options?: ServeOptions): Promise<void>;
-    /** Stop the HTTP server and the file watcher. */
+    serve(app: Application | null, options?: ServeOptions): Promise<void>;
     close(): void;
     watch(path: string, callback: () => void): () => void;
+    private currentApp;
+    private serveOptions;
+    private restarting;
+    private closing;
+    private startServer;
+    private restartInProcess;
+    private serveChildProcess;
+    private setupWatcher;
+    private spawnChild;
+    /** Kill a child process and wait for it to exit (force SIGKILL after 3s). */
+    private killChild;
+    private restartChildProcess;
 }
 
 /**

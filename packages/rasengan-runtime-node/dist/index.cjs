@@ -37,6 +37,9 @@ __export(src_exports, {
 });
 module.exports = __toCommonJS(src_exports);
 
+// src/node-dev-adapter.ts
+var import_node_child_process = require("child_process");
+
 // src/assets/node-assets.ts
 var import_promises = require("fs/promises");
 var import_node_path = require("path");
@@ -234,30 +237,145 @@ var NodeDevAdapter = class {
   assets;
   serverHandle = null;
   disposeWatcher = null;
+  serveResolve = null;
+  // Child-process fields (nodemon-style)
+  childProcess = null;
   async serve(app, options) {
-    if (options?.watch) {
-      const { path, callback, debounceMs } = options.watch;
-      const paths = Array.isArray(path) ? path : [path];
-      const disposes = paths.map(
-        (p) => this.watcher.watch(p, callback, debounceMs)
+    this.serveOptions = options ?? {};
+    if (!app) {
+      throw new Error(
+        "Application is required \u2014 provide it directly or via autoRestart.entry"
       );
-      this.disposeWatcher = () => disposes.forEach((d) => d());
     }
+    this.currentApp = app;
+    if (options?.watch) {
+      this.setupWatcher(options);
+    }
+    this.startServer(app);
+    if (options?.autoRestart) {
+      return new Promise((resolve3) => {
+        this.serveResolve = resolve3;
+      });
+    }
+    return this.serverHandle.ready;
+  }
+  close() {
+    this.closing = true;
+    this.disposeWatcher?.();
+    this.disposeWatcher = null;
+    if (this.childProcess) {
+      this.childProcess.kill("SIGTERM");
+      this.childProcess = null;
+    }
+    this.serverHandle?.close();
+    this.serverHandle = null;
+    this.serveResolve?.();
+    this.serveResolve = null;
+  }
+  watch(path, callback) {
+    return this.watcher.watch(path, callback);
+  }
+  // ── private ──────────────────────────────────────────────────
+  currentApp = null;
+  serveOptions = {};
+  restarting = false;
+  closing = false;
+  // ── In-process helpers ──────────────────────────────────────
+  startServer(app) {
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host
     });
-    return this.serverHandle.ready;
   }
-  /** Stop the HTTP server and the file watcher. */
-  close() {
-    this.disposeWatcher?.();
-    this.disposeWatcher = null;
-    this.serverHandle?.close();
-    this.serverHandle = null;
+  async restartInProcess() {
+    if (this.restarting) return;
+    this.restarting = true;
+    try {
+      this.serverHandle?.close();
+      this.serverHandle = null;
+      await new Promise((r) => setTimeout(r, 100));
+      const entry = this.serveOptions.autoRestart.entry;
+      const cacheBuster = `?t=${Date.now()}`;
+      const mod = await import(`${entry}${cacheBuster}`);
+      const freshApp = mod.default;
+      this.currentApp = freshApp;
+      this.startServer(freshApp);
+    } finally {
+      this.restarting = false;
+    }
   }
-  watch(path, callback) {
-    return this.watcher.watch(path, callback);
+  // ── Child-process helpers (nodemon-style) ──────────────────
+  async serveChildProcess(options) {
+    const { entry, args = [] } = options.autoRestart;
+    if (options.watch) {
+      this.setupWatcher(options);
+    }
+    this.spawnChild(entry, args);
+    return new Promise((resolve3) => {
+      this.serveResolve = resolve3;
+    });
+  }
+  setupWatcher(options) {
+    const { path, callback, debounceMs } = options.watch;
+    const paths = Array.isArray(path) ? path : [path];
+    const useProcess = options.autoRestart?.process !== false;
+    const disposes = paths.map(
+      (p) => this.watcher.watch(
+        p,
+        () => {
+          callback?.();
+          if (useProcess && options.autoRestart) {
+            this.restartChildProcess();
+          } else if (options.autoRestart) {
+            this.restartInProcess();
+          }
+        },
+        debounceMs
+      )
+    );
+    this.disposeWatcher = () => disposes.forEach((d) => d());
+  }
+  spawnChild(entry, args) {
+    this.childProcess = (0, import_node_child_process.spawn)("node", [entry, ...args], {
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        PORT: String(this.options.port ?? 5320)
+      }
+    });
+    this.childProcess.on("exit", (code, signal) => {
+      if (this.restarting || this.closing) return;
+      if (code !== 0 || signal !== null) {
+        console.error(
+          `[rasengan] child process exited unexpectedly (code=${code}, signal=${signal})`
+        );
+      }
+    });
+  }
+  /** Kill a child process and wait for it to exit (force SIGKILL after 3s). */
+  killChild(child) {
+    return new Promise((resolve3) => {
+      const forceKill = setTimeout(() => {
+        child.kill("SIGKILL");
+        resolve3();
+      }, 3e3);
+      child.on("exit", () => {
+        clearTimeout(forceKill);
+        resolve3();
+      });
+      child.kill("SIGTERM");
+    });
+  }
+  async restartChildProcess() {
+    if (this.restarting) return;
+    this.restarting = true;
+    const { entry, args = [] } = this.serveOptions.autoRestart;
+    if (this.childProcess) {
+      await this.killChild(this.childProcess);
+      this.childProcess = null;
+    }
+    this.spawnChild(entry, args);
+    this.restarting = false;
   }
 };
 

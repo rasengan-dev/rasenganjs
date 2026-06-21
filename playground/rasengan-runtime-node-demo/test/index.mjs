@@ -1,8 +1,11 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import { Application, json, text, redirect, bodyParser } from '@rasenganjs/runtime';
 import { NodeDevAdapter, NodeProdAdapter, NodeAssets, NodeWatcher } from '@rasenganjs/runtime-node';
@@ -205,7 +208,7 @@ describe('NodeProdAdapter', () => {
     app.get('/ping', () => text('pong'));
 
     adapter = new NodeProdAdapter({ port: PORT });
-    adapter.serve((ctx) => app.fetch(ctx.request, ctx.runtime));
+    adapter.serve(app);
     started = true;
     await new Promise((r) => setTimeout(r, 200));
   });
@@ -223,5 +226,123 @@ describe('NodeProdAdapter', () => {
   it('assets.get returns null for non-existent paths', async () => {
     const result = await adapter.assets.get('/nonexistent-file-12345');
     assert.equal(result, null);
+  });
+});
+
+// ── NodeDevAdapter auto-restart ─────────────────────────────
+
+/**
+ * Template for the entry script that the adapter spawns as a child.
+ * The script creates an Application and its own HTTP server so the
+ * child process is fully self-contained (nodemon-style).
+ *
+ * `__VERSION__` is replaced at write time with "v0", "v1", etc.
+ */
+function entryScript(version) {
+  return [
+    `import http from 'node:http';`,
+    `import { Application, text } from '@rasenganjs/runtime';`,
+    ``,
+    `const app = new Application();`,
+    `app.get('/counter', () => text('${version}'));`,
+    ``,
+    `const server = http.createServer(async (req, res) => {`,
+    `  try {`,
+    `    const url = new URL(req.url ?? '/', 'http://localhost');`,
+    `    const request = new Request(url, {`,
+    `      method: req.method,`,
+    `      headers: Object.entries(req.headers)`,
+    `        .filter(([, v]) => v !== undefined)`,
+    `        .map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : v]),`,
+    `    });`,
+    `    const response = await app.fetch(request);`,
+    `    const headers = {};`,
+    `    response.headers.forEach((v, k) => { headers[k] = v; });`,
+    `    res.writeHead(response.status, headers);`,
+    `    if (response.body) {`,
+    `      const reader = response.body.getReader();`,
+    `      (function pump() {`,
+    `        reader.read().then(({ done, value }) => {`,
+    `          if (done) res.end();`,
+    `          else { res.write(value); pump(); }`,
+    `        });`,
+    `      })();`,
+    `    } else {`,
+    `      res.end();`,
+    `    }`,
+    `  } catch (e) {`,
+    `    res.writeHead(500);`,
+    `    res.end(e.message);`,
+    `  }`,
+    `});`,
+    ``,
+    `const port = parseInt(process.env.PORT || '5320', 10);`,
+    `server.listen(port);`,
+  ].join('\n');
+}
+
+describe('NodeDevAdapter auto-restart', () => {
+  let adapter;
+  let started;
+  const PORT = 15332;
+  const testDir = join(__dirname, '..', 'tmp-restart-test');
+  let entryPath;
+
+  before(async () => {
+    rmSync(testDir, { recursive: true, force: true });
+    mkdirSync(testDir, { recursive: true });
+    entryPath = join(testDir, 'app.mjs');
+
+    writeFileSync(entryPath, entryScript('v0'));
+
+    adapter = new NodeDevAdapter({ port: PORT });
+    adapter.serve(null, {
+      watch: { path: testDir },
+      autoRestart: { entry: entryPath },
+    });
+    started = true;
+    await new Promise((r) => setTimeout(r, 500));
+  });
+
+  after(() => {
+    if (started) adapter.close();
+    rmSync(testDir, { recursive: true, force: true });
+  });
+
+  it('serves initial app', async () => {
+    const res = await globalThis.fetch(`http://localhost:${PORT}/counter`);
+    assert.equal(res.status, 200);
+    assert.equal(await res.text(), 'v0');
+  });
+
+  it('restarts on file change with fresh process', async () => {
+    writeFileSync(entryPath, entryScript('v1'));
+    await new Promise((r) => setTimeout(r, 1000));
+
+    const res = await globalThis.fetch(`http://localhost:${PORT}/counter`);
+    // Allow one retry if the child is still starting up
+    if (res.status !== 200) {
+      await new Promise((r) => setTimeout(r, 500));
+      const res2 = await globalThis.fetch(`http://localhost:${PORT}/counter`);
+      assert.equal(res2.status, 200);
+      assert.equal(await res2.text(), 'v1');
+    } else {
+      assert.equal(await res.text(), 'v1');
+    }
+  });
+
+  it('restarts again on subsequent change', async () => {
+    writeFileSync(entryPath, entryScript('v2'));
+    await new Promise((r) => setTimeout(r, 1000));
+
+    const res = await globalThis.fetch(`http://localhost:${PORT}/counter`);
+    if (res.status !== 200) {
+      await new Promise((r) => setTimeout(r, 500));
+      const res2 = await globalThis.fetch(`http://localhost:${PORT}/counter`);
+      assert.equal(res2.status, 200);
+      assert.equal(await res2.text(), 'v2');
+    } else {
+      assert.equal(await res.text(), 'v2');
+    }
   });
 });

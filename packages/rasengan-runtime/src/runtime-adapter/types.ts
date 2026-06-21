@@ -18,13 +18,16 @@ export interface RuntimeAdapter {
    * Start an HTTP server and dispatch incoming requests to
    * the given Application.
    *
+   * `app` may be omitted if `options.autoRestart.entry` is
+   * provided — the adapter loads the entry module itself.
+   *
    * If `options.watch` is provided and the platform supports
    * file watching, the watcher starts automatically and runs
    * until the server closes.
    *
    * The returned Promise resolves when the server closes.
    */
-  serve(app: Application, options?: ServeOptions): Promise<void>;
+  serve(app?: Application | null, options?: ServeOptions): Promise<void>;
 
   /**
    * Watch a file or directory for changes.
