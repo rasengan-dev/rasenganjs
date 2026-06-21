@@ -20,11 +20,4 @@ console.log(`  http://localhost:5330/hello/Rasengan\n`);
 
 adapter.serve(app);
 
-async function read() {
-  const result = await adapter.assets.load('/server/app.mjs');
-  console.log('Read successful', result);
-}
-
-read();
-
 
