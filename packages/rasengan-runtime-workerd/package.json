@@ -1,7 +1,7 @@
 {
-  "name": "@rasenganjs/runtime-bun",
+  "name": "@rasenganjs/runtime-workerd",
   "version": "1.0.0",
-  "description": "Bun RuntimeAdapter implementation for Rasengan.JS — HTTP server via Bun.serve(), file watcher, and local FS assets",
+  "description": "workerd RuntimeAdapter for Rasengan.JS — fetch event registration, no local FS (KV/R2-friendly)",
   "type": "module",
   "main": "dist/index.js",
   "exports": {
@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-runtime-bun"
+    "directory": "packages/rasengan-runtime-workerd"
   },
   "scripts": {
     "build:clean": "rimraf ./dist",

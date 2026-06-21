@@ -1070,6 +1070,12 @@ interface RuntimeAdapter {
      */
     serve(app?: Application | null, options?: ServeOptions): Promise<void>;
     /**
+     * Stop the server and release all resources (file watchers,
+     * child processes, network sockets).  After calling close()
+     * the adapter must not be reused.
+     */
+    close(): void;
+    /**
      * Watch a file or directory for changes.
      *
      * Returns a dispose function that stops the watcher.

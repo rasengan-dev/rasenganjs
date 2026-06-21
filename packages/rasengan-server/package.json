@@ -1,9 +1,12 @@
 {
-  "name": "@rasenganjs/runtime-bun",
+  "name": "@rasenganjs/server",
   "version": "1.0.0",
-  "description": "Bun RuntimeAdapter implementation for Rasengan.JS — HTTP server via Bun.serve(), file watcher, and local FS assets",
+  "description": "Rasengan Server — modular backend framework built on @rasenganjs/runtime. Controllers, providers, DI, auto-detected adapters (Node, Bun, workerd).",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "rasengan-server": "./dist/cli.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,17 +19,21 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-runtime-bun"
+    "directory": "packages/rasengan-server"
   },
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm build:clean && tsup",
     "pack": "pnpm pack --pack-destination ./release"
   },
-  "peerDependencies": {
-    "@rasenganjs/runtime": "workspace:*"
+  "dependencies": {
+    "@rasenganjs/runtime": "workspace:*",
+    "esbuild": "^0.25.0"
   },
   "devDependencies": {
+    "@rasenganjs/runtime-bun": "workspace:*",
+    "@rasenganjs/runtime-node": "workspace:*",
+    "@rasenganjs/runtime-workerd": "workspace:*",
     "rimraf": "^6.1.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"

@@ -1,0 +1,21 @@
+{
+  "name": "rasengan-server-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan-server dev",
+    "build": "rasengan-server build",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/runtime-node": "workspace:*",
+    "@rasenganjs/runtime-bun": "workspace:*",
+    "@rasenganjs/runtime-workerd": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

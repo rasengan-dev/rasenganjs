@@ -23,7 +23,7 @@
     "build": "pnpm build:clean && tsup",
     "pack": "pnpm pack --pack-destination ./release"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@rasenganjs/runtime": "workspace:*"
   },
   "devDependencies": {
