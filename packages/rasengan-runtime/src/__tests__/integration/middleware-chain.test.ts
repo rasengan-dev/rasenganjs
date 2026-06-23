@@ -1,19 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { compose } from '../../middlewares/compose.js';
+import { createContext } from '../../context/index.js';
 import type { Context } from '../../context/types.js';
 
 function createCtx(): Context {
-  const state: Record<string, unknown> = {};
-  return {
-    request: new Request('http://localhost'),
-    params: {},
-    runtime: {},
-    state,
-    set: (key, value) => {
-      state[key] = value;
-    },
-    get: (key) => state[key] as any,
-  };
+  return createContext(new Request('http://localhost'));
 }
 
 describe('middleware chain (integration)', () => {

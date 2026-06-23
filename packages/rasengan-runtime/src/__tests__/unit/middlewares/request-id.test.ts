@@ -1,19 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { requestId } from '../../../middlewares/request-id.js';
+import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
 function createCtx(request: Request): Context {
-  const state: Record<string, unknown> = {};
-  return {
-    request,
-    params: {},
-    runtime: {},
-    state,
-    set: (key, value) => {
-      state[key] = value;
-    },
-    get: (key) => state[key] as any,
-  };
+  return createContext(request);
 }
 
 describe('requestId', () => {

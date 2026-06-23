@@ -1,18 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { cors } from '../../../middlewares/cors.js';
+import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
 function createCtx(method: string, origin?: string): Context {
   const headers = new Headers();
   if (origin) headers.set('origin', origin);
-  return {
-    request: new Request('http://localhost', { method, headers }),
-    params: {},
-    runtime: {},
-    state: {},
-    set: vi.fn(),
-    get: vi.fn(),
-  };
+  return createContext(new Request('http://localhost', { method, headers }));
 }
 
 describe('cors', () => {

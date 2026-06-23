@@ -1,21 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { compress } from '../../../middlewares/compress.js';
+import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
 function createCtx(acceptEncoding?: string, method: string = 'GET'): Context {
   const headers = new Headers();
   if (acceptEncoding) headers.set('accept-encoding', acceptEncoding);
-  const state: Record<string, unknown> = {};
-  return {
-    request: new Request('http://localhost', { method, headers }),
-    params: {},
-    runtime: {},
-    state,
-    set: (key, value) => {
-      state[key] = value;
-    },
-    get: (key) => state[key] as any,
-  };
+  return createContext(new Request('http://localhost', { method, headers }));
 }
 
 const hasBrotli =

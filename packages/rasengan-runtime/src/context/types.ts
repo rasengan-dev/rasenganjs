@@ -22,12 +22,38 @@ export interface RuntimeContext {
 }
 
 /**
+ * Query parameters — both callable and indexable.
+ *
+ * Access a single param by key:
+ * ```ts
+ * ctx.query('page')   // "2"
+ * ```
+ *
+ * Or read it as a property:
+ * ```ts
+ * ctx.query.page      // "2"
+ * ```
+ *
+ * Iterate all params:
+ * ```ts
+ * Object.keys(ctx.query)  // ["page", "limit", ...]
+ * ```
+ */
+export interface QueryParams {
+  (key: string): string | undefined;
+  [key: string]: string | undefined;
+}
+
+/**
  * Request-scoped context that every middleware and handler
  * receives.
  *
  * `state` replaces the ad-hoc pattern of decorating the
  * request object.  Middlewares write to it (auth sets
  * `state.user`), handlers and later middlewares read it.
+ *
+ * `query` provides lazy access to URL query parameters:
+ * parsed on first access via a getter, then cached.
  */
 export interface Context {
   /** The incoming Web API Request */
@@ -35,6 +61,20 @@ export interface Context {
 
   /** URL path parameters extracted by the Router */
   params: Record<string, string>;
+
+  /**
+   * Parsed URL query parameters.
+   *
+   * Accessible as both an object property and a callable:
+   * ```ts
+   * ctx.query.page        // "2"
+   * ctx.query('page')     // "2"
+   * ```
+   *
+   * Parsed lazily on first access and cached thereafter.
+   * Returns `undefined` for missing keys.
+   */
+  query: QueryParams;
 
   /** Runtime environment info */
   runtime: RuntimeContext;

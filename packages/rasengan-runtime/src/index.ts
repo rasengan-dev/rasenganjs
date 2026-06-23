@@ -2,7 +2,7 @@
 export { Application } from './app/index.js';
 
 // ── Context ───────────────────────────────────────────────────
-export type { Context, RuntimeContext } from './context/types.js';
+export type { Context, RuntimeContext, QueryParams } from './context/types.js';
 export { createContext } from './context/index.js';
 
 // ── Middleware ────────────────────────────────────────────────

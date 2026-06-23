@@ -169,6 +169,38 @@ Full lifecycle document: [LIFECYCLE.md](./LIFECYCLE.md)
 | `/files/:path*` | Wildcard (multi-segment) | `/files/a/b/c` → `{ path: "a/b/c" }` |
 | `/static/*`     | Catch-all                | `/static/foo.js` → `{ _: "foo.js" }` |
 
+### Context
+
+Inside a route handler or middleware, `ctx` provides:
+
+| Property  | Type                              | Description                                                |
+| --------- | --------------------------------- | ---------------------------------------------------------- |
+| `request` | `Request`                         | The Web API Request object                                 |
+| `params`  | `Record<string, string>`          | Path parameters from the matched route                     |
+| `query`   | `QueryParams`                     | URL query string — both callable and indexable (see below) |
+| `runtime` | `RuntimeContext`                  | Platform runtime info (`{ env }`)                          |
+| `state`   | `Record<string, unknown>`         | Mutable bag for middleware ↔ handler communication         |
+| `set<T>`  | `(key: string, value: T) => void` | Typed state setter                                         |
+| `get<T>`  | `(key: string) => T \| undefined` | Typed state getter                                         |
+
+#### Query Parameters
+
+`ctx.query` provides dual-access to URL query parameters:
+
+```ts
+// As an indexable object
+const name = ctx.query.name;
+const page = ctx.query.page;
+
+// As a callable
+const name = ctx.query('name');
+const page = ctx.query('page');
+
+// Both return undefined if the key is not present
+```
+
+Query params are lazily parsed — the URL is parsed only on first access to `ctx.query`, and the result is cached.
+
 ### Route Groups
 
 ```ts
@@ -322,14 +354,14 @@ Routes are matched by iterating the array in registration order. For most applic
 
 **Framework:** Vitest v4 — `pnpm test`, `pnpm test:watch`, `pnpm test:coverage`
 
-**200 tests across 20 files** covering:
+**211 tests across 20 files** covering:
 
-| Layer                 | Files                                                                                                                                       | Coverage                                                                                                           |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Unit (pure functions) | `compose`, `context`, `errors`, `hooks`, `matchPath`, `parseQueryString`, `json/text/html/redirect`, `cookies`, `parseBody`, `parseCookies` | All edge cases, error paths, option variants                                                                       |
-| Middleware            | `bodyParser`, `cors`, `logger`, `requestId`, `compress`                                                                                     | Each option, preflight, skip logic, threshold, fallback                                                            |
-| Integration           | `Application.fetch`, `Router`, `compose` chain                                                                                              | Full pipeline: middleware + route + response, 404, error handler, hooks, groups, nested groups, middleware scoping |
-| Adapter               | `toExpressHandler`, `toWinterCgHandler`                                                                                                     | Express bridge, Workers/Deno/plain arg styles, env merging                                                         |
+| Layer                 | Files                                                                                                                                                       | Coverage                                                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Unit (pure functions) | `compose`, `context` (incl. `query`), `errors`, `hooks`, `matchPath`, `parseQueryString`, `json/text/html/redirect`, `cookies`, `parseBody`, `parseCookies` | All edge cases, error paths, option variants, lazy parsing, encoding                                                             |
+| Middleware            | `bodyParser`, `cors`, `logger`, `requestId`, `compress`                                                                                                     | Each option, preflight, skip logic, threshold, fallback                                                                          |
+| Integration           | `Application.fetch`, `Router`, `compose` chain, `ctx.query`                                                                                                 | Full pipeline: middleware + route + response, 404, error handler, hooks, groups, nested groups, middleware scoping, query params |
+| Adapter               | `toExpressHandler`, `toWinterCgHandler`                                                                                                                     | Express bridge, Workers/Deno/plain arg styles, env merging                                                                       |
 
 ### Testing Strategy for New Contributions
 

@@ -1,16 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { logger } from '../../../middlewares/logger.js';
+import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
 function createCtx(method: string, path: string = '/'): Context {
-  return {
-    request: new Request(`http://localhost${path}`, { method }),
-    params: {},
-    runtime: {},
-    state: {},
-    set: vi.fn(),
-    get: vi.fn(),
-  };
+  return createContext(new Request(`http://localhost${path}`, { method }));
 }
 
 describe('logger', () => {

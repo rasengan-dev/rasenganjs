@@ -1,19 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { bodyParser } from '../../../middlewares/body.js';
+import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
 function createCtx(req: Request): Context {
-  const state: Record<string, unknown> = {};
-  return {
-    request: req,
-    params: {},
-    runtime: {},
-    state,
-    set: (key, value) => {
-      state[key] = value;
-    },
-    get: (key) => state[key] as any,
-  };
+  return createContext(req);
 }
 
 describe('bodyParser', () => {

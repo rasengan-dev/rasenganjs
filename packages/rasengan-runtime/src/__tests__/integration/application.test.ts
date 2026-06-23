@@ -235,4 +235,52 @@ describe('Application (integration)', () => {
 
     expect(res.status).toBe(404);
   });
+
+  // ── Query params via ctx.query ─────────────────────────────
+
+  it('exposes query params via ctx.query object', async () => {
+    app.get('/search', async (ctx) =>
+      json({ q: ctx.query.q, page: ctx.query.page })
+    );
+
+    const req = new Request('http://localhost/search?q=hello&page=2');
+    const res = await app.fetch(req);
+
+    const body = await res.json();
+    expect(body).toEqual({ q: 'hello', page: '2' });
+  });
+
+  it('exposes query params via ctx.query callable', async () => {
+    app.get('/lookup', async (ctx) =>
+      json({ key: ctx.query('key'), limit: ctx.query('limit') })
+    );
+
+    const req = new Request('http://localhost/lookup?key=val&limit=10');
+    const res = await app.fetch(req);
+
+    const body = await res.json();
+    expect(body).toEqual({ key: 'val', limit: '10' });
+  });
+
+  it('returns empty query when no query string present', async () => {
+    app.get('/noquery', async (ctx) =>
+      json({ hasQ: ctx.query.q, keys: Object.keys(ctx.query) })
+    );
+
+    const req = new Request('http://localhost/noquery');
+    const res = await app.fetch(req);
+
+    const body = await res.json();
+    expect(body.hasQ).toBeUndefined();
+    expect(body.keys).toHaveLength(0);
+  });
+
+  it('decodes URL-encoded query values', async () => {
+    app.get('/decode', async (ctx) => json({ name: ctx.query.name }));
+
+    const req = new Request('http://localhost/decode?name=hello%20world');
+    const res = await app.fetch(req);
+
+    expect(await res.json()).toEqual({ name: 'hello world' });
+  });
 });

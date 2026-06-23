@@ -21,7 +21,7 @@ src/
   app/index.ts                      # Application class (orchestrator)
   context/
     types.ts                        # Context, RuntimeContext interfaces
-    index.ts                        # createContext() factory
+    index.ts                        # createContext(), createQueryParams()
   middlewares/
     index.ts                        # Middleware type definition
     compose.ts                      # compose() — Koa-style onion model
@@ -112,6 +112,7 @@ src/
 
 - `request` — standard Web API `Request`
 - `params` — path params set by Router
+- `query` — `QueryParams` (callable + indexable object for URL query string)
 - `runtime` — `{ env }` platform info
 - `state` — mutable bag for middleware ↔ handler data
 - `set<T>(key, value)` / `get<T>(key)` — typed state accessors
@@ -244,11 +245,12 @@ pnpm test:coverage     # With coverage report
 
 ### Testing Patterns
 
-- **Mock Contexts:** Tests use real `set`/`get` backed by `state` object (not `vi.fn()` stubs) — the middleware needs to actually store/retrieve values.
+- **Mock Contexts:** Tests use `createContext()` factory for real `set`/`get`/`query` behavior — not manual object literals.
 - **Content-Length:** Request/Response constructors may not auto-set `Content-Length` in Node. Tests explicitly set it when the production code checks this header (bodyParser maxSize, compress threshold).
 - **CompressionStream:** Brotli (`br`) may not be available in all Node builds. Tests check `hasBrotli` before running brotli-specific assertions.
 - **Adapter arguments:** WinterCG adapter tests cover three argument styles: Workers `(req, env, ctx)`, Deno `(req, {env, ctx})`, and plain `(req, env)`.
 - **Edge cases:** 100-middleware deep stack, `next()` double-call guard, error swallowing in hooks, short-circuit middleware, catch-all paths.
+- **Query encoding:** `createQueryParams()` uses `Object.defineProperty` to attach params onto the callable function — avoids conflict with read-only built-in `.name` and `.length` properties when a query key collides.
 
 ## Build & Release
 
