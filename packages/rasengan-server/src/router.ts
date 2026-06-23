@@ -9,7 +9,7 @@ interface RouteRegistrar {
   delete(path: string, handler: (ctx: Context) => Promise<Response>): unknown;
 }
 
-export class ServerRouter {
+export class Router {
   constructor(private registrar: RouteRegistrar) {}
 
   get(path: string, handler: RouteHandler): void {

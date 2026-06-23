@@ -21,14 +21,19 @@
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "4.1.9",
     "rimraf": "^6.1.3",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
   },
   "files": [
     "dist/",

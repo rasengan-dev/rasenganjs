@@ -24,6 +24,11 @@ export async function bootstrap(
     await adapter.serve(runtimeApp);
   }
 
+  process.on('SIGTERM', () => {
+    adapter.close();
+    process.exit(0);
+  });
+
   return {
     close: () => adapter.close(),
     app: serverApp,

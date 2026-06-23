@@ -1,26 +1,18 @@
-import {
-  Controller,
-  type RouteHandler,
-  type ServerRouter,
-} from '@rasenganjs/server';
-import { UserService } from './user.service.js';
+import { Controller, type RouteHandler, type Router } from '@rasenganjs/server';
+import { UserService } from './user.service';
 
 export class UserController extends Controller {
-  constructor(
-    private userService: UserService,
-    private CONFIG: { port: number }
-  ) {
+  constructor(private userService: UserService) {
     super();
   }
 
-  routes(router: ServerRouter) {
+  routes(router: Router) {
     router.get('/', this.findAll);
     router.get('/:id', this.findOne);
   }
 
   findAll: RouteHandler = async (ctx) => {
     const list = await this.userService.findAll();
-    console.log(this.CONFIG);
     return ctx.json(list);
   };
 

@@ -7,6 +7,10 @@ const host = process.env.RASENGAN_SERVER_HOST || '0.0.0.0';
 bootstrap(
   async (app) => {
     app.registerModule(appModule);
+
+    // app.notFound(async (ctx) => {
+    //   return ctx.text('Not Found', 404);
+    // });
   },
   { port, host }
 );

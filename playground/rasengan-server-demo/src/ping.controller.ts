@@ -1,15 +1,16 @@
-import {
-  Controller,
-  type RouteHandler,
-  type ServerRouter,
-} from '@rasenganjs/server';
+import { Controller, type RouteHandler, type Router } from '@rasenganjs/server';
 
 export class PingController extends Controller {
-  routes(router: ServerRouter) {
+  routes(router: Router) {
     router.get('/ping', this.ping);
+    router.get('/ping2', this.ping2);
   }
 
   ping: RouteHandler = async (ctx) => {
     return ctx.json({ ok: true });
+  };
+
+  ping2: RouteHandler = async (ctx) => {
+    return ctx.json({ ok: true, message: 'pong2' });
   };
 }

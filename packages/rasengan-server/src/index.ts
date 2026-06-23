@@ -11,10 +11,10 @@ export { defineModule } from './module.js';
 export type { ModuleConfig } from './module.js';
 
 // ── Router ───────────────────────────────────────────────────
-export { ServerRouter } from './router.js';
+export { Router } from './router.js';
 
 // ── Context ──────────────────────────────────────────────────
-export type { ExtendedContext } from './context.js';
+export type { RasenganContext } from './context.js';
 
 // ── Container ─────────────────────────────────────────────────
 export { Container } from './container.js';

@@ -64,7 +64,16 @@ export class Container {
         return this.instantiate(val, null);
       }
     }
-    throw new Error(`Cannot resolve dependency "${name}"`);
+    const available = [...this.registry.keys()]
+      .map((k) => (typeof k === 'function' ? k.name : `"${k}"`))
+      .join(', ');
+    throw new Error(
+      `[rasengan-server] Cannot resolve dependency "${name}". ` +
+        `Make sure the provider is registered in your module with ` +
+        `a matching class name. Hint: constructor parameter "${name}" ` +
+        `resolves to a class named "${name.charAt(0).toUpperCase() + name.slice(1)}". ` +
+        `Available providers: ${available || '(none)'}`
+    );
   }
 
   private instantiate(
@@ -83,7 +92,11 @@ export class Container {
     }
 
     const target = entry.useClass || fallbackToken;
-    if (!target) throw new Error('No class to instantiate');
+    if (!target)
+      throw new Error(
+        `[rasengan-server] No class to instantiate for provider entry. ` +
+          `Use \`useClass\` or register a constructor function.`
+      );
 
     if (entry.deps) {
       entry.instance = new target(...entry.deps.map((d) => this.resolve(d)));

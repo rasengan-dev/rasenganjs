@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "rasengan-server dev",
-    "build": "rasengan-server build",
+    "dev": "rasengan-server dev --preset node",
+    "build": "rasengan-server build --preset bun",
     "test": "node --test"
   },
   "dependencies": {

@@ -1,15 +1,16 @@
 import {
   Application,
-  type Context,
   type Middleware,
   cors,
   logger,
   bodyParser,
+  text,
 } from '@rasenganjs/runtime';
 
 import { Container } from './container.js';
-import { ServerRouter } from './router.js';
+import { Router } from './router.js';
 import type { ModuleConfig } from './module.js';
+import { RasenganContext } from './context.js';
 
 export interface ServerHandle {
   close(): void;
@@ -30,8 +31,11 @@ export class ServerApp {
     },
   ];
   private corsOptions?: Parameters<typeof cors>[0];
-  private errorHandler?: (error: Error, ctx: Context) => Promise<Response>;
-  private notFoundHandler?: (ctx: Context) => Promise<Response>;
+  private errorHandler?: (
+    error: Error,
+    ctx: RasenganContext
+  ) => Promise<Response>;
+  private notFoundHandler?: (ctx: RasenganContext) => Promise<Response>;
 
   registerModule(mod: ModuleConfig | (() => ModuleConfig)): void {
     this.modules.push(typeof mod === 'function' ? mod() : mod);
@@ -45,11 +49,13 @@ export class ServerApp {
     this.corsOptions = options ?? {};
   }
 
-  onError(handler: (error: Error, ctx: Context) => Promise<Response>): void {
+  onError(
+    handler: (error: Error, ctx: RasenganContext) => Promise<Response>
+  ): void {
     this.errorHandler = handler;
   }
 
-  notFound(handler: (ctx: Context) => Promise<Response>): void {
+  notFound(handler: (ctx: RasenganContext) => Promise<Response>): void {
     this.notFoundHandler = handler;
   }
 
@@ -64,8 +70,20 @@ export class ServerApp {
       app.use(cors(this.corsOptions));
     }
 
-    if (this.errorHandler) app.onError(this.errorHandler);
-    if (this.notFoundHandler) app.notFound(this.notFoundHandler);
+    if (this.errorHandler) {
+      app.onError(this.errorHandler);
+    } else {
+      app.onError(async (error, ctx) => {
+        return text(error.message, {
+          status: 500,
+        });
+      });
+    }
+    if (this.notFoundHandler) {
+      app.notFound(this.notFoundHandler);
+    } else {
+      app.notFound(async () => text('Not Found', { status: 404 }));
+    }
 
     const flatModules = flattenModules(this.modules);
     const container = new Container();
@@ -91,14 +109,18 @@ export class ServerApp {
     for (const ctrl of mod.controllers || []) {
       const instance = container.resolve(ctrl);
       if (!instance.routes || typeof instance.routes !== 'function') {
-        throw new Error(`Controller ${ctrl.name} must implement routes()`);
+        throw new Error(
+          `[rasengan-server] Controller "${ctrl.name}" is missing a \`routes(router)\` method. ` +
+            `Every controller must define \`routes(router: ServerRouter): void\` ` +
+            `to register its route handlers.`
+        );
       }
       if (mod.prefix) {
         app.group(mod.prefix, (router) => {
-          instance.routes(new ServerRouter(router));
+          instance.routes(new Router(router));
         });
       } else {
-        instance.routes(new ServerRouter(app));
+        instance.routes(new Router(app));
       }
     }
   }

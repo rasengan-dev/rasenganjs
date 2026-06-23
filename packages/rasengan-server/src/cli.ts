@@ -5,6 +5,7 @@ import { build } from './cli/build.js';
 import { loadConfig, parseArgs } from './cli/config.js';
 
 async function main() {
+  const packageManager = process.argv;
   const command = process.argv[2];
   const rawArgs = process.argv.slice(3);
   const overrides = parseArgs(rawArgs);
@@ -31,7 +32,7 @@ async function main() {
         '    --entry, -e <path>        Entry file (default: src/main.ts)'
       );
       console.log(
-        '    --preset <name>           Production preset (node|bun|workerd)'
+        '    --preset=<name>           Production preset (node|bun|workerd)'
       );
       console.log(
         '    --watch-dir <path>        Directory to watch for changes\n'
@@ -41,6 +42,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('Fatal error:', err);
+  console.error(`\n  [rasengan-server] Fatal error: ${err.message}\n`);
   process.exit(1);
 });

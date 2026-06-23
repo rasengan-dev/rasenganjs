@@ -1,5 +1,4 @@
-import type { RuntimeAdapter, Application } from '@rasenganjs/runtime';
-import type { ServeOptions } from '@rasenganjs/runtime';
+import type { RuntimeAdapter } from '@rasenganjs/runtime';
 
 export interface AdapterOptions {
   port?: number;
@@ -32,18 +31,29 @@ async function detectDevAdapter(
       typeof (process as any).versions !== 'undefined' &&
       (process as any).versions.bun;
     if (isBun) {
-      const mod = await importPkg('@rasenganjs/runtime-bun');
-      return new mod.BunDevAdapter({
-        port: options.port,
-        host: options.host,
-      });
+      try {
+        const mod = await importPkg('@rasenganjs/runtime-bun');
+        return new mod.BunDevAdapter({
+          port: options.port,
+          host: options.host,
+        });
+      } catch {
+        // Bun runtime detected but package not installed
+      }
     }
   } catch {
-    // not Bun
+    // version check failed
   }
 
-  const mod = await importPkg('@rasenganjs/runtime-node');
-  return new mod.NodeDevAdapter({ port: options.port, host: options.host });
+  try {
+    const mod = await importPkg('@rasenganjs/runtime-node');
+    return new mod.NodeDevAdapter({ port: options.port, host: options.host });
+  } catch {
+    throw new Error(
+      `[rasengan-server] Cannot load @rasenganjs/runtime-node adapter. ` +
+        `Make sure the package is installed: \`npm install @rasenganjs/runtime-node\``
+    );
+  }
 }
 
 async function loadProdAdapter(
