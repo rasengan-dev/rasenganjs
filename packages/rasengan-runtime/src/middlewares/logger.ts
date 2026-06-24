@@ -121,7 +121,7 @@ function defaultFormatter(entry: LogEntry, methodPadding: number): string {
   const search = entry.search || '';
   const size = entry.size !== null ? ` ${entry.size}B` : '';
 
-  return `${coloredMethod} ${entry.pathname}${search} ${coloredStatus} ${entry.duration}ms${size}`;
+  return `${new Date().toISOString()} [Rasengan Runtime] ${coloredMethod}: ${entry.pathname}${search} ${coloredStatus} ${entry.duration}ms${size}`;
 }
 
 export function logger(options: LoggerOptions = {}): Middleware {
