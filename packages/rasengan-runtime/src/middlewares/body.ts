@@ -27,12 +27,14 @@
 
 import type { Middleware } from './index.js';
 import { parseBody } from '../request/body.js';
+import { bodyLimit } from './body-limit.js';
 
 export interface BodyParserOptions {
   /** Key under which parsed body is stored in ctx.state (default "parsedBody") */
   key?: string;
 
-  /** Maximum body size in bytes (default unlimited) */
+  /** Maximum body size in bytes (default unlimited).
+   *  When set, uses streaming byte-count enforcement (body-limit). */
   maxSize?: number;
 
   /** Allowed content types (default all).  If the request's
@@ -49,6 +51,9 @@ export interface BodyParserOptions {
  *   1. The body can only be read once (ReadableStream)
  *   2. Handlers and later middlewares can access it via
  *      `ctx.get(key)` synchronously
+ *
+ * When `maxSize` is specified, delegates to `bodyLimit()` internally
+ * for streaming byte-count enforcement.
  */
 export function bodyParser(options: BodyParserOptions = {}): Middleware {
   const key = options.key ?? 'parsedBody';
@@ -56,7 +61,6 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
   return async (ctx, next) => {
     const method = ctx.request.method;
 
-    // Skip GET/HEAD/DELETE — these typically have no body
     if (method === 'GET' || method === 'HEAD' || method === 'DELETE') {
       return next();
     }
@@ -64,7 +68,6 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
     const contentType =
       ctx.request.headers.get('content-type')?.toLowerCase() ?? '';
 
-    // Optional Content-Type filter
     if (options.allowedTypes) {
       const allowed = options.allowedTypes.some((t) => contentType.includes(t));
       if (!allowed) {
@@ -72,22 +75,21 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
       }
     }
 
-    // Max body size guard
     if (options.maxSize !== undefined) {
-      const contentLength = parseInt(
-        ctx.request.headers.get('content-length') ?? '0',
-        10
-      );
-      if (contentLength > options.maxSize) {
-        return new Response('Payload Too Large', { status: 413 });
-      }
+      const limitMw = bodyLimit({ maxSize: options.maxSize });
+      return limitMw(ctx, async () => {
+        try {
+          ctx.state[key] = await parseBody(ctx.request);
+        } catch {
+          ctx.state[key] = undefined;
+        }
+        return next();
+      });
     }
 
-    // Eager parse — consume the body now
     try {
       ctx.state[key] = await parseBody(ctx.request);
     } catch {
-      // If parsing fails, store undefined so handlers can detect it
       ctx.state[key] = undefined;
     }
 
