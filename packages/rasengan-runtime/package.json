@@ -24,6 +24,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "bench": "npx tsx src/__benchmarks__/router.bench.ts",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta"
