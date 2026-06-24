@@ -112,6 +112,49 @@ export class ResponseBuilder {
     return new Response(null, { status, headers });
   }
 
+  /**
+   * Respond with a streaming body.
+   *
+   * Defaults to `Content-Type: text/html; charset=utf-8` and
+   * `Transfer-Encoding: chunked`.  Builder and init headers
+   * override these defaults.
+   *
+   * @param stream — A ReadableStream of Uint8Array chunks
+   * @param init   — Optional extra ResponseInit overrides
+   */
+  stream(stream: ReadableStream<Uint8Array>, init?: ResponseInit): Response {
+    this.#frozen = true;
+    return new Response(
+      stream,
+      this.#mergeInit(init, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      })
+    );
+  }
+
+  /**
+   * Respond with a Node.js-style readable stream, bridging it
+   * to a Web API ReadableStream internally.
+   *
+   * @param nodeStream — An object with `.pipe()` (e.g. React's pipeable stream)
+   * @param init       — Optional extra ResponseInit overrides
+   */
+  nodeStream(
+    nodeStream: {
+      pipe: (destination: WritableStream<Uint8Array>) => void;
+      on?: (event: string, handler: (...args: unknown[]) => void) => void;
+    },
+    init?: ResponseInit
+  ): Response {
+    const { readable, writable } = new TransformStream<
+      Uint8Array,
+      Uint8Array
+    >();
+    nodeStream.pipe(writable);
+    return this.stream(readable, init);
+  }
+
   #mergeInit(
     init?: ResponseInit,
     defaultHeaders?: Record<string, string>

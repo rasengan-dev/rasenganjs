@@ -108,6 +108,108 @@ describe('ResponseBuilder', () => {
     });
   });
 
+  describe('stream', () => {
+    it('creates a streaming response with default headers', async () => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('chunk1'));
+          controller.close();
+        },
+      });
+      const res = new ResponseBuilder().stream(stream);
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
+      expect(res.headers.get('transfer-encoding')).toBe('chunked');
+      expect(await res.text()).toBe('chunk1');
+    });
+
+    it('uses status set via chaining', async () => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('data'));
+          controller.close();
+        },
+      });
+      const res = new ResponseBuilder().status(206).stream(stream);
+
+      expect(res.status).toBe(206);
+    });
+
+    it('merges builder headers', async () => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('data'));
+          controller.close();
+        },
+      });
+      const res = new ResponseBuilder()
+        .header('X-Custom', 'val')
+        .stream(stream);
+
+      expect(res.headers.get('x-custom')).toBe('val');
+    });
+
+    it('builder headers override default content-type', async () => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(JSON.stringify({})));
+          controller.close();
+        },
+      });
+      const res = new ResponseBuilder()
+        .header('Content-Type', 'application/json')
+        .stream(stream);
+
+      expect(res.headers.get('content-type')).toBe('application/json');
+    });
+  });
+
+  describe('nodeStream', () => {
+    it('bridges a Node-style stream to a Response', async () => {
+      const nodeStream = {
+        pipe: (writable: WritableStream) => {
+          const writer = writable.getWriter();
+          writer.write(new TextEncoder().encode('data from node'));
+          writer.close();
+        },
+      };
+      const res = new ResponseBuilder().nodeStream(nodeStream);
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
+      expect(await res.text()).toBe('data from node');
+    });
+
+    it('inherits builder status', async () => {
+      const nodeStream = {
+        pipe: (writable: WritableStream) => {
+          const writer = writable.getWriter();
+          writer.write(new TextEncoder().encode('ok'));
+          writer.close();
+        },
+      };
+      const res = new ResponseBuilder().status(201).nodeStream(nodeStream);
+
+      expect(res.status).toBe(201);
+    });
+
+    it('inherits builder headers', async () => {
+      const nodeStream = {
+        pipe: (writable: WritableStream) => {
+          const writer = writable.getWriter();
+          writer.write(new TextEncoder().encode('ok'));
+          writer.close();
+        },
+      };
+      const res = new ResponseBuilder()
+        .header('X-Node', 'yes')
+        .nodeStream(nodeStream);
+
+      expect(res.headers.get('x-node')).toBe('yes');
+    });
+  });
+
   describe('chaining', () => {
     it('chains status and header before terminal call', async () => {
       const res = new ResponseBuilder()

@@ -26,22 +26,22 @@ Pure Web API features. Zero dependencies. Every runtime (Node, Bun, Deno, Worker
 
 ### P1 — Middleware & Body Enhancements
 
-| #   | Feature                                                                                                    | Why Runtime                                                                       | Effort |
+| #   | Feature                                                                                                    | Why Runtime                                                                       | Effort | Status         |
 | --- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------ | -------------- |
 | 5   | **Streaming byte-count body limits** — Not just `Content-Length` check, actually count bytes while reading | Integrated into `bodyParser({ maxSize })`; standalone `bodyLimit()` also exported | Medium | ✅ Done (v1.1) |
-| 6   | **Basic auth middleware** — Parse `Authorization: Basic` header, delegate verification to handler          | `atob()` is a Web API global, zero deps                                           | Small  |
-| 7   | **Bearer token extraction middleware** — Parse `Authorization: Bearer`, expose token on `ctx.state`        | Pure header parsing, zero deps                                                    | Small  |
+| 6   | **Basic auth middleware** — Parse `Authorization: Basic` header, delegate verification to handler          | `atob()` is a Web API global, zero deps                                           | Small  | ✅ Done (v1.1) |
+| 7   | **Bearer token extraction middleware** — Parse `Authorization: Bearer`, expose token on `ctx.state`        | Pure header parsing, zero deps                                                    | Small  | ✅ Done (v1.1) |
 
 ### P2 — HTTP Utilities & Ergonomics
 
-| #   | Feature                                                                                      | Why Runtime                                 | Effort |
-| --- | -------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ |
-| 8   | **ETag / `Last-Modified` helpers** — Weak ETag via JSON/Crypto, conditional request checking | `crypto.subtle` is a Web API                | Small  |
-| 9   | **Content negotiation** — `Accept` header parser, format selection                           | Pure header parsing, zero deps              | Small  |
-| 10  | **`Cache-Control` string builder** — Declarative cache policy → header value                 | Pure string construction, zero deps         | Tiny   |
-| 11  | **Error cause chaining** — Preserve original error in `HttpError.cause`                      | Pure JS, no deps                            | Tiny   |
-| 12  | **Reverse URL generation** — `router.url('user.show', { id: 5 })` from named routes          | Pure logic, no deps                         | Medium |
-| 13  | **Chainable response object** — Optional `ctx.res.json()`, `.send()`, `.status()` fluent API | Ergonomics layer on top of existing helpers | Medium |
+| #   | Feature                                                                                      | Why Runtime                                 | Effort | Status         |
+| --- | -------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ | -------------- |
+| 8   | **ETag / `Last-Modified` helpers** — Weak ETag via JSON/Crypto, conditional request checking | `crypto.subtle` is a Web API                | Small  |                |
+| 9   | **Content negotiation** — `Accept` header parser, format selection                           | Pure header parsing, zero deps              | Small  |                |
+| 10  | **`Cache-Control` string builder** — Declarative cache policy → header value                 | Pure string construction, zero deps         | Tiny   |                |
+| 11  | **Error cause chaining** — Preserve original error in `HttpError.cause`                      | Pure JS, no deps                            | Tiny   |                |
+| 12  | **Reverse URL generation** — `router.url('user.show', { id: 5 })` from named routes          | Pure logic, no deps                         | Medium |                |
+| 13  | **Chainable response object** — Optional `ctx.res.json()`, `.send()`, `.status()` fluent API | Ergonomics layer on top of existing helpers | Medium | ✅ Done (v1.2) |
 
 ### P3 — Web Platform Extensions
 
@@ -110,14 +110,18 @@ Production features that may require dependencies, Node-specific APIs, or platfo
 ├── Middleware: cors()                    ├── Session middleware
 ├── Middleware: compress()               ├── Request validation (Zod)
 ├── Middleware: bodyParser()             ├── Structured logging
-├── Middleware: logger()                 ├── Metrics / OpenTelemetry
-├── Middleware: requestId()              ├── Static file serving
-├── Request helpers (parseBody, etc.)    ├── File upload middleware
-├── Response helpers (json, text, etc.)  ├── Node native adapter
-├── Cookie parse/serialize               ├── WebSocket support
-├── SSE (ReadableStream-based)           ├── Serverless adapters
-├── ETag / Cache-Control helpers         ├── Graceful shutdown
-├── Content negotiation                  ├── HTTP/2, Early Hints
+├── Middleware: bodyLimit()              ├── Metrics / OpenTelemetry
+├── Middleware: basicAuth()              ├── Static file serving
+├── Middleware: bearerToken()            ├── File upload middleware
+├── Middleware: logger()                 ├── Node native adapter
+├── Middleware: requestId()              ├── WebSocket support
+├── Request helpers (parseBody, etc.)   ├── Serverless adapters
+├── Response helpers (json, text, etc.) ├── Graceful shutdown
+├── ResponseBuilder (fluent API)        ├── HTTP/2, Early Hints
+├── Cookie parse/serialize               │
+├── SSE (ReadableStream-based)           │
+├── ETag / Cache-Control helpers         │
+├── Content negotiation                  │
 ├── Error classes (HttpError, etc.)      │
 ├── Hook system                          │
 ├── Adapters: toExpressHandler           │
