@@ -1,5 +1,4 @@
 import type { Context } from '@rasenganjs/runtime';
-import { enhanceContext, type RouteHandler } from './context.js';
 
 interface RouteRegistrar {
   get(path: string, handler: (ctx: Context) => Promise<Response>): unknown;
@@ -13,32 +12,24 @@ export class Router {
   constructor(private registrar: RouteRegistrar) {}
 
   get(path: string, handler: RouteHandler): void {
-    this.registrar.get(path, (ctx) =>
-      Promise.resolve(handler(enhanceContext(ctx)))
-    );
+    this.registrar.get(path, (ctx) => Promise.resolve(handler(ctx)));
   }
 
   post(path: string, handler: RouteHandler): void {
-    this.registrar.post(path, (ctx) =>
-      Promise.resolve(handler(enhanceContext(ctx)))
-    );
+    this.registrar.post(path, (ctx) => Promise.resolve(handler(ctx)));
   }
 
   put(path: string, handler: RouteHandler): void {
-    this.registrar.put(path, (ctx) =>
-      Promise.resolve(handler(enhanceContext(ctx)))
-    );
+    this.registrar.put(path, (ctx) => Promise.resolve(handler(ctx)));
   }
 
   patch(path: string, handler: RouteHandler): void {
-    this.registrar.patch(path, (ctx) =>
-      Promise.resolve(handler(enhanceContext(ctx)))
-    );
+    this.registrar.patch(path, (ctx) => Promise.resolve(handler(ctx)));
   }
 
   delete(path: string, handler: RouteHandler): void {
-    this.registrar.delete(path, (ctx) =>
-      Promise.resolve(handler(enhanceContext(ctx)))
-    );
+    this.registrar.delete(path, (ctx) => Promise.resolve(handler(ctx)));
   }
 }
+
+export type RouteHandler = (ctx: Context) => Response | Promise<Response>;

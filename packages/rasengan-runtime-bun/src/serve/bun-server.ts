@@ -3,6 +3,9 @@ import { Application } from '@rasenganjs/runtime';
 export interface BunServerOptions {
   host?: string;
   port?: number;
+
+  /** Called when the server starts listening. */
+  onListening?: (info: { port: number; host: string }) => void;
 }
 
 export interface BunServerHandle {
@@ -22,6 +25,8 @@ export function startBunServer(
     port,
     hostname,
   });
+
+  options.onListening?.({ port: server.port, host: hostname });
 
   return {
     ready: Promise.resolve(),

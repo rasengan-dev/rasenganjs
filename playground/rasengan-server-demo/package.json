@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "rasengan-server dev --preset node",
+    "dev": "rasengan-server dev --preset bun",
     "build": "rasengan-server build --preset bun",
     "test": "node --test"
   },

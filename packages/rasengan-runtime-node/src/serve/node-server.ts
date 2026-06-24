@@ -18,6 +18,9 @@ import http from 'node:http';
 export interface NodeServerOptions {
   host?: string;
   port?: number;
+
+  /** Called when the server starts listening. */
+  onListening?: (info: { port: number; host: string }) => void;
 }
 
 /**
@@ -83,7 +86,9 @@ export function startNodeServer(
   const ready = new Promise<void>((resolve, reject) => {
     server.on('error', reject);
     server.on('close', resolve);
-    server.listen(port, host);
+    server.listen(port, host, () => {
+      options.onListening?.({ port, host });
+    });
   });
 
   return {

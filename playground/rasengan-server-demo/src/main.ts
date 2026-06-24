@@ -8,9 +8,9 @@ bootstrap(
   async (app) => {
     app.registerModule(appModule);
 
-    // app.notFound(async (ctx) => {
-    //   return ctx.text('Not Found', 404);
-    // });
+    app.notFound(async (ctx) => {
+      return ctx.response.status(404).json({ message: 'Not Found' });
+    });
   },
   { port, host }
 );

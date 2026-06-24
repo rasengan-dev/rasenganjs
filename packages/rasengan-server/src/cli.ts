@@ -5,7 +5,6 @@ import { build } from './cli/build.js';
 import { loadConfig, parseArgs } from './cli/config.js';
 
 async function main() {
-  const packageManager = process.argv;
   const command = process.argv[2];
   const rawArgs = process.argv.slice(3);
   const overrides = parseArgs(rawArgs);

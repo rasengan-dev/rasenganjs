@@ -1,18 +1,13 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import { createServer } from 'node:net';
 import { watch } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RasenganServerConfig } from '../config.js';
-
-const RESTART_DEBOUNCE_MS = 100;
 
 export async function dev(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');
   const port = config.port ?? 3000;
   const host = config.host ?? '0.0.0.0';
-  const isBun =
-    typeof process !== 'undefined' &&
-    typeof (process as any).versions?.bun === 'string';
+  const isBun = config.preset === 'bun';
 
   const { existsSync } = await import('node:fs');
   if (!existsSync(entry)) {
@@ -42,7 +37,7 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
         },
       });
     } else {
-      child = spawn('npx', ['--yes', 'tsx', entry], {
+      child = spawn('npx', ['--yes', 'tsx', 'watch', entry], {
         stdio: 'inherit',
         env: {
           ...process.env,
@@ -71,49 +66,6 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     });
   }
 
-  function waitForPort(cb: () => void) {
-    const server = createServer();
-    server.on('error', () => {
-      server.close(() => setTimeout(() => waitForPort(cb), 300));
-    });
-    server.on('listening', () => {
-      server.close(cb);
-    });
-    server.listen(port, host);
-  }
-
-  function restart() {
-    if (restarting || closing) return;
-    restarting = true;
-
-    console.log('\n  [rasengan-server] File change detected. Restarting...\n');
-
-    if (child && !child.killed) {
-      child.kill('SIGTERM');
-
-      const forceKill = setTimeout(() => {
-        if (child && !child.killed) child.kill('SIGKILL');
-      }, 3000);
-
-      const onExit = () => {
-        clearTimeout(forceKill);
-        waitForPort(() => {
-          restarting = false;
-          start();
-        });
-      };
-
-      if (child.exitCode !== null || child.killed) {
-        onExit();
-      } else {
-        child.once('exit', onExit);
-      }
-    } else {
-      restarting = false;
-      start();
-    }
-  }
-
   function stop() {
     if (closing) return;
     closing = true;
@@ -137,8 +89,6 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     ? config.watchDir.map((d) => resolve(d))
     : [resolve(config.watchDir || 'src/')];
 
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
   const watchers = watchDirs.map((dir) =>
     watch(dir, { recursive: true }, (_event, filename) => {
       if (
@@ -147,19 +97,11 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
         filename.includes('node_modules')
       )
         return;
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => restart(), RESTART_DEBOUNCE_MS);
     })
   );
 
   process.on('SIGINT', stop);
   process.on('SIGTERM', stop);
-
-  console.log(`\n  rasengan-server dev\n`);
-  console.log(`  entry : ${entry}`);
-  console.log(`  port  : ${config.port ?? 3000}`);
-  console.log(`  watch : ${watchDirs.join(', ')}`);
-  console.log(`  runtime : ${isBun ? 'bun' : 'node'}\n`);
 
   start();
 }

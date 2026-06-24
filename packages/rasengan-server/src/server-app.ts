@@ -5,12 +5,14 @@ import {
   logger,
   bodyParser,
   text,
+  BodyParserOptions,
 } from '@rasenganjs/runtime';
 
 import { Container } from './container.js';
 import { Router } from './router.js';
 import type { ModuleConfig } from './module.js';
-import { RasenganContext } from './context.js';
+import { Context } from '@rasenganjs/runtime';
+import { serverLogger } from './logger.js';
 
 export interface ServerHandle {
   close(): void;
@@ -22,20 +24,10 @@ export class ServerApp {
   private middlewareList: Array<{
     middleware: Middleware;
     path?: string;
-  }> = [
-    { middleware: logger({ showSize: true }) },
-    {
-      middleware: bodyParser({
-        key: 'body',
-      }),
-    },
-  ];
+  }> = [{ middleware: logger({ log: serverLogger }) }];
   private corsOptions?: Parameters<typeof cors>[0];
-  private errorHandler?: (
-    error: Error,
-    ctx: RasenganContext
-  ) => Promise<Response>;
-  private notFoundHandler?: (ctx: RasenganContext) => Promise<Response>;
+  private errorHandler?: (error: Error, ctx: Context) => Promise<Response>;
+  private notFoundHandler?: (ctx: Context) => Promise<Response>;
 
   registerModule(mod: ModuleConfig | (() => ModuleConfig)): void {
     this.modules.push(typeof mod === 'function' ? mod() : mod);
@@ -49,13 +41,18 @@ export class ServerApp {
     this.corsOptions = options ?? {};
   }
 
-  onError(
-    handler: (error: Error, ctx: RasenganContext) => Promise<Response>
-  ): void {
+  // configure body parser
+  configureBodyParser(options: BodyParserOptions): void {
+    this.middlewareList.push({
+      middleware: bodyParser(options),
+    });
+  }
+
+  onError(handler: (error: Error, ctx: Context) => Promise<Response>): void {
     this.errorHandler = handler;
   }
 
-  notFound(handler: (ctx: RasenganContext) => Promise<Response>): void {
+  notFound(handler: (ctx: Context) => Promise<Response>): void {
     this.notFoundHandler = handler;
   }
 

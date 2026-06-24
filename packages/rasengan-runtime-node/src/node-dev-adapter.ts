@@ -65,43 +65,9 @@ export class NodeDevAdapter implements RuntimeAdapter {
   async serve(app: Application | null, options?: ServeOptions): Promise<void> {
     this.serveOptions = options ?? {};
 
-    // ── Child-process mode (nodemon-style) ──────────────────
-    if (options?.autoRestart && options.autoRestart.process !== false) {
-      if (app) {
-        console.warn(
-          '[rasengan] both an Application and autoRestart.entry were provided; ' +
-            'ignoring entry and using in-process mode. ' +
-            'Pass null as the first argument to use child-process mode.'
-        );
-      } else {
-        return this.serveChildProcess(options);
-      }
-    }
-
     // ── In-process mode ─────────────────────────────────────
     if (!app) {
-      throw new Error(
-        'Application is required — provide it directly or via autoRestart.entry'
-      );
-    }
-
-    this.currentApp = app;
-
-    // Start file watcher (in-process restarts via cache-busted import)
-    if (options?.watch) {
-      const { path, callback, debounceMs } = options.watch;
-      const paths = Array.isArray(path) ? path : [path];
-      const disposes = paths.map((p) =>
-        this.watcher.watch(
-          p,
-          () => {
-            callback?.();
-            if (options.autoRestart) this.restartInProcess();
-          },
-          debounceMs
-        )
-      );
-      this.disposeWatcher = () => disposes.forEach((d) => d());
+      throw new Error('Application is required — provide it directly');
     }
 
     this.startServer(app);
@@ -116,8 +82,6 @@ export class NodeDevAdapter implements RuntimeAdapter {
   }
 
   close(): void {
-    this.closing = true;
-
     this.disposeWatcher?.();
     this.disposeWatcher = null;
 
@@ -138,10 +102,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
 
   // ── private ──────────────────────────────────────────────────
 
-  private currentApp: Application | null = null;
   private serveOptions: ServeOptions = {};
-  private restarting = false;
-  private closing = false;
 
   // ── In-process helpers ──────────────────────────────────────
 
@@ -149,118 +110,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host,
+      onListening: this.serveOptions.onListening,
     });
-  }
-
-  private async restartInProcess(): Promise<void> {
-    if (this.restarting) return;
-    this.restarting = true;
-
-    try {
-      this.serverHandle?.close();
-      this.serverHandle = null;
-      await new Promise((r) => setTimeout(r, 100));
-
-      const entry = this.serveOptions.autoRestart!.entry;
-      const cacheBuster = `?t=${Date.now()}`;
-      const mod = await import(`${entry}${cacheBuster}`);
-      const freshApp: Application = mod.default;
-      this.currentApp = freshApp;
-      this.startServer(freshApp);
-    } finally {
-      this.restarting = false;
-    }
-  }
-
-  // ── Child-process helpers (nodemon-style) ──────────────────
-
-  private async serveChildProcess(options: ServeOptions): Promise<void> {
-    const { entry, args = [] } = options.autoRestart!;
-
-    if (options.watch) {
-      this.setupWatcher(options);
-    }
-
-    this.spawnChild(entry, args);
-
-    return new Promise<void>((resolve) => {
-      this.serveResolve = resolve;
-    });
-  }
-
-  private setupWatcher(options: ServeOptions): void {
-    const { path, callback, debounceMs } = options.watch!;
-    const paths = Array.isArray(path) ? path : [path];
-    const useProcess = options.autoRestart?.process !== false;
-
-    const disposes = paths.map((p) =>
-      this.watcher.watch(
-        p,
-        () => {
-          callback?.();
-          if (useProcess && options.autoRestart) {
-            this.restartChildProcess();
-          } else if (options.autoRestart) {
-            this.restartInProcess();
-          }
-        },
-        debounceMs
-      )
-    );
-    this.disposeWatcher = () => disposes.forEach((d) => d());
-  }
-
-  private spawnChild(entry: string, args: string[]): void {
-    this.childProcess = spawn('node', [entry, ...args], {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        PORT: String(this.options.port ?? 5320),
-      },
-    });
-
-    this.childProcess.on('exit', (code, signal) => {
-      if (this.restarting || this.closing) return;
-
-      // Exit code 0 with no signal means a clean voluntary shutdown
-      // (e.g. the script finished without keeping the event loop alive).
-      if (code !== 0 || signal !== null) {
-        console.error(
-          `[rasengan] child process exited unexpectedly (code=${code}, signal=${signal})`
-        );
-      }
-    });
-  }
-
-  /** Kill a child process and wait for it to exit (force SIGKILL after 3s). */
-  private killChild(child: ChildProcess): Promise<void> {
-    return new Promise((resolve) => {
-      const forceKill = setTimeout(() => {
-        child.kill('SIGKILL');
-        resolve();
-      }, 3000);
-
-      child.on('exit', () => {
-        clearTimeout(forceKill);
-        resolve();
-      });
-
-      child.kill('SIGTERM');
-    });
-  }
-
-  private async restartChildProcess(): Promise<void> {
-    if (this.restarting) return;
-    this.restarting = true;
-
-    const { entry, args = [] } = this.serveOptions.autoRestart!;
-
-    if (this.childProcess) {
-      await this.killChild(this.childProcess);
-      this.childProcess = null;
-    }
-
-    this.spawnChild(entry, args);
-    this.restarting = false;
   }
 }

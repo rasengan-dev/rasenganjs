@@ -23,6 +23,12 @@ export interface ServeOptions {
   };
 
   /**
+   * Called when the HTTP server starts listening.
+   * Receives the resolved port and host the server bound to.
+   */
+  onListening?: (info: { port: number; host: string }) => void;
+
+  /**
    * Automatically restart the server when watched files
    * change.
    *

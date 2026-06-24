@@ -127,8 +127,8 @@ describe('logger', () => {
     await mw(ctx, () => Promise.resolve(new Response('ok')));
 
     const plain = lines[0].replace(/\x1b\[\d+m/g, '');
-    // GET padded to 8 chars
-    expect(plain).toMatch(/^GET\s{5}/);
+    // GET padded to 8 chars (after timestamp prefix)
+    expect(plain).toMatch(/GET\s{5}:/);
     spy.mockRestore();
   });
 });

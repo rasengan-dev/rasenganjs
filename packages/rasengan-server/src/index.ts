@@ -14,7 +14,7 @@ export type { ModuleConfig } from './module.js';
 export { Router } from './router.js';
 
 // ── Context ──────────────────────────────────────────────────
-export type { RasenganContext } from './context.js';
+export type { Context } from '@rasenganjs/runtime';
 
 // ── Container ─────────────────────────────────────────────────
 export { Container } from './container.js';
@@ -26,6 +26,12 @@ export type { RouteHandler } from './controller/index.js';
 
 // ── Provider ──────────────────────────────────────────────────
 export { Provider } from './provider/index.js';
+
+// ── Logger ────────────────────────────────────────────────────
+export { serverLogger, serverLoggerMinimal } from './logger.js';
+
+// ── Utils ─────────────────────────────────────────────────────
+export { logServerInfo } from './utils/log-server-info.js';
 
 // ── Config ────────────────────────────────────────────────────
 export { defineConfig } from './config.js';

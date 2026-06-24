@@ -23,7 +23,7 @@ export { cors } from './middlewares/cors.js';
 export type { CORSOptions } from './middlewares/cors.js';
 
 export { logger } from './middlewares/logger.js';
-export type { LoggerOptions } from './middlewares/logger.js';
+export type { LoggerOptions, LogEntry } from './middlewares/logger.js';
 
 export { requestId } from './middlewares/request-id.js';
 export type { RequestIdOptions } from './middlewares/request-id.js';

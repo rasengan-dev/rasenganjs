@@ -8,7 +8,7 @@ export class UserController extends Controller {
 
   routes(router: Router) {
     router.get('/', this.findAll);
-    router.get('/:id', this.findOne);
+    // router.get('/:id', this.findOne);
   }
 
   findAll: RouteHandler = async (ctx) => {

@@ -105,10 +105,11 @@ export class NodeProdAdapter implements RuntimeAdapter {
     };
   }
 
-  async serve(app: Application, _options?: ServeOptions): Promise<void> {
+  async serve(app: Application, options?: ServeOptions): Promise<void> {
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host,
+      onListening: options?.onListening,
     });
 
     return this.serverHandle.ready;
