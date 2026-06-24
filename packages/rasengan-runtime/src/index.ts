@@ -10,6 +10,12 @@ export type { Middleware } from './middlewares/index.js';
 export { compose } from './middlewares/compose.js';
 
 // ── Built-in middleware ───────────────────────────────────────
+export { basicAuth } from './middlewares/basic-auth.js';
+export type { BasicAuthOptions } from './middlewares/basic-auth.js';
+
+export { bearerToken } from './middlewares/bearer-token.js';
+export type { BearerTokenOptions } from './middlewares/bearer-token.js';
+
 export { bodyParser } from './middlewares/body.js';
 export type { BodyParserOptions } from './middlewares/body.js';
 
