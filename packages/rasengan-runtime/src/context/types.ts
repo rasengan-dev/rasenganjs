@@ -44,6 +44,8 @@ export interface QueryParams {
   [key: string]: string | undefined;
 }
 
+import type { ResponseBuilder } from '../response/builder.js';
+
 /**
  * Request-scoped context that every middleware and handler
  * receives.
@@ -54,10 +56,14 @@ export interface QueryParams {
  *
  * `query` provides lazy access to URL query parameters:
  * parsed on first access via a getter, then cached.
+ *
+ * `res` provides a chainable response builder for constructing
+ * responses with a fluent API.
  */
 export interface Context {
   /** The incoming Web API Request */
   request: Request;
+  req: Request;
 
   /** URL path parameters extracted by the Router */
   params: Record<string, string>;
@@ -78,6 +84,21 @@ export interface Context {
 
   /** Runtime environment info */
   runtime: RuntimeContext;
+
+  /**
+   * Chainable response builder.
+   *
+   * Provides a fluent API for constructing responses:
+   * ```ts
+   * return ctx.res.status(201).json({ created: true });
+   * return ctx.res.status(404).send("Not found");
+   * return ctx.res.redirect("/login");
+   * ```
+   *
+   * Created lazily on first access and cached thereafter.
+   */
+  response: ResponseBuilder;
+  res: ResponseBuilder;
 
   /**
    * Shared mutable state — the primary channel for

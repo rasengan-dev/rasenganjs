@@ -1,4 +1,5 @@
 import type { Context, QueryParams, RuntimeContext } from './types.js';
+import { ResponseBuilder } from '../response/builder.js';
 import { parseQueryString } from '../router/utils.js';
 
 /**
@@ -10,6 +11,9 @@ import { parseQueryString } from '../router/utils.js';
  *
  * `query` is lazily parsed on first access — if no handler
  * reads query params, the URL is never parsed.
+ *
+ * `response` is lazily created on first access — if no handler
+ * uses the chainable API, no builder is allocated.
  */
 export function createContext(
   request: Request,
@@ -18,9 +22,11 @@ export function createContext(
 ): Context {
   const state: Record<string, unknown> = {};
   let _query: QueryParams | undefined;
+  let _response: ResponseBuilder | undefined;
 
   const ctx: Context = {
     request,
+    req: request,
     params,
     runtime,
     state,
@@ -30,6 +36,20 @@ export function createContext(
         _query = createQueryParams(request.url);
       }
       return _query;
+    },
+
+    get response(): ResponseBuilder {
+      if (!_response) {
+        _response = new ResponseBuilder();
+      }
+      return _response;
+    },
+
+    get res(): ResponseBuilder {
+      if (!_response) {
+        _response = new ResponseBuilder();
+      }
+      return _response;
     },
 
     set<T = unknown>(key: string, value: T): void {

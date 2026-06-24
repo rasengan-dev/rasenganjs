@@ -1,3 +1,5 @@
+export { ResponseBuilder } from './builder.js';
+
 export {
   json,
   text,

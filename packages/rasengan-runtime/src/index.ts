@@ -42,6 +42,8 @@ export type { TreeMatchResult } from './router/radix.js';
 export { matchPath, parseQueryString } from './router/utils.js';
 
 // ── Response ──────────────────────────────────────────────────
+export { ResponseBuilder } from './response/index.js';
+
 export {
   json,
   text,
