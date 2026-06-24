@@ -152,13 +152,13 @@ Full lifecycle document: [LIFECYCLE.md](./LIFECYCLE.md)
 
 ### Router
 
-| Method                                   | Description                                           |
-| ---------------------------------------- | ----------------------------------------------------- |
-| `use(...middlewares)`                    | Route-level middleware (applies to subsequent routes) |
-| `get/post/put/patch/delete/head/options` | Register route                                        |
-| `group(prefix, options?, callback)`      | Scoped route group                                    |
-| `middleware()`                           | Produce Middleware for the pipeline                   |
-| `routesCount()`                          | Number of registered routes                           |
+| Method                                   | Description                                                     |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `use(...middlewares)`                    | Route-level middleware (applies to subsequent routes)           |
+| `get/post/put/patch/delete/head/options` | Register route                                                  |
+| `group(prefix, options?, callback)`      | Scoped route group                                              |
+| `middleware()`                           | Produce Middleware for the pipeline (radix-tree dispatch, O(k)) |
+| `routesCount()`                          | Number of registered routes                                     |
 
 ### Path Patterns
 

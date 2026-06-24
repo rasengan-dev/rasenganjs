@@ -2,129 +2,142 @@
 
 **Status:** v1.0.0 — Solid foundation, not yet a standalone production HTTP framework.
 
-This document outlines the planned enhancements, organized by priority. Each item includes the rationale and rough effort estimate.
+This document outlines the planned enhancements with a **clear architectural boundary**:
+
+| Package                        | Scope                        | Constraints                                             |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------- |
+| `@rasenganjs/runtime`          | Core Web API abstractions    | Zero deps, WinterCG-compatible, runs everywhere         |
+| `@rasenganjs/server` (planned) | Production backend framework | May have dependencies, Node-specific, builds on runtime |
 
 ---
 
-## P0 — Required Before Public Production Use
+## Belongs in `@rasenganjs/runtime`
 
-These are security, correctness, and scalability gaps that block production readiness for public-facing applications.
+Pure Web API features. Zero dependencies. Every runtime (Node, Bun, Deno, Workers) can use these without importing anything beyond Web API globals.
 
-| #   | Feature                                                                                               | Rationale                                                                                                                                            | Effort |
-| --- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 1   | **Rate limiting** — Token bucket / sliding window middleware                                          | Without this, any route can be hammered. Every production framework provides it (Hono, Express `express-rate-limit`, Fastify `@fastify/rate-limit`). | Medium |
-| 2   | **CSRF protection** — Double-submit cookie / token validation                                         | Essential for any app using cookie-based auth. Currently no protection against cross-site request forgery.                                           | Small  |
-| 3   | **Security headers middleware** — HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy | OWASP A5 (Security Misconfiguration). Helmet-style defense-in-depth for every response.                                                              | Small  |
-| 4   | **Request timeout** — `AbortController`-based deadline per request                                    | A hanging handler (slow DB, infinite loop) leaks resources forever. Every production server needs this.                                              | Small  |
-| 5   | **Router: pre-compile regex** — Cache compiled `RegExp` at registration time                          | `matchPath()` calls `new RegExp(pattern)` on **every request per route** — unnecessary GC pressure and CPU waste. 10-line fix.                       | Tiny   |
-| 6   | **Router: radix tree or trie** — Replace O(n) linear scan                                             | At 500+ routes, linear scan with per-request regex matching becomes a bottleneck. Hono's radix tree is the reference.                                | Large  |
-| 7   | **Router: route sorting** — Static before dynamic before catch-all                                    | Registration-order matching causes ambiguity. `/users/:id` registered before `/users/admin` would match `/users/admin` as `:id`.                     | Small  |
-| 8   | **405 responses** — `Allow` header on method mismatch                                                 | Current router silently falls through to 404 when the path matches but the method doesn't. Clients need the `Allow` header to know what's valid.     | Small  |
-| 9   | **Graceful shutdown** — `SIGTERM` drain + `server.close()`                                            | Dropping in-flight connections on deploy is unacceptable. Need connection draining and a grace period.                                               | Medium |
+### P0 — Router Core (no excuses)
 
----
+| #   | Feature                                                              | Why Runtime                               | Effort | Status         |
+| --- | -------------------------------------------------------------------- | ----------------------------------------- | ------ | -------------- |
+| 1   | ~~Pre-compile route regex~~ — Radix tree makes this unnecessary      | Superseded by radix tree                  | —      | ✅ Done (v1.1) |
+| 2   | **Radix tree router** — Replace O(n) linear scan                     | Algorithmic improvement, zero deps        | Large  | ✅ Done (v1.1) |
+| 3   | ~~Route sorting~~ — Radix tree naturally prefers static over dynamic | Inherent in tree structure                | —      | ✅ Done (v1.1) |
+| 4   | **405 with `Allow` header** — Path matched but method didn't         | Correct HTTP semantics, pure header logic | Small  | ❌ Pending     |
 
-## P1 — High-Value Additions
+### P1 — Middleware & Body Enhancements
 
-These features significantly improve the developer experience and coverage of common use cases.
+| #   | Feature                                                                                                    | Why Runtime                                                         | Effort |
+| --- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------ |
+| 5   | **Streaming byte-count body limits** — Not just `Content-Length` check, actually count bytes while reading | Pure `ReadableStream` byte counting, enhances existing `bodyParser` | Medium |
+| 6   | **Basic auth middleware** — Parse `Authorization: Basic` header, delegate verification to handler          | `atob()` is a Web API global, zero deps                             | Small  |
+| 7   | **Bearer token extraction middleware** — Parse `Authorization: Bearer`, expose token on `ctx.state`        | Pure header parsing, zero deps                                      | Small  |
 
-| #   | Feature                                                                                     | Rationale                                                                                                                                 | Effort |
-| --- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 10  | **JWT middleware** — Bearer token verification, key rotation                                | Every production API needs auth. JWT is the most common pattern. Provide `verify()` out of the box.                                       | Medium |
-| 11  | **Basic / Bearer auth middleware** — Generic credential check                               | Simple auth patterns for internal APIs, health checks, webhooks.                                                                          | Small  |
-| 12  | **Session middleware** — Cookie-based sessions with pluggable stores (memory, Redis)        | Stateful sessions are still widely used alongside JWTs. Express `express-session` equivalent.                                             | Medium |
-| 13  | **Request validation middleware** — Zod schema validation for body / params / query         | Typed input validation should be a first-class concern. No more manual `if (typeof x !== 'string')` in every handler.                     | Medium |
-| 14  | **Structured logging** — JSON log output, pino integration, log levels                      | `console.log` strings are not production-grade. Need structured logs for log aggregation (Datadog, Grafana Loki, ELK).                    | Small  |
-| 15  | **Metrics / OpenTelemetry** — Request count, latency histogram, active requests             | Cannot measure p99 latency, error rates, or throughput without this.                                                                      | Medium |
-| 16  | **Static file serving** — `serveStatic()` middleware with `public/` convention              | Every framework needs this — HTML, CSS, JS, images. Currently requires a separate file server.                                            | Medium |
-| 17  | **Body streaming limits** — Byte-accurate streaming limit (not just `Content-Length` check) | Current `maxSize` only checks the `Content-Length` header, which can be omitted or spoofed. Need actual byte counting during consumption. | Medium |
+### P2 — HTTP Utilities & Ergonomics
 
----
+| #   | Feature                                                                                      | Why Runtime                                 | Effort |
+| --- | -------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ |
+| 8   | **ETag / `Last-Modified` helpers** — Weak ETag via JSON/Crypto, conditional request checking | `crypto.subtle` is a Web API                | Small  |
+| 9   | **Content negotiation** — `Accept` header parser, format selection                           | Pure header parsing, zero deps              | Small  |
+| 10  | **`Cache-Control` string builder** — Declarative cache policy → header value                 | Pure string construction, zero deps         | Tiny   |
+| 11  | **Error cause chaining** — Preserve original error in `HttpError.cause`                      | Pure JS, no deps                            | Tiny   |
+| 12  | **Reverse URL generation** — `router.url('user.show', { id: 5 })` from named routes          | Pure logic, no deps                         | Medium |
+| 13  | **Chainable response object** — Optional `ctx.res.json()`, `.send()`, `.status()` fluent API | Ergonomics layer on top of existing helpers | Medium |
 
-## P2 — Growth & Ergonomics
+### P3 — Web Platform Extensions
 
-These improve completeness, performance, and convenience.
-
-| #   | Feature                                                                                              | Rationale                                                                                                                        | Effort |
-| --- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 18  | **Node native adapter** — `http.createServer()` / `https.createServer()` without Express             | `toExpressHandler` requires Express as a peer dependency. A direct Node adapter removes that requirement for simple deployments. | Small  |
-| 19  | **File upload middleware** — Multipart file handling with size limits, disk/memory storage, progress | `parseFormData()` returns `FormData` but has no size controls, no streaming, no disk offload.                                    | Medium |
-| 20  | **ETag / `Last-Modified` / conditional requests** — `if-none-match` / `if-modified-since`            | Reduces bandwidth for cached resources. Standard in every production framework.                                                  | Small  |
-| 21  | **Content negotiation** — `Accept` header parsing, automatic response format selection               | Serve JSON, HTML, or XML from the same endpoint based on client preference.                                                      | Small  |
-| 22  | **`Cache-Control` helpers** — `public`, `private`, `max-age`, `s-maxage`, `stale-while-revalidate`   | Make it easy to set correct caching headers on responses.                                                                        | Small  |
-| 23  | **Error cause chaining** — Preserve original error in `HttpError.cause`                              | Currently `new InternalServerError()` wraps the original error but doesn't chain it. Lost context in logs.                       | Tiny   |
-| 24  | **`app.listen()` convenience** — Quick-start without adapters for local dev                          | `app.listen(3000)` is the most ergonomic API. Current flow requires `toExpressHandler` + `express()`.                            | Small  |
-| 25  | **Reverse URL generation** — Named routes with `router.url('user.show', { id: 5 })`                  | Avoids hardcoding URLs in templates, enables route refactoring.                                                                  | Medium |
-| 26  | **`res.json()` / `res.send()` chainable API** — Traditional Express-style response object            | Some users prefer this over standalone `json(data)` functions. Optional ergonomic layer.                                         | Medium |
+| #   | Feature                                                                                     | Why Runtime                    | Effort |
+| --- | ------------------------------------------------------------------------------------------- | ------------------------------ | ------ |
+| 14  | **SSE (Server-Sent Events)** — `ctx.sse()` helper wrapping `ReadableStream` + `TextEncoder` | Pure Web API, no deps          | Medium |
+| 15  | **Signed cookies** — HMAC-based cookie signing via `SubtleCrypto`                           | `crypto.subtle` is a Web API   | Small  |
+| 16  | **Range request helpers** — Parse `Range` / `If-Range` / `Content-Range` headers            | Pure header parsing, zero deps | Small  |
+| 17  | **Plugin system** — `app.register(plugin)` with lifecycle hooks                             | Architectural, no deps         | Large  |
 
 ---
 
-## P3 — Advanced & Platform Expansion
+## Belongs in `@rasenganjs/server`
 
-These address specialized use cases and broader platform support.
+Production features that may require dependencies, Node-specific APIs, or platform integration. Consumes `@rasenganjs/runtime` as a dependency.
 
-| #   | Feature                                                                                   | Rationale                                                                                                                                             | Effort               |
-| --- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| 27  | **WebSocket upgrade handling** — `ctx.upgrade()` for WS connections                       | Real-time apps need WebSocket routing alongside HTTP.                                                                                                 | Large                |
-| 28  | **SSE (Server-Sent Events)** — `ctx.sse()` helper, keepalive, reconnection                | One-way event streaming for live updates, notifications. Simpler than WebSockets for many use cases.                                                  | Medium               |
-| 29  | **HTTP/2 support** — `http2.createServer()` adapter, server push                          | Performance improvement for modern browsers.                                                                                                          | Medium               |
-| 30  | **Serverless adapters** — AWS Lambda (function URL), Vercel serverless, Netlify Functions | Beyond Cloudflare Workers, these are the major serverless platforms.                                                                                  | Medium (per adapter) |
-| 31  | **HTTP/3 / QUIC** — When Node/bun runtime support matures                                 | Future-proofing. Early adopter stage.                                                                                                                 | Large                |
-| 32  | **Plugin system** — `app.register(plugin)` with lifecycle hooks                           | Third-party extensions need a formal API instead of "just add middleware." Hooks for "after route matched," "before handler," "before response sent." | Large                |
-| 33  | **Signed cookies** — Cookie tampering prevention via HMAC                                 | Express `cookie-parser` equivalent. Needed for session cookies that shouldn't be forgeable.                                                           | Small                |
-| 34  | **Range requests** — `Accept-Ranges`, `Content-Range`, partial content                    | Required for video/audio streaming, large file resumes.                                                                                               | Medium               |
-| 35  | **103 Early Hints** — Link headers before full response                                   | Improves perceived performance by telling the browser about critical assets early.                                                                    | Medium               |
+### P0 — Production Security & Operations
 
----
+| #   | Feature                                                                   | Why Server                                                         | Effort |
+| --- | ------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------ |
+| 18  | **Rate limiting** — Token bucket / sliding window with configurable store | Needs state management, timer precision, distributed store support | Medium |
+| 19  | **CSRF protection** — Double-submit cookie / origin validation            | Security concern, needs crypto token management                    | Small  |
+| 20  | **Security headers** — HSTS, CSP, X-Frame-Options, X-Content-Type-Options | Production hardening, sensible defaults per environment            | Small  |
+| 21  | **Request timeout** — `AbortController` deadline per request              | Resource management concern, belongs in production layer           | Small  |
+| 22  | **Graceful shutdown** — `SIGTERM` drain + connection draining             | Platform-specific (Node signals), belongs in server                | Medium |
 
-## Completion Criteria by Tier
+### P1 — Auth, Validation, Observability
 
-### P0 Done When
+| #   | Feature                                                               | Why Server                                          | Effort |
+| --- | --------------------------------------------------------------------- | --------------------------------------------------- | ------ |
+| 23  | **JWT middleware** — `verify()` + `sign()` helpers                    | Needs `jose` or `jsonwebtoken` dependency           | Medium |
+| 24  | **Session middleware** — Cookie-based sessions with pluggable stores  | Needs store abstraction, Redis/file/memory backends | Medium |
+| 25  | **Request validation** — Zod schema validation for body/params/query  | Needs `zod` dependency                              | Medium |
+| 26  | **Structured logging** — JSON output, log levels, pino integration    | Needs pino or similar dependency                    | Small  |
+| 27  | **Metrics / OpenTelemetry** — Request count, latency, active requests | Needs OTEL SDK or prometheus client                 | Medium |
+| 28  | **Static file serving** — `serveStatic()` with `public/` convention   | Needs file system access, mime types                | Medium |
 
-- Application can be deployed behind a reverse proxy without additional security middleware
-- Router handles 1000+ routes at <1ms per match
-- Server shuts down without dropping active connections
-- Wrong HTTP methods return proper 405 with `Allow` header
+### P2 — Platform Adapters & File Handling
 
-### P1 Done When
+| #   | Feature                                                                 | Why Server                        | Effort             |
+| --- | ----------------------------------------------------------------------- | --------------------------------- | ------------------ |
+| 29  | **Node native adapter** — `http.createServer()` without Express         | Platform-specific (`http` module) | Small              |
+| 30  | **File upload middleware** — Disk/memory storage, size limits, progress | Needs file system, stream piping  | Medium             |
+| 31  | **Serverless adapters** — AWS Lambda, Vercel, Netlify                   | Platform-specific integration     | Medium per adapter |
 
-- You can build a complete CRUD API with auth, validation, logging, and metrics without writing a single middleware from scratch
-- Static assets are served without a separate web server
-- Request body limits cannot be bypassed by omitting `Content-Length`
+### P3 — Real-Time & Advanced Protocols
 
-### P2 Done When
-
-- A new project can run `app.listen(3000)` without additional adapter setup
-- File uploads are handled with streaming, size limits, and offload
-- Caching is configured declaratively per route
-- Errors always preserve their causal chain in logs
-
-### P3 Done When
-
-- WebSocket and SSE apps are first-class citizens
-- The framework runs on every major serverless platform without adapter code from users
-- Third-party packages can extend the framework via a plugin API
+| #   | Feature                                                               | Why Server                         | Effort |
+| --- | --------------------------------------------------------------------- | ---------------------------------- | ------ |
+| 32  | **WebSocket upgrade handling** — Route-aware WS connection management | Needs `ws` or Node `http` upgrade  | Large  |
+| 33  | **HTTP/2 support** — `http2.createServer()` adapter + server push     | Platform-specific (`http2` module) | Medium |
+| 34  | **HTTP/3 / QUIC** — When runtime support matures                      | Platform-specific                  | Large  |
+| 35  | **103 Early Hints** — Link headers before full response               | Needs early-response platform API  | Medium |
 
 ---
 
-## Current Gaps vs Comparable Frameworks
+## Architectural Boundary Rules
 
-| Capability          | Hono 4  | Fastify 5  | Express 4 | **This package**  |
-| ------------------- | ------- | ---------- | --------- | :---------------: |
-| Radix tree router   | ✓       | ✓          | ✗         |         ✗         |
-| JWT auth middleware | ✓       | ✓          | plugin    |         ✗         |
-| Request validation  | ✓ (Zod) | ✓ (schema) | plugin    |         ✗         |
-| Security headers    | ✓       | ✓          | plugin    |         ✗         |
-| Rate limiting       | plugin  | ✓          | plugin    |         ✗         |
-| Request timeout     | ✗       | ✓          | ✗         |         ✗         |
-| Graceful shutdown   | ✗       | ✓          | ✗         |         ✗         |
-| Structured logging  | ✗       | ✓ (Pino)   | plugin    |         ✗         |
-| Metrics / OTEL      | plugin  | ✓          | plugin    |         ✗         |
-| Static file serving | ✓       | ✓          | ✓         |         ✗         |
-| SSE                 | ✓       | ✓          | plugin    |         ✗         |
-| WebSocket           | ✓       | ✓          | plugin    |         ✗         |
-| Node native adapter | ✓       | ✓          | n/a       | ✗ (needs Express) |
-| Streaming SSR       | ✗       | ✗          | ✗         |         ✓         |
-| Zero dependencies   | ✓       | ✗          | ✗         |         ✓         |
-| WinterCG compliant  | ✓       | ✗          | ✗         |         ✓         |
-| Dual ESM/CJS        | ✗       | ✓          | ✓         |         ✓         |
+```
+@rasenganjs/runtime                      @rasenganjs/server
+│                                         │
+├── Application (fetch handler)           ├── Rate limiting middleware
+├── Router (linear -> radix tree)         ├── CSRF protection middleware
+├── Context (request, params, query)      ├── Security headers middleware
+├── compose() (onion pipeline)            ├── JWT auth middleware
+├── Middleware: cors()                    ├── Session middleware
+├── Middleware: compress()               ├── Request validation (Zod)
+├── Middleware: bodyParser()             ├── Structured logging
+├── Middleware: logger()                 ├── Metrics / OpenTelemetry
+├── Middleware: requestId()              ├── Static file serving
+├── Request helpers (parseBody, etc.)    ├── File upload middleware
+├── Response helpers (json, text, etc.)  ├── Node native adapter
+├── Cookie parse/serialize               ├── WebSocket support
+├── SSE (ReadableStream-based)           ├── Serverless adapters
+├── ETag / Cache-Control helpers         ├── Graceful shutdown
+├── Content negotiation                  ├── HTTP/2, Early Hints
+├── Error classes (HttpError, etc.)      │
+├── Hook system                          │
+├── Adapters: toExpressHandler           │
+├── Adapters: toWinterCgHandler          │
+└── Plugin system                        │
+                                         │
+  Zero dependencies, Web API only        Can have dependencies, Node APIs
+  WinterCG-compatible                    Production-focused
+```
+
+**Key rule:** If a feature needs `import` from npm or a Node built-in (`fs`, `http`, `crypto` (the Node one, not Web Crypto)), it goes in `@rasenganjs/server`. If it can be written using only `Request`, `Response`, `ReadableStream`, `URL`, `Headers`, `crypto.subtle`, `TextEncoder`, `AbortController`, and `atob`/`btoa`, it can land in `@rasenganjs/runtime`.
+
+---
+
+## Summary
+
+| Layer           | Runtime | Server  | Total  |
+| --------------- | ------- | ------- | ------ |
+| P0 — Must have  | 4 items | 5 items | 9      |
+| P1 — High value | 3 items | 6 items | 9      |
+| P2 — Growth     | 6 items | 3 items | 9      |
+| P3 — Advanced   | 4 items | 4 items | 8      |
+| **Total**       | **17**  | **18**  | **35** |

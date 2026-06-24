@@ -27,7 +27,9 @@ export type { CompressOptions } from './middlewares/compress.js';
 
 // ── Router ────────────────────────────────────────────────────
 export { Router } from './router/index.js';
-export type { Route, HTTPMethod, RouterGroupOptions } from './router/index.js';
+export type { HTTPMethod, RouterGroupOptions } from './router/index.js';
+export { RasenganTreeRouter } from './router/radix.js';
+export type { TreeMatchResult } from './router/radix.js';
 export { matchPath, parseQueryString } from './router/utils.js';
 
 // ── Response ──────────────────────────────────────────────────

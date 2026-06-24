@@ -1,6 +1,6 @@
 import type { Context } from '../context/types.js';
 import type { Middleware } from '../middlewares/index.js';
-import { matchPath } from './utils.js';
+import { RasenganTreeRouter } from './radix.js';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -13,9 +13,19 @@ export type HTTPMethod =
   | 'HEAD'
   | 'OPTIONS';
 
-export interface Route {
-  method: HTTPMethod;
-  pattern: string;
+/** All supported methods for building method->tree map. */
+const ALL_METHODS: HTTPMethod[] = [
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+  'HEAD',
+  'OPTIONS',
+];
+
+/** Value stored in the radix tree for each registered route. */
+interface RouteEntry {
   handler: (ctx: Context) => Promise<Response>;
   middlewares: Middleware[];
 }
@@ -43,6 +53,8 @@ export interface RouterGroupOptions {
  *   - Scoped `group()` with prefix and shared middleware
  *   - Produces a single `.middleware()` that plugs into the
  *     Application pipeline
+ *   - **Radix-tree dispatch** — O(k) path matching where k = URL
+ *     segment count, independent of total route count.
  *
  * @example
  * ```ts
@@ -62,7 +74,17 @@ export interface RouterGroupOptions {
  * ```
  */
 export class Router {
-  private routes: Route[] = [];
+  /**
+   * One radix tree per HTTP method.
+   * Lazy-initialized on first route registration for that method.
+   */
+  private trees = new Map<HTTPMethod, RasenganTreeRouter<RouteEntry>>();
+
+  /**
+   * Total route count across all methods.
+   * Incremented on every `add()` call.
+   */
+  private totalRoutes = 0;
 
   /**
    * Register route-level middleware.
@@ -157,15 +179,12 @@ export class Router {
       callback = rest[0] as (router: Router) => void;
     }
 
-    // Save outer stack depth so we snapshot the middleware scope
     const outerDepth = this.stack.length;
 
-    // If the group has its own middleware, push them onto the stack
     if (options.middlewares) {
       this.stack.push(...options.middlewares);
     }
 
-    // Capture routes + middleware stack depth at group level
     const subRouter = new SubRouter(
       this,
       prefix,
@@ -174,7 +193,6 @@ export class Router {
     );
     callback(subRouter);
 
-    // Restore stack (pop group middleware)
     this.stack.length = outerDepth;
 
     return this;
@@ -188,7 +206,16 @@ export class Router {
     handler: (ctx: Context) => Promise<Response>
   ): this {
     const middlewares = [...this.stack];
-    this.routes.push({ method, pattern, handler, middlewares });
+    const entry: RouteEntry = { handler, middlewares };
+
+    let tree = this.trees.get(method);
+    if (!tree) {
+      tree = new RasenganTreeRouter<RouteEntry>();
+      this.trees.set(method, tree);
+    }
+    tree.add(pattern, entry);
+    this.totalRoutes++;
+
     return this;
   }
 
@@ -196,9 +223,13 @@ export class Router {
    * Produce a Middleware that dispatches to matching routes.
    *
    * Call `.middleware()` once and pass it to `app.use()`.
+   * Uses radix-tree dispatch for O(k) path matching.
    */
   middleware(): Middleware {
-    const routes = [...this.routes];
+    // Snapshot the trees so late-registered routes after
+    // middleware() is called are NOT picked up (consistent
+    // with the previous linear-scan behaviour).
+    const snapshot = new Map(this.trees);
 
     return async (
       ctx: Context,
@@ -207,32 +238,26 @@ export class Router {
       const method = ctx.request.method.toUpperCase() as HTTPMethod;
       const pathname = new URL(ctx.request.url).pathname;
 
-      for (const route of routes) {
-        if (route.method !== method) continue;
+      const tree = snapshot.get(method);
+      if (!tree) return next();
 
-        const params = matchPath(route.pattern, pathname);
-        if (params !== null) {
-          ctx.params = params;
+      const result = tree.match(pathname);
+      if (!result.handler) return next();
 
-          // If the route has its own middleware, compose them
-          // before the handler so the onion model still applies.
-          if (route.middlewares.length > 0) {
-            return runWithMiddlewares(ctx, route.middlewares, () =>
-              route.handler(ctx)
-            );
-          }
+      const { handler, middlewares } = result.handler;
+      ctx.params = result.params;
 
-          return route.handler(ctx);
-        }
+      if (middlewares.length > 0) {
+        return runWithMiddlewares(ctx, middlewares, () => handler(ctx));
       }
 
-      return next();
+      return handler(ctx);
     };
   }
 
   /** Number of registered routes (useful for debugging) */
   routesCount(): number {
-    return this.routes.length;
+    return this.totalRoutes;
   }
 }
 
@@ -275,9 +300,9 @@ class SubRouter extends Router {
   }
 
   /**
-   * Override add() — the single point of route registration.
-   * Every method shortcut (get, post, put, ...) ultimately
-   * calls add() on the parent with the prefixed pattern.
+   * Override add() — delegates to the parent with a prefixed
+   * pattern, so the parent's radix tree stores the correct
+   * full path.
    */
   add(
     method: HTTPMethod,

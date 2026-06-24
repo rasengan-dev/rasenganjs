@@ -32,6 +32,7 @@ src/
     compress.ts                     # compress() — gzip/brotli/deflate
   router/
     index.ts                        # Router class + SubRouter for groups
+    radix.ts                        # RasenganTreeRouter — radix-tree dispatch
     utils.ts                        # matchPath(), parseQueryString()
   response/
     index.ts                        # Re-exports
@@ -94,8 +95,18 @@ src/
 - Route-level middleware stack (`.use()` scoped to subsequent routes)
 - `group(prefix, callback)` for scoped route groups with prefix and shared middleware
 - Nested groups supported via `SubRouter` class
-- `.middleware()` produces a single `Middleware` that dispatches by linear scan
+- `.middleware()` produces a single `Middleware` that dispatches via **radix tree** (O(k) path matching where k = URL segment count, independent of total route count)
 - Route-level middleware run in a nested onion before the handler
+
+### RasenganTreeRouter
+
+`RasenganTreeRouter<T>` in `src/router/radix.ts`:
+
+- Radix (compressed trie) tree indexed by `/`-separated path segments
+- O(k) lookup — walks exactly k nodes regardless of total registered routes
+- Pattern types: static, `:param` (required), `:param?` (optional with skip-vs-consume logic), `:param*` (named wildcard), `*` (bare catch-all)
+- Trailing slash normalization
+- Priority: static > `:param` > `:param?` > `*`/`:param*`
 
 ### Path Matching
 
@@ -193,7 +204,7 @@ Platform-agnostic interface that platform packages implement:
 - **Optional `app.use(path, mw)` prefix:** First arg string = only run middleware for paths starting with that prefix.
 - **Scoped middleware with groups:** `router.group("/api", { middlewares: [auth] }, ...)` — middleware applied to all routes in group. Snapshot-based stack depth management.
 - **Error hook independence:** `onError` fires before the error handler, so external monitoring (Sentry, Datadog) can observe regardless of handling.
-- **Linear route scan:** Routes matched in registration order. Simple loop — no radix tree (yet).
+- **Radix tree dispatch:** `Router` uses a `RasenganTreeRouter` per HTTP method. Path matching is O(k) instead of O(n × k).
 - **No dependencies:** Zero runtime dependencies. Pure Web API everywhere.
 
 ## Testing
@@ -226,6 +237,7 @@ src/__tests__/
       cookies.test.ts            # serializeCookie, setCookie, clearCookie, all options
     router/
       utils.test.ts              # matchPath (static, params, optional, wildcard, catch-all), parseQueryString
+      radix.test.ts              # RasenganTreeRouter — 31 tests: static, param, optional (skip/consume), wildcard, catch-all, trailing slash, disambiguation, deep nesting
   integration/                    # Full pipeline tests
     application.test.ts           # Application.fetch(): routes, 404, error handler, hooks, middleware, bodyParser, CORS
     router.test.ts                # Router: method dispatch, params, group prefix/nested, group middleware scoping
