@@ -125,4 +125,74 @@ describe('bodyParser', () => {
     expect(ctx.state.myBody).toEqual({ x: 1 });
     expect(ctx.state.parsedBody).toBeUndefined();
   });
+
+  // ── maxSize (streaming byte-count limits) ───────────────────
+
+  it('rejects body when Content-Length exceeds maxSize', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      body: 'hello',
+      headers: { 'Content-Type': 'text/plain', 'Content-Length': '5' },
+    });
+    const ctx = createCtx(req);
+    const next = vi.fn().mockResolvedValue(new Response('ok'));
+
+    const mw = bodyParser({ maxSize: 3 });
+    const res = await mw(ctx, next);
+
+    expect(res.status).toBe(413);
+    expect(await res.text()).toBe('Payload Too Large');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('rejects body when streaming bytes exceed maxSize (no Content-Length)', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      body: 'this body exceeds the limit',
+      headers: { 'Content-Type': 'text/plain' },
+    });
+    const ctx = createCtx(req);
+    const next = vi.fn().mockResolvedValue(new Response('ok'));
+
+    const mw = bodyParser({ maxSize: 10 });
+    const res = await mw(ctx, next);
+
+    expect(res.status).toBe(413);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('rejects body when streaming bytes exceed maxSize (lying Content-Length)', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      body: 'this body is actually long',
+      headers: {
+        'Content-Type': 'text/plain',
+        'Content-Length': '3',
+      },
+    });
+    const ctx = createCtx(req);
+    const next = vi.fn().mockResolvedValue(new Response('ok'));
+
+    const mw = bodyParser({ maxSize: 10 });
+    const res = await mw(ctx, next);
+
+    expect(res.status).toBe(413);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('parses body when under maxSize', async () => {
+    const req = new Request('http://localhost', {
+      method: 'POST',
+      body: JSON.stringify({ ok: true }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const ctx = createCtx(req);
+    const next = vi.fn().mockResolvedValue(new Response('ok'));
+
+    const mw = bodyParser({ maxSize: 1024 });
+    await mw(ctx, next);
+
+    expect(ctx.state.parsedBody).toEqual({ ok: true });
+    expect(next).toHaveBeenCalledOnce();
+  });
 });

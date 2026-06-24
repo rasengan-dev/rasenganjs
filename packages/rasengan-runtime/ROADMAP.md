@@ -22,15 +22,15 @@ Pure Web API features. Zero dependencies. Every runtime (Node, Bun, Deno, Worker
 | 1   | ~~Pre-compile route regex~~ — Radix tree makes this unnecessary      | Superseded by radix tree                  | —      | ✅ Done (v1.1) |
 | 2   | **Radix tree router** — Replace O(n) linear scan                     | Algorithmic improvement, zero deps        | Large  | ✅ Done (v1.1) |
 | 3   | ~~Route sorting~~ — Radix tree naturally prefers static over dynamic | Inherent in tree structure                | —      | ✅ Done (v1.1) |
-| 4   | **405 with `Allow` header** — Path matched but method didn't         | Correct HTTP semantics, pure header logic | Small  | ❌ Pending     |
+| 4   | **405 with `Allow` header** — Path matched but method didn't         | Correct HTTP semantics, pure header logic | Small  | ✅ Done (v1.1) |
 
 ### P1 — Middleware & Body Enhancements
 
-| #   | Feature                                                                                                    | Why Runtime                                                         | Effort |
-| --- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------ |
-| 5   | **Streaming byte-count body limits** — Not just `Content-Length` check, actually count bytes while reading | Pure `ReadableStream` byte counting, enhances existing `bodyParser` | Medium |
-| 6   | **Basic auth middleware** — Parse `Authorization: Basic` header, delegate verification to handler          | `atob()` is a Web API global, zero deps                             | Small  |
-| 7   | **Bearer token extraction middleware** — Parse `Authorization: Bearer`, expose token on `ctx.state`        | Pure header parsing, zero deps                                      | Small  |
+| #   | Feature                                                                                                    | Why Runtime                                                                       | Effort |
+| --- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------ | -------------- |
+| 5   | **Streaming byte-count body limits** — Not just `Content-Length` check, actually count bytes while reading | Integrated into `bodyParser({ maxSize })`; standalone `bodyLimit()` also exported | Medium | ✅ Done (v1.1) |
+| 6   | **Basic auth middleware** — Parse `Authorization: Basic` header, delegate verification to handler          | `atob()` is a Web API global, zero deps                                           | Small  |
+| 7   | **Bearer token extraction middleware** — Parse `Authorization: Bearer`, expose token on `ctx.state`        | Pure header parsing, zero deps                                                    | Small  |
 
 ### P2 — HTTP Utilities & Ergonomics
 

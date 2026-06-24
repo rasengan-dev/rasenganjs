@@ -18,6 +18,8 @@ app.get('/hello/:name', (ctx) =>
 
 app.post('/echo', async (ctx) => {
   const body = ctx.get('parsedBody');
+
+  console.log({ body, body2: ctx.request.body });
   return json({ echo: body ?? null });
 });
 

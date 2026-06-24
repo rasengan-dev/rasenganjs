@@ -25,6 +25,9 @@ export type { RequestIdOptions } from './middlewares/request-id.js';
 export { compress } from './middlewares/compress.js';
 export type { CompressOptions } from './middlewares/compress.js';
 
+export { bodyLimit } from './middlewares/body-limit.js';
+export type { BodyLimitOptions } from './middlewares/body-limit.js';
+
 // ── Router ────────────────────────────────────────────────────
 export { Router } from './router/index.js';
 export type { HTTPMethod, RouterGroupOptions } from './router/index.js';
