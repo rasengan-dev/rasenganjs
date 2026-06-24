@@ -7,10 +7,10 @@ export class PingController extends Controller {
   }
 
   ping: RouteHandler = async (ctx) => {
-    return ctx.json({ ok: true });
+    return ctx.res.json({ ok: true });
   };
 
   ping2: RouteHandler = async (ctx) => {
-    return ctx.json({ ok: true, message: 'pong2' });
+    return ctx.res.json({ ok: true, message: 'pong2' });
   };
 }

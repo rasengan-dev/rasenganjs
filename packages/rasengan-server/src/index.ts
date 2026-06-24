@@ -1,6 +1,5 @@
 // ── Bootstrap ────────────────────────────────────────────────
 export { bootstrap } from './bootstrap.js';
-export type { BootstrapOptions } from './bootstrap.js';
 
 // ── ServerApp ────────────────────────────────────────────────
 export { ServerApp } from './server-app.js';

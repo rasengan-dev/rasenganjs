@@ -2,7 +2,12 @@
 export { Application } from './app/index.js';
 
 // ── Context ───────────────────────────────────────────────────
-export type { Context, RuntimeContext, QueryParams } from './context/types.js';
+export type {
+  Context,
+  RuntimeContext,
+  QueryParams,
+  ServerInfo,
+} from './context/types.js';
 export { createContext } from './context/index.js';
 
 // ── Middleware ────────────────────────────────────────────────
@@ -78,6 +83,10 @@ export { toExpressHandler, toWinterCgHandler } from './adapters/index.js';
 // ── Hooks ─────────────────────────────────────────────────────
 export { HookSystem } from './hooks/index.js';
 export type { HookName, HookHandler } from './hooks/index.js';
+
+// ── Env ───────────────────────────────────────────────────────
+export { parseEnv, getEnvFileNames } from './env/index.js';
+export type { EnvironmentMap } from './env/index.js';
 
 // ── Errors ────────────────────────────────────────────────────
 export {

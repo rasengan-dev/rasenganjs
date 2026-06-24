@@ -17,3 +17,6 @@ export type {
   NodeServerOptions,
   NodeServerHandle,
 } from './serve/node-server.js';
+
+// ── Env ───────────────────────────────────────────────────────
+export { loadNodeEnvFiles } from './env/index.js';

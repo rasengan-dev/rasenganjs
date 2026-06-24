@@ -34,7 +34,8 @@
  * ```
  */
 
-import type { Context, RuntimeContext } from '../context/types.js';
+import type { Context, RuntimeContext, ServerInfo } from '../context/types.js';
+import type { EnvironmentMap } from '../env/index.js';
 import { createContext } from '../context/index.js';
 import { compose } from '../middlewares/compose.js';
 import type { Middleware } from '../middlewares/index.js';
@@ -48,6 +49,39 @@ export class Application {
 
   /** Lifecycle hook registry */
   readonly hooks: HookSystem;
+
+  /**
+   * Server configuration — set by the adapter before serving.
+   * Accessible outside the request lifecycle (e.g. in setup code).
+   */
+  serverInfo?: ServerInfo;
+
+  /**
+   * Configure server info manually.
+   * Called automatically by the adapter's `serve()` method.
+   */
+  configureServer(info: ServerInfo): this {
+    this.serverInfo = info;
+    return this;
+  }
+
+  /**
+   * Environment variables loaded from .env files.
+   * Set by the adapter before serving.
+   *
+   * Accessible via `ctx.runtime.env` inside handlers/middleware
+   * or `app.env` outside the request lifecycle.
+   */
+  env?: EnvironmentMap;
+
+  /**
+   * Load environment variables into the Application.
+   * Called automatically by the adapter's `serve()` method.
+   */
+  loadEnv(vars: EnvironmentMap): this {
+    this.env = { ...this.env, ...vars };
+    return this;
+  }
 
   constructor() {
     this.router = new Router();
@@ -208,7 +242,14 @@ export class Application {
     request: Request,
     runtime: RuntimeContext = {}
   ): Promise<Response> {
-    const ctx = createContext(request, {}, runtime);
+    // Merge app-level props into the runtime context so they
+    // flow through to every handler and middleware via ctx.runtime.*.
+    const mergedRuntime: RuntimeContext = {
+      ...runtime,
+      env: { ...this.env, ...runtime.env },
+      server: runtime.server ?? this.serverInfo,
+    };
+    const ctx = createContext(request, {}, mergedRuntime);
 
     // Fire beforeRequest hook (errors here are swallowed per hook spec)
     await this.hooks.emit('beforeRequest', ctx);

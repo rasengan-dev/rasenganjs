@@ -12,12 +12,13 @@ export class UserController extends Controller {
   }
 
   findAll: RouteHandler = async (ctx) => {
+    console.log({ runtime: ctx.runtime });
     const list = await this.userService.findAll();
-    return ctx.json(list);
+    return ctx.res.json(list);
   };
 
   findOne: RouteHandler = async (ctx) => {
     const user = await this.userService.findById(ctx.params.id);
-    return ctx.json(user);
+    return ctx.res.json(user);
   };
 }

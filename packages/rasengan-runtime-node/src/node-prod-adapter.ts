@@ -28,6 +28,7 @@ import type {
 } from '@rasenganjs/runtime';
 
 import { startNodeServer, type NodeServerHandle } from './serve/node-server.js';
+import { loadNodeEnvFiles } from './env/index.js';
 import { join, resolve } from 'node:path';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import type { Dirent } from 'node:fs';
@@ -106,6 +107,18 @@ export class NodeProdAdapter implements RuntimeAdapter {
   }
 
   async serve(app: Application, options?: ServeOptions): Promise<void> {
+    const rootDir = this.options.rootDir ?? process.cwd();
+
+    app.configureServer({
+      preset: 'node',
+      mode: 'production',
+      port: this.options.port ?? 5200,
+      host: this.options.host ?? '0.0.0.0',
+      rootDir,
+    });
+
+    app.loadEnv(await loadNodeEnvFiles(rootDir, 'production'));
+
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host,

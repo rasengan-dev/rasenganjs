@@ -19,6 +19,38 @@
  */
 export interface RuntimeContext {
   env?: Record<string, string>;
+
+  /**
+   * Server info — populated by the adapter when the
+   * Application is served.
+   *
+   * Available at any point during runtime:
+   * ```ts
+   * ctx.runtime.server?.port     // the bound port
+   * ctx.runtime.server?.mode     // 'development' | 'production'
+   * ctx.runtime.server?.preset   // 'node' | 'bun' | 'express' | etc.
+   * ```
+   */
+  server?: ServerInfo;
+}
+
+/**
+ * Information about the running server instance.
+ * Set by the adapter before serving, accessible via
+ * `ctx.runtime.server` inside handlers/middleware
+ * or `app.serverInfo` outside the request lifecycle.
+ */
+export interface ServerInfo {
+  /** Platform adapter name */
+  preset: 'node' | 'bun' | 'express' | 'workerd' | 'wintercg' | 'unknown';
+  /** Runtime mode */
+  mode: 'development' | 'production';
+  /** Port the server is listening on */
+  port: number;
+  /** Host interface the server is bound to */
+  host: string;
+  /** Project root directory */
+  rootDir: string;
 }
 
 /**

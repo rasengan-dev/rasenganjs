@@ -1,5 +1,4 @@
-import type { Router } from '../router.js';
-import type { RouteHandler as _RouteHandler } from '../context.js';
+import type { Router, RouteHandler as _RouteHandler } from '../router.js';
 
 export type RouteHandler = _RouteHandler;
 

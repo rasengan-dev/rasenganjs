@@ -14,3 +14,6 @@ export { BunWatcher } from './watch/bun-watcher.js';
 // ── Server utilities ─────────────────────────────────────────
 export { startBunServer } from './serve/bun-server.js';
 export type { BunServerOptions, BunServerHandle } from './serve/bun-server.js';
+
+// ── Env ───────────────────────────────────────────────────────
+export { loadBunEnvFiles } from './env/index.js';

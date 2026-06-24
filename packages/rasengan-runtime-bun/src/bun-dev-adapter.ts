@@ -37,6 +37,7 @@ import type {
 import { BunAssets } from './assets/bun-assets.js';
 import { BunWatcher } from './watch/bun-watcher.js';
 import { startBunServer, type BunServerHandle } from './serve/bun-server.js';
+import { loadBunEnvFiles } from './env/index.js';
 
 interface BunChildSubprocess {
   kill(signal?: string): void;
@@ -70,6 +71,18 @@ export class BunDevAdapter implements RuntimeAdapter {
     if (!app) {
       throw new Error('Application is required — provide it directly');
     }
+
+    const rootDir = this.options.rootDir ?? process.cwd();
+
+    app.configureServer({
+      preset: 'bun',
+      mode: 'development',
+      port: this.options.port ?? 5200,
+      host: this.options.host ?? '0.0.0.0',
+      rootDir,
+    });
+
+    app.loadEnv(await loadBunEnvFiles(rootDir, 'development'));
 
     this.startServer(app);
 

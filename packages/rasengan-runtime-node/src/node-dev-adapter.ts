@@ -40,6 +40,7 @@ import type {
 import { NodeAssets } from './assets/node-assets.js';
 import { NodeWatcher } from './watch/node-watcher.js';
 import { startNodeServer, type NodeServerHandle } from './serve/node-server.js';
+import { loadNodeEnvFiles } from './env/index.js';
 
 export interface NodeDevAdapterOptions {
   port?: number;
@@ -69,6 +70,18 @@ export class NodeDevAdapter implements RuntimeAdapter {
     if (!app) {
       throw new Error('Application is required — provide it directly');
     }
+
+    const rootDir = this.options.rootDir ?? process.cwd();
+
+    app.configureServer({
+      preset: 'node',
+      mode: 'development',
+      port: this.options.port ?? 5200,
+      host: this.options.host ?? '0.0.0.0',
+      rootDir,
+    });
+
+    app.loadEnv(await loadNodeEnvFiles(rootDir, 'development'));
 
     this.startServer(app);
 

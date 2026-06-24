@@ -84,6 +84,14 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
   }
 
   async serve(app: Application, _options?: ServeOptions): Promise<void> {
+    app.configureServer({
+      preset: 'workerd',
+      mode: 'production',
+      port: 0,
+      host: '0.0.0.0',
+      rootDir: process.cwd(),
+    });
+
     this.app = app;
     this.fetchHandler = (request: Request) => app.fetch(request);
 
