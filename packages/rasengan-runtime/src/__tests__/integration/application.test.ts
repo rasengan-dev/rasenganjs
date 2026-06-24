@@ -227,13 +227,14 @@ describe('Application (integration)', () => {
     expect(log).toEqual(['route-mw', 'handler']);
   });
 
-  it('matches routes regardless of HTTP method mismatch (returns 404)', async () => {
+  it('returns 405 with Allow header when path exists but method does not', async () => {
     app.get('/item', async () => text('got'));
 
     const req = new Request('http://localhost/item', { method: 'POST' });
     const res = await app.fetch(req);
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(405);
+    expect(res.headers.get('Allow')).toBe('GET');
   });
 
   // ── Query params via ctx.query ─────────────────────────────

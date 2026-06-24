@@ -40,6 +40,28 @@ export interface RouterGroupOptions {
   middlewares?: Middleware[];
 }
 
+/**
+ * Check whether a pathname exists in any registered http-method's
+ * radix tree.
+ *
+ * Returns a list of HTTP methods for which the path has a handler.
+ * Used to generate the `Allow` header on 405 responses.
+ */
+function getAllowedMethods(
+  trees: Map<HTTPMethod, RasenganTreeRouter<RouteEntry>>,
+  pathname: string
+): HTTPMethod[] {
+  const allowed: HTTPMethod[] = [];
+
+  for (const [method, tree] of trees) {
+    if (tree.match(pathname).handler) {
+      allowed.push(method);
+    }
+  }
+
+  return allowed;
+}
+
 // ── Router ─────────────────────────────────────────────────────
 
 /**
@@ -239,10 +261,28 @@ export class Router {
       const pathname = new URL(ctx.request.url).pathname;
 
       const tree = snapshot.get(method);
-      if (!tree) return next();
+      if (!tree) {
+        const allowed = getAllowedMethods(snapshot, pathname);
+        if (allowed.length > 0) {
+          return new Response(null, {
+            status: 405,
+            headers: { Allow: allowed.join(', ') },
+          });
+        }
+        return next();
+      }
 
       const result = tree.match(pathname);
-      if (!result.handler) return next();
+      if (!result.handler) {
+        const allowed = getAllowedMethods(snapshot, pathname);
+        if (allowed.length > 0) {
+          return new Response(null, {
+            status: 405,
+            headers: { Allow: allowed.join(', ') },
+          });
+        }
+        return next();
+      }
 
       const { handler, middlewares } = result.handler;
       ctx.params = result.params;
