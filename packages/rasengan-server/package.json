@@ -24,7 +24,9 @@
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm build:clean && tsup",
-    "pack": "pnpm pack --pack-destination ./release"
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
   },
   "dependencies": {
     "@rasenganjs/runtime": "workspace:*",
