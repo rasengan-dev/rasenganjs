@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/runtime-bun",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "Bun RuntimeAdapter implementation for Rasengan.JS — HTTP server via Bun.serve(), file watcher, and local FS assets",
   "type": "module",
   "main": "dist/index.js",
