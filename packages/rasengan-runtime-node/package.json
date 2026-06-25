@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/runtime-node",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "Node.js RuntimeAdapter implementation for Rasengan.JS — HTTP server, file watcher, and local FS assets",
   "type": "module",
   "main": "dist/index.js",
