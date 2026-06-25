@@ -77,8 +77,8 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     };
 
     if (isBun) {
-      return spawn('bun', ['run', entry], opts);
-      // return spawn('bun', ['--watch', 'run', entry], opts);
+      // return spawn('bun', ['run', entry], opts);
+      return spawn('bun', ['--watch', 'run', entry], opts);
     }
 
     const tsx = resolveRuntime();
@@ -90,26 +90,33 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   }
 
   function start() {
-    if (closing) return;
+    try {
+      if (closing) return;
 
-    child = spawnChild();
+      child = spawnChild();
 
-    child.on('exit', (code) => {
-      if (restarting || closing) return;
-      if (code !== null && code !== 0) {
+      child.on('exit', (code) => {
+        if (restarting || closing) return;
+        if (code !== null && code !== 0) {
+          console.error(
+            `\n  [rasengan-server] Worker exited with code ${code}. Waiting for changes to restart...\n`
+          );
+        }
+        process.exit(code ?? 0);
+      });
+
+      child.on('error', (err) => {
         console.error(
-          `\n  [rasengan-server] Worker exited with code ${code}. Waiting for changes to restart...\n`
+          `\n  [rasengan-server] Failed to start dev server: ${err.message}\n`
         );
-      }
-      process.exit(code ?? 0);
-    });
-
-    child.on('error', (err) => {
+        if (!restarting && !closing) process.exit(1);
+      });
+    } catch (err) {
       console.error(
-        `\n  [rasengan-server] Failed to start dev server: ${err.message}\n`
+        `\n  [rasengan-server] Failed to start dev server: ${err}\n`
       );
       if (!restarting && !closing) process.exit(1);
-    });
+    }
   }
 
   function stop() {

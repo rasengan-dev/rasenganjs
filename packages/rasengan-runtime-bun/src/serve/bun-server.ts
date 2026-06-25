@@ -19,15 +19,13 @@ export function startBunServer(
 ): BunServerHandle {
   try {
     const port = options.port;
-    const hostname = options.host;
+    const hostname = options.host ?? '0.0.0.0';
 
     const server = Bun.serve({
       fetch: (request) => app.fetch(request),
       port,
       hostname,
     });
-
-    console.log(options);
 
     options.onListening?.({ port: server.port, host: hostname });
 
