@@ -5,6 +5,7 @@
  * Zero dependencies — uses ANSI escape codes directly.
  */
 
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import readline from 'node:readline';
 
@@ -33,12 +34,13 @@ function getIPAddress(): string {
 }
 
 function getVersion(): string {
-  // try {
-  //   // const pkg = require('../../package.json');
-  //   return '1.0.0';
-  // } catch {
-  return '1.0.0-beta.0';
-  // }
+  try {
+    const _require = createRequire(import.meta.url);
+    const pkg = _require('../package.json');
+    return pkg.version;
+  } catch {
+    return '0.0.0';
+  }
 }
 
 let listening = false;

@@ -57,6 +57,7 @@ async function generateAutoEntries(
 release({
   repo: 'rasenganjs',
   packages: [
+    'create-rasengan',
     'rasengan',
     'rasengan-image',
     'rasengan-i18n',
@@ -68,7 +69,11 @@ release({
     'rasengan-kurama',
     'rasengan-kage-demo',
     'rasengan-io',
-    'create-rasengan',
+    'rasengan-runtime',
+    'rasengan-runtime-node',
+    'rasengan-runtime-bun',
+    'rasengan-runtime-workerd',
+    'rasengan-server',
   ],
   toTag: (pkg, version) => {
     if (pkg === 'rasengan') {
