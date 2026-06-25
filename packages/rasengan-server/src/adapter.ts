@@ -30,6 +30,7 @@ async function detectDevAdapter(
       typeof process !== 'undefined' &&
       typeof (process as any).versions !== 'undefined' &&
       (process as any).versions.bun;
+
     if (isBun) {
       try {
         const mod = await importPkg('@rasenganjs/runtime-bun');
@@ -38,11 +39,17 @@ async function detectDevAdapter(
           host: options.host,
         });
       } catch {
-        // Bun runtime detected but package not installed
+        console.error(
+          `[rasengan-server] Cannot load @rasenganjs/runtime-bun adapter. ` +
+            `Make sure the package is installed: \`npm install @rasenganjs/runtime-bun\``
+        );
+        console.log(
+          '[rasengan-server] Bun runtime detected but package not installed'
+        );
       }
     }
   } catch {
-    // version check failed
+    console.log('[rasengan-server] Bun runtime detection failed');
   }
 
   try {

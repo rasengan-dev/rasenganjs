@@ -1,5 +1,4 @@
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build as esbuild } from 'esbuild';
@@ -45,14 +44,13 @@ export async function loadConfig(
 async function loadTSConfig(tsPath: string): Promise<RasenganServerConfig> {
   const result = await esbuild({
     entryPoints: [tsPath],
-    bundle: true,
+    bundle: false,
     format: 'esm',
     write: false,
     platform: 'node',
-    external: ['node:*'],
   });
 
-  const tmpDir = mkdtempSync(join(tmpdir(), 'rasengan-config-'));
+  const tmpDir = mkdtempSync(join(process.cwd(), '.rasengan-config-'));
   const tmpFile = join(tmpDir, 'config.mjs');
   writeFileSync(tmpFile, result.outputFiles[0].text);
   const mod = await import(pathToFileURL(tmpFile).href);

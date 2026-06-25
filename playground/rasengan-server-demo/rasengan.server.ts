@@ -4,6 +4,7 @@ export default defineConfig({
   entry: 'src/main.ts',
   port: 5200,
   watchDir: 'src/',
+  preset: 'bun',
   build: {
     outDir: '.rasengan',
     formats: ['directory'],

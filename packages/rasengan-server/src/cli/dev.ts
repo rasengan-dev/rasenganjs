@@ -1,7 +1,50 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { accessSync, constants, existsSync } from 'node:fs';
 import { watch } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RasenganServerConfig } from '../config.js';
+
+function resolveRuntime(): string | null {
+  if (process.platform === 'win32') {
+    const candidates = [
+      resolve(process.cwd(), 'node_modules/.bin/tsx.cmd'),
+      resolve(process.cwd(), 'node_modules/.bin/tsx'),
+    ];
+    for (const p of candidates) {
+      try {
+        accessSync(p, constants.X_OK);
+        return p;
+      } catch {
+        try {
+          accessSync(p);
+          return p;
+        } catch {}
+      }
+    }
+    return null;
+  }
+
+  const candidates = [
+    resolve(process.cwd(), 'node_modules/.bin/tsx'),
+    resolve(process.cwd(), 'node_modules/tsx/dist/cli.mjs'),
+  ];
+  for (const p of candidates) {
+    try {
+      accessSync(p, constants.X_OK);
+      return p;
+    } catch {}
+  }
+  return null;
+}
+
+function killProcessGroup(child: ChildProcess, signal: NodeJS.Signals): void {
+  if (!child || child.killed) return;
+  try {
+    process.kill(-child.pid, signal);
+  } catch {
+    child.kill(signal);
+  }
+}
 
 export async function dev(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');
@@ -9,7 +52,6 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   const host = config.host ?? '0.0.0.0';
   const isBun = config.preset === 'bun';
 
-  const { existsSync } = await import('node:fs');
   if (!existsSync(entry)) {
     console.error(
       `\n  [rasengan-server] Entry file not found: ${entry}\n` +
@@ -23,30 +65,34 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   let restarting = false;
   let closing = false;
 
+  function spawnChild(): ChildProcess {
+    const opts = {
+      stdio: 'inherit' as const,
+      env: {
+        ...process.env,
+        RASENGAN_SERVER_PORT: String(port),
+        RASENGAN_SERVER_HOST: host,
+        NODE_ENV: 'development',
+      },
+    };
+
+    if (isBun) {
+      return spawn('bun', ['run', entry], opts);
+      // return spawn('bun', ['--watch', 'run', entry], opts);
+    }
+
+    const tsx = resolveRuntime();
+    if (tsx) {
+      return spawn(tsx, ['watch', entry], opts);
+    }
+
+    return spawn('npx', ['--yes', 'tsx', 'watch', entry], opts);
+  }
+
   function start() {
     if (closing) return;
 
-    if (isBun) {
-      child = spawn('bun', ['--watch', 'run', entry], {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          RASENGAN_SERVER_PORT: String(port),
-          RASENGAN_SERVER_HOST: host,
-          NODE_ENV: 'development',
-        },
-      });
-    } else {
-      child = spawn('npx', ['--yes', 'tsx', 'watch', entry], {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          RASENGAN_SERVER_PORT: String(port),
-          RASENGAN_SERVER_HOST: host,
-          NODE_ENV: 'development',
-        },
-      });
-    }
+    child = spawnChild();
 
     child.on('exit', (code) => {
       if (restarting || closing) return;
@@ -71,9 +117,9 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     closing = true;
     watchers.forEach((w) => w.close());
     if (child && !child.killed) {
-      child.kill('SIGTERM');
+      killProcessGroup(child, 'SIGTERM');
       const force = setTimeout(() => {
-        if (child && !child.killed) child.kill('SIGKILL');
+        killProcessGroup(child!, 'SIGKILL');
       }, 3000);
       child.on('exit', () => {
         clearTimeout(force);

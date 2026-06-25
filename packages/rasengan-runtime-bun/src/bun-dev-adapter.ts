@@ -77,20 +77,14 @@ export class BunDevAdapter implements RuntimeAdapter {
     app.configureServer({
       preset: 'bun',
       mode: 'development',
-      port: this.options.port ?? 5200,
-      host: this.options.host ?? '0.0.0.0',
+      port: this.options.port,
+      host: this.options.host,
       rootDir,
     });
 
     app.loadEnv(await loadBunEnvFiles(rootDir, 'development'));
 
     this.startServer(app);
-
-    if (options?.autoRestart) {
-      return new Promise<void>((resolve) => {
-        this.serveResolve = resolve;
-      });
-    }
 
     return this.serverHandle!.ready;
   }

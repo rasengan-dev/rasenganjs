@@ -17,19 +17,26 @@ export function startBunServer(
   app: Application,
   options: BunServerOptions = {}
 ): BunServerHandle {
-  const port = options.port ?? 5200;
-  const hostname = options.host ?? '0.0.0.0';
+  try {
+    const port = options.port;
+    const hostname = options.host;
 
-  const server = Bun.serve({
-    fetch: (request) => app.fetch(request),
-    port,
-    hostname,
-  });
+    const server = Bun.serve({
+      fetch: (request) => app.fetch(request),
+      port,
+      hostname,
+    });
 
-  options.onListening?.({ port: server.port, host: hostname });
+    console.log(options);
 
-  return {
-    ready: Promise.resolve(),
-    close: () => server.stop(),
-  };
+    options.onListening?.({ port: server.port, host: hostname });
+
+    return {
+      ready: Promise.resolve(),
+      close: () => server.stop(),
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
