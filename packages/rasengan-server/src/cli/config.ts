@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import type { RasenganServerConfig } from '../config.js';
+import type { RasenganServerConfig } from '../config/index.js';
 
 export async function loadConfig(
   overrides: Partial<RasenganServerConfig> = {}
@@ -33,7 +33,9 @@ export async function loadConfig(
       readFileSync(tsPath);
       fileConfig = await loadTSConfig(tsPath);
     } catch {
-      // no config file found
+      console.error(
+        "[rasengan-server]: No configuration file found. Using default configuration. You can customize it by providing a 'rasengan.server.js' or 'rasengan.server.ts' file in your project root."
+      );
     }
   }
 

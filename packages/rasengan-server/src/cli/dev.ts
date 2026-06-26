@@ -2,7 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { accessSync, constants, existsSync } from 'node:fs';
 import { watch } from 'node:fs';
 import { resolve } from 'node:path';
-import type { RasenganServerConfig } from '../config.js';
+import type { RasenganServerConfig } from '../config/index.js';
 
 function resolveRuntime(): string | null {
   if (process.platform === 'win32') {

@@ -1,4 +1,4 @@
-import { Provider } from './provider/index.js';
+import { Provider } from './provider.js';
 
 export interface ProviderDefinition {
   provide: any;

@@ -1,6 +1,6 @@
 import type { RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
-import { ServerApp, type ServerHandle } from './server-app.js';
-import { selectAdapter } from './adapter.js';
+import { ServerApp, type ServerHandle } from './server/app.js';
+import { selectAdapter } from './adapter/index.js';
 import { logServerInfo } from './utils/log-server-info.js';
 import { loadConfig } from './cli/config.js';
 

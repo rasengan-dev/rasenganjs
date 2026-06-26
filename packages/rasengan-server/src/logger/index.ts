@@ -1,17 +1,3 @@
-/**
- * Custom logger for Rasengan Server — formats request log entries
- * with timestamps and ANSI colors, matching the style of the
- * default runtime logger but with a server-specific label.
- *
- * @example
- * ```ts
- * import { logger } from "@rasenganjs/runtime";
- * import { serverLogger } from "@rasenganjs/server";
- *
- * app.use(logger({ log: serverLogger }));
- * ```
- */
-
 import type { LogEntry } from '@rasenganjs/runtime';
 
 const fg = {
@@ -68,10 +54,6 @@ function colorStatus(status: number): string {
   }
 }
 
-/**
- * Default server logger function — formats a LogEntry into a
- * single colored line with timestamp and writes to console.log.
- */
 export function serverLogger(entry: LogEntry): void {
   const method = entry.method.padEnd(6);
   const coloredMethod = colorMethod(method);
@@ -84,11 +66,6 @@ export function serverLogger(entry: LogEntry): void {
   );
 }
 
-/**
- * Minimal request logger — logs only the final status line
- * without timestamps or colors.  Useful for production when
- * forwarding to structured logging systems.
- */
 export function serverLoggerMinimal(entry: LogEntry): void {
   const msg = JSON.stringify({
     time: new Date().toISOString(),

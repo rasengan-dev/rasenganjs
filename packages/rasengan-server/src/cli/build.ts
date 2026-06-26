@@ -9,7 +9,7 @@ import {
   statSync,
 } from 'node:fs';
 import { resolve, dirname, basename, extname, join, relative } from 'node:path';
-import type { RasenganServerConfig } from '../config.js';
+import type { RasenganServerConfig } from '../config/index.js';
 
 export async function build(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');

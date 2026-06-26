@@ -9,11 +9,11 @@ import {
   BodyParserOptions,
 } from '@rasenganjs/runtime';
 
-import { Container } from './container.js';
-import { Router } from './router.js';
+import { Container } from '../di/container.js';
+import { Router } from '../router/index.js';
 import type { ModuleConfig } from './module.js';
 import { Context } from '@rasenganjs/runtime';
-import { serverLogger } from './logger.js';
+import { serverLogger } from '../logger/index.js';
 
 export interface ServerHandle {
   close(): void;
@@ -42,7 +42,6 @@ export class ServerApp {
     this.corsOptions = options ?? {};
   }
 
-  // configure body parser
   configureBodyParser(options: BodyParserOptions): void {
     this.middlewareList.push({
       middleware: bodyParser(options),
