@@ -1,6 +1,7 @@
 import {
   Application,
   type Middleware,
+  type Router as RuntimeRouter,
   cors,
   logger,
   bodyParser,
@@ -103,6 +104,9 @@ export class ServerApp {
     container: Container,
     mod: ModuleConfig
   ): void {
+    const runtimeRouter = app.getRouter();
+    const modMws: Middleware[] = mod.middlewares || [];
+
     for (const ctrl of mod.controllers || []) {
       const instance = container.resolve(ctrl);
       if (!instance.routes || typeof instance.routes !== 'function') {
@@ -112,12 +116,27 @@ export class ServerApp {
             `to register its route handlers.`
         );
       }
-      if (mod.prefix) {
-        app.group(mod.prefix, (router) => {
-          instance.routes(new Router(router));
-        });
+
+      const ctrlMws: Middleware[] = instance.middlewares || [];
+
+      const registerCtrlRoutes = (targetRouter: RuntimeRouter) => {
+        if (ctrlMws.length > 0) {
+          targetRouter.group({ middlewares: ctrlMws }, (ctrlRouter) => {
+            instance.routes(new Router(ctrlRouter));
+          });
+        } else {
+          instance.routes(new Router(targetRouter));
+        }
+      };
+
+      if (mod.prefix || modMws.length > 0) {
+        runtimeRouter.group(
+          mod.prefix || '',
+          modMws.length > 0 ? { middlewares: modMws } : {},
+          registerCtrlRoutes
+        );
       } else {
-        instance.routes(new Router(app));
+        registerCtrlRoutes(runtimeRouter);
       }
     }
   }
