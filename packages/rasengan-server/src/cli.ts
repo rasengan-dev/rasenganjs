@@ -4,6 +4,18 @@ import { dev } from './cli/dev.js';
 import { build } from './cli/build.js';
 import { loadConfig, parseArgs } from './cli/config.js';
 
+/**
+ * CLI entry point.
+ *
+ * Parses the command (`dev` | `build`) and CLI flags, loads the
+ * configuration, then delegates to the appropriate handler.
+ *
+ * Usage:
+ * ```
+ * rasengan-server dev --port 4000
+ * rasengan-server build --preset node
+ * ```
+ */
 async function main() {
   const command = process.argv[2];
   const rawArgs = process.argv.slice(3);

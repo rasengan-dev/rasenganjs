@@ -1,3 +1,28 @@
+/**
+ * @module Rasengan Server — production-grade HTTP server framework
+ *
+ * Build status: v1.0.0
+ *
+ * ## Quick start
+ * ```ts
+ * import { bootstrap } from 'rasengan-server';
+ *
+ * bootstrap((app) => {
+ *   app.registerModule(defineModule({
+ *     controllers: [MyController],
+ *   }));
+ * });
+ * ```
+ *
+ * ## Layers
+ * - `bootstrap` — programmatic entry point
+ * - `ServerApp` — application orchestrator (modules, middleware, DI)
+ * - `Router` — route registration with middleware support
+ * - `Controller` — route-grouping abstraction
+ * - `Container` — lightweight DI container
+ * - `defineModule` / `defineConfig` — typed configuration helpers
+ */
+
 // ── Bootstrap ────────────────────────────────────────────────
 export { bootstrap } from './bootstrap.js';
 

@@ -1,15 +1,58 @@
 import { Provider } from './provider.js';
 
+/**
+ * Describes how a dependency should be provided to the container.
+ *
+ * @example
+ * ```ts
+ * // Provide a pre-configured value
+ * { provide: ConfigToken, useValue: { dbUrl: '...' } }
+ *
+ * // Provide a class to instantiate (optionally with explicit deps)
+ * { provide: Logger, useClass: FileLogger, deps: [ConfigToken] }
+ * ```
+ */
 export interface ProviderDefinition {
+  /** Injection token (class constructor or string key). */
   provide: any;
+  /**
+   * Class to instantiate when the token is resolved.
+   * Defaults to `provide` itself if omitted.
+   */
   useClass?: new (...args: any[]) => any;
+  /** Static value to return when the token is resolved. */
   useValue?: any;
+  /** Explicit dependency tokens (used as constructor arguments). */
   deps?: any[];
 }
 
+/**
+ * A class that extends `Provider` and can be registered with the container.
+ */
 export type ProviderLike = new (...args: any[]) => Provider;
 
+/**
+ * Lightweight dependency-injection container.
+ *
+ * Supports:
+ * - Class-based registration (auto-resolved constructor parameters)
+ * - Value-based registration (`useValue`)
+ * - Class aliasing (`useClass`)
+ * - Explicit dependency lists (`deps`)
+ * - Name-based resolution (case-insensitive matching)
+ *
+ * @example
+ * ```ts
+ * const container = new Container();
+ * container.register(MyService);
+ * container.register({ provide: Logger, useValue: console });
+ * const svc = container.resolve(MyService);
+ * ```
+ */
 export class Container {
+  /**
+   * Internal registry mapping tokens to their resolved or pending metadata.
+   */
   private registry = new Map<
     any,
     {
@@ -20,6 +63,12 @@ export class Container {
     }
   >();
 
+  /**
+   * Register a provider or provider definition with the container.
+   *
+   * @param provider - A class constructor extending `Provider`, or a
+   *                   `ProviderDefinition` object with `provide` token.
+   */
   register(provider: ProviderLike | ProviderDefinition): void {
     if (typeof provider === 'function') {
       this.registry.set(provider, {});
@@ -32,6 +81,15 @@ export class Container {
     });
   }
 
+  /**
+   * Resolve a dependency by its token.
+   *
+   * The token can be a class constructor (resolved by name or identity)
+   * or a string (resolved by name, case-insensitive).
+   *
+   * @param token - The injection token to resolve.
+   * @returns The instantiated or provided value.
+   */
   resolve<T>(token: new (...args: any[]) => T): T {
     if (typeof token === 'string') {
       return this.resolveByName(token) as T;
@@ -39,6 +97,10 @@ export class Container {
     return this.resolveByClass(token) as T;
   }
 
+  /**
+   * Resolve a dependency by its class constructor.
+   * Falls back to auto-instantiation if the class was never explicitly registered.
+   */
   private resolveByClass(token: any): any {
     const entry = this.registry.get(token);
     if (!entry) {
@@ -52,6 +114,12 @@ export class Container {
     return this.instantiate(entry, token);
   }
 
+  /**
+   * Resolve a dependency by its name (string-based lookup).
+   * Matches case-insensitively against registered class names or string keys.
+   *
+   * @throws If no matching provider is found, with suggestions from available tokens.
+   */
   private resolveByName(name: string): any {
     for (const [key, val] of this.registry) {
       if (
@@ -76,6 +144,16 @@ export class Container {
     );
   }
 
+  /**
+   * Instantiate a provider entry, caching singletons on first resolution.
+   *
+   * Resolution priority:
+   * 1. Return cached instance if already resolved.
+   * 2. Return `useValue` if provided.
+   * 3. Construct `useClass` (or `fallbackToken`) with explicit `deps`.
+   * 4. Construct with auto-detected constructor parameter names.
+   * 5. Construct with no arguments.
+   */
   private instantiate(
     entry: {
       instance?: any;
@@ -115,6 +193,18 @@ export class Container {
   }
 }
 
+/**
+ * Extract constructor parameter names from a function's source code.
+ *
+ * Strips comments and type annotations, returning only the parameter
+ * identifiers in declaration order. Used by the container for
+ * auto-wiring when no explicit `deps` are provided.
+ *
+ * @param fn - The constructor function to inspect.
+ * @returns An array of parameter name strings.
+ *
+ * @internal
+ */
 function getConstructorParamNames(fn: Function): string[] {
   const src = fn
     .toString()

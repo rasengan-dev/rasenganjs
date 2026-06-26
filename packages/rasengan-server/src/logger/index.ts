@@ -1,5 +1,8 @@
 import type { LogEntry } from '@rasenganjs/runtime';
 
+/**
+ * ANSI foreground colour codes used for terminal output formatting.
+ */
 const fg = {
   reset: '\x1b[0m',
   green: '\x1b[32m',
@@ -12,10 +15,25 @@ const fg = {
   bold: '\x1b[1m',
 } as const;
 
+/**
+ * Return the current UTC timestamp in ISO 8601 format.
+ */
 function time(): string {
   return new Date().toISOString();
 }
 
+/**
+ * Return an ANSI-coloured HTTP method string for terminal output.
+ *
+ * Colours:
+ * - GET    → green
+ * - POST   → blue
+ * - PUT    → yellow
+ * - PATCH  → cyan
+ * - DELETE → red
+ * - HEAD   → magenta
+ * - OPTIONS → gray
+ */
 function colorMethod(method: string): string {
   switch (method) {
     case 'GET':
@@ -37,6 +55,15 @@ function colorMethod(method: string): string {
   }
 }
 
+/**
+ * Return an ANSI-coloured HTTP status code string for terminal output.
+ *
+ * - 2xx → green
+ * - 3xx → cyan
+ * - 4xx → yellow
+ * - 5xx → red
+ * - 0   → bold red `ERROR`
+ */
 function colorStatus(status: number): string {
   if (status === 0) return `${fg.red}${fg.bold}ERROR${fg.reset}`;
   const group = Math.floor(status / 100);
@@ -54,6 +81,16 @@ function colorStatus(status: number): string {
   }
 }
 
+/**
+ * Colorful development-friendly request logger.
+ *
+ * Output format:
+ * ```
+ * [2025-06-26T10:30:00.000Z] GET    /api/users 200 12ms 256B
+ * ```
+ *
+ * @param entry - The log entry emitted by the runtime logger middleware.
+ */
 export function serverLogger(entry: LogEntry): void {
   const method = entry.method.padEnd(6);
   const coloredMethod = colorMethod(method);
@@ -66,6 +103,12 @@ export function serverLogger(entry: LogEntry): void {
   );
 }
 
+/**
+ * Minimal JSON-format request logger, suitable for production log
+ * ingestion (e.g. CloudWatch, Datadog, ELK).
+ *
+ * @param entry - The log entry emitted by the runtime logger middleware.
+ */
 export function serverLoggerMinimal(entry: LogEntry): void {
   const msg = JSON.stringify({
     time: new Date().toISOString(),

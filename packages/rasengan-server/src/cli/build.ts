@@ -6,11 +6,29 @@ import {
   readFileSync,
   existsSync,
   readdirSync,
-  statSync,
 } from 'node:fs';
-import { resolve, dirname, basename, extname, join, relative } from 'node:path';
+import { resolve, dirname, basename, extname, join } from 'node:path';
 import type { RasenganServerConfig } from '../config/index.js';
 
+/**
+ * Regex matching static ES import/export statements with relative paths.
+ */
+const IMPORT_RE = /(?:(from|import)\s*)(['"])(\.\.?\/[^'"]*?)(\2)/g;
+
+/**
+ * Regex matching dynamic `import()` calls with relative paths.
+ */
+const DYNAMIC_IMPORT_RE = /(import\s*\(\s*)(['"])(\.\.?\/[^'"]*?)(\2\s*\))/g;
+
+/**
+ * Build the server application for production.
+ *
+ * Supports two output formats (configurable via `config.build.formats`):
+ * - `"single-file"` — bundles everything into one `server.bundle.mjs`
+ * - `"directory"`   — one `.mjs` per source file, preserving structure
+ *
+ * @param config - Server configuration (entry, build options).
+ */
 export async function build(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');
   const outDir = resolve(config.build?.outDir || 'dist');
@@ -46,6 +64,11 @@ export async function build(config: RasenganServerConfig): Promise<void> {
   console.log('  ✓ build complete\n');
 }
 
+/**
+ * Build a single-file bundle (`server.bundle.mjs`) using esbuild.
+ *
+ * All dependencies are bundled inline except `node:*` modules.
+ */
 async function buildSingleFile(
   entry: string,
   outDir: string,
@@ -63,6 +86,16 @@ async function buildSingleFile(
   console.log(`  ✓ single-file: ${outfile}`);
 }
 
+/**
+ * Build a directory output preserving the source file structure.
+ *
+ * For each `.ts`/`.tsx` file in the entry's source directory:
+ * 1. Compiles to `.mjs` via esbuild (unbundled).
+ * 2. Rewrites relative import paths to include `.js` extensions
+ *    (required by Node.js ESM).
+ * 3. Copies `package.json` (minimal) and `rasengan.server.*` config.
+ * 4. Writes a `start.json` with convenience npm scripts.
+ */
 async function buildDirectory(
   entry: string,
   outDir: string,
@@ -72,7 +105,6 @@ async function buildDirectory(
   const srcDir = resolve(dirname(entry));
   const destDir = join(outDir, 'server');
 
-  // compile all .ts files in the source directory to .mjs
   const files = collectSourceFiles(srcDir);
   const entryPoints: Record<string, string> = {};
 
@@ -83,7 +115,6 @@ async function buildDirectory(
   }
 
   if (Object.keys(entryPoints).length === 0) {
-    // fallback: just compile the entry
     entryPoints['main'] = entry;
   }
 
@@ -98,10 +129,8 @@ async function buildDirectory(
     bundle: false,
   });
 
-  // rewrite relative imports to add .js extension (required by Node ESM)
   rewriteImportExtensions(destDir);
 
-  // copy package.json
   const pkgPath = resolve('package.json');
   if (existsSync(pkgPath)) {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
@@ -118,7 +147,6 @@ async function buildDirectory(
     );
   }
 
-  // copy rasengan config
   for (const name of ['rasengan.server.js', 'rasengan.server.ts']) {
     const cfgPath = resolve(name);
     if (existsSync(cfgPath)) {
@@ -126,7 +154,6 @@ async function buildDirectory(
     }
   }
 
-  // create a start script
   const entryName = basename(entry, extname(entry));
   const startScript = {
     scripts: {
@@ -142,6 +169,10 @@ async function buildDirectory(
   console.log(`  ✓ directory: ${destDir}`);
 }
 
+/**
+ * Recursively collect all `.ts` and `.tsx` files from a directory,
+ * skipping `node_modules`.
+ */
 function collectSourceFiles(dir: string): string[] {
   const files: string[] = [];
   const entries = readdirSync(dir, { withFileTypes: true });
@@ -159,14 +190,20 @@ function collectSourceFiles(dir: string): string[] {
   return files;
 }
 
-const IMPORT_RE = /(?:(from|import)\s*)(['"])(\.\.?\/[^'"]*?)(\2)/g;
-const DYNAMIC_IMPORT_RE = /(import\s*\(\s*)(['"])(\.\.?\/[^'"]*?)(\2\s*\))/g;
-
+/**
+ * Check whether a path string already has a file extension.
+ */
 function hasExtension(path: string): boolean {
   const seg = path.split('/').pop();
   return seg !== undefined && /\.\w{1,5}$/.test(seg);
 }
 
+/**
+ * Rewrite relative import paths in compiled `.js` files to include
+ * the `.js` extension, as required by Node.js ESM resolution.
+ *
+ * Handles both static `import`/`export from` and dynamic `import()`.
+ */
 function rewriteImportExtensions(dir: string): void {
   const entries = readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {

@@ -4,6 +4,15 @@ import { watch } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RasenganServerConfig } from '../config/index.js';
 
+/**
+ * Locate the `tsx` executable inside the project's `node_modules`.
+ *
+ * Checks platform-specific paths:
+ * - Windows: `node_modules/.bin/tsx.cmd`, then `.bin/tsx`
+ * - POSIX:   `node_modules/.bin/tsx`, then `node_modules/tsx/dist/cli.mjs`
+ *
+ * @returns The resolved absolute path to `tsx`, or `null` if not found.
+ */
 function resolveRuntime(): string | null {
   if (process.platform === 'win32') {
     const candidates = [
@@ -37,6 +46,12 @@ function resolveRuntime(): string | null {
   return null;
 }
 
+/**
+ * Send a signal to a child process's process group.
+ *
+ * Tries `process.kill(-pid, signal)` first (POSIX process group),
+ * falls back to `child.kill(signal)`.
+ */
 function killProcessGroup(child: ChildProcess, signal: NodeJS.Signals): void {
   if (!child || child.killed) return;
   try {
@@ -46,6 +61,15 @@ function killProcessGroup(child: ChildProcess, signal: NodeJS.Signals): void {
   }
 }
 
+/**
+ * Start the development server.
+ *
+ * Spawns the entry file via `tsx watch` (or `bun --watch run`) with
+ * hot-reload, sets up file watchers on the configured watch directories,
+ * and handles graceful shutdown on `SIGINT`/`SIGTERM`.
+ *
+ * @param config - Server configuration (entry, port, host, watchDir, preset).
+ */
 export async function dev(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');
   const port = config.port ?? 3000;
@@ -65,6 +89,14 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   let restarting = false;
   let closing = false;
 
+  /**
+   * Spawn the child process that runs the actual server.
+   *
+   * Uses:
+   * - `bun --watch run <entry>` if preset is `bun`
+   * - `tsx watch <entry>` otherwise (via local `node_modules/.bin/tsx`)
+   * - Falls back to `npx tsx watch <entry>` if tsx is not found locally.
+   */
   function spawnChild(): ChildProcess {
     const opts = {
       stdio: 'inherit' as const,
@@ -77,7 +109,6 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     };
 
     if (isBun) {
-      // return spawn('bun', ['run', entry], opts);
       return spawn('bun', ['--watch', 'run', entry], opts);
     }
 
@@ -89,6 +120,9 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     return spawn('npx', ['--yes', 'tsx', 'watch', entry], opts);
   }
 
+  /**
+   * Start (or restart) the child process.
+   */
   function start() {
     try {
       if (closing) return;
@@ -119,6 +153,9 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
     }
   }
 
+  /**
+   * Gracefully stop the dev server and exit the process.
+   */
   function stop() {
     if (closing) return;
     closing = true;

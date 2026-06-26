@@ -9,6 +9,9 @@ import { createRequire } from 'node:module';
 import os from 'node:os';
 import readline from 'node:readline';
 
+/**
+ * ANSI foreground colour codes used for terminal output formatting.
+ */
 const fg = {
   reset: '\x1b[0m',
   green: '\x1b[32m',
@@ -19,6 +22,11 @@ const fg = {
   bold: '\x1b[1m',
 } as const;
 
+/**
+ * Get the non-internal IPv4 address of the first active network interface.
+ *
+ * @returns The IP address string, or an empty string if none is found.
+ */
 function getIPAddress(): string {
   const interfaces = os.networkInterfaces();
   for (const name in interfaces) {
@@ -33,6 +41,11 @@ function getIPAddress(): string {
   return '';
 }
 
+/**
+ * Read the package version from the local `package.json`.
+ *
+ * @returns The semantic version string, or `"0.0.0"` if unavailable.
+ */
 function getVersion(): string {
   try {
     const _require = createRequire(import.meta.url);
@@ -43,8 +56,24 @@ function getVersion(): string {
   }
 }
 
+/** Tracks whether the keypress listener has already been set up. */
 let listening = false;
 
+/**
+ * Print the server startup banner to the console.
+ *
+ * Displays:
+ * - Server name and version
+ * - Local and network URLs
+ * - Runtime detection (Bun vs Node.js)
+ * - Keyboard shortcut hints
+ *
+ * On first call, also sets up an interactive keypress listener for
+ * `c` (clear console) and `ctrl+c` (stop server).
+ *
+ * @param port - The port the server is listening on.
+ * @param host - The host address the server is bound to (default `"0.0.0.0"`).
+ */
 export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
   const arrow = `${fg.green}\u2192${fg.reset}`;
   const version = getVersion();
@@ -89,6 +118,17 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
   }
 }
 
+/**
+ * Set up an interactive keypress listener on `stdin`.
+ *
+ * - `c` (no modifiers) → clears the console and re-displays the banner.
+ * - `ctrl+c` → prints a shutdown message and exits.
+ *
+ * Only activates when `stdin` is a TTY. Sets raw mode for instant
+ * keypress handling without waiting for `Enter`.
+ *
+ * @param log - Callback to re-display the server banner.
+ */
 function setupKeypress(log: () => void): void {
   if (!process.stdin.isTTY) return;
 
