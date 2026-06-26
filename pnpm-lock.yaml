@@ -13,9 +13,15 @@ importers:
 
   .:
     dependencies:
+      '@vitest/coverage-v8':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.8.0)
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
     devDependencies:
       '@types/node':
         specifier: ^20.19.39
@@ -654,6 +660,9 @@ importers:
       '@rasenganjs/runtime-workerd':
         specifier: workspace:*
         version: link:../rasengan-runtime-workerd
+      '@vitest/coverage-v8':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
       rimraf:
         specifier: ^6.1.3
         version: 6.1.3
@@ -663,6 +672,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@types/node@25.9.3)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
 
   packages/rasengan-shuriken:
     dependencies:
@@ -7693,7 +7705,7 @@ snapshots:
       obug: 2.1.3
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@25.9.3)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
+      vitest: 4.1.9(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
 
   '@vitest/expect@4.1.9':
     dependencies:
@@ -7703,6 +7715,14 @@ snapshots:
       '@vitest/utils': 4.1.9
       chai: 6.2.2
       tinyrainbow: 3.1.0
+
+  '@vitest/mocker@4.1.9(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))':
+    dependencies:
+      '@vitest/spy': 4.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0)
 
   '@vitest/mocker@4.1.9(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))':
     dependencies:
@@ -10943,6 +10963,25 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
+  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0):
+    dependencies:
+      esbuild: 0.27.2
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+      postcss: 8.5.6
+      rollup: 4.46.2
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 20.19.43
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      less: 4.5.1
+      lightningcss: 1.32.0
+      sass: 1.100.0
+      stylus: 0.64.0
+      tsx: 4.22.4
+      yaml: 2.8.0
+
   vite@7.3.5(@types/node@22.19.21)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0):
     dependencies:
       esbuild: 0.27.2
@@ -10999,6 +11038,34 @@ snapshots:
       stylus: 0.64.0
       tsx: 4.22.4
       yaml: 2.8.0
+
+  vitest@4.1.9(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0)):
+    dependencies:
+      '@vitest/expect': 4.1.9
+      '@vitest/mocker': 4.1.9(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
+      '@vitest/pretty-format': 4.1.9
+      '@vitest/runner': 4.1.9
+      '@vitest/snapshot': 4.1.9
+      '@vitest/spy': 4.1.9
+      '@vitest/utils': 4.1.9
+      es-module-lexer: 2.1.0
+      expect-type: 1.3.0
+      magic-string: 0.30.21
+      obug: 2.1.3
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 4.1.0
+      tinybench: 2.9.0
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.1.0
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.19.43
+      '@vitest/coverage-v8': 4.1.9(vitest@4.1.9)
+    transitivePeerDependencies:
+      - msw
 
   vitest@4.1.9(@types/node@25.9.3)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0)):
     dependencies:
