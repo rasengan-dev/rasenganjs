@@ -1,0 +1,8 @@
+{
+  "name": "@rasenganjs/bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "tsx router.bench.ts"
+  }
+}

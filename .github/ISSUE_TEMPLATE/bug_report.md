@@ -30,7 +30,7 @@ If applicable, add screenshots to help explain your problem.
 - **Package manager Version:** [e.g., 6.x]
 - **Browser (if applicable):** [e.g., Chrome, Safari]
 - **Affected Package(s):** [Specify if the bug is in a specific package inside the `packages/` folder]
-- **Additional context:** [Include any relevant details about the environment, such as any changes in the `playground/` examples or special configuration settings]
+- **Additional context:** [Include any relevant details about the environment, such as any changes in the `apps/playground/` examples or special configuration settings]
 
 **Additional context**
 Add any other context about the problem here.

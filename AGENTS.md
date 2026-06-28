@@ -18,21 +18,36 @@
 ```
 rasenganjs/
   packages/
-    rasengan/              # Core framework (routing, SSR, SSG, CLI, Vite plugin, server)
-    create-rasengan/       # CLI scaffolding tool (`npx create-rasengan`)
-    rasengan-shuriken/     # Template cloning CLI (`npx shuriken`)
-    rasengan-kurama/       # Lightweight Zustand-like state management
-    rasengan-mdx/          # MDX plugin & components for Rasengan
-    rasengan-serve/        # Production Express server for built apps
-    rasengan-vercel/       # Vercel deployment adapter
-    rasengan-i18n/         # Internationalization library
-    rasengan-image/        # Optimized Image component (lazy, blur/wave placeholder)
-    rasengan-theme/        # Light/dark/system theme management
-    rasengan-kage-demo/    # Interactive feature tour / onboarding library
-  docs/                    # The rasengan.dev documentation site (itself a Rasengan app)
-  playground/              # Example/test projects
-  examples/                # shadcn example
+    framework/
+      rasengan/            # Core framework (routing, SSR, SSG, CLI, Vite plugin, server)
+      rasengan-server/     # Backend server framework (controllers, DI, middleware)
+      rasengan-mdx/        # MDX plugin & components for Rasengan
+    platform/
+      rasengan-runtime/    # WinterCG-compatible runtime abstraction
+      rasengan-runtime-node/   # Node.js adapter
+      rasengan-runtime-bun/    # Bun adapter
+      rasengan-runtime-workerd/ # Cloudflare Workers adapter
+    ecosystem/
+      rasengan-kurama/     # Lightweight Zustand-like state management
+      rasengan-image/      # Optimized Image component (lazy, blur/wave placeholder)
+      rasengan-theme/      # Light/dark/system theme management
+      rasengan-i18n/       # Internationalization library
+      rasengan-io/         # Real-time communication (Socket.IO)
+      rasengan-kage-demo/  # Interactive feature tour / onboarding library
+      rasengan-validation/ # Schema validation (Zod adapter)
+    cli/
+      create-rasengan/     # CLI scaffolding tool (`npx create-rasengan`)
+      rasengan-shuriken/   # Template cloning CLI (`npx shuriken`)
+    deploy/
+      rasengan-serve/      # Production Express server for built apps
+      rasengan-vercel/     # Vercel deployment adapter
+  apps/
+    docs/                  # The rasengan.dev documentation site (itself a Rasengan app)
+    playground/            # Example/test projects
+    examples/              # shadcn example
   scripts/                 # Build, pack, release, CI scripts
+  e2e/                     # Playwright end-to-end tests
+  bench/                   # Benchmarks
 ```
 
 ---
@@ -518,7 +533,7 @@ pnpm run build  # Builds all packages
 To test changes in a playground:
 
 ```bash
-cd playground/rasengan-v1-test
+cd apps/playground/rasengan-v1-test
 pnpm run dev   # Links workspace packages automatically
 ```
 

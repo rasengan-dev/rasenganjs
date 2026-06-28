@@ -1,8 +1,12 @@
 packages:
-  - packages/**
-  - playground/**
-  - docs/**
-  - examples/**
+  - packages/framework/*
+  - packages/platform/*
+  - packages/ecosystem/*
+  - packages/cli/*
+  - packages/deploy/*
+  - apps/playground/**
+  - apps/docs/**
+  - apps/examples/**
 
 overrides:
   '@vitejs/plugin-react': ^4.2.1

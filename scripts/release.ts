@@ -38,7 +38,7 @@ async function generateAutoEntries(
     .commits({
       from: lastTag,
       to: 'HEAD',
-      path: `packages/${pkgName}`,
+      path: pkgPath[pkgName] || `packages/${pkgName}`,
     })
     .write()) {
     chunks.push(chunk);
@@ -53,6 +53,26 @@ async function generateAutoEntries(
 
   return body;
 }
+
+const pkgPath: Record<string, string> = {
+  'create-rasengan': 'packages/cli/create-rasengan',
+  rasengan: 'packages/framework/rasengan',
+  'rasengan-image': 'packages/ecosystem/rasengan-image',
+  'rasengan-i18n': 'packages/ecosystem/rasengan-i18n',
+  'rasengan-mdx': 'packages/framework/rasengan-mdx',
+  'rasengan-serve': 'packages/deploy/rasengan-serve',
+  'rasengan-theme': 'packages/ecosystem/rasengan-theme',
+  'rasengan-vercel': 'packages/deploy/rasengan-vercel',
+  'rasengan-shuriken': 'packages/cli/rasengan-shuriken',
+  'rasengan-kurama': 'packages/ecosystem/rasengan-kurama',
+  'rasengan-kage-demo': 'packages/ecosystem/rasengan-kage-demo',
+  'rasengan-io': 'packages/ecosystem/rasengan-io',
+  'rasengan-runtime': 'packages/platform/rasengan-runtime',
+  'rasengan-runtime-node': 'packages/platform/rasengan-runtime-node',
+  'rasengan-runtime-bun': 'packages/platform/rasengan-runtime-bun',
+  'rasengan-runtime-workerd': 'packages/platform/rasengan-runtime-workerd',
+  'rasengan-server': 'packages/framework/rasengan-server',
+};
 
 release({
   repo: 'rasenganjs',
@@ -83,7 +103,10 @@ release({
     return `${pkg}@${version}`;
   },
   logChangelog: async (pkgName: string) => {
-    const changelog = readFileSync(`packages/${pkgName}/CHANGELOG.md`, 'utf-8');
+    const changelog = readFileSync(
+      `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`,
+      'utf-8'
+    );
     if (!changelog.includes('## Unreleased')) {
       throw new Error("Can't find '## Unreleased' section in CHANGELOG.md");
     }
@@ -93,7 +116,7 @@ release({
     );
   },
   generateChangelog: async (pkgName: string, version: string) => {
-    const changelogPath = `packages/${pkgName}/CHANGELOG.md`;
+    const changelogPath = `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`;
     let changelog = readFileSync(changelogPath, 'utf-8');
 
     // Auto-generate entries from conventional commits since last tag
