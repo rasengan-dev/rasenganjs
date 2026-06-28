@@ -156,7 +156,7 @@ describe('bodyLimit', () => {
 
     let parsedBody: unknown;
     app.post('/data', async (ctx) => {
-      parsedBody = ctx.get('parsedBody');
+      parsedBody = ctx.get('body');
       return new Response('ok');
     });
 

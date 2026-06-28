@@ -27,6 +27,7 @@ export function createContext(
   const ctx: Context = {
     request,
     req: request,
+    body: undefined,
     params,
     runtime,
     state,

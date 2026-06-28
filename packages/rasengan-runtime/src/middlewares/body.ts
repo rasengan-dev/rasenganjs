@@ -56,7 +56,7 @@ export interface BodyParserOptions {
  * for streaming byte-count enforcement.
  */
 export function bodyParser(options: BodyParserOptions = {}): Middleware {
-  const key = options.key ?? 'parsedBody';
+  const key = options.key ?? 'body';
 
   return async (ctx, next) => {
     const method = ctx.request.method;
@@ -79,7 +79,9 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
       const limitMw = bodyLimit({ maxSize: options.maxSize });
       return limitMw(ctx, async () => {
         try {
-          ctx.state[key] = await parseBody(ctx.request);
+          const parsed = await parseBody(ctx.request);
+          ctx.state[key] = parsed;
+          ctx.body = parsed;
         } catch {
           ctx.state[key] = undefined;
         }
@@ -88,7 +90,9 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
     }
 
     try {
-      ctx.state[key] = await parseBody(ctx.request);
+      const parsed = await parseBody(ctx.request);
+      ctx.state[key] = parsed;
+      ctx.body = parsed;
     } catch {
       ctx.state[key] = undefined;
     }

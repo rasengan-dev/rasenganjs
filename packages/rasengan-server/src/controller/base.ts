@@ -1,11 +1,12 @@
 import type { Middleware } from '@rasenganjs/runtime';
+import type { SchemaDefinition } from '@rasenganjs/validation';
 import type { Router, RouteHandler as _RouteHandler } from '../router/index.js';
 
 /**
  * Signature for a route handler function.
  * Receives the request context and must return a `Response` (or a promise thereof).
  */
-export type RouteHandler = _RouteHandler;
+export type RouteHandler<T = {}> = _RouteHandler<T>;
 
 /**
  * Abstract base class for defining a set of related routes.
@@ -31,6 +32,31 @@ export abstract class Controller {
    * Applied after module-level middleware, before route-level middleware.
    */
   middlewares: Middleware[] = [];
+
+  /**
+   * Per-method schema definitions for validation.
+   *
+   * Keys must match method names defined in `routes()`.
+   * The validation middleware is injected automatically during
+   * `compile()` by matching method names against the handler
+   * references stored in the Router's `handlerSchemaMap`.
+   *
+   * @example
+   * ```ts
+   * class UsersController extends Controller {
+   *   schemas = {
+   *     create: { body: CreateUserSchema },
+   *     update: { body: UpdateUserSchema, params: UserParamsSchema },
+   *   };
+   *
+   *   routes(router: Router): void {
+   *     router.post('/users', this.create);
+   *     router.put('/users/:id', this.update);
+   *   }
+   * }
+   * ```
+   */
+  schemas?: Record<string, SchemaDefinition>;
 
   /**
    * Register routes on the given `Router`.

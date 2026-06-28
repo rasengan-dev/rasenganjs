@@ -656,6 +656,9 @@ importers:
       '@rasenganjs/runtime-workerd':
         specifier: workspace:*
         version: link:../rasengan-runtime-workerd
+      '@rasenganjs/validation':
+        specifier: workspace:*
+        version: link:../rasengan-validation
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
@@ -700,6 +703,31 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.1
         version: 19.2.3(@types/react@19.2.17)
+
+  packages/rasengan-validation:
+    dependencies:
+      '@rasenganjs/runtime':
+        specifier: workspace:*
+        version: link:../rasengan-runtime
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@types/node@25.9.3)(@vitest/coverage-v8@4.1.9)(vite@7.3.5(@types/node@25.9.3)(jiti@2.7.0)(less@4.5.1)(lightningcss@1.32.0)(sass@1.100.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.8.0))
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
 
   packages/rasengan-vercel:
     dependencies:
@@ -996,6 +1024,12 @@ importers:
       '@rasenganjs/server':
         specifier: workspace:*
         version: link:../../packages/rasengan-server
+      '@rasenganjs/validation':
+        specifier: workspace:*
+        version: link:../../packages/rasengan-validation
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       tsx:
         specifier: ^4.19.0
@@ -5718,6 +5752,9 @@ packages:
   yoctocolors-cjs@2.1.2:
     resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
     engines: {node: '>=18'}
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zustand@5.0.14:
     resolution: {integrity: sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g==}
@@ -11135,6 +11172,8 @@ snapshots:
   yaml@2.8.0: {}
 
   yoctocolors-cjs@2.1.2: {}
+
+  zod@3.25.76: {}
 
   zustand@5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7)):
     optionalDependencies:

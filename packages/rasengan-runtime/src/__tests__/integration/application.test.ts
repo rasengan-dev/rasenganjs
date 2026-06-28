@@ -137,7 +137,7 @@ describe('Application (integration)', () => {
   it('processes bodyParser middleware', async () => {
     app.use(bodyParser());
     app.post('/submit', async (ctx) => {
-      const body = ctx.get('parsedBody');
+      const body = ctx.get('body');
       return json({ received: body });
     });
 

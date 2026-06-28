@@ -81,6 +81,15 @@ interface ServerHandle {
 2. **Module-level middleware** — `ModuleConfig.middlewares`, scoped to module prefix
 3. **Controller-level middleware** — `Controller.middlewares`, scoped to controller routes
 4. **Route-level middleware** — passed as arguments to `router.get(path, mw, handler)` etc.
+5. **Validation middleware** — injected automatically for routes with schemas (after route middleware, before handler)
+
+### Schema validation
+
+- **Per-route schemas** — passed as last argument to `router.get/post/…(path, handler, { body: …, params: … })`
+- **Controller-level schemas** — `Controller.schemas` dictionary keyed by method name, matched via `handler.name`
+- **Per-route schema overrides controller schema** when both are provided
+- **Validation middleware is injected at route-registration time** by the `Router`, using `createValidationMiddleware()` from `@rasenganjs/validation`
+- **Default adapter** is `zodAdapter`; override via `app.configureValidation({ adapter: myAdapter })`
 
 ### Compilation flow (`ServerApp.compile()`)
 
@@ -98,11 +107,13 @@ compile()
         registerControllers(app, container, mod)
           ├── for each controller:
           │     instance = container.resolve(ctrl)
-          │     (module group) → (controller group) → routes
+          │     serverRouter = new Router(cr, validationConfig, instance.schemas)
+          │     instance.routes(serverRouter)
+          │     // Router injects validation middleware during route registration
           └── nesting:
                 runtimeRouter.group(prefix, { middlewares: modMws }, (r) => {
                   r.group({ middlewares: ctrlMws }, (cr) => {
-                    instance.routes(new Router(cr))
+                    instance.routes(new Router(cr, validationConfig, instance.schemas))
                   })
                 })
 ```
@@ -116,6 +127,7 @@ HTTP Request
   → module group middleware
   → controller group middleware
   → route-level middleware
+  → validation middleware (if schema defined)
   → route handler → Response
 ```
 
@@ -171,26 +183,30 @@ The `Container` class provides:
 - **Module nesting** — `imports` are flattened depth-first; providers from all modules (including nested) are registered in a single shared container.
 - **Config resolution priority:** defaults < file config < CLI overrides.
 - **tsx resolution** — for `dev` command, the CLI tries `node_modules/.bin/tsx`, then `node_modules/tsx/dist/cli.mjs`, then `npx tsx`.
+- **Validation config** — defaults to `{ adapter: zodAdapter, onError: defaultErrorHandler }`. The adapter can be swapped; see `app.configureValidation()`.
+- **Controller schemas** — matched by `handler.name`; arrow functions and bound methods lose their name, so per-route schema arg is required for those.
+- **Validation middleware injection** — happens at route registration time, not after. The `Router` creates the middleware immediately using the configured adapter.
 
 ---
 
 ## Testing
 
 ```bash
-pnpm test              # vitest run (40 tests)
+pnpm test              # vitest run (48 tests)
 pnpm run test:watch    # vitest watch
 pnpm run test:coverage # with v8 coverage
 ```
 
 Test files:
 
-| File                 | Tests | What it covers                                                                                             |
-| -------------------- | ----- | ---------------------------------------------------------------------------------------------------------- |
-| `router.test.ts`     | 12    | Route registration, middleware overloads, all HTTP methods                                                 |
-| `controller.test.ts` | 3     | Default middlewares, override, routes contract                                                             |
-| `container.test.ts`  | 10    | DI register/resolve with class, useClass, useValue, deps, name resolution, errors                          |
-| `module.test.ts`     | 7     | defineModule/defineConfig with all fields                                                                  |
-| `server-app.test.ts` | 8     | Integration: 3-layer middleware order, prefix, per-level middleware, 404, module factory, multi-controller |
+| File                             | Tests | What it covers                                                                                                          |
+| -------------------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------- |
+| `router.test.ts`                 | 12    | Route registration, middleware overloads, all HTTP methods                                                              |
+| `controller.test.ts`             | 3     | Default middlewares, override, routes contract                                                                          |
+| `container.test.ts`              | 10    | DI register/resolve with class, useClass, useValue, deps, name resolution, errors                                       |
+| `module.test.ts`                 | 7     | defineModule/defineConfig with all fields                                                                               |
+| `server-app.test.ts`             | 8     | Integration: 3-layer middleware order, prefix, per-level middleware, 404, module factory, multi-controller              |
+| `validation-integration.test.ts` | 8     | ServerApp configureValidation, per-route schemas, controller schemas, middleware order, error handlers, schema override |
 
 ---
 
@@ -238,6 +254,46 @@ export class UsersController extends Controller {
 }
 ```
 
+### Controller with schema validation (per-route)
+
+```ts
+router.post('/users', handler, {
+  body: z.object({ name: z.string(), email: z.string().email() }),
+  params: z.object({ id: z.string() }),
+});
+```
+
+### Controller with `schemas` property (method-name matched)
+
+```ts
+export class UsersController extends Controller {
+  schemas = {
+    create: { body: z.object({ name: z.string() }) },
+    list: { params: z.object({ page: z.string().optional() }) },
+    find: { params: z.object({ id: z.string() }) },
+  };
+
+  routes(router: Router): void {
+    router.post('/users', this.create);     // uses schemas.create
+    router.get('/users', this.list);        // uses schemas.list
+    router.get('/users/:id', this.find);    // uses schemas.find
+  }
+
+  private async create(ctx: Context) { … }
+  private async list(ctx: Context) { … }
+  private async find(ctx: Context) { … }
+}
+```
+
+### Custom validation error handler
+
+```ts
+app.configureValidation({
+  onError: (errors, ctx) =>
+    Response.json({ code: 'VALIDATION_ERROR', errors }, { status: 422 }),
+});
+```
+
 ---
 
 ## Gotchas
@@ -247,3 +303,7 @@ export class UsersController extends Controller {
 - **Adapter packages** are optional but at least one must be installed (`@rasenganjs/runtime-node` is the default).
 - **Bun detection** via `process.versions.bun` string check — wrapped in try/catch for safety.
 - **Keypress listener** (`logServerInfo`) uses `stdin.setRawMode(true)` — this changes terminal behaviour and must be cleaned up on exit.
+- **Controller schema matching** relies on `handler.name` — class methods work (`this.create`), arrow/anonymous functions do not.
+- **Validation middleware is injected at route registration time**, not during compilation. The `Router` creates it immediately using the configured adapter.
+- **Default adapter (`zodAdapter`)** requires Zod to be installed. If you use a different schema library, call `app.configureValidation({ adapter: myAdapter })`.
+- **`@rasenganjs/validation` is a required dependency** of `@rasenganjs/server` — it is not optional.

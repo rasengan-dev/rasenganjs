@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/validation": "workspace:*",
     "esbuild": "^0.25.0"
   },
   "peerDependencies": {

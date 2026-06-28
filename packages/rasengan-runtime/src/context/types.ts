@@ -91,14 +91,34 @@ import type { ResponseBuilder } from '../response/builder.js';
  *
  * `res` provides a chainable response builder for constructing
  * responses with a fluent API.
+ *
+ * @typeParam Body   — Typed request body (set by body parser + validation)
+ * @typeParam Params — Typed URL path parameters
+ * @typeParam Query  — Typed query parameters (intersected with callable access)
  */
-export interface Context {
+export interface Context<
+  Body = any,
+  Params = Record<string, string>,
+  Query = QueryParams,
+> {
   /** The incoming Web API Request */
   request: Request;
   req: Request;
 
+  /**
+   * Parsed request body.
+   *
+   * Set by the body parser middleware after reading the request body.
+   * When validation is configured, this contains the validated &
+   * coerced data instead of the raw parsed body.
+   *
+   * Starts as `undefined` — safe to access only after body parser
+   * middleware has run.
+   */
+  body: Body;
+
   /** URL path parameters extracted by the Router */
-  params: Record<string, string>;
+  params: Params;
 
   /**
    * Parsed URL query parameters.
@@ -109,10 +129,13 @@ export interface Context {
    * ctx.query('page')     // "2"
    * ```
    *
+   * When a query schema is provided via the Router, the property
+   * access types are narrowed to the Zod-inferred shape. The
+   * callable signature always returns `string | undefined`.
+   *
    * Parsed lazily on first access and cached thereafter.
-   * Returns `undefined` for missing keys.
    */
-  query: QueryParams;
+  query: Query & QueryParams;
 
   /** Runtime environment info */
   runtime: RuntimeContext;

@@ -1,11 +1,13 @@
 import { bootstrap } from '@rasenganjs/server';
 import appModule from './app.module';
-
-const port = Number(process.env.RASENGAN_SERVER_PORT) || 3000;
-const host = process.env.RASENGAN_SERVER_HOST || '0.0.0.0';
+import { ValidationError, zodAdapter } from '@rasenganjs/validation';
 
 bootstrap(async (app) => {
   app.registerModule(appModule);
+
+  app.configureValidation({
+    adapter: zodAdapter,
+  });
 
   app.notFound(async (ctx) => {
     return ctx.response.status(404).json({ message: 'Not Found' });

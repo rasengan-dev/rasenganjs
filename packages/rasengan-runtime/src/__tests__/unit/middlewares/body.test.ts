@@ -20,7 +20,8 @@ describe('bodyParser', () => {
     const mw = bodyParser();
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toEqual({ name: 'test' });
+    expect(ctx.state.body).toEqual({ name: 'test' });
+    expect(ctx.body).toEqual({ name: 'test' });
     expect(next).toHaveBeenCalledOnce();
   });
 
@@ -192,7 +193,8 @@ describe('bodyParser', () => {
     const mw = bodyParser({ maxSize: 1024 });
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toEqual({ ok: true });
+    expect(ctx.state.body).toEqual({ ok: true });
+    expect(ctx.body).toEqual({ ok: true });
     expect(next).toHaveBeenCalledOnce();
   });
 });
