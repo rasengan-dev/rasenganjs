@@ -1,26 +1,7 @@
-/**
- * Server startup banner — displays server info (URLs, version,
- * keyboard shortcuts) when the server starts listening.
- *
- * Zero dependencies — uses ANSI escape codes directly.
- */
-
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import readline from 'node:readline';
-
-/**
- * ANSI foreground colour codes used for terminal output formatting.
- */
-const fg = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  gray: '\x1b[90m',
-  bold: '\x1b[1m',
-} as const;
+import { green, blue, gray, bold } from './color.js';
 
 /**
  * Get the non-internal IPv4 address of the first active network interface.
@@ -75,7 +56,7 @@ let listening = false;
  * @param host - The host address the server is bound to (default `"0.0.0.0"`).
  */
 export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
-  const arrow = `${fg.green}\u2192${fg.reset}`;
+  const arrow = green('\u2192');
   const version = getVersion();
   const isBun =
     typeof process !== 'undefined' &&
@@ -83,32 +64,30 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
 
   console.log('');
   console.log(
-    `  ${fg.blue}${fg.bold}Rasengan Server${fg.reset} ${fg.gray}v${version}${fg.reset} ${fg.green}running${fg.reset}`
+    `  ${blue(bold('Rasengan Server'))} ${gray('v' + version)} ${green('running')}`
   );
   console.log('');
 
   const localHost = host === '0.0.0.0' ? 'localhost' : host;
   console.log(
-    `  ${arrow} ${fg.bold}Local:${fg.reset}   ${fg.blue}http://${localHost}:${fg.bold}${port}${fg.reset}`
+    `  ${arrow} ${bold('Local:')}   ${blue(`http://${localHost}:${bold(String(port))}`)}`
   );
 
   const ip = getIPAddress();
   if (ip) {
     console.log(
-      `  ${arrow} ${fg.bold}Network:${fg.reset} ${fg.blue}http://${ip}:${fg.bold}${port}${fg.reset}`
+      `  ${arrow} ${bold('Network:')} ${blue(`http://${ip}:${bold(String(port))}`)}`
     );
   }
 
-  console.log(
-    `  ${arrow} ${fg.bold}Runtime:${fg.reset} ${isBun ? 'Bun' : 'Node.js'}`
-  );
+  console.log(`  ${arrow} ${bold('Runtime:')} ${isBun ? 'Bun' : 'Node.js'}`);
 
   console.log('');
   console.log(
-    `  ${arrow} ${fg.gray}Press${fg.reset} ${fg.bold}c${fg.reset} ${fg.gray}to clear the console${fg.reset}`
+    `  ${arrow} ${gray('Press')} ${bold('c')} ${gray('to clear the console')}`
   );
   console.log(
-    `  ${arrow} ${fg.gray}Press${fg.reset} ${fg.bold}ctrl+c${fg.reset} ${fg.gray}to stop the server${fg.reset}`
+    `  ${arrow} ${gray('Press')} ${bold('ctrl+c')} ${gray('to stop the server')}`
   );
   console.log('');
 
@@ -139,7 +118,7 @@ function setupKeypress(log: () => void): void {
 
     if (key.ctrl && key.name === 'c') {
       console.log(
-        `\n  ${fg.green}ctrl+c${fg.reset} ${fg.gray}pressed — stopping server...${fg.reset}\n`
+        `\n  ${green('ctrl+c')} ${gray('pressed — stopping server...')}\n`
       );
       process.exit(0);
     }

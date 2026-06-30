@@ -1,19 +1,14 @@
 import type { LogEntry } from '@rasenganjs/runtime';
-
-/**
- * ANSI foreground colour codes used for terminal output formatting.
- */
-const fg = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  red: '\x1b[31m',
-  gray: '\x1b[90m',
-  bold: '\x1b[1m',
-} as const;
+import {
+  green,
+  yellow,
+  blue,
+  magenta,
+  cyan,
+  red,
+  gray,
+  bold,
+} from '../utils/color.js';
 
 /**
  * Return the current UTC timestamp in ISO 8601 format.
@@ -24,32 +19,23 @@ function time(): string {
 
 /**
  * Return an ANSI-coloured HTTP method string for terminal output.
- *
- * Colours:
- * - GET    → green
- * - POST   → blue
- * - PUT    → yellow
- * - PATCH  → cyan
- * - DELETE → red
- * - HEAD   → magenta
- * - OPTIONS → gray
  */
 function colorMethod(method: string): string {
   switch (method) {
     case 'GET':
-      return `${fg.green}${method}${fg.reset}`;
+      return green(method);
     case 'POST':
-      return `${fg.blue}${method}${fg.reset}`;
+      return blue(method);
     case 'PUT':
-      return `${fg.yellow}${method}${fg.reset}`;
+      return yellow(method);
     case 'PATCH':
-      return `${fg.cyan}${method}${fg.reset}`;
+      return cyan(method);
     case 'DELETE':
-      return `${fg.red}${method}${fg.reset}`;
+      return red(method);
     case 'HEAD':
-      return `${fg.magenta}${method}${fg.reset}`;
+      return magenta(method);
     case 'OPTIONS':
-      return `${fg.gray}${method}${fg.reset}`;
+      return gray(method);
     default:
       return method;
   }
@@ -57,25 +43,19 @@ function colorMethod(method: string): string {
 
 /**
  * Return an ANSI-coloured HTTP status code string for terminal output.
- *
- * - 2xx → green
- * - 3xx → cyan
- * - 4xx → yellow
- * - 5xx → red
- * - 0   → bold red `ERROR`
  */
 function colorStatus(status: number): string {
-  if (status === 0) return `${fg.red}${fg.bold}ERROR${fg.reset}`;
+  if (status === 0) return bold(red('ERROR'));
   const group = Math.floor(status / 100);
   switch (group) {
     case 2:
-      return `${fg.green}${status}${fg.reset}`;
+      return green(String(status));
     case 3:
-      return `${fg.cyan}${status}${fg.reset}`;
+      return cyan(String(status));
     case 4:
-      return `${fg.yellow}${status}${fg.reset}`;
+      return yellow(String(status));
     case 5:
-      return `${fg.red}${status}${fg.reset}`;
+      return red(String(status));
     default:
       return String(status);
   }
@@ -83,13 +63,6 @@ function colorStatus(status: number): string {
 
 /**
  * Colorful development-friendly request logger.
- *
- * Output format:
- * ```
- * [2025-06-26T10:30:00.000Z] GET    /api/users 200 12ms 256B
- * ```
- *
- * @param entry - The log entry emitted by the runtime logger middleware.
  */
 export function serverLogger(entry: LogEntry): void {
   const method = entry.method.padEnd(6);
@@ -99,7 +72,7 @@ export function serverLogger(entry: LogEntry): void {
   const size = entry.size !== null ? ` ${entry.size}B` : '';
 
   console.log(
-    `${fg.gray}[${time()}]${fg.reset} ${coloredMethod} ${entry.pathname}${search} ${coloredStatus} ${entry.duration}ms${size}`
+    `${gray(`[${time()}]`)} ${coloredMethod} ${entry.pathname}${search} ${coloredStatus} ${entry.duration}ms${size}`
   );
 }
 
