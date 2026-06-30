@@ -5,9 +5,11 @@
   "private": true,
   "dependencies": {
     "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/server": "workspace:*",
-    "@rasenganjs/runtime-node": "workspace:*",
     "@rasenganjs/runtime-bun": "workspace:*",
-    "@rasenganjs/runtime-workerd": "workspace:*"
+    "@rasenganjs/runtime-node": "workspace:*",
+    "@rasenganjs/runtime-workerd": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/validation": "workspace:*",
+    "zod": "^3.25.76"
   }
 }

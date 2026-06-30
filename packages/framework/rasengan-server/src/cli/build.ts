@@ -59,6 +59,8 @@ export async function build(config: RasenganServerConfig): Promise<void> {
         await buildDirectory(entry, outDir, sharedOptions, config);
         break;
     }
+
+    generateEntryFile(outDir, fmt, config);
   }
 
   console.log('  ✓ build complete\n');
@@ -73,7 +75,7 @@ async function buildSingleFile(
   entry: string,
   outDir: string,
   shared: any,
-  _config: RasenganServerConfig
+  config: RasenganServerConfig
 ): Promise<void> {
   const outfile = join(outDir, 'server.bundle.mjs');
 
@@ -226,4 +228,93 @@ function rewriteImportExtensions(dir: string): void {
       }
     }
   }
+}
+
+/**
+ * Template for the production entry file (Node.js / Bun).
+ *
+ * Uses dynamic `import()` with `import.meta.url` so the entry resolves
+ * built files relative to its own location regardless of the working
+ * directory.  The built entry at `SOURCE_PATH` is expected to call
+ * `bootstrap()` which handles ServerApp setup, adapter selection,
+ * and HTTP serving.
+ */
+function runtimeEntryTemplate(sourcePath: string): string {
+  return (
+    `import { dirname, resolve } from 'node:path';\n` +
+    `import { fileURLToPath } from 'node:url';\n` +
+    `\n` +
+    `const __dirname = dirname(fileURLToPath(import.meta.url));\n` +
+    `\n` +
+    `async function main() {\n` +
+    `  await import(resolve(__dirname, ${JSON.stringify(sourcePath)}));\n` +
+    `}\n` +
+    `\n` +
+    `main().catch((err) => {\n` +
+    `  console.error(\`\\n  [rasengan-server] Failed to start: \${err.message}\\n\`);\n` +
+    `  process.exit(1);\n` +
+    `});\n`
+  );
+}
+
+/**
+ * Template for the Workerd production entry file.
+ *
+ * Generates an ES module that exports a `fetch` handler, suitable for
+ * Cloudflare Workers.  Uses passthrough mode on `WorkerdProdAdapter`
+ * so the caller can export the handler as a module-level default.
+ */
+function workerdEntryTemplate(sourcePath: string): string {
+  return (
+    `import { ServerApp } from '@rasenganjs/server';\n` +
+    `import { WorkerdProdAdapter } from '@rasenganjs/runtime-workerd';\n` +
+    `import config from ${JSON.stringify(sourcePath)};\n` +
+    `\n` +
+    `const serverApp = new ServerApp();\n` +
+    `serverApp.registerModule(config.default || config);\n` +
+    `const runtimeApp = serverApp.compile();\n` +
+    `\n` +
+    `const adapter = new WorkerdProdAdapter({ passthrough: true });\n` +
+    `await adapter.serve(runtimeApp);\n` +
+    `\n` +
+    `export default {\n` +
+    `  fetch: (request) => adapter.fetchHandler(request),\n` +
+    `};\n`
+  );
+}
+
+/**
+ * Generate a runtime-specific `index.js` entry file in the output directory.
+ *
+ * The entry file is the production entry point that loads the compiled
+ * server code and starts the server using the appropriate runtime adapter.
+ *
+ * - **Node / Bun** — imports the compiled bootstrap call directly
+ * - **Workerd** — generates an ES module with `export default { fetch }`
+ *
+ * @param outDir - Root output directory (e.g. `dist`).
+ * @param format - Build format that was produced.
+ * @param config - Server configuration (preset determines the template).
+ */
+function generateEntryFile(
+  outDir: string,
+  format: 'single-file' | 'directory',
+  config: RasenganServerConfig
+): void {
+  const preset = config.preset ?? 'node';
+  const sourcePath =
+    format === 'single-file' ? './server.bundle.mjs' : './server/main.js';
+
+  let content: string;
+
+  if (preset === 'workerd') {
+    content = workerdEntryTemplate(sourcePath);
+  } else {
+    content = runtimeEntryTemplate(sourcePath);
+  }
+
+  const entryPath = join(outDir, 'index.js');
+  writeFileSync(entryPath, content, 'utf-8');
+
+  console.log(`  ✓ entry: ${entryPath} (${preset})`);
 }

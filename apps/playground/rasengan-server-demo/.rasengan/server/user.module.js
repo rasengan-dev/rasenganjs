@@ -4,6 +4,17 @@ import { UserService } from './user.service.js';
 var user_module_default = defineModule({
   prefix: '/users',
   controllers: [UserController],
-  providers: [UserService],
+  providers: [
+    {
+      provide: UserController,
+      deps: [UserService, 'CONFIG'],
+    },
+    {
+      provide: 'CONFIG',
+      useValue: {
+        port: 3e3,
+      },
+    },
+  ],
 });
 export { user_module_default as default };

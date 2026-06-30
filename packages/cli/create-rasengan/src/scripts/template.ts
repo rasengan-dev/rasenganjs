@@ -32,7 +32,7 @@ export default async function createProjectFromTemplate(options: {
     projectPath,
     templateName,
     repository = githubTemplatesURL.rasengan,
-    subDirectory = 'examples',
+    subDirectory = 'apps/examples',
   } = options;
 
   // Get the temporary folder path, the place where the repository will be cloned

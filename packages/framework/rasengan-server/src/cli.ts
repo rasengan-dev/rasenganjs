@@ -2,6 +2,7 @@
 
 import { dev } from './cli/dev.js';
 import { build } from './cli/build.js';
+import { start } from './cli/start.js';
 import { loadConfig, parseArgs } from './cli/config.js';
 
 /**
@@ -29,13 +30,19 @@ async function main() {
     case 'build':
       await build(config);
       break;
+    case 'start':
+      await start(config);
+      break;
     default:
       console.log(`\n  rasengan-server <command>\n`);
       console.log('  Commands:');
       console.log(
         '    dev     Start the development server with file watching'
       );
-      console.log('    build   Bundle the server for production\n');
+      console.log('    build   Bundle the server for production');
+      console.log(
+        '    start   Start the production server from built output\n'
+      );
       console.log('  Options:');
       console.log('    --port, -p <number>      Port number');
       console.log('    --host <address>          Host address');
