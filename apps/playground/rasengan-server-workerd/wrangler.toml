@@ -1,0 +1,7 @@
+name = "rasengan-server-workerd"
+main = "dist/index.js"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+[dev]
+port = 8100
