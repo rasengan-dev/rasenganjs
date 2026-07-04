@@ -53,6 +53,8 @@ export async function bootstrap(
     process.exit(1);
   });
 
+  // adapter.fet
+
   process.on('SIGTERM', () => {
     adapter.close();
     process.exit(0);

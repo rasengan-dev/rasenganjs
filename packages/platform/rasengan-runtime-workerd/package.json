@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/runtime-workerd",
   "version": "1.0.0",
-  "description": "workerd RuntimeAdapter for Rasengan.JS — fetch event registration, no local FS (KV/R2-friendly)",
+  "description": "[DEPRECATED] Use @rasenganjs/runtime instead. workerd RuntimeAdapter for Rasengan.JS — fetch event registration, no local FS (KV/R2-friendly)",
   "type": "module",
   "main": "dist/index.js",
   "exports": {

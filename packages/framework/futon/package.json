@@ -1,7 +1,7 @@
 {
-  "name": "@rasenganjs/runtime-bun",
+  "name": "@rasenganjs/futon",
   "version": "1.0.0-beta.0",
-  "description": "[DEPRECATED] Use @rasenganjs/runtime instead. Bun RuntimeAdapter implementation for Rasengan.JS — HTTP server via Bun.serve(), file watcher, and local FS assets",
+  "description": "WinterCG-compatible runtime abstraction layer for Rasengan.JS — middleware pipeline, router, and request/response utilities",
   "type": "module",
   "main": "dist/index.js",
   "exports": {
@@ -16,22 +16,26 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-runtime-bun"
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues",
+    "directory": "packages/platform/futon"
   },
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "bench": "npx tsx src/__benchmarks__/router.bench.ts",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta"
   },
-  "peerDependencies": {
-    "@rasenganjs/runtime": "workspace:*"
-  },
   "devDependencies": {
+    "@vitest/coverage-v8": "4.1.9",
     "rimraf": "^6.1.3",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
   },
   "files": [
     "dist/",

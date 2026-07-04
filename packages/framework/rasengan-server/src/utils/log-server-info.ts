@@ -33,7 +33,7 @@ function getVersion(): string {
     const pkg = _require('../package.json');
     return pkg.version;
   } catch {
-    return '0.0.0';
+    return '';
   }
 }
 
@@ -64,30 +64,30 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
 
   console.log('');
   console.log(
-    `  ${blue(bold('Rasengan Server'))} ${gray('v' + version)} ${green('running')}`
+    `${blue(bold('Rasengan Server'))} ${gray('v' + version)} ${green('running')}`
   );
   console.log('');
 
   const localHost = host === '0.0.0.0' ? 'localhost' : host;
   console.log(
-    `  ${arrow} ${bold('Local:')}   ${blue(`http://${localHost}:${bold(String(port))}`)}`
+    `${arrow} ${bold('Local:')}   ${blue(`http://${localHost}:${bold(String(port))}`)}`
   );
 
   const ip = getIPAddress();
   if (ip) {
     console.log(
-      `  ${arrow} ${bold('Network:')} ${blue(`http://${ip}:${bold(String(port))}`)}`
+      `${arrow} ${bold('Network:')} ${blue(`http://${ip}:${bold(String(port))}`)}`
     );
   }
 
-  console.log(`  ${arrow} ${bold('Runtime:')} ${isBun ? 'Bun' : 'Node.js'}`);
+  console.log(`${arrow} ${bold('Runtime:')} ${isBun ? 'Bun' : 'Node.js'}`);
 
   console.log('');
   console.log(
-    `  ${arrow} ${gray('Press')} ${bold('c')} ${gray('to clear the console')}`
+    `${arrow} ${gray('Press')} ${bold('c')} ${gray('to clear the console')}`
   );
   console.log(
-    `  ${arrow} ${gray('Press')} ${bold('ctrl+c')} ${gray('to stop the server')}`
+    `${arrow} ${gray('Press')} ${bold('ctrl+c')} ${gray('to stop the server')}`
   );
   console.log('');
 
@@ -118,7 +118,7 @@ function setupKeypress(log: () => void): void {
 
     if (key.ctrl && key.name === 'c') {
       console.log(
-        `\n  ${green('ctrl+c')} ${gray('pressed — stopping server...')}\n`
+        `\n${green('ctrl+c')} ${gray('pressed — stopping server...')}\n`
       );
       process.exit(0);
     }

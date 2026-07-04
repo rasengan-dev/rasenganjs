@@ -267,7 +267,7 @@ function runtimeEntryTemplate(sourcePath: string): string {
 function workerdEntryTemplate(sourcePath: string): string {
   return (
     `import { ServerApp } from '@rasenganjs/server';\n` +
-    `import { WorkerdProdAdapter } from '@rasenganjs/runtime-workerd';\n` +
+    `import { WorkerdProdAdapter } from '@rasenganjs/runtime/adapters/workerd';\n` +
     `import config from ${JSON.stringify(sourcePath)};\n` +
     `\n` +
     `const serverApp = new ServerApp();\n` +

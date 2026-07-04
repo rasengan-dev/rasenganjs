@@ -19,7 +19,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rasengan-dev/rasenganjs",
-    "directory": "packages/rasengan-server"
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues",
+    "directory": "packages/framework/rasengan-server"
   },
   "scripts": {
     "build:clean": "rimraf ./dist",
@@ -35,22 +36,6 @@
     "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/validation": "workspace:*",
     "esbuild": "^0.25.0"
-  },
-  "peerDependencies": {
-    "@rasenganjs/runtime-bun": "workspace:*",
-    "@rasenganjs/runtime-node": "workspace:*",
-    "@rasenganjs/runtime-workerd": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@rasenganjs/runtime-bun": {
-      "optional": true
-    },
-    "@rasenganjs/runtime-node": {
-      "optional": true
-    },
-    "@rasenganjs/runtime-workerd": {
-      "optional": true
-    }
   },
   "files": [
     "dist/",

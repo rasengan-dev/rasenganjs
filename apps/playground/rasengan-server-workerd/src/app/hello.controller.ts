@@ -7,7 +7,7 @@ export class HelloController extends Controller {
   }
 
   world: RouteHandler = async (ctx) => {
-    return ctx.res.json({ message: 'Hello from workerd!' });
+    return ctx.res.json({ message: 'Hello from workerd runtime!' });
   };
 
   greet: RouteHandler = async (ctx) => {

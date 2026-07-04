@@ -1,5 +1,13 @@
 import type { RuntimeAdapter } from '@rasenganjs/runtime';
 
+type AdapterModule = {
+  NodeDevAdapter?: new (opts?: any) => RuntimeAdapter;
+  BunDevAdapter?: new (opts?: any) => RuntimeAdapter;
+  NodeProdAdapter?: new (opts?: any) => RuntimeAdapter;
+  BunProdAdapter?: new (opts?: any) => RuntimeAdapter;
+  WorkerdProdAdapter?: new (opts?: any) => RuntimeAdapter;
+};
+
 /**
  * Options passed to `selectAdapter()` to determine which runtime adapter
  * to use for serving the application.
@@ -21,21 +29,12 @@ export interface AdapterOptions {
 }
 
 /**
- * Dynamically import a runtime adapter package.
- */
-async function importPkg(
-  name: string
-): Promise<Record<string, new (...args: any[]) => RuntimeAdapter>> {
-  return import(name);
-}
-
-/**
  * Select and instantiate the appropriate `RuntimeAdapter` based on
  * the provided options and the current runtime environment.
  *
  * In development mode the adapter is auto-detected:
  * - Bun is detected via `process.versions.bun`.
- * - Falls back to `@rasenganjs/runtime-node`.
+ * - Falls back to Node adapter.
  *
  * In production mode the `preset` option determines the adapter.
  *
@@ -56,9 +55,7 @@ export async function selectAdapter(
  *
  * Precedence:
  * 1. Bun (if `process.versions.bun` is set)
- * 2. Node.js (`@rasenganjs/runtime-node`)
- *
- * @throws If the Node adapter package cannot be loaded.
+ * 2. Node.js (default)
  */
 async function detectDevAdapter(
   options: AdapterOptions
@@ -71,18 +68,16 @@ async function detectDevAdapter(
 
     if (isBun) {
       try {
-        const mod = await importPkg('@rasenganjs/runtime-bun');
-        return new mod.BunDevAdapter({
+        const mod: AdapterModule =
+          await import('@rasenganjs/runtime/adapters/bun');
+        return new mod.BunDevAdapter!({
           port: options.port,
           host: options.host,
         });
       } catch {
         console.error(
-          `[rasengan-server] Cannot load @rasenganjs/runtime-bun adapter. ` +
-            `Make sure the package is installed: \`npm install @rasenganjs/runtime-bun\``
-        );
-        console.log(
-          '[rasengan-server] Bun runtime detected but package not installed'
+          `[rasengan-server] Cannot load Bun adapter from @rasenganjs/runtime/adapters/bun. ` +
+            `Make sure @rasenganjs/runtime is installed.`
         );
       }
     }
@@ -91,12 +86,16 @@ async function detectDevAdapter(
   }
 
   try {
-    const mod = await importPkg('@rasenganjs/runtime-node');
-    return new mod.NodeDevAdapter({ port: options.port, host: options.host });
+    const mod: AdapterModule =
+      await import('@rasenganjs/runtime/adapters/node');
+    return new mod.NodeDevAdapter!({
+      port: options.port,
+      host: options.host,
+    });
   } catch {
     throw new Error(
-      `[rasengan-server] Cannot load @rasenganjs/runtime-node adapter. ` +
-        `Make sure the package is installed: \`npm install @rasenganjs/runtime-node\``
+      `[rasengan-server] Cannot load Node adapter from @rasenganjs/runtime/adapters/node. ` +
+        `Make sure @rasenganjs/runtime is installed.`
     );
   }
 }
@@ -104,30 +103,31 @@ async function detectDevAdapter(
 /**
  * Load a production adapter based on the configured preset.
  *
- * - `"bun"` → `BunProdAdapter` from `@rasenganjs/runtime-bun`
- * - `"workerd"` → `WorkerdProdAdapter` from `@rasenganjs/runtime-workerd`
- * - default → `NodeProdAdapter` from `@rasenganjs/runtime-node`
- *
- * @throws If the target adapter package cannot be imported.
+ * - `"bun"` → `BunProdAdapter`
+ * - `"workerd"` → `WorkerdProdAdapter`
+ * - default → `NodeProdAdapter`
  */
 async function loadProdAdapter(
   options: AdapterOptions
 ): Promise<RuntimeAdapter> {
   switch (options.preset) {
     case 'bun': {
-      const mod = await importPkg('@rasenganjs/runtime-bun');
-      return new mod.BunProdAdapter({
+      const mod: AdapterModule =
+        await import('@rasenganjs/runtime/adapters/bun');
+      return new mod.BunProdAdapter!({
         port: options.port,
         host: options.host,
       });
     }
     case 'workerd': {
-      const mod = await importPkg('@rasenganjs/runtime-workerd');
-      return new mod.WorkerdProdAdapter();
+      const mod: AdapterModule =
+        await import('@rasenganjs/runtime/adapters/workerd');
+      return new mod.WorkerdProdAdapter!();
     }
     default: {
-      const mod = await importPkg('@rasenganjs/runtime-node');
-      return new mod.NodeProdAdapter({
+      const mod: AdapterModule =
+        await import('@rasenganjs/runtime/adapters/node');
+      return new mod.NodeProdAdapter!({
         port: options.port,
         host: options.host,
       });

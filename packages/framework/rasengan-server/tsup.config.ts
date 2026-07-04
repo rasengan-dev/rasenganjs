@@ -8,10 +8,5 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  external: [
-    '@rasenganjs/runtime-node',
-    '@rasenganjs/runtime-bun',
-    '@rasenganjs/runtime-workerd',
-    'esbuild',
-  ],
+  external: [/@rasenganjs\/runtime\/adapters\//, 'esbuild'],
 });
