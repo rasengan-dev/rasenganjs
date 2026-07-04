@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { Futon, logger, bodyParser } from '@rasenganjs/runtime';
+import { Futon, logger, bodyParser } from '@rasenganjs/futon';
 
 const app = new Futon();
 
@@ -31,5 +31,13 @@ app.onError((err, ctx) =>
 );
 
 app.notFound((ctx) => ctx.response.html('<h1>404 — not found</h1>'));
+
+app.hooks.on("beforeRequest", (ctx) => {
+  console.log("Before request");
+});
+
+app.hooks.on("afterResponse", (ctx) => {
+  console.log("After response");
+});
 
 export default app;

@@ -8,7 +8,7 @@
     "start": "bun run server/index.mjs"
   },
   "dependencies": {
-    "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/runtime-bun": "workspace:*"
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*"
   }
 }

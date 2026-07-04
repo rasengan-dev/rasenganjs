@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { BunDevAdapter } from '@rasenganjs/runtime-bun';
+import { BunDevAdapter } from '@rasenganjs/runtime/adapters/bun';
 import app from './app.mjs';
 
 const adapter = new BunDevAdapter({ port: 5330 });

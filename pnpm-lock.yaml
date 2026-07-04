@@ -514,12 +514,12 @@ importers:
 
   apps/playground/rasengan-runtime-bun-demo:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../../../packages/framework/futon
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../packages/platform/runtime
-      '@rasenganjs/runtime-bun':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-bun
 
   apps/playground/rasengan-runtime-demo:
     dependencies:

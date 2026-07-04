@@ -11,7 +11,7 @@
  *
  * @example
  * ```ts
- * import { Futon, json } from "@rasenganjs/runtime";
+ * import { Futon, json, logger, cors } from "@rasenganjs/futon";
  *
  * const app = new Futon();
  *
@@ -29,8 +29,7 @@
  * });
  *
  * // Start server
- * const handler = toWinterCgHandler(app);
- * Bun.serve({ fetch: handler });
+ * Bun.serve({ fetch: app.fetch });
  * ```
  */
 
@@ -39,9 +38,9 @@ import type { EnvironmentMap } from '../env/index.js';
 import { createContext } from '../context/index.js';
 import { compose } from '../middlewares/compose.js';
 import type { Middleware } from '../middlewares/index.js';
-import { Router, type HTTPMethod } from '../router/index.js';
+import { Router } from '../router/index.js';
 import { text } from '../response/utils.js';
-import { HookSystem, type HookName } from '../hooks/index.js';
+import { HookSystem } from '../hooks/index.js';
 
 export class Futon {
   private middlewares: Middleware[] = [];
