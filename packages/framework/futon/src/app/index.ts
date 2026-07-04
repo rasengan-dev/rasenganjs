@@ -1,7 +1,7 @@
 /**
- * Application — the top-level orchestrator for the request pipeline.
+ * Futon — the top-level orchestrator for the request pipeline.
  *
- * The Application:
+ * Futon:
  *   1. Maintains the global middleware stack
  *   2. Owns an internal Router for route registration
  *   3. Provides a `fetch(request, runtime)` entry point
@@ -11,9 +11,9 @@
  *
  * @example
  * ```ts
- * import { Application, json } from "@rasenganjs/runtime";
+ * import { Futon, json } from "@rasenganjs/runtime";
  *
- * const app = new Application();
+ * const app = new Futon();
  *
  * // Global middleware
  * app.use(logger());
@@ -43,7 +43,7 @@ import { Router, type HTTPMethod } from '../router/index.js';
 import { text } from '../response/utils.js';
 import { HookSystem, type HookName } from '../hooks/index.js';
 
-export class Application {
+export class Futon {
   private middlewares: Middleware[] = [];
   private router: Router;
 
@@ -75,7 +75,7 @@ export class Application {
   env?: EnvironmentMap;
 
   /**
-   * Load environment variables into the Application.
+   * Load environment variables into Futon.
    * Called automatically by the adapter's `serve()` method.
    */
   loadEnv(vars: EnvironmentMap): this {

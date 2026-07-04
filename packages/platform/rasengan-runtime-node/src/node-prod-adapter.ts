@@ -11,21 +11,17 @@
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/runtime";
+ * import { Futon } from "@rasenganjs/runtime";
  * import { NodeProdAdapter } from "@rasenganjs/runtime-node";
  *
- * const app = new Application();
+ * const app = new Futon();
  *
  * const adapter = new NodeProdAdapter({ port: 8080, rootDir: './dist' });
  * await adapter.serve(app.fetch);
  * ```
  */
 
-import type {
-  Application,
-  RuntimeAdapter,
-  ServeOptions,
-} from '@rasenganjs/runtime';
+import type { Futon, RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 
 import { startNodeServer, type NodeServerHandle } from './serve/node-server.js';
 import { loadNodeEnvFiles } from './env/index.js';
@@ -106,7 +102,7 @@ export class NodeProdAdapter implements RuntimeAdapter {
     };
   }
 
-  async serve(app: Application, options?: ServeOptions): Promise<void> {
+  async serve(app: Futon, options?: ServeOptions): Promise<void> {
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({

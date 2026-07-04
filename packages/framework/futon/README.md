@@ -1,20 +1,20 @@
-# @rasenganjs/runtime
+# @rasenganjs/futon
 
 **WinterCG-compatible runtime abstraction layer for Rasengan.js** — a zero-dependency HTTP middleware and routing pipeline built entirely on Web API primitives.
 
 ```
-npm install @rasenganjs/runtime
+npm install @rasenganjs/futon
 ```
 
 ```
-pnpm add @rasenganjs/runtime
+pnpm add @rasenganjs/futon
 ```
 
 ---
 
 ## Overview
 
-`@rasenganjs/runtime` provides the foundational request/response pipeline for Rasengan.js. It is a standalone HTTP framework that:
+`@rasenganjs/futon` provides the foundational request/response pipeline for Rasengan.js. It is a standalone HTTP framework that:
 
 - **Runs everywhere** — Node.js, Bun, Deno, Cloudflare Workers, and any [WinterCG](https://wintercg.org/)-compatible runtime
 - **Zero dependencies** — built on Web API standard primitives (`Request`, `Response`, `ReadableStream`, `Headers`, `URL`, `crypto`)
@@ -29,9 +29,9 @@ pnpm add @rasenganjs/runtime
 ## Quick Start
 
 ```ts
-import { Application, json, logger, cors } from '@rasenganjs/runtime';
+import { Futon, json, logger, cors } from '@rasenganjs/futon';
 
-const app = new Application();
+const app = new Futon();
 
 // Global middleware
 app.use(logger());
@@ -59,7 +59,7 @@ src/
 ├── index.ts                  # Public API entry — re-exports everything
 ├── types.ts                  # FetchHandler type
 ├── app/
-│   └── index.ts              # Application — top-level orchestrator
+│   └── index.ts              # Futon — top-level orchestrator
 ├── context/
 │   ├── types.ts              # Context, RuntimeContext interfaces
 │   └── index.ts              # createContext() factory
@@ -138,7 +138,7 @@ Full lifecycle document: [LIFECYCLE.md](./LIFECYCLE.md)
 
 ## API Reference
 
-### Application
+### Futon
 
 | Method                                   | Signature                                  | Description                                         |
 | ---------------------------------------- | ------------------------------------------ | --------------------------------------------------- |
@@ -348,7 +348,7 @@ Routes are matched by iterating the array in registration order. For most applic
 - **New built-in middleware:** Add a file to `src/middlewares/`, export a factory function following the `(options?) => Middleware` pattern, and re-export from `src/index.ts`.
 - **New adapter:** Add a file to `src/adapters/`, export the conversion function (e.g., `toExpressHandler`), and re-export from `src/index.ts`.
 - **New error type:** Add a class extending `HttpError` in `src/errors/index.ts`.
-- **New hook:** Add the hook name to the `HookName` type union in `src/hooks/index.ts` and update the Application's `fetch()` method to emit it.
+- **New hook:** Add the hook name to the `HookName` type union in `src/hooks/index.ts` and update Futon's `fetch()` method to emit it.
 
 ### Testing
 
@@ -360,13 +360,13 @@ Routes are matched by iterating the array in registration order. For most applic
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Unit (pure functions) | `compose`, `context` (incl. `query`), `errors`, `hooks`, `matchPath`, `parseQueryString`, `json/text/html/redirect`, `cookies`, `parseBody`, `parseCookies` | All edge cases, error paths, option variants, lazy parsing, encoding                                                             |
 | Middleware            | `bodyParser`, `cors`, `logger`, `requestId`, `compress`                                                                                                     | Each option, preflight, skip logic, threshold, fallback                                                                          |
-| Integration           | `Application.fetch`, `Router`, `compose` chain, `ctx.query`                                                                                                 | Full pipeline: middleware + route + response, 404, error handler, hooks, groups, nested groups, middleware scoping, query params |
+| Integration           | `Futon.fetch`, `Router`, `compose` chain, `ctx.query`                                                                                                       | Full pipeline: middleware + route + response, 404, error handler, hooks, groups, nested groups, middleware scoping, query params |
 | Adapter               | `toExpressHandler`, `toWinterCgHandler`                                                                                                                     | Express bridge, Workers/Deno/plain arg styles, env merging                                                                       |
 
 ### Testing Strategy for New Contributions
 
 1. **Unit tests** for individual functions: `matchPath()`, `parseBody()`, `compose()`, cookie helpers — these are pure functions with no platform dependency.
-2. **Integration tests** for the full pipeline: create an `Application`, register middleware + routes, call `app.fetch()` with mock Request objects, assert on the returned Response.
+2. **Integration tests** for the full pipeline: create a `Futon`, register middleware + routes, call `app.fetch()` with mock Request objects, assert on the returned Response.
 3. **Adapter tests** require a running HTTP server — use a test helper that starts a server on a random port, sends a real HTTP request, and asserts on the response.
 
 ### Build System

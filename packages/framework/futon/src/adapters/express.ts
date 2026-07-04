@@ -12,9 +12,9 @@
  * @example
  * ```ts
  * import express from "express";
- * import { Application, toExpressHandler } from "@rasenganjs/runtime";
+ * import { Futon, toExpressHandler } from "@rasenganjs/runtime";
  *
- * const app = new Application();
+ * const app = new Futon();
  * // ... set up routes and middleware
  *
  * const expressApp = express();
@@ -26,7 +26,7 @@
  * directly to the Node response socket.
  */
 
-import type { Application } from '../app/index.js';
+import type { Futon } from '../app/index.js';
 import type { RuntimeContext } from '../context/types.js';
 
 // Minimal Express-compatible type signatures so we don't need
@@ -55,10 +55,10 @@ interface ExpressResponse {
 type ExpressNextFunction = (err?: unknown) => void;
 
 /**
- * Convert a Rasengan Application into an Express request
+ * Convert a Futon instance into an Express request
  * handler `(req, res, next)`.
  */
-export function toExpressHandler(app: Application, runtime?: RuntimeContext) {
+export function toExpressHandler(app: Futon, runtime?: RuntimeContext) {
   return async (
     req: ExpressRequest,
     res: ExpressResponse,

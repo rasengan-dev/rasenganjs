@@ -1,4 +1,4 @@
-import type { Middleware } from '@rasenganjs/runtime';
+import type { Middleware } from '@rasenganjs/futon';
 import { Controller } from '../controller/index.js';
 import { ProviderDefinition, ProviderLike } from '../di/container.js';
 

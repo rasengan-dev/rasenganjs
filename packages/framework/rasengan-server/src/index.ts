@@ -48,7 +48,7 @@ export { Provider } from './di/provider.js';
 export { serverLogger, serverLoggerMinimal } from './logger/index.js';
 
 // ── Context ──────────────────────────────────────────────────
-export type { Context } from '@rasenganjs/runtime';
+export type { Context } from '@rasenganjs/futon';
 
 // ── Config ────────────────────────────────────────────────────
 export { defineConfig } from './config/index.js';

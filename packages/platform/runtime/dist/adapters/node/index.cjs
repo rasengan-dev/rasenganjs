@@ -216,7 +216,9 @@ function startNodeServer(handler, options = {}) {
     server.on("error", reject);
     server.on("close", resolve3);
     server.listen(port, host, () => {
-      options.onListening?.({ port, host });
+      const addr = server.address();
+      const actualPort = addr && typeof addr === "object" ? addr.port : port;
+      options.onListening?.({ port: actualPort, host });
     });
   });
   return {
@@ -303,14 +305,14 @@ var NodeDevAdapter = class {
   /**
    * Start the Node.js development server.
    *
-   * Requires an Application instance (in-process mode).
+   * Requires a Futon instance (in-process mode).
    * When `options.autoRestart` is provided the returned promise
    * stays pending until `close()` is called.
    */
   async serve(app, options) {
     this.serveOptions = options ?? {};
     if (!app) {
-      throw new Error("Application is required \u2014 provide it directly");
+      throw new Error("Futon's app is required \u2014 provide it directly");
     }
     const rootDir = this.options.rootDir ?? process.cwd();
     app.configureServer({
@@ -350,14 +352,11 @@ var NodeDevAdapter = class {
   serveOptions = {};
   /** Start the in-process HTTP server. */
   startServer(app) {
-    this.serverHandle = startNodeServer(
-      (request) => app.fetch(request),
-      {
-        port: this.options.port,
-        host: this.options.host,
-        onListening: this.serveOptions.onListening
-      }
-    );
+    this.serverHandle = startNodeServer((request) => app.fetch(request), {
+      port: this.options.port,
+      host: this.options.host,
+      onListening: this.serveOptions.onListening
+    });
   }
 };
 
@@ -417,7 +416,7 @@ var NodeProdAdapter = class {
   /**
    * Start the Node.js production server.
    *
-   * Configures the Application with production settings, loads
+   * Configures the Futon with production settings, loads
    * environment files, and starts listening.
    */
   async serve(app, options) {
@@ -430,14 +429,11 @@ var NodeProdAdapter = class {
       rootDir
     });
     app.loadEnv(await loadNodeEnvFiles(rootDir, "production"));
-    this.serverHandle = startNodeServer(
-      (request) => app.fetch(request),
-      {
-        port: this.options.port,
-        host: this.options.host,
-        onListening: options?.onListening
-      }
-    );
+    this.serverHandle = startNodeServer((request) => app.fetch(request), {
+      port: this.options.port,
+      host: this.options.host,
+      onListening: options?.onListening
+    });
     return this.serverHandle.ready;
   }
   /** Stop the HTTP server. */

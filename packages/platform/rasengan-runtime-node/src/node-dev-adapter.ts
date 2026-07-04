@@ -2,7 +2,7 @@
  * NodeDevAdapter — RuntimeAdapter for Node.js development.
  *
  * Features:
- *   - In-process HTTP server (when Application is passed directly)
+ *   - In-process HTTP server (when a Futon instance is passed directly)
  *   - Child-process spawning (nodemon-style) for `autoRestart`
  *   - File watcher with debounce + auto-restart on change
  *   - Local filesystem assets (read/write/delete/list)
@@ -10,10 +10,10 @@
  * @example
  * ```ts
  * // ── In-process mode ──
- * import { Application } from "@rasenganjs/runtime";
+ * import { Futon } from "@rasenganjs/runtime";
  * import { NodeDevAdapter } from "@rasenganjs/runtime-node";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", (ctx) => new Response("Hello!"));
  *
  * const adapter = new NodeDevAdapter({ port: 3000 });
@@ -31,11 +31,7 @@
 
 import { spawn, type ChildProcess } from 'node:child_process';
 
-import type {
-  Application,
-  RuntimeAdapter,
-  ServeOptions,
-} from '@rasenganjs/runtime';
+import type { Futon, RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 
 import { NodeAssets } from './assets/node-assets.js';
 import { NodeWatcher } from './watch/node-watcher.js';
@@ -63,12 +59,12 @@ export class NodeDevAdapter implements RuntimeAdapter {
     this.assets = new NodeAssets(options.rootDir);
   }
 
-  async serve(app: Application | null, options?: ServeOptions): Promise<void> {
+  async serve(app: Futon | null, options?: ServeOptions): Promise<void> {
     this.serveOptions = options ?? {};
 
     // ── In-process mode ─────────────────────────────────────
     if (!app) {
-      throw new Error('Application is required — provide it directly');
+      throw new Error('Futon instance is required — provide it directly');
     }
 
     const rootDir = this.options.rootDir ?? process.cwd();
@@ -119,7 +115,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
 
   // ── In-process helpers ──────────────────────────────────────
 
-  private startServer(app: Application): void {
+  private startServer(app: Futon): void {
     this.serverHandle = startNodeServer(app, {
       port: this.options.port,
       host: this.options.host,

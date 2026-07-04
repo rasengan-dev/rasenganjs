@@ -243,13 +243,13 @@ var BunDevAdapter = class {
   /**
    * Start the Bun development server.
    *
-   * Requires an Application instance (in-process mode).
+   * Requires a Futon instance (in-process mode).
    * Configures the app with Bun preset and development mode.
    */
   async serve(app, options) {
     this.serveOptions = options ?? {};
     if (!app) {
-      throw new Error("Application is required \u2014 provide it directly");
+      throw new Error("Futon's app is required \u2014 provide it directly");
     }
     const rootDir = this.options.rootDir ?? process.cwd();
     app.configureServer({
@@ -284,14 +284,11 @@ var BunDevAdapter = class {
   serveOptions = {};
   /** Start the in-process HTTP server via Bun.serve(). */
   startServer(app) {
-    this.serverHandle = startBunServer(
-      (request) => app.fetch(request),
-      {
-        port: this.options.port,
-        host: this.options.host,
-        onListening: this.serveOptions.onListening
-      }
-    );
+    this.serverHandle = startBunServer((request) => app.fetch(request), {
+      port: this.options.port,
+      host: this.options.host,
+      onListening: this.serveOptions.onListening
+    });
   }
 };
 
@@ -341,7 +338,7 @@ var BunProdAdapter = class {
   /**
    * Start the Bun production server.
    *
-   * Configures the Application with production settings, loads
+   * Configures the Futon with production settings, loads
    * environment files, and starts listening via Bun.serve().
    */
   async serve(app, options) {
@@ -354,14 +351,11 @@ var BunProdAdapter = class {
       rootDir
     });
     app.loadEnv(await loadBunEnvFiles(rootDir, "production"));
-    this.serverHandle = startBunServer(
-      (request) => app.fetch(request),
-      {
-        port: this.options.port,
-        host: this.options.host,
-        onListening: options?.onListening
-      }
-    );
+    this.serverHandle = startBunServer((request) => app.fetch(request), {
+      port: this.options.port,
+      host: this.options.host,
+      onListening: options?.onListening
+    });
     return this.serverHandle.ready;
   }
   /** Stop the HTTP server. */

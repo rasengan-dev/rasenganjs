@@ -1,13 +1,13 @@
 /**
  * @rasenganjs/runtime — shared demo app
  *
- * Single Application instance consumed by both
+ * Single Futon instance consumed by both
  * the Node (http.createServer) and Bun (Bun.serve) servers.
  * Import and call `.fetch(request)` in any runtime.
  */
 
 import {
-  Application,
+  Futon,
   json,
   html,
   streamResponse,
@@ -18,7 +18,7 @@ import {
   redirect,
 } from "@rasenganjs/runtime";
 
-const demo = new Application();
+const demo = new Futon();
 
 demo.use(requestId());
 demo.use(logger());

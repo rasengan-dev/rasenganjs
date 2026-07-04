@@ -9,10 +9,10 @@
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/runtime";
+ * import { Futon } from "@rasenganjs/runtime";
  * import { BunDevAdapter } from "@rasenganjs/runtime-bun";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", (ctx) => new Response("Hello!"));
  *
  * const adapter = new BunDevAdapter({ port: 3000 });
@@ -28,11 +28,7 @@
  * ```
  */
 
-import type {
-  Application,
-  RuntimeAdapter,
-  ServeOptions,
-} from '@rasenganjs/runtime';
+import type { Futon, RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 
 import { BunAssets } from './assets/bun-assets.js';
 import { BunWatcher } from './watch/bun-watcher.js';
@@ -65,11 +61,11 @@ export class BunDevAdapter implements RuntimeAdapter {
     this.assets = new BunAssets(options.rootDir);
   }
 
-  async serve(app: Application | null, options?: ServeOptions): Promise<void> {
+  async serve(app: Futon | null, options?: ServeOptions): Promise<void> {
     this.serveOptions = options ?? {};
 
     if (!app) {
-      throw new Error('Application is required — provide it directly');
+      throw new Error('Futon instance is required — provide it directly');
     }
 
     const rootDir = this.options.rootDir ?? process.cwd();
@@ -114,7 +110,7 @@ export class BunDevAdapter implements RuntimeAdapter {
 
   // ── In-process helpers ──────────────────────────────────────
 
-  private startServer(app: Application): void {
+  private startServer(app: Futon): void {
     this.serverHandle = startBunServer(app, {
       port: this.options.port,
       host: this.options.host,

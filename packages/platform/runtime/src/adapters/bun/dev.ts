@@ -58,7 +58,7 @@ export class BunDevAdapter implements RuntimeAdapter {
   /**
    * Start the Bun development server.
    *
-   * Requires an Application instance (in-process mode).
+   * Requires a Futon instance (in-process mode).
    * Configures the app with Bun preset and development mode.
    */
   async serve(app: any | null, options?: ServeOptions): Promise<void> {

@@ -6,7 +6,7 @@
  * the Web API `Request`/`Response` pattern.
  *
  * The adapter layer (NodeDevAdapter / NodeProdAdapter) is
- * responsible for creating the handler from the Application.
+ * responsible for creating the handler from the Futon.
  */
 
 import http from 'node:http';
@@ -37,7 +37,7 @@ export interface NodeServerHandle {
  *
  * `handler` receives a raw Web API Request and must return a
  * Response. This is the WinterCG fetch handler signature,
- * matching `Application.fetch()`.
+ * matching `Futon.fetch()`.
  *
  * Returns a handle with a `ready` promise (resolves on close)
  * and a `close()` method to shut down.
@@ -90,7 +90,9 @@ export function startNodeServer(
     server.on('error', reject);
     server.on('close', resolve);
     server.listen(port, host, () => {
-      options.onListening?.({ port, host });
+      const addr = server.address();
+      const actualPort = addr && typeof addr === 'object' ? addr.port : port;
+      options.onListening?.({ port: actualPort, host });
     });
   });
 

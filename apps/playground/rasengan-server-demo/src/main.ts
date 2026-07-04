@@ -1,6 +1,6 @@
 import { bootstrap } from '@rasenganjs/server';
 import appModule from './app.module';
-import { ValidationError, zodAdapter } from '@rasenganjs/validation';
+import { ValidationError, zodAdapter } from '@rasenganjs/validators';
 
 bootstrap(async (app) => {
   app.registerModule(appModule);

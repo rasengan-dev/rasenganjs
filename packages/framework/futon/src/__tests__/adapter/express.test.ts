@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { toExpressHandler } from '../../adapters/express.js';
-import { Application } from '../../app/index.js';
+import { Futon } from '../../app/index.js';
 import { json, text } from '../../response/utils.js';
 
 function createMockReq({
@@ -48,7 +48,7 @@ function createMockRes() {
 
 describe('toExpressHandler', () => {
   it('calls app.fetch with a correct Web Request', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/test', async () => json({ ok: true }));
 
     const handler = toExpressHandler(app);
@@ -67,7 +67,7 @@ describe('toExpressHandler', () => {
   });
 
   it('writes response body', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/hello', async () => text('hello world'));
 
     const handler = toExpressHandler(app);
@@ -82,7 +82,7 @@ describe('toExpressHandler', () => {
   });
 
   it('passes errors to next()', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/crash', async () => {
       throw new Error('handler error');
     });
@@ -94,13 +94,13 @@ describe('toExpressHandler', () => {
 
     await handler(req, res as any, next);
 
-    // Application catches the error and returns 500
+    // Futon catches the error and returns 500
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(500);
   });
 
   it('passes adapter construction errors to next()', async () => {
-    const app = new Application();
+    const app = new Futon();
     const handler = toExpressHandler(app);
 
     // Invalid req that will fail during Request construction
@@ -120,7 +120,7 @@ describe('toExpressHandler', () => {
   });
 
   it('merges runtime context into responses', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/env', async (ctx) => json({ env: ctx.runtime.env }));
 
     const handler = toExpressHandler(app, { env: { FOO: 'bar' } });
@@ -137,7 +137,7 @@ describe('toExpressHandler', () => {
   });
 
   it('sets the status code from the Response', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/notfound', async () => text('missing', { status: 404 }));
 
     const handler = toExpressHandler(app);

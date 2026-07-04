@@ -356,16 +356,16 @@ importers:
     dependencies:
       '@rasenganjs/image':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-image
+        version: link:../../../packages/ecosystem/image
       '@rasenganjs/mdx':
         specifier: workspace:*
-        version: link:../../../packages/framework/rasengan-mdx
+        version: link:../../../packages/framework/mdx
       '@rasenganjs/serve':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-serve
+        version: link:../../../packages/deploy/serve
       '@rasenganjs/vercel':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-vercel
+        version: link:../../../packages/deploy/vercel
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.3.1(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -402,13 +402,13 @@ importers:
     dependencies:
       '@rasenganjs/i18n':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-i18n
+        version: link:../../../packages/ecosystem/i18n
       '@rasenganjs/image':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-image
+        version: link:../../../packages/ecosystem/image
       '@rasenganjs/serve':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-serve
+        version: link:../../../packages/deploy/serve
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.3.1(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -445,10 +445,10 @@ importers:
     dependencies:
       '@rasenganjs/io':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-io
+        version: link:../../../packages/ecosystem/io
       '@rasenganjs/serve':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-serve
+        version: link:../../../packages/deploy/serve
       rasengan:
         specifier: workspace:*
         version: link:../../../packages/framework/rasengan
@@ -482,7 +482,7 @@ importers:
         version: 1.1.3(react@19.2.7)
       '@rasenganjs/kurama':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-kurama
+        version: link:../../../packages/ecosystem/kurama
       '@rasenganjs/serve':
         specifier: ^1.0.0
         version: 1.2.1(rasengan@packages+framework+rasengan)
@@ -516,7 +516,7 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime
+        version: link:../../../packages/platform/runtime
       '@rasenganjs/runtime-bun':
         specifier: workspace:*
         version: link:../../../packages/platform/rasengan-runtime-bun
@@ -525,13 +525,13 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime
+        version: link:../../../packages/platform/runtime
 
   apps/playground/rasengan-runtime-node-demo:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime
+        version: link:../../../packages/platform/runtime
       '@rasenganjs/runtime-node':
         specifier: workspace:*
         version: link:../../../packages/platform/rasengan-runtime-node
@@ -540,7 +540,7 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime
+        version: link:../../../packages/platform/runtime
       '@rasenganjs/runtime-bun':
         specifier: workspace:*
         version: link:../../../packages/platform/rasengan-runtime-bun
@@ -553,9 +553,9 @@ importers:
       '@rasenganjs/server':
         specifier: workspace:*
         version: link:../../../packages/framework/rasengan-server
-      '@rasenganjs/validation':
+      '@rasenganjs/validators':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-validation
+        version: link:../../../packages/ecosystem/validators
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -568,16 +568,16 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime
+        version: link:../../../packages/platform/runtime
       '@rasenganjs/runtime-workerd':
         specifier: workspace:*
         version: link:../../../packages/platform/rasengan-runtime-workerd
       '@rasenganjs/server':
         specifier: workspace:*
         version: link:../../../packages/framework/rasengan-server
-      '@rasenganjs/validation':
+      '@rasenganjs/validators':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-validation
+        version: link:../../../packages/ecosystem/validators
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -589,23 +589,41 @@ importers:
         specifier: ^4.0.0
         version: 4.105.0
 
+  apps/playground/rasengan-server-workerd/dist/server:
+    dependencies:
+      '@rasenganjs/runtime':
+        specifier: workspace:*
+        version: link:../../../../../packages/platform/runtime
+      '@rasenganjs/runtime-workerd':
+        specifier: workspace:*
+        version: link:../../../../../packages/platform/rasengan-runtime-workerd
+      '@rasenganjs/server':
+        specifier: workspace:*
+        version: link:../../../../../packages/framework/rasengan-server
+      '@rasenganjs/validators':
+        specifier: workspace:*
+        version: link:../../../../../packages/ecosystem/validators
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+
   apps/playground/rasengan-v1-test:
     dependencies:
       '@rasenganjs/image':
         specifier: workspace:*
-        version: link:../../../packages/ecosystem/rasengan-image
+        version: link:../../../packages/ecosystem/image
       '@rasenganjs/mdx':
         specifier: workspace:*
-        version: link:../../../packages/framework/rasengan-mdx
+        version: link:../../../packages/framework/mdx
       '@rasenganjs/serve':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-serve
+        version: link:../../../packages/deploy/serve
       '@rasenganjs/theme':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.7)
       '@rasenganjs/vercel':
         specifier: workspace:*
-        version: link:../../../packages/deploy/rasengan-vercel
+        version: link:../../../packages/deploy/vercel
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.3.1(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -678,7 +696,7 @@ importers:
         specifier: ^20.8.6
         version: 20.19.43
 
-  packages/cli/rasengan-shuriken:
+  packages/cli/shuriken:
     dependencies:
       chalk:
         specifier: ^5.3.0
@@ -706,7 +724,7 @@ importers:
         specifier: ^20.8.6
         version: 20.19.43
 
-  packages/deploy/rasengan-serve:
+  packages/deploy/serve:
     dependencies:
       chalk:
         specifier: ^5.4.1
@@ -743,7 +761,7 @@ importers:
         specifier: ^0.5.10
         version: 0.5.10
 
-  packages/deploy/rasengan-vercel:
+  packages/deploy/vercel:
     dependencies:
       execa:
         specifier: ^8.0.1
@@ -752,7 +770,7 @@ importers:
         specifier: workspace:^
         version: link:../../framework/rasengan
 
-  packages/ecosystem/rasengan-i18n:
+  packages/ecosystem/i18n:
     dependencies:
       rasengan:
         specifier: workspace:^
@@ -771,7 +789,7 @@ importers:
         specifier: ^19.0.1
         version: 19.2.3(@types/react@19.2.17)
 
-  packages/ecosystem/rasengan-image:
+  packages/ecosystem/image:
     dependencies:
       react:
         specifier: ^19.1.1
@@ -787,7 +805,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
 
-  packages/ecosystem/rasengan-io:
+  packages/ecosystem/io:
     dependencies:
       react:
         specifier: ^19.1.1
@@ -815,7 +833,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/ecosystem/rasengan-kage-demo:
+  packages/ecosystem/kage-demo:
     dependencies:
       react:
         specifier: ^19.1.1
@@ -837,7 +855,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
-  packages/ecosystem/rasengan-kurama:
+  packages/ecosystem/kurama:
     dependencies:
       react:
         specifier: ^19.1.1
@@ -853,7 +871,7 @@ importers:
         specifier: ^18.3.1 || ^19.0.0
         version: 19.2.3(@types/react@19.2.17)
 
-  packages/ecosystem/rasengan-theme:
+  packages/ecosystem/theme:
     dependencies:
       react:
         specifier: ^19.1.1
@@ -866,11 +884,11 @@ importers:
         specifier: ^19.0.1
         version: 19.2.3(@types/react@19.2.17)
 
-  packages/ecosystem/rasengan-validation:
+  packages/ecosystem/validators:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../platform/rasengan-runtime
+        version: link:../../platform/runtime
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
@@ -890,6 +908,94 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+
+  packages/framework/futon:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 4.1.9
+        version: 4.1.9(vitest@4.1.9)
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  packages/framework/mdx:
+    dependencies:
+      '@mdx-js/rollup':
+        specifier: ^3.1.1
+        version: 3.1.1(rollup@4.62.2)
+      gray-matter:
+        specifier: ^4.0.3
+        version: 4.0.3
+      lucide-react:
+        specifier: ^0.477.0
+        version: 0.477.0(react@19.2.7)
+      micromatch:
+        specifier: ^4.0.8
+        version: 4.0.8
+      prism-react-renderer:
+        specifier: ^2.4.1
+        version: 2.4.1(react@19.2.7)
+      react:
+        specifier: ^19.1.1
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.2.7(react@19.2.7)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@19.2.17)(react@19.2.7)
+      rehype-pretty-code:
+        specifier: ^0.14.1
+        version: 0.14.3(shiki@4.3.0)
+      rehype-stringify:
+        specifier: ^10.0.1
+        version: 10.0.1
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-rehype:
+        specifier: ^11.1.2
+        version: 11.1.2
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+      vite:
+        specifier: ^7.*
+        version: 7.3.6(@types/node@22.20.0)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0)
+    devDependencies:
+      '@types/clean-css':
+        specifier: ^4.2.11
+        version: 4.2.11
+      '@types/micromatch':
+        specifier: ^4.0.10
+        version: 4.0.10
+      '@types/node':
+        specifier: ^22.19.3
+        version: 22.20.0
+      '@types/react':
+        specifier: ^19.2.7
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
+      clean-css:
+        specifier: ^5.3.3
+        version: 5.3.3
 
   packages/framework/rasengan:
     dependencies:
@@ -961,120 +1067,26 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
 
-  packages/framework/rasengan-mdx:
-    dependencies:
-      '@mdx-js/rollup':
-        specifier: ^3.1.1
-        version: 3.1.1(rollup@4.62.2)
-      gray-matter:
-        specifier: ^4.0.3
-        version: 4.0.3
-      lucide-react:
-        specifier: ^0.477.0
-        version: 0.477.0(react@19.2.7)
-      micromatch:
-        specifier: ^4.0.8
-        version: 4.0.8
-      prism-react-renderer:
-        specifier: ^2.4.1
-        version: 2.4.1(react@19.2.7)
-      react:
-        specifier: ^19.1.1
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.2.7(react@19.2.7)
-      react-markdown:
-        specifier: ^10.1.0
-        version: 10.1.0(@types/react@19.2.17)(react@19.2.7)
-      rehype-pretty-code:
-        specifier: ^0.14.1
-        version: 0.14.3(shiki@4.3.0)
-      rehype-stringify:
-        specifier: ^10.0.1
-        version: 10.0.1
-      remark:
-        specifier: ^15.0.1
-        version: 15.0.1
-      remark-gfm:
-        specifier: ^4.0.1
-        version: 4.0.1
-      remark-parse:
-        specifier: ^11.0.0
-        version: 11.0.0
-      remark-rehype:
-        specifier: ^11.1.2
-        version: 11.1.2
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      vite:
-        specifier: ^7.*
-        version: 7.3.6(@types/node@22.20.0)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0)
-    devDependencies:
-      '@types/clean-css':
-        specifier: ^4.2.11
-        version: 4.2.11
-      '@types/micromatch':
-        specifier: ^4.0.10
-        version: 4.0.10
-      '@types/node':
-        specifier: ^22.19.3
-        version: 22.20.0
-      '@types/react':
-        specifier: ^19.2.7
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.17)
-      clean-css:
-        specifier: ^5.3.3
-        version: 5.3.3
-
   packages/framework/rasengan-server:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../futon
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../../platform/rasengan-runtime
-      '@rasenganjs/runtime-bun':
+        version: link:../../platform/runtime
+      '@rasenganjs/validators':
         specifier: workspace:*
-        version: link:../../platform/rasengan-runtime-bun
-      '@rasenganjs/runtime-node':
-        specifier: workspace:*
-        version: link:../../platform/rasengan-runtime-node
-      '@rasenganjs/runtime-workerd':
-        specifier: workspace:*
-        version: link:../../platform/rasengan-runtime-workerd
-      '@rasenganjs/validation':
-        specifier: workspace:*
-        version: link:../../ecosystem/rasengan-validation
+        version: link:../../ecosystem/validators
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
-
-  packages/platform/rasengan-runtime:
-    devDependencies:
-      '@vitest/coverage-v8':
-        specifier: 4.1.9
-        version: 4.1.9(vitest@4.1.9)
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
 
   packages/platform/rasengan-runtime-bun:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../rasengan-runtime
+        version: link:../runtime
     devDependencies:
       rimraf:
         specifier: ^6.1.3
@@ -1090,7 +1102,7 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../rasengan-runtime
+        version: link:../runtime
     devDependencies:
       rimraf:
         specifier: ^6.1.3
@@ -1106,7 +1118,7 @@ importers:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
-        version: link:../rasengan-runtime
+        version: link:../runtime
     devDependencies:
       rimraf:
         specifier: ^6.1.3
@@ -1117,6 +1129,24 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+
+  packages/platform/runtime:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^4.1.9
+        version: 4.1.9(vitest@4.1.9)
+      rimraf:
+        specifier: ^6.1.3
+        version: 6.1.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
 
 packages:
 

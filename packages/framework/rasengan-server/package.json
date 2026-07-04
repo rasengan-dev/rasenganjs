@@ -33,8 +33,9 @@
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/validation": "workspace:*",
+    "@rasenganjs/validators": "workspace:*",
     "esbuild": "^0.25.0"
   },
   "files": [

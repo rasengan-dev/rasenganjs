@@ -1,4 +1,4 @@
-import { Application } from '@rasenganjs/runtime';
+import { Futon } from '@rasenganjs/runtime';
 
 export interface BunServerOptions {
   host?: string;
@@ -14,7 +14,7 @@ export interface BunServerHandle {
 }
 
 export function startBunServer(
-  app: Application,
+  app: Futon,
   options: BunServerOptions = {}
 ): BunServerHandle {
   try {

@@ -9,7 +9,7 @@
  * responsible for creating the Context from the Request.
  */
 
-import { Application, FetchHandler } from '@rasenganjs/runtime';
+import { Futon, FetchHandler } from '@rasenganjs/runtime';
 import http from 'node:http';
 
 /**
@@ -38,13 +38,13 @@ export interface NodeServerHandle {
  *
  * `handler` receives a raw Web API Request and must return a
  * Response.  This is the WinterCG fetch handler signature,
- * matching `Application.fetch()`.
+ * matching `Futon.fetch()`.
  *
  * Returns a handle with a `ready` promise (resolves on close)
  * and a `close()` method to shut down.
  */
 export function startNodeServer(
-  app: Application,
+  app: Futon,
   options: NodeServerOptions = {}
 ): NodeServerHandle {
   const port = options.port ?? 5200;

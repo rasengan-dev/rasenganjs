@@ -54,7 +54,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
   /**
    * Start the Node.js development server.
    *
-   * Requires an Application instance (in-process mode).
+   * Requires a Futon instance (in-process mode).
    * When `options.autoRestart` is provided the returned promise
    * stays pending until `close()` is called.
    */

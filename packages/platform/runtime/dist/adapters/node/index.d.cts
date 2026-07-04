@@ -1,4 +1,4 @@
-import { R as RuntimeAdapter, S as ServeOptions, A as Assets } from '../../types-BNS4B2pc.cjs';
+import { R as RuntimeAdapter, S as ServeOptions, A as Assets } from '../../types-C53UIsik.cjs';
 import { EnvironmentMap } from '../../index.cjs';
 
 /**
@@ -63,7 +63,7 @@ declare class NodeAssets {
  * NodeDevAdapter — RuntimeAdapter for Node.js development.
  *
  * Features:
- *   - In-process HTTP server (when Application is passed directly)
+ *   - In-process HTTP server (when Futon is passed directly)
  *   - Child-process spawning (nodemon-style) for `autoRestart`
  *   - File watcher with debounce + auto-restart on change
  *   - Local filesystem assets (read/write/delete/list)
@@ -71,10 +71,10 @@ declare class NodeAssets {
  * @example
  * ```ts
  * // In-process mode
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { NodeDevAdapter } from "@rasenganjs/runtime/adapters/node";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", () => new Response("Hello!"));
  *
  * const adapter = new NodeDevAdapter({ port: 3000 });
@@ -99,7 +99,7 @@ declare class NodeDevAdapter implements RuntimeAdapter {
     /**
      * Start the Node.js development server.
      *
-     * Requires an Application instance (in-process mode).
+     * Requires a Futon instance (in-process mode).
      * When `options.autoRestart` is provided the returned promise
      * stays pending until `close()` is called.
      */
@@ -126,10 +126,10 @@ declare class NodeDevAdapter implements RuntimeAdapter {
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { NodeProdAdapter } from "@rasenganjs/runtime/adapters/node";
  *
- * const app = new Application();
+ * const app = new Futon();
  * const adapter = new NodeProdAdapter({ port: 8080, rootDir: './dist' });
  * await adapter.serve(app);
  * ```
@@ -148,7 +148,7 @@ declare class NodeProdAdapter implements RuntimeAdapter {
     /**
      * Start the Node.js production server.
      *
-     * Configures the Application with production settings, loads
+     * Configures the Futon with production settings, loads
      * environment files, and starts listening.
      */
     serve(app: any, options?: ServeOptions): Promise<void>;
@@ -190,7 +190,7 @@ declare class NodeWatcher {
  * the Web API `Request`/`Response` pattern.
  *
  * The adapter layer (NodeDevAdapter / NodeProdAdapter) is
- * responsible for creating the handler from the Application.
+ * responsible for creating the handler from the Futon.
  */
 /**
  * Options shared by all Node-based servers.
@@ -218,7 +218,7 @@ interface NodeServerHandle {
  *
  * `handler` receives a raw Web API Request and must return a
  * Response. This is the WinterCG fetch handler signature,
- * matching `Application.fetch()`.
+ * matching `Futon.fetch()`.
  *
  * Returns a handle with a `ready` promise (resolves on close)
  * and a `close()` method to shut down.

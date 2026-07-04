@@ -45,7 +45,7 @@ var WorkerdProdAdapter = class {
    */
   fetchHandler = null;
   /**
-   * Register the Application's fetch handler with the workerd runtime.
+   * Register the Futon's fetch handler with the workerd runtime.
    *
    * In service-worker mode (default), registers a `fetch` event listener.
    * In passthrough mode, exposes the handler via `fetchHandler` property
@@ -87,7 +87,7 @@ var WorkerdProdAdapter = class {
   closed = false;
   boundHandler = null;
   /**
-   * Handle a FetchEvent by delegating to the Application.
+   * Handle a FetchEvent by delegating to the Futon.
    * Returns a 503 response if the server has been closed.
    */
   async handleEvent(event) {

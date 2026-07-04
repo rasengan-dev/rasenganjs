@@ -1,5 +1,5 @@
-// ── Application ───────────────────────────────────────────────
-export { Application } from './app/index.js';
+// ── Futon ─────────────────────────────────────────────────────
+export { Futon } from './app/index.js';
 
 // ── Context ───────────────────────────────────────────────────
 export type {

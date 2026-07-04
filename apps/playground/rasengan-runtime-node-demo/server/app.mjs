@@ -7,9 +7,9 @@
  *        pnpm start
  */
 
-import { Application, json, html, logger, bodyParser } from '@rasenganjs/runtime';
+import { Futon, json, html, logger, bodyParser } from '@rasenganjs/runtime';
 
-const app = new Application();
+const app = new Futon();
 
 app.use(logger());
 app.use(bodyParser());

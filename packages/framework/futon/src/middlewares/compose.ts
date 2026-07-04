@@ -38,7 +38,7 @@ export function compose(middlewares: Middleware[]): Middleware {
 
       if (!handler) {
         // Final fallback — no route matched and no next provided.
-        // The Application wraps this with a 404 handler so this
+        // The Futon instance wraps this with a 404 handler so this
         // should never surface in normal operation.
         throw new Error('No handler found for request');
       }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { Middleware } from '@rasenganjs/runtime';
+import type { Middleware } from '@rasenganjs/futon';
 
 describe('defineModule', () => {
   it('returns a ModuleConfig with given properties', async () => {

@@ -7,17 +7,6 @@ import { RasenganTreeRouter } from './radix.js';
 export type HTTPMethod =
   'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
-/** All supported methods for building method->tree map. */
-const ALL_METHODS: HTTPMethod[] = [
-  'GET',
-  'POST',
-  'PUT',
-  'PATCH',
-  'DELETE',
-  'HEAD',
-  'OPTIONS',
-];
-
 /** Value stored in the radix tree for each registered route. */
 interface RouteEntry {
   handler: (ctx: Context) => Promise<Response>;
@@ -68,7 +57,7 @@ function getAllowedMethods(
  *   - Route-level middleware (applied per route before its handler)
  *   - Scoped `group()` with prefix and shared middleware
  *   - Produces a single `.middleware()` that plugs into the
- *     Application pipeline
+ *     Futon pipeline
  *   - **Radix-tree dispatch** — O(k) path matching where k = URL
  *     segment count, independent of total route count.
  *

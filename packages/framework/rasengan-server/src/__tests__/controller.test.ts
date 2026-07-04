@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { Middleware } from '@rasenganjs/runtime';
+import type { Middleware } from '@rasenganjs/futon';
 import { Controller } from '../controller/index.js';
 
 describe('Controller', () => {

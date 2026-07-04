@@ -11,10 +11,10 @@
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { NodeProdAdapter } from "@rasenganjs/runtime/adapters/node";
  *
- * const app = new Application();
+ * const app = new Futon();
  * const adapter = new NodeProdAdapter({ port: 8080, rootDir: './dist' });
  * await adapter.serve(app);
  * ```
@@ -97,7 +97,7 @@ export class NodeProdAdapter implements RuntimeAdapter {
   /**
    * Start the Node.js production server.
    *
-   * Configures the Application with production settings, loads
+   * Configures the Futon with production settings, loads
    * environment files, and starts listening.
    */
   async serve(app: any, options?: ServeOptions): Promise<void> {

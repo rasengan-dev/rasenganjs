@@ -9,7 +9,7 @@ export type Runtime = 'node' | 'bun' | 'workerd' | 'unknown';
 export interface RuntimeInfo {
   /** Detected runtime label. */
   runtime: Runtime;
-  /** Server preset used to configure the Application. */
+  /** Server preset used to configure the Futon. */
   preset: 'node' | 'bun' | 'workerd';
   /** Whether the server is running in development or production. */
   mode: 'development' | 'production';
@@ -74,16 +74,16 @@ export interface Assets {
  * and accessing assets.
  *
  * Every platform adapter (Node, Bun, Workerd) implements this
- * so the Application can run anywhere without changing its code.
+ * so the Futon can run anywhere without changing its code.
  *
- * @typeParam T - The Application type (default `any` to avoid
+ * @typeParam T - The Futon type (default `any` to avoid
  *   a hard dependency on `@rasenganjs/futon`).
  */
 export interface RuntimeAdapter<T = any> {
   /**
-   * Start an HTTP server and dispatch requests to the Application.
+   * Start an HTTP server and dispatch requests to the Futon.
    *
-   * @param app - The Application instance (required).
+   * @param app - The Futon instance (required).
    * @param options - Serve options (watch, autoRestart, etc.).
    */
   serve(app?: T | null, options?: ServeOptions): Promise<void>;

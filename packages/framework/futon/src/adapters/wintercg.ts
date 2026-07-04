@@ -12,9 +12,9 @@
  * @example
  * ```ts
  * // wrangler.toml / Cloudflare Worker
- * import { Application, toWinterCgHandler } from "@rasenganjs/runtime";
+ * import { Futon, toWinterCgHandler } from "@rasenganjs/runtime";
  *
- * const app = new Application();
+ * const app = new Futon();
  * // ... routes
  *
  * export default { fetch: toWinterCgHandler(app) };
@@ -23,16 +23,16 @@
  * @example
  * ```ts
  * // Bun / Deno
- * import { Application, toWinterCgHandler } from "@rasenganjs/runtime";
+ * import { Futon, toWinterCgHandler } from "@rasenganjs/runtime";
  *
- * const app = new Application();
+ * const app = new Futon();
  * // ... routes
  *
  * Bun.serve({ fetch: toWinterCgHandler(app) });
  * ```
  */
 
-import type { Application } from '../app/index.js';
+import type { Futon } from '../app/index.js';
 import type { RuntimeContext } from '../context/types.js';
 
 /**
@@ -54,16 +54,13 @@ interface WinterCgFetchContext {
 }
 
 /**
- * Convert a Rasengan Application into a WinterCG-compatible
+ * Convert a Futon instance into a WinterCG-compatible
  * fetch handler.
  *
  * The returned function has the signature that WinterCG
  * expects: `(request: Request, env?: object, ctx?: object) => Promise<Response>`.
  */
-export function toWinterCgHandler(
-  app: Application,
-  defaultRuntime?: RuntimeContext
-) {
+export function toWinterCgHandler(app: Futon, defaultRuntime?: RuntimeContext) {
   return async (
     request: Request,
     envOrCtx?: Record<string, unknown> | WinterCgFetchContext,

@@ -7,10 +7,10 @@
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { BunProdAdapter } from "@rasenganjs/runtime/adapters/bun";
  *
- * const app = new Application();
+ * const app = new Futon();
  * const adapter = new BunProdAdapter({ port: 8080, rootDir: './dist' });
  * await adapter.serve(app);
  * ```
@@ -82,7 +82,7 @@ export class BunProdAdapter implements RuntimeAdapter {
   /**
    * Start the Bun production server.
    *
-   * Configures the Application with production settings, loads
+   * Configures the Futon with production settings, loads
    * environment files, and starts listening via Bun.serve().
    */
   async serve(app: any, options?: ServeOptions): Promise<void> {

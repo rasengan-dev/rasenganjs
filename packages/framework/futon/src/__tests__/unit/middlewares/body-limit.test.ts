@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { bodyLimit } from '../../../middlewares/body-limit.js';
 import { bodyParser } from '../../../middlewares/body.js';
-import { Application } from '../../../app/index.js';
+import { Futon } from '../../../app/index.js';
 import { createContext } from '../../../context/index.js';
 import type { Context } from '../../../context/types.js';
 
@@ -149,7 +149,7 @@ describe('bodyLimit', () => {
       body: JSON.stringify({ key: 'value' }),
       headers: { 'Content-Type': 'application/json' },
     });
-    const app = new Application();
+    const app = new Futon();
 
     app.use(bodyLimit({ maxSize: 1024 }));
     app.use(bodyParser());
@@ -172,7 +172,7 @@ describe('bodyLimit', () => {
       body: 'this body is too long',
       headers: { 'Content-Type': 'text/plain' },
     });
-    const app = new Application();
+    const app = new Futon();
 
     app.use(bodyLimit({ maxSize: 5 }));
     app.use(bodyParser());

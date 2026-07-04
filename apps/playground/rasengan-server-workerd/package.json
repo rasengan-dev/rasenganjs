@@ -12,7 +12,7 @@
     "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/runtime-workerd": "workspace:*",
     "@rasenganjs/server": "workspace:*",
-    "@rasenganjs/validation": "workspace:*",
+    "@rasenganjs/validators": "workspace:*",
     "zod": "^3.25.76"
   },
   "devDependencies": {

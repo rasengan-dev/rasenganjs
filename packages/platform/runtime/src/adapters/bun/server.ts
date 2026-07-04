@@ -23,7 +23,7 @@ export interface BunServerHandle {
  * Start a Bun HTTP server using `Bun.serve()`.
  *
  * `handler` receives a raw Web API Request and must return a
- * Response — the same WinterCG signature as `Application.fetch()`.
+ * Response — the same WinterCG signature as `Futon.fetch()`.
  *
  * Returns a handle with a `ready` promise (resolves immediately)
  * and a `close()` method to stop the server.

@@ -1,4 +1,4 @@
-import type { LogEntry } from '@rasenganjs/runtime';
+import type { LogEntry } from '@rasenganjs/futon';
 import {
   green,
   yellow,

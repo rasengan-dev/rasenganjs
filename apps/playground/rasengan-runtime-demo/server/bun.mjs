@@ -4,7 +4,7 @@
  * @rasenganjs/runtime — Bun demo server
  *
  * Bun.serve() speaks Web API natively — Request in, Response out.
- * No adapter required since `Application.fetch()` already returns
+ * No adapter required since `Futon.fetch()` already returns
  * a standard Response.
  *
  * Run:   bun server/bun.mjs

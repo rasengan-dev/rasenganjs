@@ -1,6 +1,6 @@
 # Request Lifecycle
 
-This document describes the full request lifecycle of `@rasenganjs/runtime`, from the moment a raw HTTP request hits your server to the moment a Response is returned.
+This document describes the full request lifecycle of `@rasenganjs/futon`, from the moment a raw HTTP request hits your server to the moment a Response is returned.
 
 ## 1. Server Adapter (entry point)
 
@@ -22,7 +22,7 @@ const response: Response = await app.fetch(request, runtime);
 
 ---
 
-## 2. `Application.fetch()` — the orchestrator
+## 2. `Futon.fetch()` — the orchestrator
 
 **Source:** `src/app/index.ts`
 
@@ -152,7 +152,7 @@ The control flow returns to the adapter, which pipes the body back to the client
                            │
                            ▼
 ┌──────────────────────────────────────────────────────────┐
-│  Application.fetch(request, runtime)                     │
+│  Futon.fetch(request, runtime)                           │
 │                                                          │
 │  ┌─ 1. createContext(request, {}, runtime)               │
 │  │     → ctx.state = {}, ctx.params = {}                 │

@@ -22,7 +22,7 @@ export interface RuntimeContext {
 
   /**
    * Server info — populated by the adapter when the
-   * Application is served.
+   * Futon instance is served.
    *
    * Available at any point during runtime:
    * ```ts

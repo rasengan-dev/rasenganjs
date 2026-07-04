@@ -1,17 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { toWinterCgHandler } from '../../adapters/wintercg.js';
-import { Application } from '../../app/index.js';
+import { Futon } from '../../app/index.js';
 import { json } from '../../response/utils.js';
 
 describe('toWinterCgHandler', () => {
   it('returns a fetch function', () => {
-    const app = new Application();
+    const app = new Futon();
     const handler = toWinterCgHandler(app);
     expect(typeof handler).toBe('function');
   });
 
   it('processes requests and returns responses', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/ping', async () => json({ pong: true }));
 
     const handler = toWinterCgHandler(app);
@@ -23,7 +23,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('accepts Cloudflare Workers (request, env, ctx) signature', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/env', async (ctx) =>
       json({ secret: ctx.runtime.env?.MY_SECRET })
     );
@@ -39,7 +39,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('accepts Deno-style (request, { env, ctx }) signature', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/deno', async (ctx) =>
       json({ hasEnv: !!ctx.runtime.env?.DENO_REGION })
     );
@@ -57,7 +57,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('accepts plain env object', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/plain', async (ctx) => json({ val: ctx.runtime.env?.SOME_VAR }));
 
     const handler = toWinterCgHandler(app);
@@ -69,7 +69,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('merges defaultRuntime with incoming env', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/merged', async (ctx) => json(ctx.runtime.env));
 
     const handler = toWinterCgHandler(app, { env: { DEFAULT: 'yes' } });
@@ -83,7 +83,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('works without runtime argument', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/', async () => json({ ok: true }));
 
     const handler = toWinterCgHandler(app);
@@ -94,7 +94,7 @@ describe('toWinterCgHandler', () => {
   });
 
   it('coerces env values to strings', async () => {
-    const app = new Application();
+    const app = new Futon();
     app.get('/coerce', async (ctx) => json({ num: ctx.runtime.env?.COUNT }));
 
     const handler = toWinterCgHandler(app);

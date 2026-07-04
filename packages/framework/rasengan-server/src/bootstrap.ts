@@ -12,7 +12,7 @@ import { loadConfig } from './cli/config.js';
  * 1. Creates a `ServerApp` instance.
  * 2. Loads configuration from `rasengan.server.js`/`.ts`.
  * 3. Invokes the user callback to register modules, middleware, etc.
- * 4. Compiles the app into a runtime `Application`.
+ * 4. Compiles the app into a runtime \`Futon\`.
  * 5. Selects and starts the appropriate runtime adapter (Node/Bun).
  * 6. Sets up a `SIGTERM` handler for graceful shutdown.
  *

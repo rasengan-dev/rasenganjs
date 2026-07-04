@@ -1,5 +1,5 @@
 /**
- * Hooks — lightweight lifecycle system for the Application.
+ * Hooks — lightweight lifecycle system for Futon.
  *
  * Hooks let framework integrators and middleware authors
  * observe or intercept the request lifecycle without

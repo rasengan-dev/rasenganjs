@@ -1,13 +1,13 @@
 /**
  * Errors package — standard HTTP error hierarchy.
  *
- * Every error carries a numeric `status` so the Application
+ * Every error carries a numeric `status` so Futon
  * can map it directly to an HTTP response status code.
  */
 
 /**
  * Generic HTTP error. Thrown (or stored) anywhere in the
- * middleware chain.  The Application's error handler
+ * middleware chain.  Futon's error handler
  * catches these and responds with the appropriate status.
  */
 export class HttpError extends Error {

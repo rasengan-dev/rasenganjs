@@ -3,7 +3,7 @@ import type {
   Context,
   Middleware,
   Router as RuntimeRouter,
-} from '@rasenganjs/runtime';
+} from '@rasenganjs/futon';
 import { Router, type RouteHandler } from '../router/index.js';
 
 function mockRuntimeRouter(): RuntimeRouter {

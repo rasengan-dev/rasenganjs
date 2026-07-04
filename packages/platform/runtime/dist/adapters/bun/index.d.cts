@@ -1,4 +1,4 @@
-import { R as RuntimeAdapter, S as ServeOptions, A as Assets } from '../../types-BNS4B2pc.cjs';
+import { R as RuntimeAdapter, S as ServeOptions, A as Assets } from '../../types-C53UIsik.cjs';
 import { EnvironmentMap } from '../../index.cjs';
 
 /**
@@ -71,10 +71,10 @@ declare class BunAssets {
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { BunDevAdapter } from "@rasenganjs/runtime/adapters/bun";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", () => new Response("Hello!"));
  *
  * const adapter = new BunDevAdapter({ port: 3000 });
@@ -99,7 +99,7 @@ declare class BunDevAdapter implements RuntimeAdapter {
     /**
      * Start the Bun development server.
      *
-     * Requires an Application instance (in-process mode).
+     * Requires a Futon instance (in-process mode).
      * Configures the app with Bun preset and development mode.
      */
     serve(app: any | null, options?: ServeOptions): Promise<void>;
@@ -121,10 +121,10 @@ declare class BunDevAdapter implements RuntimeAdapter {
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { BunProdAdapter } from "@rasenganjs/runtime/adapters/bun";
  *
- * const app = new Application();
+ * const app = new Futon();
  * const adapter = new BunProdAdapter({ port: 8080, rootDir: './dist' });
  * await adapter.serve(app);
  * ```
@@ -143,7 +143,7 @@ declare class BunProdAdapter implements RuntimeAdapter {
     /**
      * Start the Bun production server.
      *
-     * Configures the Application with production settings, loads
+     * Configures the Futon with production settings, loads
      * environment files, and starts listening via Bun.serve().
      */
     serve(app: any, options?: ServeOptions): Promise<void>;
@@ -203,7 +203,7 @@ interface BunServerHandle {
  * Start a Bun HTTP server using `Bun.serve()`.
  *
  * `handler` receives a raw Web API Request and must return a
- * Response — the same WinterCG signature as `Application.fetch()`.
+ * Response — the same WinterCG signature as `Futon.fetch()`.
  *
  * Returns a handle with a `ready` promise (resolves immediately)
  * and a `close()` method to stop the server.

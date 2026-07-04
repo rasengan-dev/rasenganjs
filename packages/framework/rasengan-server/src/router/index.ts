@@ -2,7 +2,7 @@ import type {
   Context,
   Middleware,
   Router as RuntimeRouter,
-} from '@rasenganjs/runtime';
+} from '@rasenganjs/futon';
 
 import {
   type ValidationConfig,
@@ -11,7 +11,7 @@ import {
   type InferParams,
   type InferQuery,
   createValidationMiddleware,
-} from '@rasenganjs/validation';
+} from '@rasenganjs/validators';
 
 /**
  * HTTP handler function type (no schema inference).

@@ -1,27 +1,24 @@
 import {
-  Application,
+  Futon,
   type Middleware,
   type Router as RuntimeRouter,
   cors,
   logger,
   bodyParser,
   text,
-  BodyParserOptions,
-} from '@rasenganjs/runtime';
+} from '@rasenganjs/futon';
 
 import { Container } from '../di/container.js';
 import { Router } from '../router/index.js';
 import type { ModuleConfig } from './module.js';
-import { Context } from '@rasenganjs/runtime';
+import { Context } from '@rasenganjs/futon';
 import { serverLogger } from '../logger/index.js';
 
 import {
   type ValidationConfig,
-  type SchemaDefinition,
-  createValidationMiddleware,
   defaultErrorHandler,
   zodAdapter,
-} from '@rasenganjs/validation';
+} from '@rasenganjs/validators';
 
 /**
  * Handle returned by `bootstrap()` that allows external shutdown.
@@ -37,7 +34,7 @@ export interface ServerHandle {
  * Core application class for Rasengan Server.
  *
  * Orchestrates module registration, middleware layering, dependency injection,
- * validation, and compilation into a runtime `Application`.
+ * validation, and compilation into a runtime \`Futon\`.
  *
  * ### Middleware layering (execution order)
  *
@@ -183,7 +180,7 @@ export class ServerApp {
   }
 
   /**
-   * Compile the application into a runtime `Application` instance.
+   * Compile the application into a runtime \`Futon\` instance.
    *
    * This is called internally by `bootstrap()`. The compilation process:
    * 1. Applies global middleware (user + CORS + body parser).
@@ -194,10 +191,10 @@ export class ServerApp {
    *    (module → controller → route), with validation middleware
    *    injected automatically for routes that have schemas.
    *
-   * @returns The compiled runtime `Application`, ready to be served.
+   * @returns The compiled runtime \`Futon\`, ready to be served.
    */
-  compile(): Application {
-    const app = new Application();
+  compile(): Futon {
+    const app = new Futon();
 
     for (const { middleware } of this.middlewareList) {
       app.use(middleware);
@@ -255,7 +252,7 @@ export class ServerApp {
    *   validation → handler.
    */
   private registerControllers(
-    app: Application,
+    app: Futon,
     container: Container,
     mod: ModuleConfig
   ): void {

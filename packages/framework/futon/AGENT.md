@@ -1,4 +1,4 @@
-# @rasenganjs/runtime — Agent Guide
+# @rasenganjs/futon — Agent Guide
 
 ## Identity
 
@@ -6,7 +6,7 @@ A **WinterCG-compatible** runtime abstraction layer for Rasengan.js. Zero-depend
 
 ## Package Manifest
 
-- **Package:** `@rasenganjs/runtime` (v1.0.0)
+- **Package:** `@rasenganjs/futon` (v1.0.0)
 - **Entry:** `src/index.ts` → `dist/index.js` (ESM + CJS + `.d.ts`)
 - **Build:** `tsup` (ESM + CJS dual output, `.d.ts` generation)
 - **Node:** >=22.12.0, ESM-only (`"type": "module"`)
@@ -18,7 +18,7 @@ A **WinterCG-compatible** runtime abstraction layer for Rasengan.js. Zero-depend
 src/
   index.ts                          # Public API — re-exports everything
   types.ts                          # FetchHandler type
-  app/index.ts                      # Application class (orchestrator)
+  app/index.ts                      # Futon class (orchestrator)
   context/
     types.ts                        # Context, RuntimeContext interfaces
     index.ts                        # createContext(), createQueryParams()
@@ -58,9 +58,9 @@ src/
 
 ## Architecture & Key Concepts
 
-### Application (orchestrator)
+### Futon (orchestrator)
 
-`Application` in `src/app/index.ts` is the top-level entry point. It:
+`Futon` in `src/app/index.ts` is the top-level entry point. It:
 
 - Maintains a global middleware stack (`use()`)
 - Owns an internal `Router`
@@ -239,7 +239,7 @@ src/__tests__/
       utils.test.ts              # matchPath (static, params, optional, wildcard, catch-all), parseQueryString
       radix.test.ts              # RasenganTreeRouter — 31 tests: static, param, optional (skip/consume), wildcard, catch-all, trailing slash, disambiguation, deep nesting
   integration/                    # Full pipeline tests
-    application.test.ts           # Application.fetch(): routes, 404, error handler, hooks, middleware, bodyParser, CORS
+    application.test.ts           # Futon.fetch(): routes, 404, error handler, hooks, middleware, bodyParser, CORS
     router.test.ts                # Router: method dispatch, params, group prefix/nested, group middleware scoping
     middleware-chain.test.ts      # compose: context state passing, short-circuit, error propagation, 100-mw stack
   adapter/                        # Platform adapter tests

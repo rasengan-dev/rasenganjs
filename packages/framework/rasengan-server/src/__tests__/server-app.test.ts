@@ -175,7 +175,7 @@ describe('ServerApp — module and handler registration', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
-  it('compile() returns an Application instance', async () => {
+  it('compile() returns a Futon instance', async () => {
     const app = new ServerApp();
     const runtime = app.compile();
 

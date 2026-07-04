@@ -8,7 +8,7 @@
  *
  * ## How it works
  *
- * - `serve(app)` registers the Application's fetch handler via
+ * - `serve(app)` registers the Futon instance's fetch handler via
  *   `self.addEventListener('fetch', ...)`, the standard service-worker
  *   pattern supported by workerd.
  * - Assets are **no-ops** — workerd has no local filesystem at runtime.
@@ -17,10 +17,10 @@
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/runtime";
+ * import { Futon } from "@rasenganjs/runtime";
  * import { WorkerdProdAdapter } from "@rasenganjs/runtime-workerd";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", () => new Response("Hello from the edge!"));
  *
  * const adapter = new WorkerdProdAdapter();
@@ -37,11 +37,7 @@
  * ```
  */
 
-import type {
-  Application,
-  RuntimeAdapter,
-  ServeOptions,
-} from '@rasenganjs/runtime';
+import type { Futon, RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 
 export interface WorkerdProdAdapterOptions {
   /** Port (ignored by workerd — exists for type compatibility with other adapters) */
@@ -73,7 +69,7 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
 
   constructor(private options: WorkerdProdAdapterOptions = {}) {
     // workerd has no local filesystem at runtime.
-    // Assets can be served via KV / R2 / D1 at the Application layer.
+    // Assets can be served via KV / R2 / D1 at the Futon layer.
     this.assets = {
       get: async () => null,
       load: async () => null,
@@ -83,7 +79,7 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
     };
   }
 
-  async serve(app: Application, _options?: ServeOptions): Promise<void> {
+  async serve(app: Futon, _options?: ServeOptions): Promise<void> {
     app.configureServer({
       preset: 'workerd',
       mode: 'production',
@@ -126,7 +122,7 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
 
   // ── private ──────────────────────────────────────────────────
 
-  private app: Application | null = null;
+  private app: Futon | null = null;
   private closed = false;
   private boundHandler: ((event: FetchEvent) => void) | null = null;
 

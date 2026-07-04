@@ -4,7 +4,7 @@ import type {
   SchemaAdapter,
   ValidationError,
   SchemaDefinition,
-} from '@rasenganjs/validation';
+} from '@rasenganjs/validators';
 
 // ── Mock adapter that validates synchronously ───────────────────
 const mockAdapter: SchemaAdapter = {

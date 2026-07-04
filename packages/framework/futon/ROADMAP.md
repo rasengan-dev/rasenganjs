@@ -1,4 +1,4 @@
-# @rasenganjs/runtime — Roadmap
+# @rasenganjs/futon — Roadmap
 
 **Status:** v1.0.0 — Solid foundation, not yet a standalone production HTTP framework.
 
@@ -6,12 +6,12 @@ This document outlines the planned enhancements with a **clear architectural bou
 
 | Package                        | Scope                        | Constraints                                             |
 | ------------------------------ | ---------------------------- | ------------------------------------------------------- |
-| `@rasenganjs/runtime`          | Core Web API abstractions    | Zero deps, WinterCG-compatible, runs everywhere         |
+| `@rasenganjs/futon`            | Core Web API abstractions    | Zero deps, WinterCG-compatible, runs everywhere         |
 | `@rasenganjs/server` (planned) | Production backend framework | May have dependencies, Node-specific, builds on runtime |
 
 ---
 
-## Belongs in `@rasenganjs/runtime`
+## Belongs in `@rasenganjs/futon`
 
 Pure Web API features. Zero dependencies. Every runtime (Node, Bun, Deno, Workers) can use these without importing anything beyond Web API globals.
 
@@ -56,7 +56,7 @@ Pure Web API features. Zero dependencies. Every runtime (Node, Bun, Deno, Worker
 
 ## Belongs in `@rasenganjs/server`
 
-Production features that may require dependencies, Node-specific APIs, or platform integration. Consumes `@rasenganjs/runtime` as a dependency.
+Production features that may require dependencies, Node-specific APIs, or platform integration. Consumes `@rasenganjs/futon` as a dependency.
 
 ### P0 — Production Security & Operations
 
@@ -101,9 +101,9 @@ Production features that may require dependencies, Node-specific APIs, or platfo
 ## Architectural Boundary Rules
 
 ```
-@rasenganjs/runtime                      @rasenganjs/server
+@rasenganjs/futon                      @rasenganjs/server
 │                                         │
-├── Application (fetch handler)           ├── Rate limiting middleware
+├── Futon (fetch handler)                 ├── Rate limiting middleware
 ├── Router (linear -> radix tree)         ├── CSRF protection middleware
 ├── Context (request, params, query)      ├── Security headers middleware
 ├── compose() (onion pipeline)            ├── JWT auth middleware
@@ -132,7 +132,7 @@ Production features that may require dependencies, Node-specific APIs, or platfo
   WinterCG-compatible                    Production-focused
 ```
 
-**Key rule:** If a feature needs `import` from npm or a Node built-in (`fs`, `http`, `crypto` (the Node one, not Web Crypto)), it goes in `@rasenganjs/server`. If it can be written using only `Request`, `Response`, `ReadableStream`, `URL`, `Headers`, `crypto.subtle`, `TextEncoder`, `AbortController`, and `atob`/`btoa`, it can land in `@rasenganjs/runtime`.
+**Key rule:** If a feature needs `import` from npm or a Node built-in (`fs`, `http`, `crypto` (the Node one, not Web Crypto)), it goes in `@rasenganjs/server`. If it can be written using only `Request`, `Response`, `ReadableStream`, `URL`, `Headers`, `crypto.subtle`, `TextEncoder`, `AbortController`, and `atob`/`btoa`, it can land in `@rasenganjs/futon`.
 
 ---
 

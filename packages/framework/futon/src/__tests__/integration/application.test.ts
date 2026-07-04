@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Application } from '../../app/index.js';
+import { Futon } from '../../app/index.js';
 import { json, text } from '../../response/utils.js';
 import { bodyParser } from '../../middlewares/body.js';
 import { cors } from '../../middlewares/cors.js';
 
-describe('Application (integration)', () => {
-  let app: Application;
+describe('Futon (integration)', () => {
+  let app: Futon;
 
   beforeEach(() => {
-    app = new Application();
+    app = new Futon();
   });
 
   it('responds to a registered GET route', async () => {

@@ -1,8 +1,4 @@
-import type {
-  Application,
-  RuntimeAdapter,
-  ServeOptions,
-} from '@rasenganjs/runtime';
+import type { Futon, RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 
 import { startBunServer, type BunServerHandle } from './serve/bun-server.js';
 import { loadBunEnvFiles } from './env/index.js';
@@ -67,7 +63,7 @@ export class BunProdAdapter implements RuntimeAdapter {
     };
   }
 
-  async serve(app: Application, options?: ServeOptions): Promise<void> {
+  async serve(app: Futon, options?: ServeOptions): Promise<void> {
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({

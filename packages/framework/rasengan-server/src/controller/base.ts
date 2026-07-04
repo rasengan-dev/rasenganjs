@@ -1,5 +1,5 @@
-import type { Middleware } from '@rasenganjs/runtime';
-import type { SchemaDefinition } from '@rasenganjs/validation';
+import type { Middleware } from '@rasenganjs/futon';
+import type { SchemaDefinition } from '@rasenganjs/validators';
 import type { Router, RouteHandler as _RouteHandler } from '../router/index.js';
 
 /**

@@ -4,7 +4,7 @@
  * @rasenganjs/runtime — Deno demo server
  *
  * Deno.serve() is Web API native — Request in, Response out.
- * No adapter needed since Application.fetch() returns a standard Response.
+ * No adapter needed since Futon.fetch() returns a standard Response.
  *
  * Run:   deno run --allow-net server/deno.mjs
  *        pnpm start:deno

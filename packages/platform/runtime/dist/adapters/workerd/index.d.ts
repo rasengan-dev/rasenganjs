@@ -1,4 +1,4 @@
-import { R as RuntimeAdapter, A as Assets, S as ServeOptions } from '../../types-BNS4B2pc.js';
+import { R as RuntimeAdapter, A as Assets, S as ServeOptions } from '../../types-C53UIsik.js';
 
 /**
  * WorkerdProdAdapter — RuntimeAdapter for the workerd runtime
@@ -10,7 +10,7 @@ import { R as RuntimeAdapter, A as Assets, S as ServeOptions } from '../../types
  *
  * ## How it works
  *
- * - `serve(app)` registers the Application's fetch handler via
+ * - `serve(app)` registers the Futon's fetch handler via
  *   `self.addEventListener('fetch', ...)`, the standard service-worker
  *   pattern supported by workerd.
  * - Assets are **no-ops** — workerd has no local filesystem at runtime.
@@ -20,10 +20,10 @@ import { R as RuntimeAdapter, A as Assets, S as ServeOptions } from '../../types
  *
  * @example
  * ```ts
- * import { Application } from "@rasenganjs/futon";
+ * import { Futon } from "@rasenganjs/futon";
  * import { WorkerdProdAdapter } from "@rasenganjs/runtime/adapters/workerd";
  *
- * const app = new Application();
+ * const app = new Futon();
  * app.get("/hello", () => new Response("Hello from the edge!"));
  *
  * const adapter = new WorkerdProdAdapter();
@@ -62,7 +62,7 @@ declare class WorkerdProdAdapter implements RuntimeAdapter {
     fetchHandler: ((request: Request) => Promise<Response>) | null;
     constructor(options?: WorkerdProdAdapterOptions);
     /**
-     * Register the Application's fetch handler with the workerd runtime.
+     * Register the Futon's fetch handler with the workerd runtime.
      *
      * In service-worker mode (default), registers a `fetch` event listener.
      * In passthrough mode, exposes the handler via `fetchHandler` property
@@ -75,7 +75,7 @@ declare class WorkerdProdAdapter implements RuntimeAdapter {
     private closed;
     private boundHandler;
     /**
-     * Handle a FetchEvent by delegating to the Application.
+     * Handle a FetchEvent by delegating to the Futon.
      * Returns a 503 response if the server has been closed.
      */
     private handleEvent;
