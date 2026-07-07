@@ -79,6 +79,9 @@ export class ServerApp {
   /** Custom 404 handler (defaults to plain-text "Not Found"). */
   private notFoundHandler?: (ctx: Context) => Promise<Response>;
 
+  /** DI container created during compile(), used for lifecycle management. */
+  private container: Container | null = null;
+
   /**
    * Global validation configuration.
    * Defaults to the built-in Zod adapter and a 400 JSON error response.
@@ -221,6 +224,7 @@ export class ServerApp {
 
     const flatModules = flattenModules(this.modules);
     const container = new Container();
+    this.container = container;
 
     for (const mod of flatModules) {
       for (const provider of mod.providers || []) {
@@ -232,7 +236,25 @@ export class ServerApp {
       this.registerControllers(app, container, mod);
     }
 
+    // Fire lifecycle hooks after everything is wired up
+    container.initAll().catch((err) => {
+      console.error(`[rasengan-server] Provider onInit() failed: ${err}`);
+    });
+
     return app;
+  }
+
+  /**
+   * Gracefully shut down the application.
+   *
+   * Calls `onDestroy()` on all resolved providers in reverse
+   * registration order, then releases the container reference.
+   */
+  async close(): Promise<void> {
+    if (this.container) {
+      await this.container.destroyAll();
+      this.container = null;
+    }
   }
 
   /**

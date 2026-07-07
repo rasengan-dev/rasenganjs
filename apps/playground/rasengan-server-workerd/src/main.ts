@@ -1,6 +1,6 @@
 import { bootstrap } from '@rasenganjs/server';
-import appModule from './app.module';
+import configureApp from './index';
 
 bootstrap((app) => {
-  app.registerModule(appModule);
+  configureApp(app);
 });

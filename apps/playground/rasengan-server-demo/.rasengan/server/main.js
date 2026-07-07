@@ -1,6 +1,6 @@
 import { bootstrap } from '@rasenganjs/server';
 import appModule from './app.module.js';
-import { zodAdapter } from '@rasenganjs/validation';
+import { zodAdapter } from '@rasenganjs/validators';
 bootstrap(async (app) => {
   app.registerModule(appModule);
   app.configureValidation({

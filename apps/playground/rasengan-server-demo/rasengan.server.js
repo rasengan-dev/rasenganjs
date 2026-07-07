@@ -5,7 +5,7 @@ export default defineConfig({
   port: 3006,
   // host: "127.0.0.2",
   watchDir: 'src/',
-  preset: 'bun',
+  preset: 'workerd',
   build: {
     outDir: '.rasengan',
     formats: ['directory'],

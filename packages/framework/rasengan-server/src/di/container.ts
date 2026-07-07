@@ -40,6 +40,8 @@ export type ProviderLike = new (...args: any[]) => Provider;
  * - Class aliasing (`useClass`)
  * - Explicit dependency lists (`deps`)
  * - Name-based resolution (case-insensitive matching)
+ * - Lifecycle hooks — calls `onInit()` on all resolved providers after
+ *   compilation, and `onDestroy()` on graceful shutdown.
  *
  * @example
  * ```ts
@@ -62,6 +64,12 @@ export class Container {
       deps?: any[];
     }
   >();
+
+  /**
+   * Track all resolved Provider instances that implement lifecycle hooks.
+   * Used by `initAll()` (forward order) and `destroyAll()` (reverse order).
+   */
+  private lifecycleInstances: Provider[] = [];
 
   /**
    * Register a provider or provider definition with the container.
@@ -95,6 +103,26 @@ export class Container {
       return this.resolveByName(token) as T;
     }
     return this.resolveByClass(token) as T;
+  }
+
+  /**
+   * Call `onInit()` on every resolved provider that implements it.
+   * Invoked in registration order after the application is compiled.
+   */
+  async initAll(): Promise<void> {
+    for (const instance of this.lifecycleInstances) {
+      await instance.onInit?.();
+    }
+  }
+
+  /**
+   * Call `onDestroy()` on every resolved provider that implements it.
+   * Invoked in reverse registration order on graceful shutdown.
+   */
+  async destroyAll(): Promise<void> {
+    for (const instance of this.lifecycleInstances.reverse()) {
+      await instance.onDestroy?.();
+    }
   }
 
   /**
@@ -187,6 +215,10 @@ export class Container {
       } else {
         entry.instance = new target();
       }
+    }
+
+    if (entry.instance instanceof Provider) {
+      this.lifecycleInstances.push(entry.instance);
     }
 
     return entry.instance;

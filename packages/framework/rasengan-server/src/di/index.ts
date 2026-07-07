@@ -2,7 +2,8 @@
  * @module DI — dependency-injection container
  *
  * Lightweight IoC container with class-based and value-based resolution,
- * auto-wiring via constructor parameter names, and singleton caching.
+ * auto-wiring via constructor parameter names, singleton caching, and
+ * lifecycle hooks (`onInit` / `onDestroy`).
  */
 
 export { Container } from './container.js';

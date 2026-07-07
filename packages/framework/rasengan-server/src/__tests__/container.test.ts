@@ -5,7 +5,7 @@ import { Provider } from '../di/provider.js';
 describe('Container', () => {
   describe('register with class provider', () => {
     it('registers and resolves a class', () => {
-      class Logger {
+      class Logger extends Provider {
         log(msg: string) {
           return msg;
         }
@@ -20,7 +20,7 @@ describe('Container', () => {
     });
 
     it('resolves the same instance (singleton)', () => {
-      class Config {
+      class Config extends Provider {
         value = 42;
       }
 
@@ -65,14 +65,16 @@ describe('Container', () => {
     it('resolves with dependency injection', () => {
       const container = new Container();
 
-      class Database {
+      class Database extends Provider {
         query(sql: string) {
           return `result: ${sql}`;
         }
       }
 
-      class UserService {
-        constructor(public database: Database) {}
+      class UserService extends Provider {
+        constructor(public database: Database) {
+          super();
+        }
       }
 
       container.register(Database);
@@ -88,8 +90,10 @@ describe('Container', () => {
 
       const apiKey = 'sk-123';
 
-      class ApiClient {
-        constructor(public key: string) {}
+      class ApiClient extends Provider {
+        constructor(public key: string) {
+          super();
+        }
       }
 
       container.register({ provide: ApiClient, useClass: ApiClient, deps: [] });
@@ -102,7 +106,7 @@ describe('Container', () => {
 
   describe('resolve by name', () => {
     it('resolves by matching class name', () => {
-      class Mailer {
+      class Mailer extends Provider {
         send() {
           return 'sent';
         }
@@ -143,6 +147,121 @@ describe('Container', () => {
       const instance = new CustomProvider();
       expect(instance).toBeInstanceOf(Provider);
       expect(instance.data).toBe('custom');
+    });
+  });
+
+  describe('lifecycle hooks', () => {
+    it('calls onInit after compile', async () => {
+      let inited = false;
+
+      class InitProvider extends Provider {
+        async onInit() {
+          inited = true;
+        }
+      }
+
+      const container = new Container();
+      container.register(InitProvider);
+      container.resolve(InitProvider);
+
+      await container.initAll();
+      expect(inited).toBe(true);
+    });
+
+    it('calls onDestroy on shutdown', async () => {
+      let destroyed = false;
+
+      class DestroyProvider extends Provider {
+        async onDestroy() {
+          destroyed = true;
+        }
+      }
+
+      const container = new Container();
+      container.register(DestroyProvider);
+      container.resolve(DestroyProvider);
+
+      await container.destroyAll();
+      expect(destroyed).toBe(true);
+    });
+
+    it('calls init in registration order', async () => {
+      const order: string[] = [];
+
+      class A extends Provider {
+        async onInit() {
+          order.push('A');
+        }
+      }
+      class B extends Provider {
+        async onInit() {
+          order.push('B');
+        }
+      }
+
+      const container = new Container();
+      container.register(A);
+      container.register(B);
+      container.resolve(A);
+      container.resolve(B);
+
+      await container.initAll();
+      expect(order).toEqual(['A', 'B']);
+    });
+
+    it('calls destroy in reverse registration order', async () => {
+      const order: string[] = [];
+
+      class A extends Provider {
+        async onDestroy() {
+          order.push('A');
+        }
+      }
+      class B extends Provider {
+        async onDestroy() {
+          order.push('B');
+        }
+      }
+
+      const container = new Container();
+      container.register(A);
+      container.register(B);
+      container.resolve(A);
+      container.resolve(B);
+
+      await container.destroyAll();
+      expect(order).toEqual(['B', 'A']);
+    });
+
+    it('does not fail when provider has no lifecycle methods', async () => {
+      class NoopProvider extends Provider {
+        data = 42;
+      }
+
+      const container = new Container();
+      container.register(NoopProvider);
+      container.resolve(NoopProvider);
+
+      await expect(container.initAll()).resolves.toBeUndefined();
+      await expect(container.destroyAll()).resolves.toBeUndefined();
+    });
+
+    it('does not track useValue providers', async () => {
+      let initCalled = false;
+      const c = new Container();
+
+      c.register({
+        provide: 'plain',
+        useValue: {
+          onInit: () => {
+            initCalled = true;
+          },
+        },
+      });
+      c.resolve('plain' as any);
+
+      await c.initAll();
+      expect(initCalled).toBe(false);
     });
   });
 });

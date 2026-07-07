@@ -1,7 +1,7 @@
 import type {
   Context,
   Middleware,
-  Router as RuntimeRouter,
+  Router as FutonRouter,
 } from '@rasenganjs/futon';
 
 import {
@@ -42,7 +42,7 @@ export type RouteHandler<S extends SchemaDefinition = {}> = (
  *
  * @example
  * ```ts
- * const router = new Router(runtimeRouter);
+ * const router = new Router(futonRouter);
  * router.get('/public', publicHandler);
  * router.post('/users', handler, { body: CreateUserSchema });
  * router.put('/users/:id', [auth], handler, { body: UpdateSchema, params: IdSchema });
@@ -57,7 +57,7 @@ export class Router {
   readonly handlerSchemaMap = new Map<RouteHandler, SchemaDefinition>();
 
   constructor(
-    private router: RuntimeRouter,
+    private router: FutonRouter,
     private validationConfig?: ValidationConfig,
     private controllerSchemas?: Record<string, SchemaDefinition>
   ) {}
@@ -245,7 +245,7 @@ export class Router {
 
     if (chain.length > 0) {
       this.router.group({ middlewares: chain }, (r) => {
-        (r as RuntimeRouter)[m](path, wrapHandler);
+        (r as FutonRouter)[m](path, wrapHandler);
       });
     } else {
       this.router[m](path, wrapHandler);

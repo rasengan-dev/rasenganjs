@@ -19,7 +19,7 @@
  * - `ServerApp` — application orchestrator (modules, middleware, DI)
  * - `Router` — route registration with middleware support
  * - `Controller` — route-grouping abstraction
- * - `Container` — lightweight DI container
+ * - `Container` — lightweight DI container with lifecycle hooks
  * - `defineModule` / `defineConfig` — typed configuration helpers
  */
 
@@ -52,6 +52,7 @@ export type { Context } from '@rasenganjs/futon';
 
 // ── Config ────────────────────────────────────────────────────
 export { defineConfig } from './config/index.js';
+export { ConfigHolder } from './config/holder.js';
 export type { RasenganServerConfig, BuildConfig } from './config/index.js';
 
 // ── Utils ─────────────────────────────────────────────────────

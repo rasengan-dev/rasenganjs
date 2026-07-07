@@ -104,6 +104,7 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
         ...process.env,
         RASENGAN_SERVER_PORT: String(port),
         RASENGAN_SERVER_HOST: host,
+        RASENGAN_SERVER_CONFIG: JSON.stringify(config),
         NODE_ENV: 'development',
       },
     };

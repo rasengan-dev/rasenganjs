@@ -63,7 +63,15 @@ export async function build(config: RasenganServerConfig): Promise<void> {
     generateEntryFile(outDir, fmt, config);
   }
 
+  writeConfigJson(outDir, config);
+
   console.log('  ✓ build complete\n');
+}
+
+function writeConfigJson(outDir: string, config: RasenganServerConfig): void {
+  const configPath = join(outDir, 'config.json');
+  writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
+  console.log(`  ✓ config: ${configPath}`);
 }
 
 /**
@@ -268,10 +276,11 @@ function workerdEntryTemplate(sourcePath: string): string {
   return (
     `import { ServerApp } from '@rasenganjs/server';\n` +
     `import { WorkerdProdAdapter } from '@rasenganjs/runtime/adapters/workerd';\n` +
-    `import config from ${JSON.stringify(sourcePath)};\n` +
+    `import module from ${JSON.stringify(sourcePath)};\n` +
     `\n` +
     `const serverApp = new ServerApp();\n` +
-    `serverApp.registerModule(config.default || config);\n` +
+    `const configureApp = (module.default || module).configureApp;\n` +
+    `configureApp(serverApp);\n` +
     `const runtimeApp = serverApp.compile();\n` +
     `\n` +
     `const adapter = new WorkerdProdAdapter({ passthrough: true });\n` +
@@ -308,6 +317,8 @@ function generateEntryFile(
   let content: string;
 
   if (preset === 'workerd') {
+    const sourcePath =
+      format === 'single-file' ? './server.bundle.mjs' : './server/index.js';
     content = workerdEntryTemplate(sourcePath);
   } else {
     content = runtimeEntryTemplate(sourcePath);

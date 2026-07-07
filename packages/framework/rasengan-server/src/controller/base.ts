@@ -20,8 +20,8 @@ export type RouteHandler<T = {}> = _RouteHandler<T>;
  *   middlewares = [authMiddleware];
  *
  *   routes(router: Router): void {
- *     router.get('/users', listUsers);
- *     router.post('/users', createUser);
+ *     router.get('/users', this.listUsers);
+ *     router.post('/users', this.createUser);
  *   }
  * }
  * ```

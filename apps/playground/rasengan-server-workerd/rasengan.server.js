@@ -1,7 +1,7 @@
 import { defineConfig } from '@rasenganjs/server';
 
 export default defineConfig({
-  entry: 'src/main.ts',
+  entry: 'src/index.ts',
   port: 8100,
   preset: 'workerd',
   build: {

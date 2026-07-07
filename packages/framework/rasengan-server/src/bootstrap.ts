@@ -2,7 +2,8 @@ import type { RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 import { ServerApp, type ServerHandle } from './server/app.js';
 import { selectAdapter } from './adapter/index.js';
 import { logServerInfo } from './utils/log-server-info.js';
-import { loadConfig } from './cli/config.js';
+import { ConfigHolder } from './config/holder.js';
+import type { RasenganServerConfig } from './config/index.js';
 
 /**
  * Bootstrap the Rasengan server application.
@@ -10,7 +11,8 @@ import { loadConfig } from './cli/config.js';
  * This is the recommended entry point for programmatic usage.
  * It:
  * 1. Creates a `ServerApp` instance.
- * 2. Loads configuration from `rasengan.server.js`/`.ts`.
+ * 2. Loads configuration from `ConfigHolder` (auto-loaded from disk
+ *    on first access, or pre-set by `cli.ts`).
  * 3. Invokes the user callback to register modules, middleware, etc.
  * 4. Compiles the app into a runtime \`Futon\`.
  * 5. Selects and starts the appropriate runtime adapter (Node/Bun).
@@ -27,14 +29,17 @@ import { loadConfig } from './cli/config.js';
  *
  * @param callback - Function that receives the `ServerApp` instance for
  *                   configuration before the server starts.
+ * @param overrides - Optional partial config to merge on top of the
+ *                    stored config (e.g. from CLI flags).
  * @returns A `ServerHandle` that can shut down the server externally.
  */
 export async function bootstrap(
-  callback: (app: ServerApp) => void | Promise<void>
+  callback: (app: ServerApp) => void | Promise<void>,
+  overrides?: Partial<RasenganServerConfig>
 ): Promise<ServerHandle> {
   const serverApp = new ServerApp();
 
-  const config = await loadConfig();
+  const config = await ConfigHolder.get(overrides);
 
   await callback(serverApp);
 
@@ -53,15 +58,17 @@ export async function bootstrap(
     process.exit(1);
   });
 
-  // adapter.fet
-
-  process.on('SIGTERM', () => {
+  process.on('SIGTERM', async () => {
+    await serverApp.close();
     adapter.close();
     process.exit(0);
   });
 
   return {
-    close: () => adapter.close(),
+    close: async () => {
+      await serverApp.close();
+      adapter.close();
+    },
     app: serverApp,
   };
 }

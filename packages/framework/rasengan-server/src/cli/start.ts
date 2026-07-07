@@ -40,6 +40,7 @@ export async function start(config: RasenganServerConfig): Promise<void> {
     NODE_ENV: 'production',
     RASENGAN_SERVER_PORT: String(config.port ?? 3000),
     RASENGAN_SERVER_HOST: config.host ?? '0.0.0.0',
+    RASENGAN_SERVER_CONFIG: JSON.stringify(config),
   };
 
   let child: ChildProcess | null = null;

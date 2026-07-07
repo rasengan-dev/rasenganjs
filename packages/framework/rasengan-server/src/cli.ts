@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { ConfigHolder } from './config/holder.js';
 import { dev } from './cli/dev.js';
 import { build } from './cli/build.js';
 import { start } from './cli/start.js';
