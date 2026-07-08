@@ -1,6 +1,6 @@
 import { bootstrap } from '@rasenganjs/server';
 import appModule from './app.module';
-import { ValidationError, zodAdapter } from '@rasenganjs/validators';
+import { zodAdapter } from '@rasenganjs/validators';
 
 bootstrap(async (app) => {
   app.registerModule(appModule);
@@ -11,5 +11,13 @@ bootstrap(async (app) => {
 
   app.notFound(async (ctx) => {
     return ctx.response.status(404).json({ message: 'Not Found' });
+  });
+
+  app.onInit(() => {
+    console.log('App initialized');
+  });
+
+  app.onDestroy(() => {
+    console.log('App destroyed');
   });
 });

@@ -8,7 +8,7 @@
     "start": "node server/index.mjs"
   },
   "dependencies": {
-    "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/runtime-node": "workspace:*"
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*"
   }
 }

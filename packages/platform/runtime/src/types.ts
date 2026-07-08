@@ -88,8 +88,14 @@ export interface RuntimeAdapter<T = any> {
    */
   serve(app?: T | null, options?: ServeOptions): Promise<void>;
 
-  /** Stop the server and release all resources. */
-  close(): void;
+  /**
+   * Stop the server and release all resources.
+   *
+   * Returns a promise that resolves when cleanup is complete.
+   * Adapters should call `await app.destroy()` before stopping
+   * the underlying HTTP server.
+   */
+  close(): Promise<void>;
 
   /**
    * Watch a file or directory for changes.

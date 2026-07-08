@@ -26,7 +26,7 @@
     "pack": "pnpm pack --pack-destination ./release"
   },
   "dependencies": {
-    "@rasenganjs/runtime": "workspace:*"
+    "@rasenganjs/futon": "workspace:*"
   },
   "peerDependencies": {
     "zod": "^3.23.0"

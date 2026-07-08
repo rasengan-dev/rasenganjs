@@ -9,8 +9,8 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/runtime-workerd": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "@rasenganjs/validators": "workspace:*",
     "zod": "^3.25.76"

@@ -219,6 +219,64 @@ describe('ServerApp — module and handler registration', () => {
     expect(await response.text()).toBe('factory');
   });
 
+  it('forwards onInit handlers to the Futon instance', async () => {
+    const order: string[] = [];
+
+    const app = new ServerApp();
+    app.onInit(() => {
+      order.push('server-init');
+    });
+    app.onInit(() => {
+      order.push('server-init-2');
+    });
+
+    const futon = app.compile();
+
+    // Manually trigger init (as the adapter would)
+    await futon.init();
+
+    expect(order).toEqual(['server-init', 'server-init-2']);
+  });
+
+  it('forwards onDestroy handlers to the Futon instance', async () => {
+    const order: string[] = [];
+
+    const app = new ServerApp();
+    app.onDestroy(() => {
+      order.push('server-destroy');
+    });
+    app.onDestroy(() => {
+      order.push('server-destroy-2');
+    });
+
+    const futon = app.compile();
+
+    // Manually trigger destroy (as the adapter would)
+    await futon.destroy();
+
+    expect(order).toEqual(['server-destroy', 'server-destroy-2']);
+  });
+
+  it('calls futon.destroy during close()', async () => {
+    const order: string[] = [];
+
+    const app = new ServerApp();
+    app.onInit(() => {
+      order.push('init');
+    });
+    app.onDestroy(() => {
+      order.push('destroy');
+    });
+
+    app.compile();
+
+    // Simulate the full lifecycle: init on serve, destroy on close
+    await app['futon']!.init();
+    await app.close();
+
+    expect(order).toEqual(['init', 'destroy']);
+  });
+
   it('supports multiple controllers in one module', async () => {
     const { Controller } = await import('../controller/index.js');
 

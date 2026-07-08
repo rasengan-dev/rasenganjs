@@ -1,4 +1,4 @@
-import type { Context } from '@rasenganjs/runtime';
+import type { Context } from '@rasenganjs/futon';
 
 /**
  * Single validation error with a human-readable message

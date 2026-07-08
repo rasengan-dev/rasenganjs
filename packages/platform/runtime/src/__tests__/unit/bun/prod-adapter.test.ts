@@ -11,6 +11,8 @@ function createMockApp() {
   return {
     configureServer: () => {},
     loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
     fetch: () => Promise.resolve(new Response('ok')),
   };
 }
@@ -33,10 +35,10 @@ describe('BunProdAdapter', () => {
     expect(typeof adapter.assets.get).toBe('function');
   });
 
-  it('is idempotent on close', () => {
+  it('is idempotent on close', async () => {
     const adapter = new BunProdAdapter({ rootDir });
-    adapter.close();
-    adapter.close();
+    await adapter.close();
+    await adapter.close();
   });
 
   describeIfBun('serve', () => {
@@ -52,7 +54,7 @@ describe('BunProdAdapter', () => {
 
       const servePromise = adapter.serve(app);
       await started;
-      adapter.close();
+      await adapter.close();
       await servePromise;
     });
   });
@@ -66,7 +68,7 @@ describe('BunProdAdapter', () => {
       expect(result).toBeInstanceOf(Uint8Array);
       expect(new TextDecoder().decode(result!)).toBe('production content');
 
-      adapter.close();
+      await adapter.close();
     });
 
     it('assets.load reads files as text', async () => {
@@ -76,7 +78,7 @@ describe('BunProdAdapter', () => {
       const result = await adapter.assets.load('hello.txt');
       expect(result).toBe('hello');
 
-      adapter.close();
+      await adapter.close();
     });
 
     it('assets.write is a no-op (does not write)', async () => {
@@ -85,7 +87,7 @@ describe('BunProdAdapter', () => {
 
       await expect(readFile(join(rootDir, 'new.txt'))).rejects.toThrow();
 
-      adapter.close();
+      await adapter.close();
     });
 
     it('assets.delete is a no-op', async () => {
@@ -97,7 +99,7 @@ describe('BunProdAdapter', () => {
       const content = await readFile(join(rootDir, 'keep.txt'), 'utf-8');
       expect(content).toBe('keep me');
 
-      adapter.close();
+      await adapter.close();
     });
 
     it('assets.list returns files under prefix', async () => {
@@ -109,7 +111,7 @@ describe('BunProdAdapter', () => {
       const files = await adapter.assets.list('');
       expect(files.sort()).toEqual(['a.txt', 'sub/b.txt']);
 
-      adapter.close();
+      await adapter.close();
     });
   });
 });

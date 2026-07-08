@@ -37,6 +37,7 @@ export interface NodeDevAdapterOptions {
 }
 
 export class NodeDevAdapter implements RuntimeAdapter {
+  private app: any | null = null;
   private watcher: NodeWatcher;
   readonly assets: NodeAssets;
   private serverHandle: NodeServerHandle | null = null;
@@ -65,6 +66,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
       throw new Error("Futon's app is required — provide it directly");
     }
 
+    this.app = app;
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({
@@ -76,6 +78,8 @@ export class NodeDevAdapter implements RuntimeAdapter {
     });
 
     app.loadEnv(await loadNodeEnvFiles(rootDir, 'development'));
+
+    await app.init();
 
     this.startServer(app);
 
@@ -90,9 +94,11 @@ export class NodeDevAdapter implements RuntimeAdapter {
   }
 
   /** Stop the server, watcher, and any child process. */
-  close(): void {
+  async close(): Promise<void> {
     this.disposeWatcher?.();
     this.disposeWatcher = null;
+
+    await this.app?.destroy();
 
     if (this.childProcess) {
       this.childProcess.kill('SIGTERM');
@@ -103,6 +109,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
     this.serverHandle = null;
     this.serveResolve?.();
     this.serveResolve = null;
+    this.app = null;
   }
 
   /** Watch a file or directory for changes. */

@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/runtime",
-  "version": "2.0.0-beta.0",
+  "version": "1.0.0-beta.0",
   "description": "Unified runtime abstraction layer for Rasengan.JS — RuntimeAdapter interface, platform adapters (Node, Bun, Workerd), env utilities, and auto-detection",
   "type": "module",
   "main": "dist/index.js",
@@ -42,6 +42,9 @@
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta"
+  },
+  "peerDependencies": {
+    "@rasenganjs/futon": "workspace:^*"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.9",

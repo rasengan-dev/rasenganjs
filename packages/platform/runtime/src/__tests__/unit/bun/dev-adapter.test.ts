@@ -11,6 +11,8 @@ function createMockApp() {
   return {
     configureServer: () => {},
     loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
     fetch: () => Promise.resolve(new Response('ok')),
   };
 }
@@ -38,21 +40,21 @@ describe('BunDevAdapter', () => {
     await expect(adapter.serve(null)).rejects.toThrow(
       "Futon's app is required"
     );
-    adapter.close();
+    await adapter.close();
   });
 
-  it('watch returns a dispose function', () => {
+  it('watch returns a dispose function', async () => {
     const adapter = new BunDevAdapter({ rootDir });
     const dispose = adapter.watch(rootDir, () => {});
     expect(typeof dispose).toBe('function');
     dispose();
-    adapter.close();
+    await adapter.close();
   });
 
-  it('is idempotent on close', () => {
+  it('is idempotent on close', async () => {
     const adapter = new BunDevAdapter({ rootDir });
-    adapter.close();
-    adapter.close();
+    await adapter.close();
+    await adapter.close();
   });
 
   describeIfBun('serve', () => {
@@ -68,7 +70,7 @@ describe('BunDevAdapter', () => {
 
       const servePromise = adapter.serve(app);
       await started;
-      adapter.close();
+      await adapter.close();
       await servePromise;
     });
 
@@ -95,7 +97,7 @@ describe('BunDevAdapter', () => {
       expect(res.status).toBe(200);
       expect(await res.text()).toBe('ok');
 
-      adapter.close();
+      await adapter.close();
       await servePromise;
     });
   });

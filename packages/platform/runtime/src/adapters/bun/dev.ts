@@ -26,6 +26,7 @@ import { BunAssets } from './assets.js';
 import { BunWatcher } from './watcher.js';
 import { startBunServer, type BunServerHandle } from './server.js';
 import { loadBunEnvFiles } from './env.js';
+import { Futon } from '@rasenganjs/futon';
 
 /** Minimal interface for a Bun child subprocess. */
 interface BunChildSubprocess {
@@ -41,14 +42,12 @@ export interface BunDevAdapterOptions {
 }
 
 export class BunDevAdapter implements RuntimeAdapter {
+  private app: any | null = null; // Futon instance
   private watcher: BunWatcher;
   readonly assets: BunAssets;
   private serverHandle: BunServerHandle | null = null;
   private disposeWatcher: (() => void) | null = null;
   private serveResolve: (() => void) | null = null;
-
-  // Child-process fields (nodemon-style)
-  private childProcess: BunChildSubprocess | null = null;
 
   constructor(private options: BunDevAdapterOptions = {}) {
     this.watcher = new BunWatcher();
@@ -61,13 +60,14 @@ export class BunDevAdapter implements RuntimeAdapter {
    * Requires a Futon instance (in-process mode).
    * Configures the app with Bun preset and development mode.
    */
-  async serve(app: any | null, options?: ServeOptions): Promise<void> {
+  async serve(app: Futon | null, options?: ServeOptions): Promise<void> {
     this.serveOptions = options ?? {};
 
     if (!app) {
       throw new Error("Futon's app is required — provide it directly");
     }
 
+    this.app = app; // Keep reference of the Futon's app instance
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({
@@ -80,25 +80,23 @@ export class BunDevAdapter implements RuntimeAdapter {
 
     app.loadEnv(await loadBunEnvFiles(rootDir, 'development'));
 
+    await app.init();
+
     this.startServer(app);
 
     return this.serverHandle!.ready;
   }
 
   /** Stop the server, watcher, and any child process. */
-  close(): void {
+  async close(): Promise<void> {
     this.disposeWatcher?.();
     this.disposeWatcher = null;
-
-    if (this.childProcess) {
-      this.childProcess.kill('SIGTERM');
-      this.childProcess = null;
-    }
 
     this.serverHandle?.close();
     this.serverHandle = null;
     this.serveResolve?.();
     this.serveResolve = null;
+    this.app = null;
   }
 
   /** Watch a file or directory for changes. */
@@ -111,8 +109,8 @@ export class BunDevAdapter implements RuntimeAdapter {
   private serveOptions: ServeOptions = {};
 
   /** Start the in-process HTTP server via Bun.serve(). */
-  private startServer(app: any): void {
-    this.serverHandle = startBunServer((request) => app.fetch(request), {
+  private startServer(app: Futon): void {
+    this.serverHandle = startBunServer(app, {
       port: this.options.port,
       host: this.options.host,
       onListening: this.serveOptions.onListening,

@@ -1,5 +1,3 @@
-import { RuntimeAdapter } from './runtime-adapter/types.js';
-
 /**
  * A FetchHandler is the fundamental request handler primitive.
  * It accepts a Request and a optional Runtime Adapter and
@@ -11,5 +9,5 @@ import { RuntimeAdapter } from './runtime-adapter/types.js';
  */
 export type FetchHandler = (
   request: Request,
-  runtime?: RuntimeAdapter
+  runtime?: any
 ) => Promise<Response>;

@@ -6,8 +6,9 @@
  *   2. Owns an internal Router for route registration
  *   3. Provides a `fetch(request, runtime)` entry point
  *      conforming to the WinterCG fetch handler signature
- *   4. Supports lifecycle hooks (beforeRequest, afterResponse, onError)
- *   5. Handles 404 and 500 with configurable handlers
+ *   4. Supports request lifecycle hooks (beforeRequest, afterResponse, onError)
+ *   5. Supports app lifecycle hooks (onInit, onDestroy)
+ *   6. Handles 404 and 500 with configurable handlers
  *
  * @example
  * ```ts
@@ -218,6 +219,53 @@ export class Futon {
   onError(handler: (error: Error, ctx: Context) => Promise<Response>): this {
     this.errorHandler = handler;
     return this;
+  }
+
+  // ── App lifecycle (onInit / onDestroy) ─────────────────────
+
+  private initHandlers: Array<() => void | Promise<void>> = [];
+  private destroyHandlers: Array<() => void | Promise<void>> = [];
+
+  /**
+   * Register a handler that runs once before the server starts
+   * accepting requests.  Handlers are called in registration order.
+   *
+   * Useful for async setup (DB connections, warm caches, etc.).
+   */
+  onInit(handler: () => void | Promise<void>): this {
+    this.initHandlers.push(handler);
+    return this;
+  }
+
+  /**
+   * Register a handler that runs during graceful shutdown.
+   * Handlers are called in registration order.
+   *
+   * Useful for cleanup (close DB pools, flush logs, etc.).
+   */
+  onDestroy(handler: () => void | Promise<void>): this {
+    this.destroyHandlers.push(handler);
+    return this;
+  }
+
+  /**
+   * Fire all registered onInit handlers.
+   * Called by the runtime adapter before the HTTP server starts.
+   */
+  async init(): Promise<void> {
+    for (const handler of this.initHandlers) {
+      await handler();
+    }
+  }
+
+  /**
+   * Fire all registered onDestroy handlers.
+   * Called by the runtime adapter during graceful shutdown.
+   */
+  async destroy(): Promise<void> {
+    for (const handler of this.destroyHandlers) {
+      await handler();
+    }
   }
 
   // ── Request entry point ────────────────────────────────────

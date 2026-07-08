@@ -82,6 +82,15 @@ export class ServerApp {
   /** DI container created during compile(), used for lifecycle management. */
   private container: Container | null = null;
 
+  /** Compiled Futon instance (set during compile()). */
+  private futon: Futon | null = null;
+
+  /** App-level init handlers, forwarded to Futon during compile(). */
+  private initHandlers: Array<() => void | Promise<void>> = [];
+
+  /** App-level destroy handlers, forwarded to Futon during compile(). */
+  private destroyHandlers: Array<() => void | Promise<void>> = [];
+
   /**
    * Global validation configuration.
    * Defaults to the built-in Zod adapter and a 400 JSON error response.
@@ -158,6 +167,23 @@ export class ServerApp {
   }
 
   /**
+   * Register a handler that runs once before the server starts
+   * accepting requests. Forwarded to the underlying Futon instance
+   * during compile().
+   */
+  onInit(handler: () => void | Promise<void>): void {
+    this.initHandlers.push(handler);
+  }
+
+  /**
+   * Register a handler that runs during graceful shutdown.
+   * Forwarded to the underlying Futon instance during compile().
+   */
+  onDestroy(handler: () => void | Promise<void>): void {
+    this.destroyHandlers.push(handler);
+  }
+
+  /**
    * Configure schema validation globally.
    *
    * Sets the schema adapter (default: Zod) and the default error handler
@@ -198,6 +224,7 @@ export class ServerApp {
    */
   compile(): Futon {
     const app = new Futon();
+    this.futon = app;
 
     for (const { middleware } of this.middlewareList) {
       app.use(middleware);
@@ -236,7 +263,15 @@ export class ServerApp {
       this.registerControllers(app, container, mod);
     }
 
-    // Fire lifecycle hooks after everything is wired up
+    // Forward app-level lifecycle handlers to the Futon instance
+    for (const handler of this.initHandlers) {
+      app.onInit(handler);
+    }
+    for (const handler of this.destroyHandlers) {
+      app.onDestroy(handler);
+    }
+
+    // Fire DI container init hooks after everything is wired up
     container.initAll().catch((err) => {
       console.error(`[rasengan-server] Provider onInit() failed: ${err}`);
     });
@@ -251,6 +286,13 @@ export class ServerApp {
    * registration order, then releases the container reference.
    */
   async close(): Promise<void> {
+    // Fire app-level destroy handlers (forwarded to Futon)
+    if (this.futon) {
+      await this.futon.destroy();
+      this.futon = null;
+    }
+
+    // Fire DI provider destroy hooks
     if (this.container) {
       await this.container.destroyAll();
       this.container = null;

@@ -10,6 +10,6 @@
     "start:deno": "deno run --allow-net --allow-env server/deno.mjs"
   },
   "dependencies": {
-    "@rasenganjs/runtime": "workspace:*"
+    "@rasenganjs/futon": "workspace:*"
   }
 }

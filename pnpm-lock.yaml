@@ -523,33 +523,24 @@ importers:
 
   apps/playground/rasengan-runtime-demo:
     dependencies:
-      '@rasenganjs/runtime':
+      '@rasenganjs/futon':
         specifier: workspace:*
-        version: link:../../../packages/platform/runtime
+        version: link:../../../packages/framework/futon
 
   apps/playground/rasengan-runtime-node-demo:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../../../packages/framework/futon
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../packages/platform/runtime
-      '@rasenganjs/runtime-node':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-node
 
   apps/playground/rasengan-server-demo:
     dependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../packages/platform/runtime
-      '@rasenganjs/runtime-bun':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-bun
-      '@rasenganjs/runtime-node':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-node
-      '@rasenganjs/runtime-workerd':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-workerd
       '@rasenganjs/server':
         specifier: workspace:*
         version: link:../../../packages/framework/rasengan-server
@@ -566,12 +557,12 @@ importers:
 
   apps/playground/rasengan-server-workerd:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../../../packages/framework/futon
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../packages/platform/runtime
-      '@rasenganjs/runtime-workerd':
-        specifier: workspace:*
-        version: link:../../../packages/platform/rasengan-runtime-workerd
       '@rasenganjs/server':
         specifier: workspace:*
         version: link:../../../packages/framework/rasengan-server
@@ -588,24 +579,6 @@ importers:
       wrangler:
         specifier: ^4.0.0
         version: 4.105.0
-
-  apps/playground/rasengan-server-workerd/dist/server:
-    dependencies:
-      '@rasenganjs/runtime':
-        specifier: workspace:*
-        version: link:../../../../../packages/platform/runtime
-      '@rasenganjs/runtime-workerd':
-        specifier: workspace:*
-        version: link:../../../../../packages/platform/rasengan-runtime-workerd
-      '@rasenganjs/server':
-        specifier: workspace:*
-        version: link:../../../../../packages/framework/rasengan-server
-      '@rasenganjs/validators':
-        specifier: workspace:*
-        version: link:../../../../../packages/ecosystem/validators
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
 
   apps/playground/rasengan-v1-test:
     dependencies:
@@ -886,9 +859,9 @@ importers:
 
   packages/ecosystem/validators:
     dependencies:
-      '@rasenganjs/runtime':
+      '@rasenganjs/futon':
         specifier: workspace:*
-        version: link:../../platform/runtime
+        version: link:../../framework/futon
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
@@ -1082,55 +1055,11 @@ importers:
         specifier: ^0.25.0
         version: 0.25.12
 
-  packages/platform/rasengan-runtime-bun:
-    dependencies:
-      '@rasenganjs/runtime':
-        specifier: workspace:*
-        version: link:../runtime
-    devDependencies:
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  packages/platform/rasengan-runtime-node:
-    dependencies:
-      '@rasenganjs/runtime':
-        specifier: workspace:*
-        version: link:../runtime
-    devDependencies:
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  packages/platform/rasengan-runtime-workerd:
-    dependencies:
-      '@rasenganjs/runtime':
-        specifier: workspace:*
-        version: link:../runtime
-    devDependencies:
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
   packages/platform/runtime:
+    dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:^*
+        version: link:../../framework/futon
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.9

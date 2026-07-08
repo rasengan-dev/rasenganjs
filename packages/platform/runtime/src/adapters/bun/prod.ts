@@ -31,6 +31,7 @@ export interface BunProdAdapterOptions {
 }
 
 export class BunProdAdapter implements RuntimeAdapter {
+  private app: any | null = null;
   readonly assets: Assets;
   private serverHandle: BunServerHandle | null = null;
 
@@ -86,6 +87,7 @@ export class BunProdAdapter implements RuntimeAdapter {
    * environment files, and starts listening via Bun.serve().
    */
   async serve(app: any, options?: ServeOptions): Promise<void> {
+    this.app = app;
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({
@@ -98,7 +100,9 @@ export class BunProdAdapter implements RuntimeAdapter {
 
     app.loadEnv(await loadBunEnvFiles(rootDir, 'production'));
 
-    this.serverHandle = startBunServer((request) => app.fetch(request), {
+    await app.init();
+
+    this.serverHandle = startBunServer(app, {
       port: this.options.port,
       host: this.options.host,
       onListening: options?.onListening,
@@ -108,9 +112,10 @@ export class BunProdAdapter implements RuntimeAdapter {
   }
 
   /** Stop the HTTP server. */
-  close(): void {
+  async close(): Promise<void> {
     this.serverHandle?.close();
     this.serverHandle = null;
+    this.app = null;
   }
 
   // No watch() in production

@@ -16,7 +16,7 @@
  * injected into the route-level middleware chain.
  */
 
-import type { Context, Middleware } from '@rasenganjs/runtime';
+import type { Context, Middleware } from '@rasenganjs/futon';
 import {
   type SchemaDefinition,
   type ValidationConfig,

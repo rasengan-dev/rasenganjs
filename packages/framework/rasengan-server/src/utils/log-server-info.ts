@@ -109,6 +109,11 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
  * @param log - Callback to re-display the server banner.
  */
 function setupKeypress(log: () => void): void {
+  /**
+   * Returns early if stdin is not a terminal (TTY).
+   * When piping input or running in non-interactive environments (CI, Docker, rasengan-server &),
+   * there's no keyboard to listen on — the keypress listener would either hang or throw.
+   */
   if (!process.stdin.isTTY) return;
 
   readline.emitKeypressEvents(process.stdin);
@@ -120,7 +125,7 @@ function setupKeypress(log: () => void): void {
       console.log(
         `\n${green('ctrl+c')} ${gray('pressed — stopping server...')}\n`
       );
-      process.exit(0);
+      process.kill(process.pid, 'SIGINT');
     }
 
     if (!key.ctrl && !key.meta && !key.shift && key.name === 'c') {

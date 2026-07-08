@@ -35,6 +35,7 @@ export interface NodeProdAdapterOptions {
 }
 
 export class NodeProdAdapter implements RuntimeAdapter {
+  private app: any | null = null;
   readonly assets: Assets;
   private serverHandle: NodeServerHandle | null = null;
 
@@ -101,6 +102,7 @@ export class NodeProdAdapter implements RuntimeAdapter {
    * environment files, and starts listening.
    */
   async serve(app: any, options?: ServeOptions): Promise<void> {
+    this.app = app;
     const rootDir = this.options.rootDir ?? process.cwd();
 
     app.configureServer({
@@ -113,6 +115,8 @@ export class NodeProdAdapter implements RuntimeAdapter {
 
     app.loadEnv(await loadNodeEnvFiles(rootDir, 'production'));
 
+    await app.init();
+
     this.serverHandle = startNodeServer((request) => app.fetch(request), {
       port: this.options.port,
       host: this.options.host,
@@ -123,9 +127,11 @@ export class NodeProdAdapter implements RuntimeAdapter {
   }
 
   /** Stop the HTTP server. */
-  close(): void {
+  async close(): Promise<void> {
+    await this.app?.destroy();
     this.serverHandle?.close();
     this.serverHandle = null;
+    this.app = null;
   }
 
   // No watch() in production

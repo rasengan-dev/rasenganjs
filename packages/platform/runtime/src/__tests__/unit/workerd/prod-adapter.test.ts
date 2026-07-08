@@ -12,6 +12,8 @@ function createMockApp() {
   return {
     configureServer: () => {},
     loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
     fetch: () => Promise.resolve(new Response('ok')),
   };
 }
@@ -19,8 +21,8 @@ function createMockApp() {
 describe('WorkerdProdAdapter', () => {
   let adapter: WorkerdProdAdapter;
 
-  afterEach(() => {
-    adapter?.close();
+  afterEach(async () => {
+    await adapter?.close();
   });
 
   it('provides no-op assets instance', () => {
@@ -46,10 +48,10 @@ describe('WorkerdProdAdapter', () => {
     expect(adapter.fetchHandler).toBeNull();
   });
 
-  it('is idempotent on close', () => {
+  it('is idempotent on close', async () => {
     adapter = new WorkerdProdAdapter();
-    adapter.close();
-    adapter.close();
+    await adapter.close();
+    await adapter.close();
   });
 
   it('passthrough mode sets fetchHandler without addEventListener', async () => {
@@ -71,7 +73,7 @@ describe('WorkerdProdAdapter', () => {
     await adapter.serve(createMockApp());
 
     expect(adapter.fetchHandler).not.toBeNull();
-    adapter.close();
+    await adapter.close();
     expect(adapter.fetchHandler).toBeNull();
   });
 
@@ -90,7 +92,7 @@ describe('WorkerdProdAdapter', () => {
       adapter = new WorkerdProdAdapter();
       await adapter.serve(createMockApp());
 
-      adapter.close();
+      await adapter.close();
 
       expect(adapter.fetchHandler).toBeNull();
     });

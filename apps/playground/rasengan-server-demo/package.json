@@ -11,9 +11,6 @@
   },
   "dependencies": {
     "@rasenganjs/runtime": "workspace:*",
-    "@rasenganjs/runtime-bun": "workspace:*",
-    "@rasenganjs/runtime-node": "workspace:*",
-    "@rasenganjs/runtime-workerd": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "@rasenganjs/validators": "workspace:*",
     "zod": "^3.25.76"

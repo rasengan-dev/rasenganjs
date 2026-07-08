@@ -9,6 +9,8 @@ function createMockApp() {
   return {
     configureServer: () => {},
     loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
     fetch: () => Promise.resolve(new Response('ok')),
   };
 }
@@ -37,7 +39,7 @@ describe('NodeDevAdapter', () => {
 
     const servePromise = adapter.serve(app);
     await started;
-    adapter.close();
+    await adapter.close();
     await servePromise;
   });
 
@@ -64,7 +66,7 @@ describe('NodeDevAdapter', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('ok');
 
-    adapter.close();
+    await adapter.close();
     await servePromise;
   });
 
@@ -79,20 +81,20 @@ describe('NodeDevAdapter', () => {
     await expect(adapter.serve(null)).rejects.toThrow(
       "Futon's app is required"
     );
-    adapter.close();
+    await adapter.close();
   });
 
-  it('watch returns a dispose function', () => {
+  it('watch returns a dispose function', async () => {
     const adapter = new NodeDevAdapter({ rootDir });
     const dispose = adapter.watch(rootDir, () => {});
     expect(typeof dispose).toBe('function');
     dispose();
-    adapter.close();
+    await adapter.close();
   });
 
-  it('is idempotent on close', () => {
+  it('is idempotent on close', async () => {
     const adapter = new NodeDevAdapter({ rootDir });
-    adapter.close();
-    adapter.close();
+    await adapter.close();
+    await adapter.close();
   });
 });

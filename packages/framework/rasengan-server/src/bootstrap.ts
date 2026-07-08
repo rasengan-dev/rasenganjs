@@ -58,16 +58,19 @@ export async function bootstrap(
     process.exit(1);
   });
 
-  process.on('SIGTERM', async () => {
+  const shutdown = async () => {
     await serverApp.close();
-    adapter.close();
+    await adapter.close();
     process.exit(0);
-  });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 
   return {
     close: async () => {
       await serverApp.close();
-      adapter.close();
+      await adapter.close();
     },
     app: serverApp,
   };

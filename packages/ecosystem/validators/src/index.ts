@@ -1,7 +1,7 @@
 /**
  * @module @rasenganjs/validation
  *
- * Schema validation middleware for `@rasenganjs/runtime`.
+ * Schema validation middleware for `@rasenganjs/futon`.
  *
  * ## Quick start
  *

@@ -16,7 +16,7 @@ import {
   cors,
   bodyParser,
   redirect,
-} from "@rasenganjs/runtime";
+} from "@rasenganjs/futon";
 
 const demo = new Futon();
 

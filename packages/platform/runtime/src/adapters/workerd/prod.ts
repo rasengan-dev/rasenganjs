@@ -90,6 +90,8 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
       rootDir: process.cwd(),
     });
 
+    await app.init();
+
     this.app = app;
     this.fetchHandler = (request: Request) => app.fetch(request);
 
@@ -110,7 +112,9 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
   }
 
   /** Unregister the fetch listener and clean up. */
-  close(): void {
+  async close(): Promise<void> {
+    await this.app?.destroy();
+
     if (this.boundHandler) {
       self.removeEventListener('fetch', this.boundHandler);
       this.boundHandler = null;

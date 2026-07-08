@@ -7,7 +7,7 @@
  *        pnpm start
  */
 
-import { NodeDevAdapter } from '@rasenganjs/runtime-node';
+import { NodeDevAdapter } from '@rasenganjs/runtime/adapters/node';
 
 import app from './app.mjs';
 

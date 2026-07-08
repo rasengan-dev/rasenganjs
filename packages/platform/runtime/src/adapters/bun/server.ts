@@ -6,6 +6,8 @@
  * Web API `Request`/`Response` pattern, so no conversion is needed.
  */
 
+import { Futon } from '@rasenganjs/futon';
+
 export interface BunServerOptions {
   host?: string;
   port?: number;
@@ -33,7 +35,7 @@ export interface BunServerHandle {
  * @returns A handle to control the server lifecycle.
  */
 export function startBunServer(
-  handler: (request: Request) => Promise<Response>,
+  app: Futon, // Futon instance
   options: BunServerOptions = {}
 ): BunServerHandle {
   try {
@@ -41,7 +43,7 @@ export function startBunServer(
     const hostname = options.host ?? '0.0.0.0';
 
     const server = Bun.serve({
-      fetch: (request) => handler(request),
+      fetch: (request) => app.fetch(request),
       port,
       hostname,
     });
@@ -50,7 +52,10 @@ export function startBunServer(
 
     return {
       ready: Promise.resolve(),
-      close: () => server.stop(),
+      close: async () => {
+        // Then stop the server
+        server.stop();
+      },
     };
   } catch (error) {
     console.error(error);
