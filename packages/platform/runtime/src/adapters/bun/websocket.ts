@@ -10,7 +10,10 @@
  *
  * This module adapts that shape into the runtime-agnostic
  * `WebSocketConnection`/`WebSocketContext` types so application handlers
- * are identical to the Node adapter's.
+ * are identical to the Node adapter's — including `ctx.socket` being the
+ * same object reference for every `open`/`message`/`close` call on one
+ * connection (see `getConnection()`), since callers reasonably key
+ * connection-tracking data structures by that identity.
  *
  * Verified against a real `bun@1.3.8` process (see `types.d.ts`): the
  * `websocket` handler object has no `error` callback the way Node's `ws`
@@ -28,6 +31,15 @@ import { toArrayBuffer } from '../../websocket/utils.js';
 export interface BunWebSocketData {
   handlers: WebSocketHandlers;
   request: Request;
+  /**
+   * Lazily cached by `getConnection()` so `ctx.socket` is the *same*
+   * object reference across `open`/`message`/`close` for one connection —
+   * callers (e.g. `@rasenganjs/ws`) key connection-tracking maps by that
+   * identity, matching the guarantee the Node adapter already provides
+   * (it builds the wrapper once per connection, outside the event
+   * listeners). Do not set this directly.
+   */
+  connection?: WebSocketConnection;
 }
 
 /**
@@ -62,7 +74,17 @@ export function createBunWebSocketHandlers(): {
 }
 
 function makeContext(ws: ServerWebSocket<BunWebSocketData>): WebSocketContext {
-  return { request: ws.data.request, socket: wrapConnection(ws) };
+  return { request: ws.data.request, socket: getConnection(ws) };
+}
+
+/** Build (once) or return the cached `WebSocketConnection` for this connection. */
+function getConnection(
+  ws: ServerWebSocket<BunWebSocketData>
+): WebSocketConnection {
+  if (!ws.data.connection) {
+    ws.data.connection = wrapConnection(ws);
+  }
+  return ws.data.connection;
 }
 
 /** Adapt a Bun `ServerWebSocket` into the runtime-agnostic `WebSocketConnection` shape. */

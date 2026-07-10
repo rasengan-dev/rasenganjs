@@ -158,4 +158,49 @@ describe('Bun WebSocket upgrade handling (RFC-0001)', () => {
       server.close();
     }
   );
+
+  itIfBun(
+    'ctx.socket is the same object reference across open/message/close for one connection',
+    async () => {
+      const sockets: unknown[] = [];
+
+      const handlers: WebSocketHandlers = {
+        open(ctx) {
+          sockets.push(ctx.socket);
+        },
+        message(ctx) {
+          sockets.push(ctx.socket);
+        },
+        close(ctx) {
+          sockets.push(ctx.socket);
+        },
+      };
+
+      const { port, server } = await startTestServer(
+        singleRouteMatcher('/chat', handlers)
+      );
+
+      const client = new WebSocket(`ws://127.0.0.1:${port}/chat`);
+      await new Promise<void>((resolve) => {
+        client.onopen = () => {
+          client.send('hi');
+          resolve();
+        };
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      await new Promise<void>((resolve) => {
+        client.onclose = () => resolve();
+        client.close();
+      });
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      expect(sockets).toHaveLength(3);
+      expect(sockets[0]).toBe(sockets[1]);
+      expect(sockets[1]).toBe(sockets[2]);
+
+      server.close();
+    }
+  );
 });
