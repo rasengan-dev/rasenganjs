@@ -13,6 +13,8 @@ import { Router } from '../router/index.js';
 import type { ModuleConfig } from './module.js';
 import { Context } from '@rasenganjs/futon';
 import { serverLogger } from '../logger/index.js';
+import { WebSocketRegistry } from '../websocket/registry.js';
+import type { WebSocketHandlers } from '../websocket/types.js';
 
 import {
   type ValidationConfig,
@@ -92,6 +94,19 @@ export class ServerApp {
   private destroyHandlers: Array<() => void | Promise<void>> = [];
 
   /**
+   * WebSocket routes registered via `.websocket()`, staged until compile()
+   * builds them into a `WebSocketRegistry`. See RFC-0001 — this registry is
+   * owned by `rasengan-server`, not Futon, since Futon stays HTTP-only.
+   */
+  private websocketRoutes: Array<{
+    path: string;
+    handlers: WebSocketHandlers;
+  }> = [];
+
+  /** WebSocket registry built during compile(), consumed by runtime adapters. */
+  private websocketRegistry: WebSocketRegistry | null = null;
+
+  /**
    * Global validation configuration.
    * Defaults to the built-in Zod adapter and a 400 JSON error response.
    */
@@ -164,6 +179,38 @@ export class ServerApp {
    */
   notFound(handler: (ctx: Context) => Promise<Response>): void {
     this.notFoundHandler = handler;
+  }
+
+  /**
+   * Register a WebSocket route (RFC-0001, phase 1: core abstraction only).
+   *
+   * Staged here and built into a `WebSocketRegistry` during `compile()`.
+   * No runtime adapter consumes this registry yet — that wiring (Node's
+   * `server.on('upgrade')`, Bun's `server.upgrade()`, ...) is a later phase.
+   *
+   * Only static paths are supported in this slice (no `/chat/:room`
+   * dynamic segments yet).
+   *
+   * @example
+   * ```ts
+   * app.websocket('/chat', {
+   *   open(ctx) {},
+   *   message(ctx, data) {},
+   *   close(ctx) {},
+   * });
+   * ```
+   */
+  websocket(path: string, handlers: WebSocketHandlers): void {
+    this.websocketRoutes.push({ path, handlers });
+  }
+
+  /**
+   * The `WebSocketRegistry` built during `compile()`, or `null` if
+   * `compile()` hasn't run yet. Runtime adapters will read this once
+   * upgrade handling is wired up (RFC-0001, later phase).
+   */
+  getWebSocketRegistry(): WebSocketRegistry | null {
+    return this.websocketRegistry;
   }
 
   /**
@@ -275,6 +322,14 @@ export class ServerApp {
     container.initAll().catch((err) => {
       console.error(`[rasengan-server] Provider onInit() failed: ${err}`);
     });
+
+    // Build the WebSocket registry from routes staged via .websocket().
+    // Kept separate from the Futon instance above (see RFC-0001).
+    const wsRegistry = new WebSocketRegistry();
+    for (const { path, handlers } of this.websocketRoutes) {
+      wsRegistry.register(path, handlers);
+    }
+    this.websocketRegistry = wsRegistry;
 
     return app;
   }

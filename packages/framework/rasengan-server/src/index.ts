@@ -21,6 +21,8 @@
  * - `Controller` — route-grouping abstraction
  * - `Container` — lightweight DI container with lifecycle hooks
  * - `defineModule` / `defineConfig` — typed configuration helpers
+ * - `WebSocketRegistry` — runtime-agnostic WebSocket route registry
+ *   (RFC-0001, core abstraction only — no runtime adapter wiring yet)
  */
 
 // ── Bootstrap ────────────────────────────────────────────────
@@ -34,6 +36,14 @@ export type { ModuleConfig } from './server/module.js';
 
 // ── Router ───────────────────────────────────────────────────
 export { Router } from './router/index.js';
+
+// ── WebSocket (RFC-0001, core abstraction — no runtime wiring yet) ──
+export { WebSocketRegistry } from './websocket/index.js';
+export type {
+  WebSocketConnection,
+  WebSocketContext,
+  WebSocketHandlers,
+} from './websocket/index.js';
 
 // ── Controller ────────────────────────────────────────────────
 export { Controller } from './controller/index.js';

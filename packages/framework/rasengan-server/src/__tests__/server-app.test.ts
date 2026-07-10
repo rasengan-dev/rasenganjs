@@ -312,3 +312,45 @@ describe('ServerApp — module and handler registration', () => {
     expect(await res2.text()).toBe('beta');
   });
 });
+
+describe('ServerApp — WebSocket registration (RFC-0001, core abstraction)', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  it('getWebSocketRegistry() is null before compile()', () => {
+    const app = new ServerApp();
+    expect(app.getWebSocketRegistry()).toBeNull();
+  });
+
+  it('builds a WebSocketRegistry during compile() with the registered routes', () => {
+    const openHandler = () => {};
+
+    const app = new ServerApp();
+    app.websocket('/chat', { open: openHandler });
+    app.compile();
+
+    const registry = app.getWebSocketRegistry();
+    expect(registry).not.toBeNull();
+    expect(registry!.match('/chat')?.open).toBe(openHandler);
+  });
+
+  it('does not affect HTTP routing — WebSocket and HTTP routes are independent', async () => {
+    const app = new ServerApp();
+    app.websocket('/chat', { open: () => {} });
+
+    const runtime = app.compile();
+    const response = await runtime.fetch(new Request('http://localhost/chat'));
+
+    // '/chat' was only registered as a WebSocket route, so plain HTTP still 404s.
+    expect(response.status).toBe(404);
+  });
+
+  it('throws at compile() time when two websocket() calls share a path', () => {
+    const app = new ServerApp();
+    app.websocket('/chat', {});
+    app.websocket('/chat', {});
+
+    expect(() => app.compile()).toThrow(/already registered/);
+  });
+});
