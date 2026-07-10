@@ -26,6 +26,14 @@ export interface ModuleConfig {
   controllers?: (new (...args: any[]) => Controller)[];
   /** Providers to register in the dependency-injection container. */
   providers?: (ProviderLike | ProviderDefinition)[];
+  /**
+   * Open extension point for ecosystem packages (e.g. `@rasenganjs/ws`
+   * registers a `gateways` key). `rasengan-server` never interprets these
+   * values itself — a matching `ModulePlugin` registered via
+   * `app.registerPlugin()` must claim the key, or `compile()` throws.
+   * See `../plugin/index.js`.
+   */
+  [extensionKey: string]: unknown;
 }
 
 /**

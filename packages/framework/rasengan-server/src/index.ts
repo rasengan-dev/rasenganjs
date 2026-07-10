@@ -23,6 +23,8 @@
  * - `defineModule` / `defineConfig` — typed configuration helpers
  * - `WebSocketRegistry` — runtime-agnostic WebSocket route registry
  *   (RFC-0001, core abstraction only — no runtime adapter wiring yet)
+ * - `ModulePlugin` — extension point letting ecosystem packages (e.g.
+ *   `@rasenganjs/ws`) add their own `defineModule()` fields
  */
 
 // ── Bootstrap ────────────────────────────────────────────────
@@ -33,6 +35,9 @@ export { ServerApp } from './server/app.js';
 export type { ServerHandle } from './server/app.js';
 export { defineModule } from './server/module.js';
 export type { ModuleConfig } from './server/module.js';
+
+// ── Module plugins ────────────────────────────────────────────
+export type { ModulePlugin } from './plugin/index.js';
 
 // ── Router ───────────────────────────────────────────────────
 export { Router } from './router/index.js';

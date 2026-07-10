@@ -15,6 +15,7 @@ import { Context } from '@rasenganjs/futon';
 import { serverLogger } from '../logger/index.js';
 import { WebSocketRegistry } from '../websocket/registry.js';
 import type { WebSocketHandlers } from '../websocket/types.js';
+import type { ModulePlugin } from '../plugin/index.js';
 
 import {
   type ValidationConfig,
@@ -106,6 +107,9 @@ export class ServerApp {
   /** WebSocket registry built during compile(), consumed by runtime adapters. */
   private websocketRegistry: WebSocketRegistry | null = null;
 
+  /** Module-extension plugins registered via `.registerPlugin()`, keyed by their claimed `ModuleConfig` field. */
+  private plugins = new Map<string, ModulePlugin>();
+
   /**
    * Global validation configuration.
    * Defaults to the built-in Zod adapter and a 400 JSON error response.
@@ -122,6 +126,30 @@ export class ServerApp {
    */
   registerModule(mod: ModuleConfig | (() => ModuleConfig)): void {
     this.modules.push(typeof mod === 'function' ? mod() : mod);
+  }
+
+  /**
+   * Register a `ModulePlugin`, claiming one `ModuleConfig` extension key
+   * (e.g. `'gateways'`). During `compile()`, every flattened module that
+   * declares a value at that key gets forwarded to `plugin.register()`.
+   *
+   * Order relative to `registerModule()` doesn't matter — both just need
+   * to happen before `compile()`.
+   *
+   * @example
+   * ```ts
+   * app.registerPlugin(createWsPlugin());
+   * app.registerModule(appModule); // may declare `gateways: [ChatGateway]`
+   * ```
+   */
+  registerPlugin(plugin: ModulePlugin): void {
+    const existing = this.plugins.get(plugin.key);
+    if (existing) {
+      throw new Error(
+        `[rasengan-server] A plugin is already registered for module key "${plugin.key}".`
+      );
+    }
+    this.plugins.set(plugin.key, plugin);
   }
 
   /**
@@ -310,6 +338,10 @@ export class ServerApp {
       this.registerControllers(app, container, mod);
     }
 
+    for (const mod of flatModules) {
+      this.dispatchPlugins(container, mod);
+    }
+
     // Forward app-level lifecycle handlers to the Futon instance
     for (const handler of this.initHandlers) {
       app.onInit(handler);
@@ -415,7 +447,47 @@ export class ServerApp {
       }
     }
   }
+
+  /**
+   * Forward a module's extension-key values (anything beyond `prefix`,
+   * `middlewares`, `imports`, `controllers`, `providers`) to the
+   * `ModulePlugin` that claimed that key.
+   *
+   * Throws if a module declares a key with no matching registered
+   * plugin — a silent no-op here would mean e.g. `gateways: [...]`
+   * quietly does nothing because `app.registerPlugin(createWsPlugin())`
+   * was never called.
+   */
+  private dispatchPlugins(container: Container, mod: ModuleConfig): void {
+    for (const key of Object.keys(mod)) {
+      if (RESERVED_MODULE_KEYS.has(key)) continue;
+
+      const value = mod[key];
+      if (value === undefined) continue;
+
+      const plugin = this.plugins.get(key);
+      if (!plugin) {
+        throw new Error(
+          `[rasengan-server] Module declares unknown key "${key}" with no ` +
+            `matching plugin. If this is meant to be handled by an ecosystem ` +
+            `package (e.g. \`@rasenganjs/ws\` for "gateways"), call ` +
+            `\`app.registerPlugin(...)\` into \`bootstrap()\`.`
+        );
+      }
+
+      plugin.register(this, container, mod, value);
+    }
+  }
 }
+
+/** `ModuleConfig` fields `dispatchPlugins()` never forwards to a plugin. */
+const RESERVED_MODULE_KEYS = new Set([
+  'prefix',
+  'middlewares',
+  'imports',
+  'controllers',
+  'providers',
+]);
 
 /**
  * Recursively flatten a module tree into a linear array.
