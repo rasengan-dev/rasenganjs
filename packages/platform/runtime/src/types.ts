@@ -1,3 +1,5 @@
+import type { WebSocketRouteMatcher } from './websocket/types.js';
+
 /**
  * Supported runtime environments.
  */
@@ -48,6 +50,15 @@ export interface ServeOptions {
     /** Extra arguments passed to the entry script. */
     args?: string[];
   };
+
+  /**
+   * Looks up WebSocket handlers by pathname (RFC-0001). Typically
+   * `ServerApp.getWebSocketRegistry()` from `@rasenganjs/server`, passed
+   * through untouched — `@rasenganjs/runtime` never imports that class,
+   * it only needs this `match()` shape. Adapters that don't support
+   * WebSockets yet (Bun, workerd) currently ignore this field.
+   */
+  websocket?: WebSocketRouteMatcher;
 }
 
 /**

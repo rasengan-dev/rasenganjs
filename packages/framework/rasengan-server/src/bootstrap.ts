@@ -47,10 +47,19 @@ export async function bootstrap(
 
   const adapter: RuntimeAdapter = await selectAdapter(config);
 
+  // The WebSocket registry (RFC-0001) is only consumed by the Node adapter
+  // so far; other adapters (Bun, workerd) ignore `ServeOptions.websocket`
+  // until their own upgrade-handling phase lands.
+  const websocketRegistry = serverApp.getWebSocketRegistry();
+
   const serveOptions: ServeOptions = {
     onListening: (info) => {
       logServerInfo(info.port, info.host);
     },
+    websocket:
+      websocketRegistry && !websocketRegistry.isEmpty
+        ? websocketRegistry
+        : undefined,
   };
 
   adapter.serve(runtimeApp, serveOptions).catch((err: Error) => {

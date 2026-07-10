@@ -34,3 +34,11 @@ export type {
 // ── Environment utilities ─────────────────────────────────────
 export type { EnvironmentMap } from './env.js';
 export { parseEnv, getEnvFileNames, detectRuntime } from './env.js';
+
+// ── WebSocket (RFC-0001) ────────────────────────────────────────
+export type {
+  WebSocketConnection,
+  WebSocketContext,
+  WebSocketHandlers,
+  WebSocketRouteMatcher,
+} from './websocket/types.js';

@@ -127,6 +127,7 @@ export class NodeDevAdapter implements RuntimeAdapter {
       port: this.options.port,
       host: this.options.host,
       onListening: this.serveOptions.onListening,
+      websocket: this.serveOptions.websocket,
     });
   }
 }

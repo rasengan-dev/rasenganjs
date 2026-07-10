@@ -11,6 +11,10 @@
 
 import http from 'node:http';
 
+import type { WebSocketRouteMatcher } from '../../websocket/types.js';
+import { createNodeUpgradeHandler } from './websocket.js';
+import { incomingToRequest } from './request.js';
+
 /**
  * Options shared by all Node-based servers.
  */
@@ -20,6 +24,15 @@ export interface NodeServerOptions {
 
   /** Called when the server starts listening. */
   onListening?: (info: { port: number; host: string }) => void;
+
+  /**
+   * Looks up WebSocket handlers for an incoming upgrade request's
+   * pathname. When provided, `startNodeServer` wires up the HTTP
+   * server's `upgrade` event (RFC-0001, Node adapter phase). When
+   * omitted, upgrade requests are left unhandled and Node closes
+   * the socket by default.
+   */
+  websocket?: WebSocketRouteMatcher;
 }
 
 /**
@@ -86,6 +99,13 @@ export function startNodeServer(
     }
   });
 
+  if (options.websocket) {
+    // Node's http server has no built-in WebSocket protocol support — it
+    // only emits 'upgrade' with a raw duplex socket. Delegate handshake +
+    // framing to `ws` via `createNodeUpgradeHandler`.
+    server.on('upgrade', createNodeUpgradeHandler(options.websocket));
+  }
+
   const ready = new Promise<void>((resolve, reject) => {
     server.on('error', reject);
     server.on('close', resolve);
@@ -100,36 +120,4 @@ export function startNodeServer(
     ready,
     close: () => server.close(),
   };
-}
-
-/**
- * Convert a Node.js IncomingMessage into a Web API Request.
- */
-async function incomingToRequest(req: http.IncomingMessage): Promise<Request> {
-  const protocol =
-    (req.socket as unknown as { encrypted?: boolean }).encrypted ||
-    req.headers['x-forwarded-proto'] === 'https'
-      ? 'https'
-      : 'http';
-  const host = req.headers.host ?? 'localhost';
-  const url = `${protocol}://${host}${req.url}`;
-
-  // Only read body for methods that support it
-  let body: string | undefined;
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    body = await new Promise<string>((resolve) => {
-      const chunks: string[] = [];
-      req.setEncoding('utf8');
-      req.on('data', (c: string) => chunks.push(c));
-      req.on('end', () => resolve(chunks.join('')));
-    });
-  }
-
-  return new Request(url, {
-    method: req.method,
-    headers: Object.entries(req.headers)
-      .filter(([, v]) => v !== undefined)
-      .map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : v!]),
-    body: body ?? undefined,
-  });
 }

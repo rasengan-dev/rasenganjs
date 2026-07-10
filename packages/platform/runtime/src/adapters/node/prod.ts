@@ -121,6 +121,7 @@ export class NodeProdAdapter implements RuntimeAdapter {
       port: this.options.port,
       host: this.options.host,
       onListening: options?.onListening,
+      websocket: options?.websocket,
     });
 
     return this.serverHandle.ready;

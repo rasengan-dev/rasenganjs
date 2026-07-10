@@ -14,6 +14,9 @@ import type { WebSocketHandlers } from './types.js';
  * `app.websocket(path, handlers)`, then handed to the runtime adapter
  * (Node/Bun/...) so it can look up handlers for an incoming upgrade
  * request by pathname.
+ *
+ * `match()` alone satisfies `@rasenganjs/runtime`'s `WebSocketRouteMatcher`
+ * interface structurally — this class never imports from `runtime`.
  */
 export class WebSocketRegistry {
   private routes = new Map<string, WebSocketHandlers>();

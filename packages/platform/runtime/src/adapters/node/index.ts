@@ -30,3 +30,6 @@ export { startNodeServer } from './server.js';
 export type { NodeServerOptions, NodeServerHandle } from './server.js';
 
 export { loadNodeEnvFiles } from './env.js';
+
+// ── WebSocket (RFC-0001) ────────────────────────────────────────
+export { createNodeUpgradeHandler } from './websocket.js';
