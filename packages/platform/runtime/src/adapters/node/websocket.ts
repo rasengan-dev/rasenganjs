@@ -23,6 +23,7 @@ import type {
   WebSocketContext,
   WebSocketRouteMatcher,
 } from '../../websocket/types.js';
+import { toArrayBuffer } from '../../websocket/utils.js';
 import { incomingToRequest } from './request.js';
 
 /**
@@ -84,7 +85,7 @@ async function handleUpgrade(
     ws.on('message', (data, isBinary) => {
       const buffer = data as Buffer;
       const payload: string | ArrayBuffer = isBinary
-        ? bufferToArrayBuffer(buffer)
+        ? toArrayBuffer(buffer)
         : buffer.toString('utf8');
       handlers.message?.(ctx, payload);
     });
@@ -111,12 +112,4 @@ function wrapConnection(ws: WSWebSocket): WebSocketConnection {
       return ws.protocol;
     },
   };
-}
-
-/** `ws` delivers message payloads as Node `Buffer`s; binary handlers expect ArrayBuffer. */
-function bufferToArrayBuffer(buffer: Buffer): ArrayBuffer {
-  return buffer.buffer.slice(
-    buffer.byteOffset,
-    buffer.byteOffset + buffer.byteLength
-  ) as ArrayBuffer;
 }

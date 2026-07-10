@@ -6,7 +6,11 @@
  * Web API `Request`/`Response` pattern, so no conversion is needed.
  */
 
-import { Futon } from '@rasenganjs/futon';
+import type { WebSocketRouteMatcher } from '../../websocket/types.js';
+import {
+  createBunWebSocketHandlers,
+  type BunWebSocketData,
+} from './websocket.js';
 
 export interface BunServerOptions {
   host?: string;
@@ -14,6 +18,14 @@ export interface BunServerOptions {
 
   /** Called when the server starts listening. */
   onListening?: (info: { port: number; host: string }) => void;
+
+  /**
+   * Looks up WebSocket handlers for an incoming upgrade request's
+   * pathname. When provided, `startBunServer` hijacks matching upgrade
+   * requests via `server.upgrade()` (RFC-0001, Bun adapter phase). When
+   * omitted, no `websocket` option is passed to `Bun.serve()` at all.
+   */
+  websocket?: WebSocketRouteMatcher;
 }
 
 export interface BunServerHandle {
@@ -31,19 +43,38 @@ export interface BunServerHandle {
  * and a `close()` method to stop the server.
  *
  * @param handler - Fetch handler matching WinterCG signature.
- * @param options - Server options (port, host, callback).
+ * @param options - Server options (port, host, callback, websocket).
  * @returns A handle to control the server lifecycle.
  */
 export function startBunServer(
-  app: Futon, // Futon instance
+  handler: (request: Request) => Promise<Response>,
   options: BunServerOptions = {}
 ): BunServerHandle {
   try {
     const port = options.port;
     const hostname = options.host ?? '0.0.0.0';
+    const matcher = options.websocket;
 
-    const server = Bun.serve({
-      fetch: (request) => app.fetch(request),
+    const server = Bun.serve<BunWebSocketData>({
+      fetch(request, server) {
+        if (matcher && isWebSocketUpgrade(request)) {
+          const { pathname } = new URL(request.url);
+          const handlers = matcher.match(pathname);
+
+          if (handlers) {
+            const upgraded = server.upgrade(request, {
+              data: { handlers, request },
+            });
+            // Per Bun's contract: return undefined (no Response) once
+            // upgraded — Bun has taken over the connection.
+            if (upgraded) return undefined;
+          }
+        }
+
+        return handler(request);
+      },
+      // Only required (and only valid) when `fetch` may call `server.upgrade()`.
+      websocket: matcher ? createBunWebSocketHandlers() : undefined,
       port,
       hostname,
     });
@@ -61,4 +92,9 @@ export function startBunServer(
     console.error(error);
     throw error;
   }
+}
+
+/** Whether a request is asking to be upgraded to a WebSocket connection. */
+function isWebSocketUpgrade(request: Request): boolean {
+  return request.headers.get('upgrade')?.toLowerCase() === 'websocket';
 }

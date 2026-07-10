@@ -102,10 +102,11 @@ export class BunProdAdapter implements RuntimeAdapter {
 
     await app.init();
 
-    this.serverHandle = startBunServer(app, {
+    this.serverHandle = startBunServer((request) => app.fetch(request), {
       port: this.options.port,
       host: this.options.host,
       onListening: options?.onListening,
+      websocket: options?.websocket,
     });
 
     return this.serverHandle.ready;

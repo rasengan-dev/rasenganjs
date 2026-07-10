@@ -110,10 +110,11 @@ export class BunDevAdapter implements RuntimeAdapter {
 
   /** Start the in-process HTTP server via Bun.serve(). */
   private startServer(app: Futon): void {
-    this.serverHandle = startBunServer(app, {
+    this.serverHandle = startBunServer((request) => app.fetch(request), {
       port: this.options.port,
       host: this.options.host,
       onListening: this.serveOptions.onListening,
+      websocket: this.serveOptions.websocket,
     });
   }
 }
