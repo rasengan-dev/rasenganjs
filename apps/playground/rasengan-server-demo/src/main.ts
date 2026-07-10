@@ -1,8 +1,13 @@
 import { bootstrap } from '@rasenganjs/server';
+import { createWsPlugin } from '@rasenganjs/ws';
 import appModule from './app.module';
 import { zodAdapter } from '@rasenganjs/validators';
 
 bootstrap(async (app) => {
+  // Claims the `gateways` key on defineModule() — must run before
+  // registerModule() picks up ChatRoomModule's `gateways: [ChatRoomGateway]`.
+  app.registerPlugin(createWsPlugin());
+
   app.registerModule(appModule);
 
   app.configureValidation({
@@ -14,8 +19,10 @@ bootstrap(async (app) => {
   });
 
   // RFC-0001 core abstraction + Node adapter smoke test: a simple echo
-  // room at /chat. Connect with a WebSocket client (see
-  // scripts/ws-client.mjs) while running `pnpm dev` under Node.
+  // room at /chat, registered directly via app.websocket(). Connect with
+  // a WebSocket client (see scripts/ws-client.mjs) while running
+  // `pnpm dev`. Contrast with /rooms below, registered through
+  // @rasenganjs/ws's Gateway + module-plugin layer instead.
   app.websocket('/chat', {
     open(ctx) {
       console.log('[ws] client connected:', ctx.request.url);
