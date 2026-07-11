@@ -69,7 +69,7 @@ export class RedisGatewayAdapter implements GatewayAdapter {
   ): () => void {
     let subs = this.handlers.get(channel);
     const isFirstSubscriber = !subs;
-    if (!subs) {
+    if (isFirstSubscriber) {
       subs = new Set();
       this.handlers.set(channel, subs);
     }

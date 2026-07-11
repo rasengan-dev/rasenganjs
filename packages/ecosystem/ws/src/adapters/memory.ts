@@ -9,7 +9,7 @@ import type { GatewayAdapter, BroadcastMessage } from '../types.js';
  */
 export class MemoryGatewayAdapter implements GatewayAdapter {
   private subscribers = new Map<
-    string,
+    string, // channel / path
     Set<(message: BroadcastMessage) => void>
   >();
 
