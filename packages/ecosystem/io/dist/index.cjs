@@ -19,7 +19,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
+  RESERVED_EVENTS: () => RESERVED_EVENTS,
   RasenganIOProvider: () => RasenganIOProvider,
+  RasenganSocket: () => RasenganSocket,
   useConnection: () => useConnection,
   useEmit: () => useEmit,
   useEvent: () => useEvent,
@@ -29,7 +31,213 @@ module.exports = __toCommonJS(src_exports);
 
 // src/components/Provider.tsx
 var import_react2 = require("react");
-var import_socket = require("socket.io-client");
+
+// src/core/socket.ts
+var RESERVED_EVENTS = [
+  "connect",
+  "disconnect",
+  "error",
+  "reconnecting",
+  "reconnect_failed",
+  "binary"
+];
+var DEFAULTS = {
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1e3,
+  reconnectionDelayMax: 1e4,
+  randomizationFactor: 0.5,
+  emitBufferSize: 64,
+  protocols: void 0
+};
+var RasenganSocket = class {
+  url;
+  options;
+  ws = null;
+  listeners = /* @__PURE__ */ new Map();
+  buffer = [];
+  currentStatus = "idle";
+  attempts = 0;
+  reconnectTimer = null;
+  /** True while a close was requested via `disconnect()` — no reconnect. */
+  intentionalClose = false;
+  constructor(url, options = {}) {
+    this.url = url;
+    this.options = { ...DEFAULTS, ...options };
+  }
+  get status() {
+    return this.currentStatus;
+  }
+  get isConnected() {
+    return this.currentStatus === "open";
+  }
+  // ── Lifecycle ─────────────────────────────────────────────────────
+  /** Open the connection. No-op if already connecting/connected. */
+  connect() {
+    if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) {
+      return;
+    }
+    if (typeof WebSocket === "undefined") {
+      throw new Error(
+        "[rasengan-io] No global WebSocket available. connect() must run in a browser (or a runtime with the Web Standard WebSocket class)."
+      );
+    }
+    this.clearReconnectTimer();
+    this.intentionalClose = false;
+    this.attempts = 0;
+    this.open("connecting");
+  }
+  /** Close the connection and stop any reconnection. */
+  disconnect(code, reason) {
+    this.intentionalClose = true;
+    this.clearReconnectTimer();
+    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
+      this.ws.close(code, reason);
+    } else {
+      this.currentStatus = "closed";
+    }
+  }
+  // ── Messaging ─────────────────────────────────────────────────────
+  /**
+   * Send an `{ event, data }` envelope. While the socket isn't open the
+   * frame is queued (bounded, see `emitBufferSize`) and flushed right
+   * after the next successful connection.
+   */
+  emit(event, data) {
+    const frame = JSON.stringify({ event, data });
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(frame);
+      return;
+    }
+    if (this.options.emitBufferSize > 0) {
+      this.buffer.push(frame);
+      if (this.buffer.length > this.options.emitBufferSize) {
+        this.buffer.shift();
+      }
+    }
+  }
+  on(event, handler) {
+    let set = this.listeners.get(event);
+    if (!set) {
+      set = /* @__PURE__ */ new Set();
+      this.listeners.set(event, set);
+    }
+    set.add(handler);
+    return () => this.off(event, handler);
+  }
+  off(event, handler) {
+    this.listeners.get(event)?.delete(handler);
+  }
+  removeAllListeners() {
+    this.listeners.clear();
+  }
+  // ── Internals ─────────────────────────────────────────────────────
+  open(status) {
+    this.currentStatus = status;
+    const ws = this.options.protocols ? new WebSocket(this.url, this.options.protocols) : new WebSocket(this.url);
+    ws.binaryType = "arraybuffer";
+    this.ws = ws;
+    ws.onopen = () => {
+      this.attempts = 0;
+      this.currentStatus = "open";
+      this.flushBuffer();
+      this.dispatch("connect");
+    };
+    ws.onmessage = (e) => {
+      if (typeof e.data !== "string") {
+        this.dispatch("binary", e.data);
+        return;
+      }
+      let envelope;
+      try {
+        envelope = JSON.parse(e.data);
+      } catch {
+        this.dispatch(
+          "error",
+          new Error("[rasengan-io] Received a non-envelope text frame.")
+        );
+        return;
+      }
+      if (typeof envelope?.event !== "string") {
+        this.dispatch(
+          "error",
+          new Error("[rasengan-io] Received a frame without an event name.")
+        );
+        return;
+      }
+      this.dispatch(envelope.event, envelope.data);
+    };
+    let settled = false;
+    const settle = (code, reason) => {
+      if (settled) return;
+      settled = true;
+      const wasOpen = this.currentStatus === "open";
+      this.ws = null;
+      if (wasOpen) {
+        this.dispatch("disconnect", { code, reason });
+      }
+      if (this.intentionalClose || !this.options.reconnection) {
+        this.currentStatus = "closed";
+        return;
+      }
+      this.scheduleReconnect();
+    };
+    ws.onclose = (e) => settle(e.code, e.reason);
+    ws.onerror = () => {
+      this.dispatch("error", new Error("[rasengan-io] WebSocket error."));
+      if (ws.readyState !== WebSocket.OPEN && ws.readyState !== WebSocket.CLOSING) {
+        settle();
+      }
+    };
+  }
+  scheduleReconnect() {
+    if (this.attempts >= this.options.reconnectionAttempts) {
+      this.currentStatus = "closed";
+      this.dispatch("reconnect_failed");
+      return;
+    }
+    this.attempts++;
+    const base = Math.min(
+      this.options.reconnectionDelayMax,
+      this.options.reconnectionDelay * 2 ** (this.attempts - 1)
+    );
+    const delay = Math.max(
+      0,
+      Math.round(base - Math.random() * base * this.options.randomizationFactor)
+    );
+    this.currentStatus = "reconnecting";
+    this.dispatch("reconnecting", { attempt: this.attempts, delay });
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.open("reconnecting");
+    }, delay);
+  }
+  flushBuffer() {
+    if (this.buffer.length === 0) return;
+    const pending = this.buffer;
+    this.buffer = [];
+    for (const frame of pending) {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(frame);
+      } else {
+        this.buffer.push(frame);
+      }
+    }
+  }
+  dispatch(event, ...args) {
+    const set = this.listeners.get(event);
+    if (!set) return;
+    for (const handler of [...set]) {
+      handler(...args);
+    }
+  }
+  clearReconnectTimer() {
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+  }
+};
 
 // src/contexts/socket.ts
 var import_react = require("react");
@@ -58,15 +266,8 @@ function RasenganIOProvider({
   autoConnectRef.current = autoConnect;
   (0, import_react2.useEffect)(() => {
     if (!isBrowser) return;
-    const instance = (0, import_socket.io)(url, {
-      autoConnect: false,
-      ...optionsRef.current
-    });
+    const instance = new RasenganSocket(url, optionsRef.current);
     setSocket(instance);
-    if (autoConnectRef.current) {
-      setIsConnecting(true);
-      instance.connect();
-    }
     instance.on("connect", () => {
       setIsConnected(true);
       setIsConnecting(false);
@@ -74,12 +275,20 @@ function RasenganIOProvider({
     });
     instance.on("disconnect", () => {
       setIsConnected(false);
+    });
+    instance.on("reconnecting", () => {
+      setIsConnecting(true);
+    });
+    instance.on("reconnect_failed", () => {
       setIsConnecting(false);
     });
-    instance.on("connect_error", (err) => {
+    instance.on("error", (err) => {
       setError(err);
-      setIsConnecting(false);
     });
+    if (autoConnectRef.current) {
+      setIsConnecting(true);
+      instance.connect();
+    }
     return () => {
       instance.removeAllListeners();
       instance.disconnect();
@@ -90,10 +299,13 @@ function RasenganIOProvider({
     };
   }, [url]);
   const connect = (0, import_react2.useCallback)(() => {
-    socket?.connect();
+    if (!socket) return;
+    setIsConnecting(true);
+    socket.connect();
   }, [socket]);
   const disconnect = (0, import_react2.useCallback)(() => {
     socket?.disconnect();
+    setIsConnecting(false);
   }, [socket]);
   const entry = (0, import_react2.useMemo)(
     () => ({
@@ -123,32 +335,27 @@ function useSocket(name = "default") {
 
 // src/hooks/useEvent.ts
 var import_react4 = require("react");
-function useEvent(nameOrEvent, eventOrHandler, handlerOrDeps, deps) {
+function useEvent(nameOrEvent, eventOrHandler, maybeHandler) {
   let name = "default";
   let event;
   let handler;
   if (typeof eventOrHandler === "string") {
     name = nameOrEvent;
     event = eventOrHandler;
-    handler = handlerOrDeps;
+    handler = maybeHandler;
   } else {
     event = nameOrEvent;
     handler = eventOrHandler;
-    deps = handlerOrDeps;
   }
   const socket = useSocket(name);
   const handlerRef = (0, import_react4.useRef)(handler);
   handlerRef.current = handler;
   (0, import_react4.useEffect)(() => {
     if (!socket) return;
-    const listener = (...args) => {
-      handlerRef.current(...args);
-    };
-    socket.on(event, listener);
-    return () => {
-      socket.off(event, listener);
-    };
-  }, [socket, event, ...deps ?? []]);
+    return socket.on(event, (data) => {
+      handlerRef.current(data);
+    });
+  }, [socket, event]);
 }
 
 // src/hooks/useConnection.ts
@@ -170,13 +377,15 @@ function useConnection(name = "default") {
 // src/hooks/useEmit.ts
 function useEmit(name = "default") {
   const socket = useSocket(name);
-  return (event, ...args) => {
-    socket?.emit(event, ...args);
+  return (event, ...data) => {
+    socket?.emit(event, data[0]);
   };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  RESERVED_EVENTS,
   RasenganIOProvider,
+  RasenganSocket,
   useConnection,
   useEmit,
   useEvent,

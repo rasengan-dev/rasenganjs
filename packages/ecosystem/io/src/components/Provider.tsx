@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useState, useCallback, use, useRef } from 'react';
-import { io } from 'socket.io-client';
+import { RasenganSocket } from '../core/socket.js';
 import { SocketContext } from '../contexts/socket.js';
 import { isBrowser } from '../utils/index.js';
 import type { RasenganIOProviderProps, SocketEntry } from '../types/index.js';
 
+/**
+ * Owns one `RasenganSocket` (one WebSocket connection) and registers it
+ * in the context under `name`, so nested providers compose into a
+ * registry of named sockets. SSR-safe: the socket is only created in
+ * the browser; on the server every hook sees a `null` socket.
+ */
 export function RasenganIOProvider({
   name = 'default',
   url,
@@ -12,7 +18,7 @@ export function RasenganIOProvider({
   children,
 }: RasenganIOProviderProps) {
   const parentRegistry = use(SocketContext);
-  const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
+  const [socket, setSocket] = useState<RasenganSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -26,17 +32,8 @@ export function RasenganIOProvider({
   useEffect(() => {
     if (!isBrowser) return;
 
-    const instance = io(url, {
-      autoConnect: false,
-      ...optionsRef.current,
-    });
-
+    const instance = new RasenganSocket(url, optionsRef.current);
     setSocket(instance);
-
-    if (autoConnectRef.current) {
-      setIsConnecting(true);
-      instance.connect();
-    }
 
     instance.on('connect', () => {
       setIsConnected(true);
@@ -46,13 +43,26 @@ export function RasenganIOProvider({
 
     instance.on('disconnect', () => {
       setIsConnected(false);
+    });
+
+    // Fired for the initial connection failure AND before every retry —
+    // the socket is actively trying, so the UI should say "connecting".
+    instance.on('reconnecting', () => {
+      setIsConnecting(true);
+    });
+
+    instance.on('reconnect_failed', () => {
       setIsConnecting(false);
     });
 
-    instance.on('connect_error', (err) => {
+    instance.on('error', (err) => {
       setError(err);
-      setIsConnecting(false);
     });
+
+    if (autoConnectRef.current) {
+      setIsConnecting(true);
+      instance.connect();
+    }
 
     return () => {
       instance.removeAllListeners();
@@ -65,11 +75,14 @@ export function RasenganIOProvider({
   }, [url]);
 
   const connect = useCallback(() => {
-    socket?.connect();
+    if (!socket) return;
+    setIsConnecting(true);
+    socket.connect();
   }, [socket]);
 
   const disconnect = useCallback(() => {
     socket?.disconnect();
+    setIsConnecting(false);
   }, [socket]);
 
   const entry = useMemo<SocketEntry>(

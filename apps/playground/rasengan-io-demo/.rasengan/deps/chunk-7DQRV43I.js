@@ -1,9 +1,8 @@
-import { require_react } from './chunk-OWF4UUX6.js';
-import { __commonJS } from './chunk-G3PMV62Z.js';
+import { __commonJS, require_react } from './chunk-U4KNHTYC.js';
 
-// ../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/cjs/react-dom.development.js
+// ../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/cjs/react-dom.development.js
 var require_react_dom_development = __commonJS({
-  '../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/cjs/react-dom.development.js'(
+  '../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/cjs/react-dom.development.js'(
     exports
   ) {
     'use strict';
@@ -424,7 +423,7 @@ var require_react_dom_development = __commonJS({
       exports.useFormStatus = function () {
         return resolveDispatcher().useHostTransitionStatus();
       };
-      exports.version = '19.1.1';
+      exports.version = '19.2.7';
       'undefined' !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ &&
         'function' ===
           typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop &&
@@ -433,9 +432,9 @@ var require_react_dom_development = __commonJS({
   },
 });
 
-// ../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/index.js
+// ../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/index.js
 var require_react_dom = __commonJS({
-  '../../node_modules/.pnpm/react-dom@19.1.1_react@19.1.1/node_modules/react-dom/index.js'(
+  '../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/index.js'(
     exports,
     module
   ) {
@@ -449,4 +448,4 @@ var require_react_dom = __commonJS({
 });
 
 export { require_react_dom };
-//# sourceMappingURL=chunk-BTNRKHLG.js.map
+//# sourceMappingURL=chunk-7DQRV43I.js.map

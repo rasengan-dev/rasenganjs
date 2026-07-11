@@ -1,34 +1,38 @@
 import { useEffect, useRef } from 'react';
 import { useSocket } from './useSocket.js';
+import type { EventsMap } from '../core/socket.js';
 
 export function useEvent<
-  Events extends Record<string, (...args: any[]) => void>,
-  Event extends keyof Events,
->(event: Event, handler: Events[Event], deps?: any[]): void;
+  Events extends EventsMap,
+  Event extends keyof Events & string,
+>(event: Event, handler: Events[Event]): void;
 
 export function useEvent<
-  Events extends Record<string, (...args: any[]) => void>,
-  Event extends keyof Events,
->(name: string, event: Event, handler: Events[Event], deps?: any[]): void;
+  Events extends EventsMap,
+  Event extends keyof Events & string,
+>(name: string, event: Event, handler: Events[Event]): void;
 
+/**
+ * Subscribe to one server event for the lifetime of the component.
+ * The handler is kept fresh via a ref, so it can freely close over
+ * state without re-subscribing — no dependency array needed.
+ */
 export function useEvent(
   nameOrEvent: string,
-  eventOrHandler: any,
-  handlerOrDeps?: any,
-  deps?: any[]
+  eventOrHandler: string | ((data: any) => void),
+  maybeHandler?: (data: any) => void
 ) {
   let name = 'default';
   let event: string;
-  let handler: (...args: any[]) => void;
+  let handler: (data: any) => void;
 
   if (typeof eventOrHandler === 'string') {
     name = nameOrEvent;
     event = eventOrHandler;
-    handler = handlerOrDeps;
+    handler = maybeHandler!;
   } else {
     event = nameOrEvent;
     handler = eventOrHandler;
-    deps = handlerOrDeps;
   }
 
   const socket = useSocket(name);
@@ -38,14 +42,8 @@ export function useEvent(
   useEffect(() => {
     if (!socket) return;
 
-    const listener = (...args: any[]) => {
-      handlerRef.current(...args);
-    };
-
-    socket.on(event, listener);
-
-    return () => {
-      socket.off(event, listener);
-    };
-  }, [socket, event, ...(deps ?? [])]);
+    return socket.on(event, (data: any) => {
+      handlerRef.current(data);
+    });
+  }, [socket, event]);
 }

@@ -1,9 +1,8 @@
-import { require_react } from './chunk-OWF4UUX6.js';
-import { __commonJS } from './chunk-G3PMV62Z.js';
+import { __commonJS, require_react } from './chunk-U4KNHTYC.js';
 
-// ../../node_modules/.pnpm/react@19.1.1/node_modules/react/cjs/react-jsx-dev-runtime.development.js
+// ../../../node_modules/.pnpm/react@19.2.7/node_modules/react/cjs/react-jsx-dev-runtime.development.js
 var require_react_jsx_dev_runtime_development = __commonJS({
-  '../../node_modules/.pnpm/react@19.1.1/node_modules/react/cjs/react-jsx-dev-runtime.development.js'(
+  '../../../node_modules/.pnpm/react@19.2.7/node_modules/react/cjs/react-jsx-dev-runtime.development.js'(
     exports
   ) {
     'use strict';
@@ -40,7 +39,7 @@ var require_react_jsx_dev_runtime_development = __commonJS({
             case REACT_PORTAL_TYPE:
               return 'Portal';
             case REACT_CONTEXT_TYPE:
-              return (type.displayName || 'Context') + '.Provider';
+              return type.displayName || 'Context';
             case REACT_CONSUMER_TYPE:
               return (type._context.displayName || 'Context') + '.Consumer';
             case REACT_FORWARD_REF_TYPE:
@@ -148,17 +147,8 @@ var require_react_jsx_dev_runtime_development = __commonJS({
         componentName = this.props.ref;
         return void 0 !== componentName ? componentName : null;
       }
-      function ReactElement(
-        type,
-        key,
-        self,
-        source,
-        owner,
-        props,
-        debugStack,
-        debugTask
-      ) {
-        self = props.ref;
+      function ReactElement(type, key, props, owner, debugStack, debugTask) {
+        var refProp = props.ref;
         type = {
           $$typeof: REACT_ELEMENT_TYPE,
           type,
@@ -166,7 +156,7 @@ var require_react_jsx_dev_runtime_development = __commonJS({
           props,
           _owner: owner,
         };
-        null !== (void 0 !== self ? self : null)
+        null !== (void 0 !== refProp ? refProp : null)
           ? Object.defineProperty(type, 'ref', {
               enumerable: false,
               get: elementRefGetterWithDeprecationWarning,
@@ -208,8 +198,6 @@ var require_react_jsx_dev_runtime_development = __commonJS({
         config,
         maybeKey,
         isStaticChildren,
-        source,
-        self,
         debugStack,
         debugTask
       ) {
@@ -270,20 +258,30 @@ var require_react_jsx_dev_runtime_development = __commonJS({
         return ReactElement(
           type,
           children,
-          self,
-          source,
-          getOwner(),
           maybeKey,
+          getOwner(),
           debugStack,
           debugTask
         );
       }
       function validateChildKeys(node) {
-        'object' === typeof node &&
-          null !== node &&
-          node.$$typeof === REACT_ELEMENT_TYPE &&
-          node._store &&
-          (node._store.validated = 1);
+        isValidElement(node)
+          ? node._store && (node._store.validated = 1)
+          : 'object' === typeof node &&
+            null !== node &&
+            node.$$typeof === REACT_LAZY_TYPE &&
+            ('fulfilled' === node._payload.status
+              ? isValidElement(node._payload.value) &&
+                node._payload.value._store &&
+                (node._payload.value._store.validated = 1)
+              : node._store && (node._store.validated = 1));
+      }
+      function isValidElement(object) {
+        return (
+          'object' === typeof object &&
+          null !== object &&
+          object.$$typeof === REACT_ELEMENT_TYPE
+        );
       }
       var React = require_react(),
         REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for(
@@ -293,9 +291,8 @@ var require_react_jsx_dev_runtime_development = __commonJS({
         REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for('react.fragment'),
         REACT_STRICT_MODE_TYPE =
           /* @__PURE__ */ Symbol.for('react.strict_mode'),
-        REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for('react.profiler');
-      /* @__PURE__ */ Symbol.for('react.provider');
-      var REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for('react.consumer'),
+        REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for('react.profiler'),
+        REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for('react.consumer'),
         REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for('react.context'),
         REACT_FORWARD_REF_TYPE =
           /* @__PURE__ */ Symbol.for('react.forward_ref'),
@@ -332,14 +329,7 @@ var require_react_jsx_dev_runtime_development = __commonJS({
       var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
       var didWarnAboutKeySpread = {};
       exports.Fragment = REACT_FRAGMENT_TYPE;
-      exports.jsxDEV = function (
-        type,
-        config,
-        maybeKey,
-        isStaticChildren,
-        source,
-        self
-      ) {
+      exports.jsxDEV = function (type, config, maybeKey, isStaticChildren) {
         var trackActualOwner =
           1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
         return jsxDEVImpl(
@@ -347,8 +337,6 @@ var require_react_jsx_dev_runtime_development = __commonJS({
           config,
           maybeKey,
           isStaticChildren,
-          source,
-          self,
           trackActualOwner
             ? Error('react-stack-top-frame')
             : unknownOwnerDebugStack,
@@ -361,9 +349,9 @@ var require_react_jsx_dev_runtime_development = __commonJS({
   },
 });
 
-// ../../node_modules/.pnpm/react@19.1.1/node_modules/react/jsx-dev-runtime.js
+// ../../../node_modules/.pnpm/react@19.2.7/node_modules/react/jsx-dev-runtime.js
 var require_jsx_dev_runtime = __commonJS({
-  '../../node_modules/.pnpm/react@19.1.1/node_modules/react/jsx-dev-runtime.js'(
+  '../../../node_modules/.pnpm/react@19.2.7/node_modules/react/jsx-dev-runtime.js'(
     exports,
     module
   ) {

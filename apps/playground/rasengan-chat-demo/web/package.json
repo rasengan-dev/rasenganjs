@@ -9,6 +9,7 @@
     "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
+    "@rasenganjs/io": "workspace:*",
     "@rasenganjs/serve": "workspace:*",
     "@tailwindcss/vite": "^4.*",
     "rasengan": "workspace:*",
