@@ -179,7 +179,13 @@ function registerGateway(app, container, gatewayClass, adapter) {
         rooms: /* @__PURE__ */ new Set(),
         data: {}
       };
-      entry.client = createGatewayClient(id, ctx.request, entry, channel, adapter);
+      entry.client = createGatewayClient(
+        id,
+        ctx.request,
+        entry,
+        channel,
+        adapter
+      );
       localClients.set(id, entry);
       connectionToId.set(ctx.socket, id);
       instance.onConnect?.(entry.client);
@@ -250,7 +256,7 @@ var RedisGatewayAdapter = class {
   subscribe(channel, onMessage) {
     let subs = this.handlers.get(channel);
     const isFirstSubscriber = !subs;
-    if (!subs) {
+    if (isFirstSubscriber) {
       subs = /* @__PURE__ */ new Set();
       this.handlers.set(channel, subs);
     }

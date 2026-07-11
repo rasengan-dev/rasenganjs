@@ -1,0 +1,99 @@
+/* Rajdhani (display) + Albert Sans (body) + JetBrains Mono (room tags) */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Albert+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import 'tailwindcss';
+
+/*
+ * "Chakra terminal" theme — deep ink blues, one hot chakra-blue accent
+ * (the Rasengan brand color), glassy panels over a radial glow.
+ */
+@theme {
+  --color-ink: #070a13;
+  --color-panel: #0c1222;
+  --color-panel-2: #111a33;
+  --color-edge: #1d2747;
+  --color-chakra: #2a7fff;
+  --color-chakra-soft: #6ba7ff;
+  --color-mist: #8b93ad;
+  --color-paper: #e9edf8;
+  --color-leaf: #35e0a1;
+  --color-ember: #ff6262;
+
+  --font-display: 'Rajdhani', sans-serif;
+  --font-body: 'Albert Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --animate-rise: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+  --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
+
+  --shadow-glow:
+    0 0 0 1px rgb(42 127 255 / 0.35), 0 0 24px rgb(42 127 255 / 0.25);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(53 224 161 / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgb(53 224 161 / 0);
+  }
+}
+
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  /* Chakra glow top-center, faint counter-glow bottom-right, over ink. */
+  background-image:
+    radial-gradient(
+      60rem 40rem at 50% -10rem,
+      rgb(42 127 255 / 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      40rem 30rem at 110% 110%,
+      rgb(107 91 255 / 0.08),
+      transparent 60%
+    );
+  background-attachment: fixed;
+}
+
+/* Thin, unobtrusive scrollbars that fit the dark panel look. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-edge) transparent;
+}
