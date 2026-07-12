@@ -40,6 +40,13 @@ export interface BodyParserOptions {
   /** Allowed content types (default all).  If the request's
    *  Content-Type does not match any entry, the body is NOT parsed. */
   allowedTypes?: string[];
+
+  /** Leave multipart/form-data bodies unread (default false), so a
+   *  downstream `fileUpload()` middleware parses them instead. Without
+   *  this flag both still cooperate — `fileUpload()` reuses the
+   *  FormData this middleware stored — but skipping avoids holding the
+   *  parsed form on `ctx.state` for routes that never read it. */
+  skipMultipart?: boolean;
 }
 
 /**
@@ -67,6 +74,10 @@ export function bodyParser(options: BodyParserOptions = {}): Middleware {
 
     const contentType =
       ctx.request.headers.get('content-type')?.toLowerCase() ?? '';
+
+    if (options.skipMultipart && contentType.includes('multipart/form-data')) {
+      return next();
+    }
 
     if (options.allowedTypes) {
       const allowed = options.allowedTypes.some((t) => contentType.includes(t));

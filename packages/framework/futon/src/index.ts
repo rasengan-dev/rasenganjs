@@ -39,6 +39,26 @@ export type { CompressOptions } from './middlewares/compress.js';
 export { bodyLimit } from './middlewares/body-limit.js';
 export type { BodyLimitOptions } from './middlewares/body-limit.js';
 
+// DiskStorage deliberately lives elsewhere: import it from the
+// '@rasenganjs/futon/upload/disk' subpath (RFC-0002) so `node:fs`
+// never enters WinterCG bundles through this entry.
+export {
+  fileUpload,
+  MemoryStorage,
+  UPLOAD_ERROR_CODES,
+} from './middlewares/upload/index.js';
+export type {
+  FieldSpec,
+  FileFilter,
+  FileInfo,
+  StorageEngine,
+  UploadErrorCode,
+  UploadLimits,
+  UploadOptions,
+  UploadedFile,
+  Uploader,
+} from './middlewares/upload/index.js';
+
 // ── Router ────────────────────────────────────────────────────
 export { Router } from './router/index.js';
 export type { HTTPMethod, RouterGroupOptions } from './router/index.js';

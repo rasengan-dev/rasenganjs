@@ -10,6 +10,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./upload/disk": {
+      "types": "./dist/upload/disk.d.ts",
+      "import": "./dist/upload/disk.js",
+      "require": "./dist/upload/disk.cjs"
+    },
     "./package.json": "./package.json"
   },
   "license": "MIT",
