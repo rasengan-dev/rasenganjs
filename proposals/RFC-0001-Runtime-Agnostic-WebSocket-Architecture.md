@@ -185,7 +185,7 @@ The runtime adapter receives both registries and dispatches requests appropriate
 Socket.IO lives in a dedicated package.
 
 ```
-@rasenganjs/io
+@rasenganjs/io-server
 ```
 
 Responsibilities:
@@ -226,4 +226,4 @@ Not guaranteed:
 
 Rasengan should build its real-time architecture around the WebSocket protocol rather than around Socket.IO.
 
-The framework owns a stable, portable WebSocket abstraction while ecosystem packages such as `@rasenganjs/io` provide optional protocol-specific integrations.
+The framework owns a stable, portable WebSocket abstraction while ecosystem packages such as `@rasenganjs/io-server` provide optional protocol-specific integrations.
