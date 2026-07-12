@@ -1,8 +1,8 @@
 # RFC 0002 — File Upload Middleware for Futon
 
-**Status:** Draft  
+**Status:** Implemented (v1)  
 **Author:** Rasengan.js Core Team  
-**Date:** 2026-07-11
+**Date:** 2026-07-11 · Implemented 2026-07-12
 
 ## Executive Summary
 
@@ -170,6 +170,34 @@ multipart/form-data Request
 - `memory.ts` — `MemoryStorage` (default)
 
 `packages/framework/futon/src/upload/disk.ts` — `DiskStorage`, exposed **only** through the `./upload/disk` subpath export. This is the same isolation principle as `@rasenganjs/ws`'s type-only `ioredis` import, applied at the package-exports level: importing the main entry never pulls `node:fs`, so workerd/WinterCG bundles stay clean. `MemoryStorage` works on every runtime.
+
+## DiskStorage mechanics
+
+```
+handleFile(ctx, file, info)
+  1. destination ── static string, or callback (ctx, info) => string
+     └─ mkdir(destination, { recursive: true })
+  2. filename ──── callback (ctx, info) => string, or the default:
+     └─ crypto random hex + sanitized extension of originalname
+  3. write ─────── file.stream()  →  node:fs write stream (flags 'wx')
+     └─ on failure: unlink the partial file, rethrow
+  4. return ────── { destination, filename, path }
+```
+
+- **The write is a stream, not a copy** — `file.stream()` pipes into a
+  `createWriteStream`, allocating no second buffer on top of what
+  `formData()` already holds.
+- **`originalname` never becomes a path.** It is user-controlled
+  (`filename="../../etc/cron.d/x"`), so the default name is random hex
+  keeping only a sanitized, lowercased extension. A user's `filename`
+  callback may choose to trust it — explicitly.
+- **Engine placement rule:** engines with no dependencies live in futon
+  (`MemoryStorage` on the main entry, `DiskStorage` behind the subpath);
+  engines with vendor SDKs (S3, R2, GCS) live in ecosystem packages or
+  user-land via the public `StorageEngine` interface. `node:fs` is
+  natively available on Node, Bun and Deno, so one disk engine covers
+  every runtime that has a disk — workerd is excluded at build time by
+  the subpath split, not at runtime by a crash.
 
 ## bodyParser coordination
 

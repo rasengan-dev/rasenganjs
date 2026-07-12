@@ -1,8 +1,8 @@
 # RFC 0001 — Runtime-Agnostic WebSocket Architecture
 
-**Status:** Draft  
+**Status:** Implemented (v1)  
 **Author:** Rasengan.js Core Team  
-**Date:** 2026-07-08
+**Date:** 2026-07-08 · Implemented 2026-07-11
 
 ## Executive Summary
 
