@@ -19,15 +19,18 @@ export async function incomingToRequest(
   const host = req.headers.host ?? 'localhost';
   const url = `${protocol}://${host}${req.url}`;
 
-  // Only read body for methods that support it
-  let body: string | undefined;
+  // Only read body for methods that support it. Collected as raw bytes —
+  // decoding to utf8 here would corrupt binary bodies (multipart file
+  // uploads: every invalid sequence becomes U+FFFD and the file is
+  // unreadable). Text bodies are unaffected by staying binary.
+  let body: Uint8Array | undefined;
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    body = await new Promise<string>((resolve) => {
-      const chunks: string[] = [];
-      req.setEncoding('utf8');
-      req.on('data', (c: string) => chunks.push(c));
-      req.on('end', () => resolve(chunks.join('')));
+    body = await new Promise<Uint8Array>((resolve) => {
+      const chunks: Buffer[] = [];
+      req.on('data', (c: Buffer) => chunks.push(c));
+      req.on('end', () => resolve(Buffer.concat(chunks)));
     });
+    if (body.byteLength === 0) body = undefined;
   }
 
   return new Request(url, {
