@@ -65,6 +65,27 @@ export { serverLogger, serverLoggerMinimal } from './logger/index.js';
 // ── Context ──────────────────────────────────────────────────
 export type { Context } from '@rasenganjs/futon';
 
+// ── File uploads (RFC-0002) ──────────────────────────────────
+// DiskStorage is NOT re-exported: import it from
+// '@rasenganjs/futon/upload/disk' so `node:fs` stays out of
+// WinterCG bundles.
+export {
+  fileUpload,
+  MemoryStorage,
+  UPLOAD_ERROR_CODES,
+} from '@rasenganjs/futon';
+export type {
+  FieldSpec,
+  FileFilter,
+  FileInfo,
+  StorageEngine,
+  UploadErrorCode,
+  UploadLimits,
+  UploadOptions,
+  UploadedFile,
+  Uploader,
+} from '@rasenganjs/futon';
+
 // ── Config ────────────────────────────────────────────────────
 export { defineConfig } from './config/index.js';
 export { ConfigHolder } from './config/holder.js';

@@ -594,6 +594,9 @@ importers:
 
   apps/playground/rasengan-server-demo:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../../../packages/framework/futon
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../packages/platform/runtime
