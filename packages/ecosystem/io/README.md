@@ -108,6 +108,34 @@ its first (or only) extra argument:
 >
 ```
 
+## Acknowledgements (request/response)
+
+When the gateway handler returns a value, `emitWithAck()` resolves with it:
+
+```ts
+// server (gateway)
+router.on('getRooms', async () => this.rooms());
+
+// client — hook form
+const emitWithAck = useEmitWithAck<ClientEvents>();
+const rooms = await emitWithAck('getRooms'); // 10s default timeout
+
+// client — socket form
+const socket = useSocket();
+await socket.emitWithAck('join', { room }, { timeout: 5000 });
+```
+
+The promise rejects when the handler throws, the event is unknown, the
+timeout passes, or the connection drops — unlike `emit()`, acks never
+buffer while offline.
+
+## Heartbeat
+
+`@rasenganjs/ws` gateways heartbeat by default; the socket replies
+automatically and self-disconnects (then reconnects) if a pinging server
+goes silent. Nothing to configure, and servers that never ping (plain
+`app.websocket()` routes) are unaffected.
+
 ## Without React
 
 The core class is exported and framework-agnostic:

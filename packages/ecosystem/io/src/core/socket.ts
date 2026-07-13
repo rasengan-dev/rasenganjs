@@ -97,6 +97,26 @@ export class RasenganSocket<
   /** True while a close was requested via `disconnect()` — no reconnect. */
   private intentionalClose = false;
 
+  // ── Acks ──
+  private ackCounter = 0;
+  private pendingAcks = new Map<
+    number,
+    {
+      resolve: (value: unknown) => void;
+      reject: (reason: Error) => void;
+      timer: ReturnType<typeof setTimeout>;
+    }
+  >();
+
+  // ── Heartbeat liveness (armed by the first server $ping) ──
+  private livenessWindow: number | null = null;
+  private livenessTimer: ReturnType<typeof setTimeout> | null = null;
+  /** The active connection's settle path — lets the liveness timer end a
+   *  zombie session without waiting for a close handshake that a dead
+   *  server will never answer. */
+  private settleActive: ((code?: number, reason?: string) => void) | null =
+    null;
+
   constructor(url: string, options: RasenganSocketOptions = {}) {
     this.url = url;
     this.options = { ...DEFAULTS, ...options };
@@ -137,6 +157,8 @@ export class RasenganSocket<
   disconnect(code?: number, reason?: string): void {
     this.intentionalClose = true;
     this.clearReconnectTimer();
+    this.clearLivenessTimer();
+    this.livenessWindow = null;
     if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
       this.ws.close(code, reason);
     } else {
@@ -166,6 +188,49 @@ export class RasenganSocket<
         this.buffer.shift();
       }
     }
+  }
+
+  /**
+   * Send an `{ event, data, ackId }` envelope and resolve with the
+   * server handler's return value (`$ack` reply). Rejects when the
+   * handler throws, when the event is unknown to the gateway, on
+   * timeout (default 10s), or when the connection drops before the
+   * reply — a reply can't meaningfully arrive from another session,
+   * so unlike `emit()` this NEVER buffers while offline.
+   */
+  emitWithAck<E extends keyof ClientEvents & string, Reply = unknown>(
+    event: E,
+    data?: Parameters<ClientEvents[E]>[0],
+    options?: { timeout?: number }
+  ): Promise<Reply> {
+    if (this.ws?.readyState !== WebSocket.OPEN) {
+      return Promise.reject(
+        new Error(
+          `[rasengan-io] emitWithAck("${event}") requires an open connection.`
+        )
+      );
+    }
+
+    const ackId = ++this.ackCounter;
+    const timeout = options?.timeout ?? 10_000;
+
+    return new Promise<Reply>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pendingAcks.delete(ackId);
+        reject(
+          new Error(
+            `[rasengan-io] Ack for "${event}" timed out after ${timeout}ms.`
+          )
+        );
+      }, timeout);
+
+      this.pendingAcks.set(ackId, {
+        resolve: resolve as (value: unknown) => void,
+        reject,
+        timer,
+      });
+      this.ws!.send(JSON.stringify({ event, data, ackId }));
+    });
   }
 
   /**
@@ -217,11 +282,19 @@ export class RasenganSocket<
     };
 
     ws.onmessage = (e: MessageEvent) => {
+      // Once heartbeats are armed, any inbound frame proves liveness.
+      this.restartLivenessTimer();
+
       if (typeof e.data !== 'string') {
         this.dispatch('binary', e.data);
         return;
       }
-      let envelope: { event?: unknown; data?: unknown };
+      let envelope: {
+        event?: unknown;
+        data?: unknown;
+        ackId?: unknown;
+        error?: { message?: string };
+      };
       try {
         envelope = JSON.parse(e.data);
       } catch {
@@ -238,6 +311,39 @@ export class RasenganSocket<
         );
         return;
       }
+
+      // ── Protocol frames, handled internally, never dispatched ──
+      if (envelope.event === '$ping') {
+        // Learn the server's cadence: the next frame must arrive within
+        // interval + timeout, exactly the server's own deadline for us.
+        const info = envelope.data as { interval?: number; timeout?: number };
+        this.livenessWindow =
+          (info?.interval ?? 25_000) + (info?.timeout ?? 20_000);
+        this.restartLivenessTimer();
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ event: '$pong', data: undefined }));
+        }
+        return;
+      }
+      if (envelope.event === '$ack') {
+        const pending =
+          typeof envelope.ackId === 'number'
+            ? this.pendingAcks.get(envelope.ackId)
+            : undefined;
+        if (pending) {
+          this.pendingAcks.delete(envelope.ackId as number);
+          clearTimeout(pending.timer);
+          if (envelope.error) {
+            pending.reject(
+              new Error(envelope.error.message ?? 'Ack failed on the server.')
+            );
+          } else {
+            pending.resolve(envelope.data);
+          }
+        }
+        return;
+      }
+
       this.dispatch(envelope.event, envelope.data);
     };
 
@@ -250,6 +356,11 @@ export class RasenganSocket<
 
       const wasOpen = this.currentStatus === 'open';
       this.ws = null;
+      this.clearLivenessTimer();
+      // A reply can't arrive from a session that just ended.
+      this.rejectPendingAcks(
+        new Error('[rasengan-io] Connection closed before the ack arrived.')
+      );
 
       if (wasOpen) {
         this.dispatch('disconnect', { code, reason });
@@ -261,6 +372,7 @@ export class RasenganSocket<
       }
       this.scheduleReconnect();
     };
+    this.settleActive = settle;
 
     ws.onclose = (e: CloseEvent) => settle(e.code, e.reason);
 
@@ -334,5 +446,46 @@ export class RasenganSocket<
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+  }
+
+  private clearLivenessTimer(): void {
+    if (this.livenessTimer !== null) {
+      clearTimeout(this.livenessTimer);
+      this.livenessTimer = null;
+    }
+  }
+
+  /**
+   * (Re)start the dead-server watchdog. Inert until the first `$ping`
+   * sets `livenessWindow` — a plain `app.websocket()` server that never
+   * pings never arms it, so nothing changes for non-gateway servers.
+   */
+  private restartLivenessTimer(): void {
+    this.clearLivenessTimer();
+    if (this.livenessWindow === null) return;
+
+    this.livenessTimer = setTimeout(() => {
+      this.livenessTimer = null;
+      const zombie = this.ws;
+      // Settle first (dispatch disconnect, reject acks, schedule the
+      // reconnect) — a dead server never answers a close handshake, so
+      // waiting for its close event could stall for minutes.
+      this.settleActive?.(4001, 'heartbeat timeout');
+      if (zombie) {
+        try {
+          zombie.close();
+        } catch {
+          // The socket may already be unusable — that's the point.
+        }
+      }
+    }, this.livenessWindow);
+  }
+
+  private rejectPendingAcks(reason: Error): void {
+    for (const pending of this.pendingAcks.values()) {
+      clearTimeout(pending.timer);
+      pending.reject(reason);
+    }
+    this.pendingAcks.clear();
   }
 }

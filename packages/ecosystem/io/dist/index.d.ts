@@ -73,6 +73,14 @@ declare class RasenganSocket<ServerEvents extends EventsMap = EventsMap, ClientE
     private reconnectTimer;
     /** True while a close was requested via `disconnect()` — no reconnect. */
     private intentionalClose;
+    private ackCounter;
+    private pendingAcks;
+    private livenessWindow;
+    private livenessTimer;
+    /** The active connection's settle path — lets the liveness timer end a
+     *  zombie session without waiting for a close handshake that a dead
+     *  server will never answer. */
+    private settleActive;
     constructor(url: string, options?: RasenganSocketOptions);
     get status(): SocketStatus;
     get isConnected(): boolean;
@@ -87,6 +95,17 @@ declare class RasenganSocket<ServerEvents extends EventsMap = EventsMap, ClientE
      */
     emit<E extends keyof ClientEvents & string>(event: E, data?: Parameters<ClientEvents[E]>[0]): void;
     /**
+     * Send an `{ event, data, ackId }` envelope and resolve with the
+     * server handler's return value (`$ack` reply). Rejects when the
+     * handler throws, when the event is unknown to the gateway, on
+     * timeout (default 10s), or when the connection drops before the
+     * reply — a reply can't meaningfully arrive from another session,
+     * so unlike `emit()` this NEVER buffers while offline.
+     */
+    emitWithAck<E extends keyof ClientEvents & string, Reply = unknown>(event: E, data?: Parameters<ClientEvents[E]>[0], options?: {
+        timeout?: number;
+    }): Promise<Reply>;
+    /**
      * Listen to a server event (by envelope name) or a reserved lifecycle
      * event. @returns An unsubscribe function.
      */
@@ -99,6 +118,14 @@ declare class RasenganSocket<ServerEvents extends EventsMap = EventsMap, ClientE
     private flushBuffer;
     private dispatch;
     private clearReconnectTimer;
+    private clearLivenessTimer;
+    /**
+     * (Re)start the dead-server watchdog. Inert until the first `$ping`
+     * sets `livenessWindow` — a plain `app.websocket()` server that never
+     * pings never arms it, so nothing changes for non-gateway servers.
+     */
+    private restartLivenessTimer;
+    private rejectPendingAcks;
 }
 
 interface ConnectionState {
@@ -157,4 +184,34 @@ declare function useConnection(name?: string): {
  */
 declare function useEmit<ClientEvents extends EventsMap = EventsMap>(name?: string): <Event extends keyof ClientEvents & string>(event: Event, ...data: Parameters<ClientEvents[Event]>) => void;
 
-export { type ConnectionState, type EventsMap, RESERVED_EVENTS, RasenganIOProvider, type RasenganIOProviderProps, RasenganSocket, type RasenganSocketOptions, type ReservedEvent, type ReservedEventPayloads, type SocketEntry, type SocketStatus, useConnection, useEmit, useEvent, useSocket };
+/**
+ * Typed request/response bound to the socket registered under `name` —
+ * the hook form of `RasenganSocket.emitWithAck()`.
+ *
+ * The promise resolves with the gateway handler's return value and
+ * rejects when the handler throws, the event is unknown, the timeout
+ * passes (default 10s), the connection drops before the reply, or the
+ * socket doesn't exist yet (SSR / provider not mounted). Unlike
+ * `useEmit`, nothing is ever buffered while offline.
+ *
+ * ```tsx
+ * const emitWithAck = useEmitWithAck<ClientEvents>();
+ *
+ * const handleJoin = async () => {
+ *   try {
+ *     const reply = await emitWithAck<'user:register', RegisterReply>(
+ *       'user:register',
+ *       { name }
+ *     );
+ *     setUsers(reply.users);
+ *   } catch (error) {
+ *     setError((error as Error).message);
+ *   }
+ * };
+ * ```
+ */
+declare function useEmitWithAck<ClientEvents extends EventsMap = EventsMap>(name?: string): <Event extends keyof ClientEvents & string, Reply = unknown>(event: Event, data?: Parameters<ClientEvents[Event]>[0], options?: {
+    timeout?: number;
+}) => Promise<Reply>;
+
+export { type ConnectionState, type EventsMap, RESERVED_EVENTS, RasenganIOProvider, type RasenganIOProviderProps, RasenganSocket, type RasenganSocketOptions, type ReservedEvent, type ReservedEventPayloads, type SocketEntry, type SocketStatus, useConnection, useEmit, useEmitWithAck, useEvent, useSocket };

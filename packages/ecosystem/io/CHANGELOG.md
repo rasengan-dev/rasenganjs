@@ -1,3 +1,42 @@
+## Unreleased (2.0.0 additions)
+
+### `useEmitWithAck()` hook
+
+The hook form of `emitWithAck()`, bound to the provider's socket:
+
+```tsx
+const emitWithAck = useEmitWithAck<ClientEvents>();
+const reply = await emitWithAck<'user:register', RegisterReply>(
+  'user:register',
+  { name }
+); // rejects on server error / unknown event / timeout / disconnect / no socket
+```
+
+### `emitWithAck()` — request/response over the envelope
+
+```ts
+const rooms = await socket.emitWithAck('getRooms'); // 10s default timeout
+await socket.emitWithAck('join', { room }, { timeout: 5000 }); // rejects on server
+// error, unknown event,
+// timeout, or disconnect
+```
+
+The reply is the gateway handler's return value (`@rasenganjs/ws`
+`$ack` protocol). Unlike `emit()`, this never buffers while offline —
+it rejects immediately without an open connection, and all pending
+acks reject when the connection drops.
+
+### Heartbeat support (zero config)
+
+`RasenganSocket` replies `$pong` to gateway `$ping` frames
+automatically and learns the server's cadence from the ping payload:
+if a server that pinged goes silent past `interval + timeout`, the
+client ends the session itself (`disconnect` with code 4001) and the
+usual reconnect backoff takes over. Servers that never ping (plain
+`app.websocket()` routes) never arm the watchdog — nothing changes for
+them. `$ping`/`$pong`/`$ack` are protocol frames and never reach
+`on()` listeners.
+
 ## 2.0.0 (Unreleased)
 
 **Breaking: Socket.IO replaced by the Web Standard `WebSocket` class.**
