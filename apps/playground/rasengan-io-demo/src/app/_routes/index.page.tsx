@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { useConnection, useEvent, useEmit } from '@rasenganjs/io';
-
+import {
+  useConnection,
+  useEvent,
+  useEmit,
+  useEmitWithAck,
+} from '@rasenganjs/io';
 type ServerEvents = {
   'system:message': (data: { text: string }) => void;
   'chat:message': (data: {
@@ -9,8 +13,6 @@ type ServerEvents = {
     text: string;
     timestamp: number;
   }) => void;
-  'user:registered': (data: { name: string; users: string[] }) => void;
-  'user:error': (data: { message: string }) => void;
   'users:update': (data: { users: string[] }) => void;
 };
 
@@ -19,9 +21,13 @@ type ClientEvents = {
   'chat:message': (data: { text: string }) => void;
 };
 
+/** What the gateway's user:register handler returns (the $ack payload). */
+type RegisterReply = { name: string; users: string[] };
+
 export default function HomePage() {
   const { isConnected, isConnecting, error } = useConnection();
   const emit = useEmit<ClientEvents>();
+  const emitWithAck = useEmitWithAck<ClientEvents>();
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
@@ -50,24 +56,27 @@ export default function HomePage() {
     setMessages((prev) => [...prev, data]);
   });
 
-  useEvent<ServerEvents, 'user:registered'>('user:registered', (data) => {
-    setLoggedIn(true);
-    setUsername(data.name);
-    setUsers(data.users);
-    setRegisterError('');
-  });
-
-  useEvent<ServerEvents, 'user:error'>('user:error', (data) => {
-    setRegisterError(data.message);
-  });
-
   useEvent<ServerEvents, 'users:update'>('users:update', (data) => {
     setUsers(data.users);
   });
 
-  const handleRegister = () => {
+  // Registration is request/response now: the gateway handler's return
+  // value resolves the promise, a thrown error (empty/taken name)
+  // rejects it — no user:registered / user:error events to choreograph.
+  const handleRegister = async () => {
     if (!loginInput.trim()) return;
-    emit('user:register', { name: loginInput.trim() });
+    try {
+      const reply = await emitWithAck<'user:register', RegisterReply>(
+        'user:register',
+        { name: loginInput.trim() }
+      );
+      setLoggedIn(true);
+      setUsername(reply.name);
+      setUsers(reply.users);
+      setRegisterError('');
+    } catch (err) {
+      setRegisterError(err instanceof Error ? err.message : 'Register failed.');
+    }
   };
 
   const handleSend = () => {

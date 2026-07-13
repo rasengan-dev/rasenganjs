@@ -11,5 +11,9 @@ bootstrap(async (app) => {
   // Claims the `gateways` key consumed by app.module.ts.
   app.registerPlugin(createWsPlugin());
 
+  // The web app (another origin in dev) POSTs uploads to /upload and
+  // loads /files/* — WebSockets don't need CORS, but fetch() does.
+  app.enableCors();
+
   app.registerModule(appModule);
 });

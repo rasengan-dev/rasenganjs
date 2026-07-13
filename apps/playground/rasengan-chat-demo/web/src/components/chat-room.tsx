@@ -1,4 +1,4 @@
-import type { FeedEntry } from '@/lib/protocol';
+import type { Attachment, FeedEntry } from '@/lib/protocol';
 import Avatar from './avatar';
 import Composer from './composer';
 import Feed from './feed';
@@ -10,7 +10,7 @@ type Props = {
   feed: FeedEntry[];
   members: string[];
   typing: string[];
-  onSend: (text: string) => void;
+  onSend: (text: string, attachment?: Attachment) => void;
   onTyping: () => void;
   onLeave: () => void;
 };

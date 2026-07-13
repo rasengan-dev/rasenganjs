@@ -1,49 +1,49 @@
 {
-  "hash": "f0512b7c",
+  "hash": "cf864dd7",
   "configHash": "a6099eeb",
-  "lockfileHash": "36df6f5e",
-  "browserHash": "4b6377ae",
+  "lockfileHash": "e7194a6e",
+  "browserHash": "c621967d",
   "optimized": {
     "react": {
       "src": "../../../../../node_modules/.pnpm/react@19.2.7/node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "80ffbf00",
+      "fileHash": "ad70540e",
       "needsInterop": true
     },
     "react-dom": {
       "src": "../../../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/index.js",
       "file": "react-dom.js",
-      "fileHash": "4f012220",
+      "fileHash": "d747f830",
       "needsInterop": true
     },
     "react/jsx-dev-runtime": {
       "src": "../../../../../node_modules/.pnpm/react@19.2.7/node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "5a6f5975",
+      "fileHash": "ff87e552",
       "needsInterop": true
     },
     "react/jsx-runtime": {
       "src": "../../../../../node_modules/.pnpm/react@19.2.7/node_modules/react/jsx-runtime.js",
       "file": "react_jsx-runtime.js",
-      "fileHash": "b248ed50",
+      "fileHash": "0bea9dfb",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "3de914b6",
+      "fileHash": "6aa04ab2",
       "needsInterop": true
     },
     "react-dom/server": {
       "src": "../../../../../node_modules/.pnpm/react-dom@19.2.7_react@19.2.7/node_modules/react-dom/server.browser.js",
       "file": "react-dom_server.js",
-      "fileHash": "3421529d",
+      "fileHash": "ee63b406",
       "needsInterop": true
     },
     "react-router": {
       "src": "../../../../../node_modules/.pnpm/react-router@7.18.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/react-router/dist/development/index.mjs",
       "file": "react-router.js",
-      "fileHash": "4081b6d2",
+      "fileHash": "be20d46a",
       "needsInterop": false
     }
   },

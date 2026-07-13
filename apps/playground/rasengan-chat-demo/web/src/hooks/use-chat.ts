@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useConnection, useEmit, useEvent } from '@rasenganjs/io';
 import type {
+  Attachment,
   ChatMessage,
   FeedEntry,
   JoinedPayload,
@@ -38,7 +39,7 @@ type LifecycleEvents = {
 type ChatEvents = {
   join: (data: { username: string; room: string }) => void;
   leave: () => void;
-  message: (data: { text: string }) => void;
+  message: (data: { text: string; attachment?: Attachment }) => void;
   typing: (data: { isTyping: boolean }) => void;
 };
 
@@ -236,8 +237,8 @@ export function useChat() {
   }, [emit]);
 
   const sendMessage = useCallback(
-    (text: string) => {
-      emit('message', { text });
+    (text: string, attachment?: Attachment) => {
+      emit('message', { text, attachment });
       // Sending a message ends the local typing state immediately.
       if (idleTimerRef.current !== null) {
         window.clearTimeout(idleTimerRef.current);

@@ -7,10 +7,40 @@ import {
 import { ChatService } from './chat.service.js';
 import {
   LIMITS,
+  type Attachment,
   type JoinPayload,
   type SendMessagePayload,
   type TypingPayload,
 } from './protocol.js';
+import { classify } from './media.js';
+
+/**
+ * Rebuild the attachment from scratch instead of trusting the client's
+ * object: only `/files/<hex>` urls the FilesController actually serves,
+ * only kinds derived from the mimetype server-side.
+ */
+function sanitizeAttachment(input: unknown): Attachment | null {
+  if (typeof input !== 'object' || input === null) return null;
+  const raw = input as Record<string, unknown>;
+
+  const url = typeof raw.url === 'string' ? raw.url : '';
+  const mimetype = typeof raw.mimetype === 'string' ? raw.mimetype : '';
+  const kind = classify(mimetype);
+  if (!kind || !/^\/files\/[a-f0-9]{32}(\.[a-z0-9]{1,10})?$/.test(url)) {
+    return null;
+  }
+
+  return {
+    kind,
+    url,
+    mimetype,
+    originalname:
+      typeof raw.originalname === 'string'
+        ? raw.originalname.slice(0, 255)
+        : 'file',
+    size: typeof raw.size === 'number' && raw.size >= 0 ? raw.size : 0,
+  };
+}
 
 /**
  * The chat gateway behind the rasengan-chat-demo web app.
@@ -97,13 +127,16 @@ export class ChatGateway extends Gateway {
     if (!room || !username) return;
 
     const text = (data?.text ?? '').trim().slice(0, LIMITS.message.max);
-    if (!text) return;
+    const attachment = sanitizeAttachment(data?.attachment);
+    // A message must carry something: text, a file, or both.
+    if (!text && !attachment) return;
 
     const message = this.chatService.record(room, {
       id: crypto.randomUUID(),
       username,
       text,
       at: Date.now(),
+      ...(attachment ? { attachment } : {}),
     });
     // Includes the sender — the UI renders its own message from this
     // broadcast, so everyone shares one canonical id/timestamp.

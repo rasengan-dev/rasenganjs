@@ -5,7 +5,7 @@ import {
   type Router,
   type UploadedFile,
 } from '@rasenganjs/server';
-import { diskStorage } from '@rasenganjs/futon/upload/disk';
+import { diskStorage } from '@rasenganjs/server/upload/disk';
 
 /**
  * RFC-0002 playground: Multer-style uploads over futon's fileUpload().

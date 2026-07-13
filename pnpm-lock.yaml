@@ -400,6 +400,9 @@ importers:
 
   apps/playground/rasengan-chat-demo/server:
     dependencies:
+      '@rasenganjs/futon':
+        specifier: workspace:*
+        version: link:../../../../packages/framework/futon
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../../packages/platform/runtime

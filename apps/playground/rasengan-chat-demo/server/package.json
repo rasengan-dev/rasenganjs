@@ -9,6 +9,7 @@
     "build": "rasengan-server build"
   },
   "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "@rasenganjs/ws": "workspace:*"

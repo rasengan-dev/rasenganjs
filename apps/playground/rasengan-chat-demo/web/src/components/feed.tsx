@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { isSystemNotice, type FeedEntry } from '@/lib/protocol';
 import Avatar, { avatarColor } from './avatar';
+import AttachmentView from './attachments';
 
 type Props = {
   feed: FeedEntry[];
@@ -99,13 +100,23 @@ export default function Feed({ feed, self, footer }: Props) {
                 </p>
               )}
               <div
-                className={`inline-block rounded-2xl px-3.5 py-2 text-[0.94rem] leading-relaxed break-words text-left ${
+                className={`inline-block rounded-2xl text-[0.94rem] leading-relaxed break-words text-left ${
+                  // Media fills the bubble edge-to-edge; text keeps padding.
+                  entry.attachment ? 'p-1.5' : 'px-3.5 py-2'
+                } ${
                   own
                     ? 'bg-chakra text-white rounded-br-md'
                     : 'bg-panel-2 border border-edge rounded-bl-md'
                 }`}
               >
-                {entry.text}
+                {entry.attachment && (
+                  <AttachmentView attachment={entry.attachment} />
+                )}
+                {entry.text && (
+                  <p className={entry.attachment ? 'px-2 pt-1.5 pb-1' : ''}>
+                    {entry.text}
+                  </p>
+                )}
               </div>
             </div>
           </div>

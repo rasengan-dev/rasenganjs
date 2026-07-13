@@ -32,32 +32,32 @@ class LobbyGateway extends Gateway {
   }
 
   messages(router) {
+    // Ack-style registration: the return value resolves the client's
+    // emitWithAck() promise; throwing rejects it. No user:registered /
+    // user:error events needed anymore.
     router.on('user:register', (client, data) => {
       const trimmed = data?.name?.trim();
       if (!trimmed) {
-        client.emit('user:error', { message: 'Name cannot be empty.' });
-        return;
+        throw new Error('Name cannot be empty.');
       }
 
       const taken = [...this.users.values()].some(
         (name) => name.toLowerCase() === trimmed.toLowerCase()
       );
       if (taken) {
-        client.emit('user:error', {
-          message: `"${trimmed}" is already taken.`,
-        });
-        return;
+        throw new Error(`"${trimmed}" is already taken.`);
       }
 
       this.users.set(client.id, trimmed);
       client.join(ROOM);
 
-      client.emit('user:registered', { name: trimmed, users: this.list() });
       // client.to() excludes the registering client, like socket.to() did.
       client.to(ROOM).emit('users:update', { users: this.list() });
       client.to(ROOM).emit('system:message', { text: `${trimmed} joined.` });
 
       console.log(`[register] ${client.id} as "${trimmed}"`);
+
+      return { name: trimmed, users: this.list() };
     });
 
     router.on('chat:message', (client, data) => {
