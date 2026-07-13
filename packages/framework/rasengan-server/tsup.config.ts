@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    'upload/disk': 'src/upload/disk.ts',
     cli: 'src/cli.ts',
   },
   format: ['esm', 'cjs'],
