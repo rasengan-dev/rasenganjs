@@ -42,9 +42,21 @@ var GatewayRouter = class {
    * Register a handler for one event name, parsed out of the
    * `{ event, data }` envelope on incoming text messages.
    *
-   * @throws If `event` is already registered on this gateway.
+   * When the incoming frame carries an `ackId` (a client
+   * `emitWithAck()`), the handler's awaited return value is sent back
+   * as the `$ack` reply, and a thrown error rejects the client's
+   * promise. Frames without an `ackId` ignore the return value.
+   *
+   * @throws If `event` is already registered on this gateway, or if it
+   *         starts with `$` (reserved for the protocol: `$error`,
+   *         `$ping`, `$pong`, `$ack`).
    */
   on(event, handler) {
+    if (event.startsWith("$")) {
+      throw new Error(
+        `[rasengan-ws] Event "${event}" is reserved \u2014 "$"-prefixed names belong to the protocol.`
+      );
+    }
     if (this.handlers.has(event)) {
       throw new Error(
         `[rasengan-ws] Event "${event}" is already registered on this gateway.`
@@ -85,8 +97,8 @@ var MemoryGatewayAdapter = class {
 };
 
 // src/client.ts
-function serializeEnvelope(event, data) {
-  return JSON.stringify({ event, data });
+function serializeEnvelope(event, data, extra) {
+  return JSON.stringify({ event, data, ...extra });
 }
 function parseEnvelope(raw) {
   let parsed;
@@ -96,8 +108,12 @@ function parseEnvelope(raw) {
     return null;
   }
   if (parsed && typeof parsed === "object" && typeof parsed.event === "string") {
-    const { event, data } = parsed;
-    return { event, data };
+    const { event, data, ackId } = parsed;
+    return {
+      event,
+      data,
+      ...typeof ackId === "number" ? { ackId } : {}
+    };
   }
   return null;
 }
@@ -160,19 +176,30 @@ function deliverLocally(localClients, message) {
 
 // src/plugin.ts
 var ERROR_EVENT = "$error";
+var HEARTBEAT_CLOSE_CODE = 4001;
+var HEARTBEAT_DEFAULTS = {
+  interval: 25e3,
+  timeout: 2e4
+};
+function resolveHeartbeat(option) {
+  if (option === false) return null;
+  if (option === true || option === void 0) return HEARTBEAT_DEFAULTS;
+  return { ...HEARTBEAT_DEFAULTS, ...option };
+}
 function createWsPlugin(options = {}) {
   const adapter = options.adapter ?? new MemoryGatewayAdapter();
+  const heartbeat = resolveHeartbeat(options.heartbeat);
   return {
     key: "gateways",
     register(app, container, _mod, value) {
       const gatewayClasses = value;
       for (const gatewayClass of gatewayClasses) {
-        registerGateway(app, container, gatewayClass, adapter);
+        registerGateway(app, container, gatewayClass, adapter, heartbeat);
       }
     }
   };
 }
-function registerGateway(app, container, gatewayClass, adapter) {
+function registerGateway(app, container, gatewayClass, adapter, heartbeat) {
   const instance = container.resolve(gatewayClass);
   if (!(instance instanceof Gateway)) {
     throw new Error(
@@ -200,13 +227,32 @@ function registerGateway(app, container, gatewayClass, adapter) {
     deliverLocally(localClients, message);
   });
   app.onDestroy(() => unsubscribe());
+  if (heartbeat) {
+    const pingFrame = serializeEnvelope("$ping", {
+      interval: heartbeat.interval,
+      timeout: heartbeat.timeout
+    });
+    const heartbeatTimer = setInterval(() => {
+      const deadline = heartbeat.interval + heartbeat.timeout;
+      const now = Date.now();
+      for (const entry of localClients.values()) {
+        if (now - entry.lastSeen > deadline) {
+          entry.connection.close(HEARTBEAT_CLOSE_CODE, "heartbeat timeout");
+        } else {
+          entry.connection.send(pingFrame);
+        }
+      }
+    }, heartbeat.interval);
+    app.onDestroy(() => clearInterval(heartbeatTimer));
+  }
   app.websocket(instance.path, {
     open(ctx) {
       const id = crypto.randomUUID();
       const entry = {
         connection: ctx.socket,
         rooms: /* @__PURE__ */ new Set(),
-        data: {}
+        data: {},
+        lastSeen: Date.now()
       };
       entry.client = createGatewayClient(
         id,
@@ -224,6 +270,7 @@ function registerGateway(app, container, gatewayClass, adapter) {
       if (!id) return;
       const entry = localClients.get(id);
       if (!entry) return;
+      entry.lastSeen = Date.now();
       if (typeof data !== "string") {
         instance.onBinaryMessage?.(entry.client, data);
         return;
@@ -235,14 +282,45 @@ function registerGateway(app, container, gatewayClass, adapter) {
         });
         return;
       }
+      if (envelope.event === "$pong") return;
       const handler = handlers.get(envelope.event);
       if (!handler) {
-        entry.client.emit(ERROR_EVENT, {
-          message: `Unknown event "${envelope.event}".`
-        });
+        if (envelope.ackId !== void 0) {
+          entry.connection.send(
+            serializeEnvelope("$ack", void 0, {
+              ackId: envelope.ackId,
+              error: { message: `Unknown event "${envelope.event}".` }
+            })
+          );
+        } else {
+          entry.client.emit(ERROR_EVENT, {
+            message: `Unknown event "${envelope.event}".`
+          });
+        }
         return;
       }
-      handler(entry.client, envelope.data);
+      void (async () => {
+        try {
+          const result = await handler(entry.client, envelope.data);
+          if (envelope.ackId !== void 0) {
+            entry.connection.send(
+              serializeEnvelope("$ack", result, { ackId: envelope.ackId })
+            );
+          }
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (envelope.ackId !== void 0) {
+            entry.connection.send(
+              serializeEnvelope("$ack", void 0, {
+                ackId: envelope.ackId,
+                error: { message }
+              })
+            );
+          } else {
+            entry.client.emit(ERROR_EVENT, { message });
+          }
+        }
+      })();
     },
     close(ctx, code, reason) {
       const id = connectionToId.get(ctx.socket);

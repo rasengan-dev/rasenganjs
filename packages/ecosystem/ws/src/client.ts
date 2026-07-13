@@ -20,20 +20,35 @@ export interface LocalClientEntry {
   rooms: Set<string>;
   data: Record<string, unknown>;
   client: GatewayClient;
-}
-
-/** Serialize an event/data pair into this package's `{ event, data }` wire envelope. */
-export function serializeEnvelope(event: string, data: unknown): string {
-  return JSON.stringify({ event, data });
+  /** Timestamp of the last inbound frame — the heartbeat's liveness signal. */
+  lastSeen: number;
 }
 
 /**
- * Parse an incoming text frame as `{ event, data }`.
+ * A parsed wire frame. `ackId` (client-chosen) asks for a `$ack` reply
+ * carrying the handler's return value; `error` marks a failed `$ack`.
+ */
+export interface Envelope {
+  event: string;
+  data: unknown;
+  ackId?: number;
+  error?: { message: string };
+}
+
+/** Serialize an event/data pair into this package's `{ event, data }` wire envelope. */
+export function serializeEnvelope(
+  event: string,
+  data: unknown,
+  extra?: { ackId?: number; error?: { message: string } }
+): string {
+  return JSON.stringify({ event, data, ...extra });
+}
+
+/**
+ * Parse an incoming text frame as `{ event, data, ackId?, error? }`.
  * @returns `null` if the frame isn't valid JSON or lacks a string `event`.
  */
-export function parseEnvelope(
-  raw: string
-): { event: string; data: unknown } | null {
+export function parseEnvelope(raw: string): Envelope | null {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
@@ -45,8 +60,12 @@ export function parseEnvelope(
     typeof parsed === 'object' &&
     typeof (parsed as { event?: unknown }).event === 'string'
   ) {
-    const { event, data } = parsed as { event: string; data: unknown };
-    return { event, data };
+    const { event, data, ackId } = parsed as Envelope;
+    return {
+      event,
+      data,
+      ...(typeof ackId === 'number' ? { ackId } : {}),
+    };
   }
   return null;
 }

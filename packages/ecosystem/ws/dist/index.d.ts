@@ -61,7 +61,14 @@ declare class GatewayRouter {
      * Register a handler for one event name, parsed out of the
      * `{ event, data }` envelope on incoming text messages.
      *
-     * @throws If `event` is already registered on this gateway.
+     * When the incoming frame carries an `ackId` (a client
+     * `emitWithAck()`), the handler's awaited return value is sent back
+     * as the `$ack` reply, and a thrown error rejects the client's
+     * promise. Frames without an `ackId` ignore the return value.
+     *
+     * @throws If `event` is already registered on this gateway, or if it
+     *         starts with `$` (reserved for the protocol: `$error`,
+     *         `$ping`, `$pong`, `$ack`).
      */
     on<T = unknown>(event: string, handler: GatewayMessageHandler<T>): void;
     /** @internal Consumed by `createWsPlugin` after `Gateway.messages()` runs. */
@@ -84,8 +91,12 @@ declare class GatewayRouter {
  * territory, which RFC-0001 lists as a separate future integration —
  * intentionally out of scope here.
  */
-/** A handler for one named event, registered via `GatewayRouter.on()`. */
-type GatewayMessageHandler<T = unknown> = (client: GatewayClient, data: T) => void | Promise<void>;
+/**
+ * A handler for one named event, registered via `GatewayRouter.on()`.
+ * The return value only matters when the incoming frame carried an
+ * `ackId` — it then becomes the `$ack` reply payload (RPC-style).
+ */
+type GatewayMessageHandler<T = unknown> = (client: GatewayClient, data: T) => unknown | Promise<unknown>;
 /** Returned by `client.to(room)` / `client.broadcast` / `server.to(room)`. */
 interface Broadcaster {
     emit(event: string, data: unknown): Promise<void>;
@@ -169,6 +180,16 @@ declare module '@rasenganjs/server' {
     }
 }
 
+interface HeartbeatOptions {
+    /** How often the server pings each connection (ms). Default 25000. */
+    interval?: number;
+    /**
+     * Extra time after `interval` a connection may stay silent before it
+     * is closed as dead (ms). Default 20000 — a connection is dropped
+     * once nothing was received for `interval + timeout`.
+     */
+    timeout?: number;
+}
 interface WsPluginOptions {
     /**
      * Pub/sub relay used for room/broadcast delivery across every gateway
@@ -176,6 +197,13 @@ interface WsPluginOptions {
      * (single-process). Pass a `RedisGatewayAdapter` to scale horizontally.
      */
     adapter?: GatewayAdapter;
+    /**
+     * App-level dead-connection detection (browsers can't send protocol
+     * pings). On by default; pass `false` to disable, or an object to
+     * tune. Any inbound frame counts as liveness — active clients are
+     * never pinged into disconnection.
+     */
+    heartbeat?: boolean | HeartbeatOptions;
 }
 /**
  * Build the `ModulePlugin` that wires `defineModule({ gateways: [...] })`
@@ -243,4 +271,4 @@ declare class RedisGatewayAdapter implements GatewayAdapter {
     subscribe(channel: string, onMessage: (message: BroadcastMessage) => void): () => void;
 }
 
-export { type BroadcastMessage, type Broadcaster, Gateway, type GatewayAdapter, type GatewayClass, type GatewayClient, type GatewayMessageHandler, GatewayRouter, type GatewayServer, MemoryGatewayAdapter, RedisGatewayAdapter, type RedisGatewayAdapterOptions, type WsPluginOptions, createWsPlugin };
+export { type BroadcastMessage, type Broadcaster, Gateway, type GatewayAdapter, type GatewayClass, type GatewayClient, type GatewayMessageHandler, GatewayRouter, type GatewayServer, type HeartbeatOptions, MemoryGatewayAdapter, RedisGatewayAdapter, type RedisGatewayAdapterOptions, type WsPluginOptions, createWsPlugin };

@@ -78,9 +78,21 @@ export class GatewayRouter {
    * Register a handler for one event name, parsed out of the
    * `{ event, data }` envelope on incoming text messages.
    *
-   * @throws If `event` is already registered on this gateway.
+   * When the incoming frame carries an `ackId` (a client
+   * `emitWithAck()`), the handler's awaited return value is sent back
+   * as the `$ack` reply, and a thrown error rejects the client's
+   * promise. Frames without an `ackId` ignore the return value.
+   *
+   * @throws If `event` is already registered on this gateway, or if it
+   *         starts with `$` (reserved for the protocol: `$error`,
+   *         `$ping`, `$pong`, `$ack`).
    */
   on<T = unknown>(event: string, handler: GatewayMessageHandler<T>): void {
+    if (event.startsWith('$')) {
+      throw new Error(
+        `[rasengan-ws] Event "${event}" is reserved — "$"-prefixed names belong to the protocol.`
+      );
+    }
     if (this.handlers.has(event)) {
       throw new Error(
         `[rasengan-ws] Event "${event}" is already registered on this gateway.`

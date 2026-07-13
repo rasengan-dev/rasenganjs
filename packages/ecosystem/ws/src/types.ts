@@ -15,11 +15,15 @@
  * intentionally out of scope here.
  */
 
-/** A handler for one named event, registered via `GatewayRouter.on()`. */
+/**
+ * A handler for one named event, registered via `GatewayRouter.on()`.
+ * The return value only matters when the incoming frame carried an
+ * `ackId` — it then becomes the `$ack` reply payload (RPC-style).
+ */
 export type GatewayMessageHandler<T = unknown> = (
   client: GatewayClient,
   data: T
-) => void | Promise<void>;
+) => unknown | Promise<unknown>;
 
 /** Returned by `client.to(room)` / `client.broadcast` / `server.to(room)`. */
 export interface Broadcaster {

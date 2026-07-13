@@ -56,7 +56,7 @@ import './augment.js';
 
 // ── Plugin (the module-system integration point) ──────────────────
 export { createWsPlugin } from './plugin.js';
-export type { WsPluginOptions } from './plugin.js';
+export type { HeartbeatOptions, WsPluginOptions } from './plugin.js';
 
 // ── Gateway ─────────────────────────────────────────────────────────
 export { Gateway, GatewayRouter } from './gateway.js';
