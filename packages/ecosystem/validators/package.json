@@ -25,10 +25,8 @@
     "test:coverage": "vitest run --coverage",
     "pack": "pnpm pack --pack-destination ./release"
   },
-  "dependencies": {
-    "@rasenganjs/futon": "workspace:*"
-  },
   "peerDependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "zod": "^3.23.0"
   },
   "peerDependenciesMeta": {

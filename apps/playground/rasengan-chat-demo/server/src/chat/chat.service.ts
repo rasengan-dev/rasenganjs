@@ -6,6 +6,7 @@ import {
   type RoomSummary,
   type SystemNotice,
 } from './protocol.js';
+import { ChatGateway } from './chat.gateway.js';
 
 /**
  * In-memory chat state: who is in which room, and each room's recent
@@ -23,6 +24,10 @@ export class ChatService extends Provider {
 
   /** room → recent feed, oldest first */
   private feeds = new Map<string, Array<ChatMessage | SystemNotice>>();
+
+  // constructor(private readonly chatGateway: ChatGateway) {
+  //   super();
+  // }
 
   // ── Presence ──────────────────────────────────────────────────────
 
