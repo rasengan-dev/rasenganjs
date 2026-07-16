@@ -366,6 +366,8 @@ class SubRouter extends Router {
 
     const combinedPrefix = `${this.prefix}${subPrefix}`;
 
+    const outerDepth = this.parent['stack'].length; // capture where WE entered
+
     if (subOptions.middlewares) {
       for (const mw of subOptions.middlewares) {
         this.parent.use(mw);
@@ -375,12 +377,12 @@ class SubRouter extends Router {
     const child = new SubRouter(
       this.parent,
       combinedPrefix,
-      this.outerDepth,
+      outerDepth, // propagate entry depth too
       this.parent['stack'].length
     );
     callback(child);
 
-    this.parent['stack'].length = this.outerDepth;
+    this.parent['stack'].length = outerDepth; // restore to entry
 
     return this;
   }
