@@ -10,6 +10,11 @@ import { ProviderDefinition, ProviderLike } from '../di/container.js';
  */
 export interface ModuleConfig {
   /**
+   * Optional module name, used in DI error messages
+   * ("module \"UserModule\" cannot resolve ..."). Purely diagnostic.
+   */
+  name?: string;
+  /**
    * URL prefix applied to all routes registered by this module's controllers.
    * @example `"/api/v1"`
    */
@@ -24,8 +29,21 @@ export interface ModuleConfig {
   imports?: ModuleConfig[];
   /** Controller classes to register within this module. */
   controllers?: (new (...args: any[]) => Controller)[];
-  /** Providers to register in the dependency-injection container. */
+  /**
+   * Providers to register in the dependency-injection container.
+   * Private to this module unless listed in `exports` (RFC-0003).
+   */
   providers?: (ProviderLike | ProviderDefinition)[];
+  /**
+   * Tokens from `providers` that importing modules may resolve.
+   * Everything not exported stays private to this module.
+   */
+  exports?: any[];
+  /**
+   * Make this module's `exports` visible to EVERY module without
+   * importing it — for cross-cutting concerns (config, logging).
+   */
+  global?: boolean;
   /**
    * Open extension point for ecosystem packages (e.g. `@rasenganjs/ws`
    * registers a `gateways` key). `rasengan-server` never interprets these

@@ -1,8 +1,8 @@
 # RFC 0003 — Module-Scoped Dependency Injection
 
-**Status:** Draft  
+**Status:** Implemented (v1)  
 **Author:** Rasengan.js Core Team  
-**Date:** 2026-07-13
+**Date:** 2026-07-13 · Implemented 2026-07-14
 
 ## Executive Summary
 
@@ -151,10 +151,14 @@ Container
   cycle-safe via a visited set).
 - `resolve(token, scope)` / `resolveByName(name, scope)` filter the registry
   through the scope's visible set before matching.
-- The auto-instantiation fallback for **unregistered** classes is removed —
-  it produced uncached, un-scoped instances and silently broke singletons.
-  Everything injectable must be declared in some module's `providers`
-  (gateways included, as already documented).
+- The auto-instantiation fallback for **unregistered** classes is refined
+  rather than removed (an implementation deviation from this RFC's first
+  draft): resolving an unregistered CLASS token auto-registers it as a
+  **private, cached provider owned by the resolving module**. Controllers
+  and plugin-resolved classes (gateways) are class-token roots and keep
+  working without `providers` entries — and become real module-owned
+  singletons, fixing the old uncached-instance flaw. Name-based
+  resolution (constructor params) never auto-creates anything.
 
 ## Scoped views keep plugins unchanged
 

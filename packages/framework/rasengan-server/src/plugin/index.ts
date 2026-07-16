@@ -1,4 +1,4 @@
-import type { Container } from '../di/container.js';
+import type { ContainerView } from '../di/container.js';
 import type { ModuleConfig } from '../server/module.js';
 import type { ServerApp } from '../server/app.js';
 
@@ -29,14 +29,15 @@ export interface ModulePlugin {
    * @param app - The `ServerApp` being compiled — use `app.websocket()`
    *              (or any other public registration method) to wire in
    *              whatever this plugin's key represents.
-   * @param container - The shared DI container (already has every
-   *                     module's `providers` registered).
+   * @param container - A view of the shared DI container scoped to
+   *                     `mod` (RFC-0003) — resolutions see the module's
+   *                     own providers, its imports' exports, and globals.
    * @param mod - The specific flattened module that declared `key`.
    * @param value - `mod[key]`, untyped since core doesn't know its shape.
    */
   register(
     app: ServerApp,
-    container: Container,
+    container: ContainerView,
     mod: ModuleConfig,
     value: unknown
   ): void;

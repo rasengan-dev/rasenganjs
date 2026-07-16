@@ -27,12 +27,33 @@ export interface ProviderDefinition {
 }
 
 /**
- * A class that extends `Provider` and can be registered with the container.
+ * A class registrable with the container. Extending `Provider` is what
+ * opts a class into lifecycle hooks (`onInit`/`onDestroy`), but any class
+ * is a valid provider — gateways and other plugin-declared classes are
+ * listed under `providers` to become exportable (RFC-0003), and must not
+ * be rejected by the type for lacking lifecycle members.
  */
-export type ProviderLike = new (...args: any[]) => Provider;
+export type ProviderLike = new (...args: any[]) => any;
 
 /**
- * Lightweight dependency-injection container.
+ * The resolution surface handed to controllers/plugins during compile —
+ * a module-scoped view of the container (see `Container.forModule()`).
+ * `Container` itself satisfies it (root scope: sees everything).
+ */
+export interface ContainerView {
+  resolve<T>(token: new (...args: any[]) => T): T;
+}
+
+/**
+ * A scope owner — in practice a `ModuleConfig` object. The container only
+ * uses it as an identity key and, when present, reads `name`/`prefix`
+ * for error messages.
+ */
+type ScopeOwner = { name?: string; prefix?: string } & object;
+
+/**
+ * Lightweight dependency-injection container with module-scoped
+ * visibility (RFC-0003).
  *
  * Supports:
  * - Class-based registration (auto-resolved constructor parameters)
@@ -40,15 +61,25 @@ export type ProviderLike = new (...args: any[]) => Provider;
  * - Class aliasing (`useClass`)
  * - Explicit dependency lists (`deps`)
  * - Name-based resolution (case-insensitive matching)
- * - Lifecycle hooks — calls `onInit()` on all resolved providers after
- *   compilation, and `onDestroy()` on graceful shutdown.
+ * - Module scoping — a token registered with an owner is only visible to
+ *   that owner's scope and to scopes whose visible set includes it
+ *   (computed by `ServerApp.compile()` from `imports`/`exports`/`global`)
+ * - Lifecycle hooks — `onInit()` on all resolved providers after
+ *   compilation, `onDestroy()` in reverse order on graceful shutdown
+ *
+ * Scoping model: ONE registry and ONE instance per token (singletons are
+ * shared by every module that can see them); visibility is a filter on
+ * top, never a second cache. A provider's own constructor dependencies
+ * always resolve in the scope of the module that OWNS the provider, so a
+ * shared singleton behaves identically no matter which module triggered
+ * its construction.
  *
  * @example
  * ```ts
  * const container = new Container();
- * container.register(MyService);
- * container.register({ provide: Logger, useValue: console });
- * const svc = container.resolve(MyService);
+ * container.register(MyService, userModule);
+ * container.setScope(userModule, new Set([MyService]));
+ * const svc = container.forModule(userModule).resolve(MyService);
  * ```
  */
 export class Container {
@@ -65,6 +96,12 @@ export class Container {
     }
   >();
 
+  /** Token → the module that declared it. Absent = root-owned (visible everywhere). */
+  private owners = new Map<any, ScopeOwner>();
+
+  /** Module → tokens visible to it (own + imported exports + global exports). */
+  private scopes = new Map<ScopeOwner, Set<any>>();
+
   /**
    * Track all resolved Provider instances that implement lifecycle hooks.
    * Used by `initAll()` (forward order) and `destroyAll()` (reverse order).
@@ -76,33 +113,64 @@ export class Container {
    *
    * @param provider - A class constructor extending `Provider`, or a
    *                   `ProviderDefinition` object with `provide` token.
+   * @param owner - The module declaring this provider. Omitted = root
+   *                scope (visible to every module) — used by tests and
+   *                programmatic setups that skip modules entirely.
    */
-  register(provider: ProviderLike | ProviderDefinition): void {
+  register(
+    provider: ProviderLike | ProviderDefinition,
+    owner?: ScopeOwner
+  ): void {
+    const token = typeof provider === 'function' ? provider : provider.provide;
     if (typeof provider === 'function') {
       this.registry.set(provider, {});
-      return;
+    } else {
+      this.registry.set(provider.provide, {
+        useClass: provider.useClass ?? provider.provide,
+        useValue: provider.useValue,
+        deps: provider.deps,
+      });
     }
-    this.registry.set(provider.provide, {
-      useClass: provider.useClass ?? provider.provide,
-      useValue: provider.useValue,
-      deps: provider.deps,
-    });
+    if (owner) {
+      this.owners.set(token, owner);
+    } else {
+      this.owners.delete(token);
+    }
   }
 
   /**
-   * Resolve a dependency by its token.
-   *
-   * The token can be a class constructor (resolved by name or identity)
-   * or a string (resolved by name, case-insensitive).
-   *
-   * @param token - The injection token to resolve.
-   * @returns The instantiated or provided value.
+   * Set the visible-token set for a module. Computed once by
+   * `ServerApp.compile()` after every module's providers are registered.
+   */
+  setScope(owner: ScopeOwner, visible: Set<any>): void {
+    this.scopes.set(owner, visible);
+  }
+
+  /**
+   * A resolution view bound to `owner`'s scope — same `resolve()` shape,
+   * used for controllers, plugin dispatch (`ModulePlugin.register`) and
+   * the eager resolution pass.
+   */
+  forModule(owner: ScopeOwner): ContainerView {
+    return {
+      resolve: <T>(token: new (...args: any[]) => T): T =>
+        this.resolveScoped(token, owner) as T,
+    };
+  }
+
+  /**
+   * Resolve a dependency by its token in the ROOT scope (sees every
+   * registration). Module-scoped code resolves through `forModule()`.
    */
   resolve<T>(token: new (...args: any[]) => T): T {
+    return this.resolveScoped(token, undefined) as T;
+  }
+
+  private resolveScoped(token: any, scope: ScopeOwner | undefined): any {
     if (typeof token === 'string') {
-      return this.resolveByName(token) as T;
+      return this.resolveByName(token, scope);
     }
-    return this.resolveByClass(token) as T;
+    return this.resolveByClass(token, scope);
   }
 
   /**
@@ -125,55 +193,145 @@ export class Container {
     }
   }
 
+  // ── Visibility ─────────────────────────────────────────────────────
+
+  /**
+   * Whether `scope` may resolve `token`. Root scope (undefined) and
+   * root-owned tokens (no owner) are always visible. Ownership is also
+   * checked directly so classes auto-registered AFTER scopes were
+   * computed (controllers, plugin-resolved gateways) stay visible to
+   * their own module.
+   */
+  private isVisible(token: any, scope: ScopeOwner | undefined): boolean {
+    if (!scope) return true;
+    const owner = this.owners.get(token);
+    if (!owner || owner === scope) return true;
+    return this.scopes.get(scope)?.has(token) ?? false;
+  }
+
+  private describeModule(owner: ScopeOwner | undefined): string {
+    if (!owner) return 'the root scope';
+    if (owner.name) return `module "${owner.name}"`;
+    if (owner.prefix) return `the module with prefix "${owner.prefix}"`;
+    return 'an unnamed module';
+  }
+
+  // ── Resolution ─────────────────────────────────────────────────────
+
   /**
    * Resolve a dependency by its class constructor.
-   * Falls back to auto-instantiation if the class was never explicitly registered.
+   *
+   * An unregistered class is auto-registered as a PRIVATE provider owned
+   * by the resolving scope, then cached — this is how controllers and
+   * plugin-resolved classes (gateways, queues) become singletons without
+   * appearing in `providers`. Name-based resolution never auto-creates.
    */
-  private resolveByClass(token: any): any {
+  private resolveByClass(token: any, scope: ScopeOwner | undefined): any {
     const entry = this.registry.get(token);
-    if (!entry) {
-      for (const [key, val] of this.registry) {
-        if (typeof key === 'function' && key.name === token.name) {
-          return this.instantiate(val, token);
-        }
+    if (entry) {
+      if (!this.isVisible(token, scope)) {
+        throw new Error(this.visibilityError(token.name, token, scope));
       }
-      return this.instantiate({}, token);
+      return this.instantiate(entry, token, this.owners.get(token) ?? scope);
     }
-    return this.instantiate(entry, token);
+
+    // Match by class name for same-named tokens registered under aliases.
+    for (const [key, value] of this.registry) {
+      if (
+        typeof key === 'function' &&
+        key.name === token.name &&
+        this.isVisible(key, scope)
+      ) {
+        return this.instantiate(value, token, this.owners.get(key) ?? scope);
+      }
+    }
+
+    // Auto-register: private to the resolving scope, cached as a singleton.
+    this.register(token, scope);
+    return this.instantiate(this.registry.get(token)!, token, scope);
   }
 
   /**
-   * Resolve a dependency by its name (string-based lookup).
-   * Matches case-insensitively against registered class names or string keys.
+   * Resolve a dependency by its name (string-based lookup, used for
+   * constructor parameter auto-wiring). Matches case-insensitively
+   * against registered class names or string keys — own providers first,
+   * then the rest of the visible set in registration order.
    *
-   * @throws If no matching provider is found, with suggestions from available tokens.
+   * @throws A directed error when the name exists but isn't visible from
+   *         `scope`, or when it doesn't exist at all.
    */
-  private resolveByName(name: string): any {
-    for (const [key, val] of this.registry) {
-      if (
-        typeof key === 'function' &&
-        key.name.toLowerCase() === name.toLowerCase()
-      ) {
-        return this.instantiate(val, key);
+  private resolveByName(name: string, scope: ScopeOwner | undefined): any {
+    const matches = (key: any) =>
+      typeof key === 'function'
+        ? key.name.toLowerCase() === name.toLowerCase()
+        : key === name;
+
+    // Own/visible pass — prefer the scope's own providers on collisions.
+    let fallback: { key: any; entry: any } | undefined;
+    for (const [key, entry] of this.registry) {
+      if (!matches(key) || !this.isVisible(key, scope)) continue;
+      if (scope && this.owners.get(key) === scope) {
+        return this.instantiate(
+          entry,
+          typeof key === 'function' ? key : null,
+          scope
+        );
       }
-      if (typeof key === 'string' && key === name) {
-        return this.instantiate(val, null);
+      fallback ??= { key, entry };
+    }
+    if (fallback) {
+      const owner = this.owners.get(fallback.key);
+      return this.instantiate(
+        fallback.entry,
+        typeof fallback.key === 'function' ? fallback.key : null,
+        owner ?? scope
+      );
+    }
+
+    // Nothing visible — find an invisible match for a directed error.
+    for (const key of this.registry.keys()) {
+      if (matches(key)) {
+        throw new Error(this.visibilityError(name, key, scope));
       }
     }
+
     const available = [...this.registry.keys()]
+      .filter((k) => this.isVisible(k, scope))
       .map((k) => (typeof k === 'function' ? k.name : `"${k}"`))
       .join(', ');
     throw new Error(
-      `[rasengan-server] Cannot resolve dependency "${name}". ` +
-        `Make sure the provider is registered in your module with ` +
-        `a matching class name. Hint: constructor parameter "${name}" ` +
-        `resolves to a class named "${name.charAt(0).toUpperCase() + name.slice(1)}". ` +
-        `Available providers: ${available || '(none)'}`
+      `[rasengan-server] Cannot resolve dependency "${name}" from ` +
+        `${this.describeModule(scope)}. Make sure the provider is registered ` +
+        `in your module with a matching class name. Hint: constructor ` +
+        `parameter "${name}" resolves to a class named ` +
+        `"${name.charAt(0).toUpperCase() + name.slice(1)}". ` +
+        `Providers visible here: ${available || '(none)'}`
+    );
+  }
+
+  /** Directed message for "exists, but your module can't see it" (RFC-0003). */
+  private visibilityError(
+    requested: string,
+    token: any,
+    scope: ScopeOwner | undefined
+  ): string {
+    const owner = this.owners.get(token);
+    const tokenName = typeof token === 'function' ? token.name : `"${token}"`;
+    return (
+      `[rasengan-server] ${this.describeModule(scope)} cannot resolve ` +
+      `"${requested}". ${tokenName} exists in ${this.describeModule(owner)} ` +
+      `but is not visible here — add it to that module's \`exports\` and ` +
+      `add that module to this module's \`imports\` (or mark the owning ` +
+      `module \`global: true\`).`
     );
   }
 
   /**
    * Instantiate a provider entry, caching singletons on first resolution.
+   *
+   * `ownerScope` is the scope the entry's OWN dependencies resolve in —
+   * always the owning module (never the requester), so shared singletons
+   * are deterministic regardless of who resolves them first.
    *
    * Resolution priority:
    * 1. Return cached instance if already resolved.
@@ -189,7 +347,8 @@ export class Container {
       useValue?: any;
       deps?: any[];
     },
-    fallbackToken?: any
+    fallbackToken: any,
+    ownerScope: ScopeOwner | undefined
   ): any {
     if (entry.instance !== undefined) return entry.instance;
 
@@ -205,12 +364,14 @@ export class Container {
       );
 
     if (entry.deps) {
-      entry.instance = new target(...entry.deps.map((d) => this.resolve(d)));
+      entry.instance = new target(
+        ...entry.deps.map((d) => this.resolveScoped(d, ownerScope))
+      );
     } else {
       const paramNames = getConstructorParamNames(target);
       if (paramNames.length > 0) {
         entry.instance = new target(
-          ...paramNames.map((n) => this.resolveByName(n))
+          ...paramNames.map((n) => this.resolveByName(n, ownerScope))
         );
       } else {
         entry.instance = new target();

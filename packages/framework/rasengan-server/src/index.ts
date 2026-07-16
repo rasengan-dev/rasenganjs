@@ -56,7 +56,7 @@ export type { RouteHandler } from './controller/index.js';
 
 // ── Dependency injection ─────────────────────────────────────
 export { Container } from './di/container.js';
-export type { ProviderDefinition } from './di/container.js';
+export type { ContainerView, ProviderDefinition } from './di/container.js';
 export { Provider } from './di/provider.js';
 
 // ── Logger ────────────────────────────────────────────────────

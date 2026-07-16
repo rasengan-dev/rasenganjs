@@ -8,7 +8,12 @@ import {
   text,
 } from '@rasenganjs/futon';
 
-import { Container } from '../di/container.js';
+import {
+  Container,
+  type ContainerView,
+  type ProviderDefinition,
+  type ProviderLike,
+} from '../di/container.js';
 import { Router } from '../router/index.js';
 import type { ModuleConfig } from './module.js';
 import { Context } from '@rasenganjs/futon';
@@ -328,18 +333,55 @@ export class ServerApp {
     const container = new Container();
     this.container = container;
 
+    // ── RFC-0003: register providers with their owning module ────────
     for (const mod of flatModules) {
+      validateExports(mod);
       for (const provider of mod.providers || []) {
-        container.register(provider);
+        container.register(provider, mod);
       }
     }
 
+    // Visible set per module: own providers + imports' exports + the
+    // exports of every `global: true` module.
+    const globalExports: any[] = flatModules
+      .filter((mod) => mod.global)
+      .flatMap((mod) => mod.exports ?? []);
     for (const mod of flatModules) {
-      this.registerControllers(app, container, mod);
+      const visible = new Set<any>();
+      for (const provider of mod.providers || []) {
+        visible.add(providerToken(provider));
+      }
+      for (const imported of mod.imports || []) {
+        for (const token of imported.exports ?? []) {
+          visible.add(token);
+        }
+      }
+      for (const token of globalExports) {
+        visible.add(token);
+      }
+      container.setScope(mod, visible);
+    }
+
+    // Controllers and plugins resolve through module-scoped views.
+    for (const mod of flatModules) {
+      this.registerControllers(app, container.forModule(mod), mod);
     }
 
     for (const mod of flatModules) {
-      this.dispatchPlugins(container, mod);
+      this.dispatchPlugins(container.forModule(mod), mod);
+    }
+
+    // ── RFC-0003: eager resolution ────────────────────────────────────
+    // Every declared provider is constructed at boot — onInit() fires
+    // even for providers nothing injects (schedulers, warmers), and any
+    // wiring mistake fails here instead of on the first request. Runs
+    // after dispatchPlugins so plugin-populated handles (e.g.
+    // `gateway.server` from @rasenganjs/ws) are set before any onInit().
+    for (const mod of flatModules) {
+      const scoped = container.forModule(mod);
+      for (const provider of mod.providers || []) {
+        scoped.resolve(providerToken(provider));
+      }
     }
 
     // Forward app-level lifecycle handlers to the Futon instance
@@ -404,7 +446,7 @@ export class ServerApp {
    */
   private registerControllers(
     app: Futon,
-    container: Container,
+    container: ContainerView,
     mod: ModuleConfig
   ): void {
     const runtimeRouter = app.getRouter();
@@ -458,7 +500,7 @@ export class ServerApp {
    * quietly does nothing because `app.registerPlugin(createWsPlugin())`
    * was never called.
    */
-  private dispatchPlugins(container: Container, mod: ModuleConfig): void {
+  private dispatchPlugins(container: ContainerView, mod: ModuleConfig): void {
     for (const key of Object.keys(mod)) {
       if (RESERVED_MODULE_KEYS.has(key)) continue;
 
@@ -482,26 +524,56 @@ export class ServerApp {
 
 /** `ModuleConfig` fields `dispatchPlugins()` never forwards to a plugin. */
 const RESERVED_MODULE_KEYS = new Set([
+  'name',
   'prefix',
   'middlewares',
   'imports',
   'controllers',
   'providers',
+  'exports',
+  'global',
 ]);
 
+/** The injection token a `providers` entry registers under. */
+function providerToken(provider: ProviderLike | ProviderDefinition): any {
+  return typeof provider === 'function' ? provider : provider.provide;
+}
+
 /**
- * Recursively flatten a module tree into a linear array.
- *
- * Sub-modules declared via `imports` are traversed depth-first
- * and appended after their parent module.
+ * RFC-0003: every exported token must be declared in the same module's
+ * `providers` — exporting something you don't own is always a mistake.
+ */
+function validateExports(mod: ModuleConfig): void {
+  if (!mod.exports?.length) return;
+  const own = new Set((mod.providers || []).map(providerToken));
+  for (const token of mod.exports) {
+    if (!own.has(token)) {
+      const name = typeof token === 'function' ? token.name : `"${token}"`;
+      throw new Error(
+        `[rasengan-server] ${mod.name ? `Module "${mod.name}"` : 'A module'} ` +
+          `exports ${name} but does not declare it in \`providers\`. ` +
+          `Only a module's own providers can be exported.`
+      );
+    }
+  }
+}
+
+/**
+ * Flatten the module graph into a linear array, depth-first, each module
+ * appearing once (diamond imports are deduped by object identity, and
+ * cyclic imports terminate instead of recursing forever).
  */
 function flattenModules(modules: ModuleConfig[]): ModuleConfig[] {
   const result: ModuleConfig[] = [];
-  for (const mod of modules) {
-    result.push(mod);
-    if (mod.imports) {
-      result.push(...flattenModules(mod.imports));
+  const seen = new Set<ModuleConfig>();
+  const walk = (mods: ModuleConfig[]) => {
+    for (const mod of mods) {
+      if (seen.has(mod)) continue;
+      seen.add(mod);
+      result.push(mod);
+      if (mod.imports) walk(mod.imports);
     }
-  }
+  };
+  walk(modules);
   return result;
 }
