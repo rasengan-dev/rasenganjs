@@ -13,8 +13,8 @@
  * benchmark completes in reasonable time.
  */
 
-import { RasenganTreeRouter } from '../packages/platform/rasengan-runtime/src/router/radix.js';
-import { matchPath } from '../packages/platform/rasengan-runtime/src/router/utils.js';
+import { RasenganTreeRouter } from '../packages/framework/futon/src/router/radix.js';
+import { matchPath } from '../packages/framework/futon/src/router/utils.js';
 
 // ── Helpers ─────────────────────────────────────────────────────
 
