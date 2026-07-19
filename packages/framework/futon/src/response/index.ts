@@ -1,6 +1,7 @@
 export { ResponseBuilder } from './builder.js';
 
 export {
+  RAW_BODY,
   json,
   text,
   html,

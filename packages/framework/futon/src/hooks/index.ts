@@ -59,6 +59,17 @@ export class HookSystem {
   }
 
   /**
+   * Whether any handler is registered for `name`.
+   *
+   * Callers on hot paths should guard `emit()` with this to skip
+   * the async-call overhead when no hooks exist (RFC-0005).
+   */
+  has(name: HookName): boolean {
+    const set = this.handlers.get(name);
+    return set !== undefined && set.size > 0;
+  }
+
+  /**
    * Fire all handlers registered for `name`.
    *
    * Each handler receives `args` spread as its arguments.

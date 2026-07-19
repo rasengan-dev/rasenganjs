@@ -7,15 +7,46 @@
  */
 
 /**
+ * Registry symbol carrying a Response's raw single-buffer body.
+ *
+ * Runtime adapters (RFC-0005, Phase 2) look this up via
+ * `Symbol.for('rasenganjs.response.rawBody')` and, when present,
+ * write the body with a single `res.end(raw)` instead of pumping
+ * the web stream. `Symbol.for` keeps this working across package
+ * boundaries without an import edge from @rasenganjs/runtime.
+ *
+ * Only ever attach a value that is byte-identical to the
+ * Response's actual body — the adapter trusts it blindly.
+ */
+export const RAW_BODY = Symbol.for('rasenganjs.response.rawBody');
+
+function tagRawBody(res: Response, raw: string): Response {
+  (res as Response & { [RAW_BODY]?: string })[RAW_BODY] = raw;
+  return res;
+}
+
+/**
  * Create a JSON Response.
  *
- * Thin wrapper around `Response.json()`.
+ * Behaves like `Response.json()` (init-provided Content-Type wins,
+ * otherwise `application/json`), but serialises once and tags the
+ * Response with its raw body for the adapter fast path.
  *
  * @param data — Any JSON-serialisable value
  * @param init — Optional status + headers overrides
  */
 export function json(data: unknown, init?: ResponseInit): Response {
-  return Response.json(data, init);
+  const payload = JSON.stringify(data);
+  if (payload === undefined) {
+    // Match Response.json(undefined)
+    throw new TypeError('The data is not JSON serializable');
+  }
+
+  const res = new Response(payload, init);
+  if (!init?.headers || !new Headers(init.headers).has('content-type')) {
+    res.headers.set('content-type', 'application/json');
+  }
+  return tagRawBody(res, payload);
 }
 
 /**
@@ -25,7 +56,7 @@ export function json(data: unknown, init?: ResponseInit): Response {
  * @param init  — Optional status + headers overrides
  */
 export function text(value: string, init?: ResponseInit): Response {
-  return new Response(value, init);
+  return tagRawBody(new Response(value, init), value);
 }
 
 /**
@@ -35,13 +66,16 @@ export function text(value: string, init?: ResponseInit): Response {
  * @param init  — Optional status + headers overrides
  */
 export function html(value: string, init?: ResponseInit): Response {
-  return new Response(value, {
-    ...init,
-    headers: {
-      ...init?.headers,
-      'Content-Type': 'text/html; charset=utf-8',
-    },
-  });
+  return tagRawBody(
+    new Response(value, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    }),
+    value
+  );
 }
 
 /**

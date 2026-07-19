@@ -1,6 +1,7 @@
 import type { Context } from '../context/types.js';
 import type { Middleware } from '../middlewares/index.js';
 import { RasenganTreeRouter } from './radix.js';
+import { getPathname } from './utils.js';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -92,6 +93,18 @@ export class Router {
   private totalRoutes = 0;
 
   /**
+   * Registration version — bumped whenever the route table or the
+   * route-level middleware stack changes. Futon compares it against
+   * the version its cached composed chain was built from, so routes
+   * registered after the first request are still picked up (RFC-0005).
+   */
+  private _version = 0;
+
+  get version(): number {
+    return this._version;
+  }
+
+  /**
    * Register route-level middleware.
    *
    * Middleware registered here only applies to routes defined
@@ -107,6 +120,7 @@ export class Router {
    */
   use(...middlewares: Middleware[]): this {
     this.stack.push(...middlewares);
+    this._version++;
     return this;
   }
 
@@ -220,6 +234,7 @@ export class Router {
     }
     tree.add(pattern, entry);
     this.totalRoutes++;
+    this._version++;
 
     return this;
   }
@@ -241,7 +256,7 @@ export class Router {
       next: () => Promise<Response>
     ): Promise<Response> => {
       const method = ctx.request.method.toUpperCase() as HTTPMethod;
-      const pathname = new URL(ctx.request.url).pathname;
+      const pathname = getPathname(ctx.request.url);
 
       const tree = snapshot.get(method);
       if (!tree) {

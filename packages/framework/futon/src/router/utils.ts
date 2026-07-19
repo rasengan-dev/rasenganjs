@@ -82,6 +82,39 @@ export function matchPath(
 }
 
 /**
+ * Extract the pathname from an absolute URL without the cost of a
+ * full WHATWG `new URL()` parse (RFC-0005, Phase 1b).
+ *
+ * Falls back to `new URL().pathname` whenever the result could
+ * differ from WHATWG normalization:
+ *   - no scheme separator (relative/unusual shapes)
+ *   - `%` in the path (WHATWG normalizes percent-encoding case)
+ *   - `\` in the path (WHATWG converts backslashes to slashes)
+ */
+export function getPathname(url: string): string {
+  const schemeEnd = url.indexOf('://');
+  if (schemeEnd === -1) return new URL(url).pathname;
+
+  const pathStart = url.indexOf('/', schemeEnd + 3);
+  if (pathStart === -1) return '/';
+
+  let pathEnd = url.length;
+  for (let i = pathStart; i < url.length; i++) {
+    const c = url.charCodeAt(i);
+    if (c === 63 /* ? */ || c === 35 /* # */) {
+      pathEnd = i;
+      break;
+    }
+  }
+
+  const pathname = url.slice(pathStart, pathEnd);
+  if (pathname.includes('%') || pathname.includes('\\')) {
+    return new URL(url).pathname;
+  }
+  return pathname;
+}
+
+/**
  * Parse a query string into a plain key-value map.
  *
  * Handles URL-encoded keys and values.

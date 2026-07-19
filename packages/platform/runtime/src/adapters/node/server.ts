@@ -16,6 +16,15 @@ import { createNodeUpgradeHandler } from './websocket.js';
 import { incomingToRequest } from './request.js';
 
 /**
+ * Registry symbol under which futon's response helpers (json/text/html)
+ * attach the raw single-buffer body of the Response they build
+ * (RFC-0005, Phase 2). When present, the body is written with one
+ * `res.end(raw)` instead of pumping the web stream — the dominant cost
+ * for small JSON responses. `Symbol.for` avoids an import edge to futon.
+ */
+const RAW_BODY = Symbol.for('rasenganjs.response.rawBody');
+
+/**
  * Options shared by all Node-based servers.
  */
 export interface NodeServerOptions {
@@ -71,31 +80,46 @@ export function startNodeServer(
       const request = await incomingToRequest(req);
       const response = await handler(request);
 
-      const rawHeaders: Record<string, string> = {};
-      if (response.headers && typeof response.headers.forEach === 'function') {
-        response.headers.forEach((value: string, key: string) => {
-          rawHeaders[key] = value;
-        });
+      res.statusCode = response.status;
+      // Copy headers directly. `set-cookie` is skipped in the joined
+      // view and set from getSetCookie() so multiple cookies are sent
+      // as separate header lines instead of one comma-joined value.
+      for (const [key, value] of response.headers) {
+        if (key === 'set-cookie') continue;
+        res.setHeader(key, value);
       }
-      res.writeHead(response.status, rawHeaders);
+      const setCookies = response.headers.getSetCookie();
+      if (setCookies.length > 0) res.setHeader('set-cookie', setCookies);
 
-      if (response.body) {
-        const reader = response.body.getReader();
-        const pump = (): void => {
-          reader.read().then(({ done, value }) => {
-            if (done) return res.end();
-            res.write(value);
-            pump();
-          });
-        };
-        pump();
+      const raw = (response as { [RAW_BODY]?: string | Uint8Array })[RAW_BODY];
+      if (raw !== undefined) {
+        // Fast path: single-buffer body tagged at creation
+        res.end(raw);
+      } else if (response.body) {
+        // Streaming path: flush each chunk as it arrives (first chunk
+        // is never held back — SSE/TTFB safe), honoring backpressure.
+        // Cast: Node's ReadableStream is async-iterable at runtime,
+        // but the DOM lib types don't declare it.
+        const chunks = response.body as unknown as AsyncIterable<Uint8Array>;
+        for await (const chunk of chunks) {
+          if (!res.write(chunk)) {
+            await new Promise<void>((resolve) => res.once('drain', resolve));
+          }
+        }
+        res.end();
       } else {
         res.end();
       }
     } catch (error) {
       console.error('Server error:', error);
-      res.writeHead(500);
-      res.end('Internal Server Error');
+      if (res.headersSent) {
+        // Mid-stream failure — the status line is gone; all we can
+        // do is terminate the connection so the client sees an error.
+        res.destroy();
+      } else {
+        res.writeHead(500);
+        res.end('Internal Server Error');
+      }
     }
   });
 

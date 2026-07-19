@@ -119,19 +119,29 @@ Add a `getPathname(url: string): string` fast path in `router/utils.ts`: scan pa
 
 ## Phase 2 — adapter response fast path (`@rasenganjs/runtime`)
 
-Replace the recursive reader pump with a two-read strategy that needs **no knowledge of how the Response was built**:
+> **Amended at implementation time.** The originally proposed two-read strategy (read twice, `res.end(first)` when the second read reports `done`) has a latent TTFB regression: for a _genuinely streaming_ body (SSE), the first chunk would sit unflushed until the second chunk arrives — potentially seconds later. Replaced by an explicit tag that carries zero streaming risk.
+
+futon's `json()` / `text()` / `html()` helpers serialize once and attach the raw payload to the Response they build under `Symbol.for('rasenganjs.response.rawBody')`. The Node adapter checks that symbol:
 
 ```ts
-if (!response.body) return res.end();
-const reader = response.body.getReader();
-const first = await reader.read();
-if (first.done) return res.end();
-const second = await reader.read();
-if (second.done) return res.end(first.value); // single-chunk body → one syscall
-// genuinely streaming → fall back to the pump loop starting from the two chunks
+const raw = (response as { [RAW_BODY]?: string | Uint8Array })[RAW_BODY];
+if (raw !== undefined) {
+  res.end(raw); // single-buffer body → one syscall
+} else if (response.body) {
+  for await (const chunk of response.body) {
+    if (!res.write(chunk)) await drain(res); // flush immediately, honor backpressure
+  }
+  res.end();
+}
 ```
 
-`Response.json()`, `text()`, `html()` and every ResponseBuilder output are single-chunk — they take the `res.end(buffer)` path. Real streams (`streamResponse`, SSE, file downloads) behave exactly as today. Header copying also drops the intermediate object: iterate `response.headers` directly into `res.setHeader` (with the `set-cookie` multi-value case using `getSetCookie()`).
+Properties:
+
+- `Symbol.for` (registry symbol) means no import edge from `@rasenganjs/runtime` to futon — any framework/helper can opt in.
+- Responses rebuilt by middleware (e.g. `setCookie` constructs a new Response) lose the tag and take the streaming path — always correct, just not fast-pathed.
+- Streaming bodies flush every chunk the moment it arrives (SSE-safe, unlike two-read) and now honor `res.write` backpressure, which the old recursive pump did not.
+- Header copying drops the intermediate object: iterate `response.headers` directly into `res.setHeader`, with `set-cookie` written from `getSetCookie()` — incidentally fixing multiple cookies being comma-joined into one header line by the old `forEach` copy.
+- Mid-stream errors now reach the handler's catch block (the old pump was fire-and-forget); the catch guards on `res.headersSent` before attempting a 500.
 
 **Expected effect:** the larger share of the HTTP GET gap; benches after Phase 2 should show ≥22k req/s on hello.
 

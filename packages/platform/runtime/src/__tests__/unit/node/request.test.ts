@@ -14,6 +14,16 @@ function fakeIncoming(
   req.method = method;
   req.url = '/upload';
   req.headers = { host: 'localhost', ...headers };
+  // Real requests with a body always declare it — mirror HTTP
+  // semantics so the streaming body path (RFC-0005, 3a) engages.
+  const totalBytes = chunks.reduce((sum, c) => sum + c.byteLength, 0);
+  if (totalBytes > 0 && !req.headers['content-length']) {
+    req.headers['content-length'] = String(totalBytes);
+  }
+  req.rawHeaders = Object.entries(req.headers).flatMap(([k, v]) => [
+    k,
+    v as string,
+  ]);
   (req as unknown as { socket: object }).socket = {};
   return req;
 }

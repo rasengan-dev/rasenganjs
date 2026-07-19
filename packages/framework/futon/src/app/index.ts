@@ -40,6 +40,7 @@ import { createContext } from '../context/index.js';
 import { compose } from '../middlewares/compose.js';
 import type { Middleware } from '../middlewares/index.js';
 import { Router } from '../router/index.js';
+import { getPathname } from '../router/utils.js';
 import { text } from '../response/utils.js';
 import { HookSystem } from '../hooks/index.js';
 
@@ -108,8 +109,7 @@ export class Futon {
     if (typeof pathOrMiddleware === 'string' && middleware) {
       const path = pathOrMiddleware;
       this.middlewares.push(async (ctx, next) => {
-        const url = new URL(ctx.request.url);
-        if (url.pathname.startsWith(path)) {
+        if (getPathname(ctx.request.url).startsWith(path)) {
           return middleware(ctx, next);
         }
         return next();
@@ -117,6 +117,7 @@ export class Futon {
     } else {
       this.middlewares.push(pathOrMiddleware as Middleware);
     }
+    this._chain = null;
     return this;
   }
 
@@ -268,6 +269,32 @@ export class Futon {
     }
   }
 
+  // ── Composed chain cache (RFC-0005, Phase 1a) ──────────────
+
+  /**
+   * The composed middleware chain, rebuilt lazily instead of per
+   * request. Invalidated by `use()` directly and by the router's
+   * registration version, so middleware/routes added after the
+   * first request are still picked up — matching the previous
+   * per-request-rebuild semantics.
+   *
+   * Safe to share across concurrent requests: `compose()` keeps
+   * its double-`next()` guard state inside each invocation.
+   */
+  private _chain: Middleware | null = null;
+  private _chainRouterVersion = -1;
+
+  private chain(): Middleware {
+    if (
+      this._chain === null ||
+      this._chainRouterVersion !== this.router.version
+    ) {
+      this._chainRouterVersion = this.router.version;
+      this._chain = compose([...this.middlewares, this.router.middleware()]);
+    }
+    return this._chain;
+  }
+
   // ── Request entry point ────────────────────────────────────
 
   /**
@@ -297,12 +324,15 @@ export class Futon {
     };
     const ctx = createContext(request, {}, mergedRuntime);
 
-    // Fire beforeRequest hook (errors here are swallowed per hook spec)
-    await this.hooks.emit('beforeRequest', ctx);
+    // Fire beforeRequest hook (errors here are swallowed per hook spec).
+    // Guarded so hookless apps skip the async-call overhead entirely.
+    if (this.hooks.has('beforeRequest')) {
+      await this.hooks.emit('beforeRequest', ctx);
+    }
 
-    // Build the middleware chain with the router at the end.
-    // The final "next" is the 404 handler.
-    const chain = compose([...this.middlewares, this.router.middleware()]);
+    // Middleware chain with the router at the end, cached across
+    // requests (see chain()). The final "next" is the 404 handler.
+    const chain = this.chain();
 
     const finalHandler: () => Promise<Response> = async () => {
       if (this.notFoundHandler) {
@@ -325,7 +355,7 @@ export class Futon {
       response = await chain(ctx, finalHandler);
     } catch (error) {
       // Fire onError hook
-      if (error instanceof Error) {
+      if (error instanceof Error && this.hooks.has('onError')) {
         await this.hooks.emit('onError', error, ctx);
       }
 
@@ -339,7 +369,9 @@ export class Futon {
     }
 
     // Fire afterResponse hook
-    await this.hooks.emit('afterResponse', ctx, response);
+    if (this.hooks.has('afterResponse')) {
+      await this.hooks.emit('afterResponse', ctx, response);
+    }
 
     return response;
   }
