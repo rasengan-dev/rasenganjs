@@ -32,7 +32,11 @@ export { bootstrap } from './bootstrap.js';
 
 // ── ServerApp & Module ──────────────────────────────────────
 export { ServerApp } from './server/app.js';
-export type { ServerHandle } from './server/app.js';
+export type {
+  ServerHandle,
+  ModuleSummary,
+  BuildSummary,
+} from './server/app.js';
 export { defineModule } from './server/module.js';
 export type { ModuleConfig } from './server/module.js';
 

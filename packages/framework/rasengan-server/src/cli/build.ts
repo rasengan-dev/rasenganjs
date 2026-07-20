@@ -1,4 +1,5 @@
 import { build as esbuild } from 'esbuild';
+import { spawn } from 'node:child_process';
 import {
   copyFileSync,
   mkdirSync,
@@ -7,8 +8,19 @@ import {
   existsSync,
   readdirSync,
 } from 'node:fs';
-import { resolve, dirname, basename, extname, join } from 'node:path';
+import { resolve, relative, dirname, basename, extname, join } from 'node:path';
 import type { RasenganServerConfig } from '../config/index.js';
+import { green, yellow, gray, bold } from '../utils/color.js';
+import { startSpinner } from '../utils/spinner.js';
+
+/**
+ * Display a path relative to the project root (`process.cwd()`) instead
+ * of the full absolute path — everything the build touches lives under
+ * the project, so the absolute prefix is just noise.
+ */
+function relativeToRoot(path: string): string {
+  return relative(process.cwd(), path) || '.';
+}
 
 /**
  * Regex matching static ES import/export statements with relative paths.
@@ -37,10 +49,10 @@ export async function build(config: RasenganServerConfig): Promise<void> {
 
   mkdirSync(outDir, { recursive: true });
 
-  console.log(`\n  rasengan-server build\n`);
-  console.log(`  entry : ${entry}`);
-  console.log(`  out   : ${outDir}`);
-  console.log(`  format: ${formats.join(', ')}\n`);
+  console.log(`\n  ${bold('rasengan-server build')}\n`);
+  console.log(`  ${gray('entry').padEnd(15)} ${relativeToRoot(entry)}`);
+  console.log(`  ${gray('out').padEnd(15)} ${relativeToRoot(outDir)}`);
+  console.log(`  ${gray('format').padEnd(15)} ${formats.join(', ')}\n`);
 
   const sharedOptions = {
     entryPoints: [entry],
@@ -50,22 +62,88 @@ export async function build(config: RasenganServerConfig): Promise<void> {
     external: ['node:*'],
   };
 
-  for (const fmt of formats) {
-    switch (fmt) {
-      case 'single-file':
-        await buildSingleFile(entry, outDir, sharedOptions, config);
-        break;
-      case 'directory':
-        await buildDirectory(entry, outDir, sharedOptions, config);
-        break;
+  // Keyed by label so `generateEntryFile()` — called once per format,
+  // always overwriting the same `dist/index.js` — reports once with
+  // whichever path actually survives on disk, not once per format.
+  const artifacts = new Map<string, string>();
+  const preset = config.preset ?? 'node';
+
+  const bundleSpinner = startSpinner('Bundling...');
+  const bundleStart = performance.now();
+  try {
+    for (const fmt of formats) {
+      switch (fmt) {
+        case 'single-file':
+          artifacts.set(
+            'single-file',
+            await buildSingleFile(outDir, sharedOptions)
+          );
+          break;
+        case 'directory':
+          artifacts.set(
+            'directory',
+            await buildDirectory(entry, outDir, sharedOptions, config)
+          );
+          break;
+      }
+      artifacts.set(
+        `entry (${preset})`,
+        generateEntryFile(outDir, fmt, config, entry)
+      );
     }
-
-    generateEntryFile(outDir, fmt, config);
+    artifacts.set('config', writeConfigJson(outDir, config));
+  } catch (err) {
+    bundleSpinner.fail('Bundling failed');
+    throw err;
   }
+  const bundleMs = performance.now() - bundleStart;
+  bundleSpinner.succeed(`Bundled in ${bold(`${bundleMs.toFixed(1)}ms`)}`);
 
-  writeConfigJson(outDir, config);
+  for (const [label, path] of artifacts) {
+    console.log(`    ${gray(label.padEnd(14))} ${relativeToRoot(path)}`);
+  }
+  console.log('');
 
-  console.log('  ✓ build complete\n');
+  if (preset === 'workerd') {
+    console.log(
+      `  ${yellow('→')} ${gray('skipping route summary — workerd builds are not locally runnable')}\n`
+    );
+  } else {
+    const validateSpinner = startSpinner('Validating build...');
+    const exitCode = await runDryRun(outDir, preset);
+    if (exitCode !== 0) {
+      validateSpinner.fail('Build validation failed');
+      throw new Error(
+        `The compiled app could not start (exit code ${exitCode}). ` +
+          `See the output above for the underlying error.`
+      );
+    }
+    validateSpinner.succeed('Build validated');
+  }
+}
+
+/**
+ * Run the freshly-built entry with `RASENGAN_SERVER_DRY_RUN=1` so
+ * `bootstrap()` compiles the app, prints the route/module summary
+ * (`utils/print-build-summary.ts`), and exits WITHOUT starting the HTTP
+ * listener — doubling as a build-validity check: a module graph that
+ * fails to compile now fails `rasengan-server build` itself, not just
+ * the first boot. `stdio: 'inherit'` streams the colored summary
+ * straight to this process's terminal.
+ */
+function runDryRun(outDir: string, preset: string): Promise<number> {
+  const entry = join(outDir, 'index.js');
+  const env = { ...process.env, RASENGAN_SERVER_DRY_RUN: '1' };
+
+  const child =
+    preset === 'bun'
+      ? spawn('bun', ['run', entry], { stdio: 'inherit', env })
+      : spawn('node', [entry], { stdio: 'inherit', env });
+
+  return new Promise((resolvePromise) => {
+    child.on('exit', (code) => resolvePromise(code ?? 1));
+    child.on('error', () => resolvePromise(1));
+  });
 }
 
 /**
@@ -92,23 +170,21 @@ function esbuildMinifyOptions(minify: boolean): {
   };
 }
 
-function writeConfigJson(outDir: string, config: RasenganServerConfig): void {
+/** Writes `config.json` and returns its path. */
+function writeConfigJson(outDir: string, config: RasenganServerConfig): string {
   const configPath = join(outDir, 'config.json');
   writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
-  console.log(`  ✓ config: ${configPath}`);
+  return configPath;
 }
 
 /**
  * Build a single-file bundle (`server.bundle.mjs`) using esbuild.
  *
  * All dependencies are bundled inline except `node:*` modules.
+ *
+ * @returns The path to the produced bundle.
  */
-async function buildSingleFile(
-  entry: string,
-  outDir: string,
-  shared: any,
-  config: RasenganServerConfig
-): Promise<void> {
+async function buildSingleFile(outDir: string, shared: any): Promise<string> {
   const outfile = join(outDir, 'server.bundle.mjs');
 
   await esbuild({
@@ -117,7 +193,7 @@ async function buildSingleFile(
     outfile,
   });
 
-  console.log(`  ✓ single-file: ${outfile}`);
+  return outfile;
 }
 
 /**
@@ -129,13 +205,15 @@ async function buildSingleFile(
  *    (required by Node.js ESM).
  * 3. Copies `package.json` (minimal) and `rasengan.server.*` config.
  * 4. Writes a `start.json` with convenience npm scripts.
+ *
+ * @returns The path to the produced directory.
  */
 async function buildDirectory(
   entry: string,
   outDir: string,
   shared: any,
   config: RasenganServerConfig
-): Promise<void> {
+): Promise<string> {
   const srcDir = resolve(dirname(entry));
   const destDir = join(outDir, 'server');
 
@@ -143,8 +221,8 @@ async function buildDirectory(
   const entryPoints: Record<string, string> = {};
 
   for (const file of files) {
-    const relative = file.replace(srcDir + '/', '');
-    const key = relative.replace(extname(relative), '');
+    const relPath = file.replace(srcDir + '/', '');
+    const key = relPath.replace(extname(relPath), '');
     entryPoints[key] = file;
   }
 
@@ -200,7 +278,7 @@ async function buildDirectory(
     JSON.stringify(startScript, null, 2)
   );
 
-  console.log(`  ✓ directory: ${destDir}`);
+  return destDir;
 }
 
 /**
@@ -328,21 +406,29 @@ function workerdEntryTemplate(sourcePath: string): string {
  * @param outDir - Root output directory (e.g. `dist`).
  * @param format - Build format that was produced.
  * @param config - Server configuration (preset determines the template).
+ * @param entry - The resolved entry file path — its basename (minus
+ *                extension) is `buildDirectory()`'s compiled output
+ *                filename, e.g. `src/server.ts` → `dist/server/server.js`.
+ *                Only `main.ts`-named entries happened to work before this
+ *                was threaded through; anything else pointed at a
+ *                nonexistent `server/main.js`.
  */
 function generateEntryFile(
   outDir: string,
   format: 'single-file' | 'directory',
-  config: RasenganServerConfig
-): void {
+  config: RasenganServerConfig,
+  entry: string
+): string {
   const preset = config.preset ?? 'node';
+  const entryBase = basename(entry, extname(entry));
   const sourcePath =
-    format === 'single-file' ? './server.bundle.mjs' : './server/main.js';
+    format === 'single-file'
+      ? './server.bundle.mjs'
+      : `./server/${entryBase}.js`;
 
   let content: string;
 
   if (preset === 'workerd') {
-    const sourcePath =
-      format === 'single-file' ? './server.bundle.mjs' : './server/index.js';
     content = workerdEntryTemplate(sourcePath);
   } else {
     content = runtimeEntryTemplate(sourcePath);
@@ -351,5 +437,5 @@ function generateEntryFile(
   const entryPath = join(outDir, 'index.js');
   writeFileSync(entryPath, content, 'utf-8');
 
-  console.log(`  ✓ entry: ${entryPath} (${preset})`);
+  return entryPath;
 }

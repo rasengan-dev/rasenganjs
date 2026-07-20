@@ -56,6 +56,14 @@ export class Router {
    */
   readonly handlerSchemaMap = new Map<RouteHandler, SchemaDefinition>();
 
+  /**
+   * Every route registered through this instance, in registration order.
+   * Read by `ServerApp.registerControllers()` via `consumeRegisteredRoutes()`
+   * to build the compile-time build/boot summary — paths here are as
+   * declared by the controller, NOT yet prefixed by the module.
+   */
+  private routeLog: Array<{ method: string; path: string }> = [];
+
   constructor(
     private router: FutonRouter,
     private validationConfig?: ValidationConfig,
@@ -227,6 +235,8 @@ export class Router {
     const { middlewares, handler, schema } = this.parseArgs(args);
     const finalSchema = schema ?? this.resolveControllerSchema(handler);
 
+    this.routeLog.push({ method, path });
+
     const wrapHandler = (ctx: Context) => Promise.resolve(handler(ctx));
     const m = method.toLowerCase() as
       'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -325,6 +335,17 @@ export class Router {
   consumeHandlerSchemas(): Array<[RouteHandler, SchemaDefinition]> {
     const entries = [...this.handlerSchemaMap.entries()];
     this.handlerSchemaMap.clear();
+    return entries;
+  }
+
+  /**
+   * Return all routes registered through this instance and clear the
+   * internal log. Called by `ServerApp.registerControllers()` after
+   * `instance.routes(router)` returns, to build the build/boot summary.
+   */
+  consumeRegisteredRoutes(): Array<{ method: string; path: string }> {
+    const entries = [...this.routeLog];
+    this.routeLog.length = 0;
     return entries;
   }
 }

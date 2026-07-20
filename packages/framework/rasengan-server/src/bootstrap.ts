@@ -2,6 +2,7 @@ import type { RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
 import { ServerApp, type ServerHandle } from './server/app.js';
 import { selectAdapter } from './adapter/index.js';
 import { logServerInfo } from './utils/log-server-info.js';
+import { printBuildSummary } from './utils/print-build-summary.js';
 import { ConfigHolder } from './config/holder.js';
 import type { RasenganServerConfig } from './config/index.js';
 
@@ -44,6 +45,20 @@ export async function bootstrap(
   await callback(serverApp);
 
   const runtimeApp = serverApp.compile();
+
+  const summary = serverApp.getBuildSummary();
+  if (summary) printBuildSummary(summary);
+
+  // `rasengan-server build` spawns the freshly-built entry with this flag
+  // set so it can print the same summary and double as a build-validity
+  // check, WITHOUT actually starting the HTTP listener. Note: `onInit()`
+  // hooks still fire (compile() unconditionally starts them) — this
+  // exits right after printing, so a slow onInit() (e.g. a real DB
+  // connection) may be cut off mid-flight. Reusing the exact compile()
+  // path both ways is the point; a full app lifecycle is not.
+  if (process.env.RASENGAN_SERVER_DRY_RUN === '1') {
+    process.exit(0);
+  }
 
   const adapter: RuntimeAdapter = await selectAdapter(config);
 

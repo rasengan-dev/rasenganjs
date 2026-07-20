@@ -39,6 +39,28 @@ export interface ServerHandle {
 }
 
 /**
+ * Per-module compile summary — routes, providers, and plugin-declared
+ * classes (e.g. `@rasenganjs/ws` gateways), grouped exactly the way a
+ * user declared them. `pluginGroups` is keyed by the module's extension
+ * key (e.g. `"gateways"`) rather than a hardcoded concept, so core stays
+ * decoupled from what any given plugin represents.
+ */
+export interface ModuleSummary {
+  name: string;
+  prefix?: string;
+  routes: Array<{ method: string; path: string }>;
+  providers: string[];
+  pluginGroups: Record<string, string[]>;
+  middlewareCount: number;
+}
+
+/** Result of the most recent `compile()` — consumed by the CLI's build/boot summary printer. */
+export interface BuildSummary {
+  modules: ModuleSummary[];
+  durationMs: number;
+}
+
+/**
  * Core application class for Rasengan Server.
  *
  * Orchestrates module registration, middleware layering, dependency injection,
@@ -111,6 +133,9 @@ export class ServerApp {
 
   /** WebSocket registry built during compile(), consumed by runtime adapters. */
   private websocketRegistry: WebSocketRegistry | null = null;
+
+  /** Route/provider/gateway summary + timing from the most recent compile(). */
+  private buildSummary: BuildSummary | null = null;
 
   /** Module-extension plugins registered via `.registerPlugin()`, keyed by their claimed `ModuleConfig` field. */
   private plugins = new Map<string, ModulePlugin>();
@@ -247,6 +272,16 @@ export class ServerApp {
   }
 
   /**
+   * Routes/providers/plugin-declared classes grouped by module, plus
+   * `compile()`'s wall-clock duration — `null` until `compile()` has run.
+   * Consumed by the CLI (`utils/print-build-summary.ts`) for the
+   * build/boot summary.
+   */
+  getBuildSummary(): BuildSummary | null {
+    return this.buildSummary;
+  }
+
+  /**
    * Register a handler that runs once before the server starts
    * accepting requests. Forwarded to the underlying Futon instance
    * during compile().
@@ -303,6 +338,7 @@ export class ServerApp {
    * @returns The compiled runtime \`Futon\`, ready to be served.
    */
   compile(): Futon {
+    const compileStart = performance.now();
     const app = new Futon();
     this.futon = app;
 
@@ -377,8 +413,13 @@ export class ServerApp {
     }
 
     // Controllers and plugins resolve through module-scoped views.
+    // Each module's summary (routes/providers/plugin groups) is built
+    // alongside registration for the CLI's build/boot summary.
+    const moduleSummaries: ModuleSummary[] = [];
     for (const mod of flatModules) {
-      this.registerControllers(app, container.forModule(mod), mod);
+      const summary = this.buildModuleSummary(mod);
+      this.registerControllers(app, container.forModule(mod), mod, summary);
+      moduleSummaries.push(summary);
     }
 
     for (const mod of flatModules) {
@@ -423,6 +464,11 @@ export class ServerApp {
     }
     this.websocketRegistry = wsRegistry;
 
+    this.buildSummary = {
+      modules: moduleSummaries,
+      durationMs: performance.now() - compileStart,
+    };
+
     return app;
   }
 
@@ -465,7 +511,8 @@ export class ServerApp {
   private registerControllers(
     app: Futon,
     container: ContainerView,
-    mod: ModuleConfig
+    mod: ModuleConfig,
+    summary: ModuleSummary
   ): void {
     const runtimeRouter = app.getRouter();
     const modMws: Middleware[] = mod.middlewares || [];
@@ -482,17 +529,34 @@ export class ServerApp {
 
       const ctrlMws: Middleware[] = instance.middlewares || [];
 
+      const recordRoutes = (serverRouter: Router) => {
+        for (const route of serverRouter.consumeRegisteredRoutes()) {
+          summary.routes.push({
+            method: route.method,
+            path: joinPath(mod.prefix, route.path),
+          });
+        }
+      };
+
       const registerCtrlRoutes = (targetRouter: RuntimeRouter) => {
         if (ctrlMws.length > 0) {
           targetRouter.group({ middlewares: ctrlMws }, (ctrlRouter) => {
-            instance.routes(
-              new Router(ctrlRouter, this.validationConfig, instance.schemas)
+            const serverRouter = new Router(
+              ctrlRouter,
+              this.validationConfig,
+              instance.schemas
             );
+            instance.routes(serverRouter);
+            recordRoutes(serverRouter);
           });
         } else {
-          instance.routes(
-            new Router(targetRouter, this.validationConfig, instance.schemas)
+          const serverRouter = new Router(
+            targetRouter,
+            this.validationConfig,
+            instance.schemas
           );
+          instance.routes(serverRouter);
+          recordRoutes(serverRouter);
         }
       };
 
@@ -542,6 +606,40 @@ export class ServerApp {
   }
 
   /**
+   * Seed a module's build/boot summary — name, prefix, its OWN
+   * `providers` (display purposes only: deliberately NOT the merged
+   * list `mergedProviders()` produces, so plugin-declared classes show
+   * up under their own extension key instead of lumped into
+   * "Providers"), one group per active plugin key (e.g. `gateways`),
+   * and the module-level middleware count. `routes` starts empty —
+   * `registerControllers()` fills it in as controllers register.
+   */
+  private buildModuleSummary(mod: ModuleConfig): ModuleSummary {
+    const displayName = (token: any): string =>
+      typeof token === 'function' ? token.name : String(token);
+
+    const providers = (mod.providers || []).map((p) =>
+      displayName(providerToken(p))
+    );
+
+    const pluginGroups: Record<string, string[]> = {};
+    for (const key of this.plugins.keys()) {
+      const value = mod[key];
+      if (value === undefined || !Array.isArray(value)) continue;
+      pluginGroups[key] = value.map(displayName);
+    }
+
+    return {
+      name: mod.name ?? '(unnamed module)',
+      prefix: mod.prefix,
+      routes: [],
+      providers,
+      pluginGroups,
+      middlewareCount: (mod.middlewares || []).length,
+    };
+  }
+
+  /**
    * Forward a module's extension-key values (anything beyond `prefix`,
    * `middlewares`, `imports`, `controllers`, `providers`) to the
    * `ModulePlugin` that claimed that key.
@@ -588,6 +686,16 @@ const RESERVED_MODULE_KEYS = new Set([
 /** The injection token a `providers` entry registers under. */
 function providerToken(provider: ProviderLike | ProviderDefinition): any {
   return typeof provider === 'function' ? provider : provider.provide;
+}
+
+/**
+ * Join a module prefix and a route path for display in the build/boot
+ * summary — strips a trailing slash from the prefix so `"/chat/"` +
+ * `"/rooms"` reads as `/chat/rooms`, not `/chat//rooms`.
+ */
+function joinPath(prefix: string | undefined, path: string): string {
+  if (!prefix) return path;
+  return prefix.replace(/\/+$/, '') + path;
 }
 
 /**
