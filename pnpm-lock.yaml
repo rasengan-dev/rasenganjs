@@ -1015,14 +1015,13 @@ importers:
         version: 3.25.76
 
   packages/ecosystem/ws:
-    dependencies:
-      '@rasenganjs/server':
-        specifier: workspace:*
-        version: link:../../framework/rasengan-server
     devDependencies:
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../platform/runtime
+      '@rasenganjs/server':
+        specifier: workspace:*
+        version: link:../../framework/rasengan-server
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -8730,7 +8729,7 @@ snapshots:
       obug: 2.1.3
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
+      vitest: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(vite@7.3.6(@types/node@24.13.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(tsx@4.22.4)(yaml@2.9.0))
 
   '@vitest/expect@4.1.9':
     dependencies:

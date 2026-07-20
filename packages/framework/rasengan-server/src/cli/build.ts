@@ -46,7 +46,7 @@ export async function build(config: RasenganServerConfig): Promise<void> {
     entryPoints: [entry],
     platform: 'node' as const,
     format: 'esm' as const,
-    minify,
+    ...esbuildMinifyOptions(minify),
     external: ['node:*'],
   };
 
@@ -66,6 +66,30 @@ export async function build(config: RasenganServerConfig): Promise<void> {
   writeConfigJson(outDir, config);
 
   console.log('  ✓ build complete\n');
+}
+
+/**
+ * esbuild's `minify: true` shorthand also enables `minifyIdentifiers`,
+ * which renames local bindings — including constructor parameters. The
+ * DI container resolves a provider's dependencies by reading its
+ * constructor's parameter *names* back at runtime (`Container` in
+ * `../di/container.js`), so identifier minification silently breaks
+ * every provider/controller that relies on implicit constructor
+ * injection instead of an explicit `deps: [...]` array.
+ *
+ * Syntax and whitespace minification are unrelated to DI and stay on;
+ * only identifier renaming is disabled, regardless of the `minify` flag.
+ */
+function esbuildMinifyOptions(minify: boolean): {
+  minifyIdentifiers: boolean;
+  minifySyntax: boolean;
+  minifyWhitespace: boolean;
+} {
+  return {
+    minifyIdentifiers: false,
+    minifySyntax: minify,
+    minifyWhitespace: minify,
+  };
 }
 
 function writeConfigJson(outDir: string, config: RasenganServerConfig): void {
@@ -135,7 +159,7 @@ async function buildDirectory(
     outdir: destDir,
     platform: 'node',
     format: 'esm',
-    minify: config.build?.minify ?? true,
+    ...esbuildMinifyOptions(config.build?.minify ?? true),
     bundle: false,
   });
 
