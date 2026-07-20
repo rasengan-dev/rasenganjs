@@ -56,7 +56,14 @@ function killProcessGroup(child: ChildProcess, signal: NodeJS.Signals): void {
   if (!child || child.killed) return;
   try {
     process.kill(-child.pid, signal);
-  } catch {
+  } catch (err) {
+    // Falling back here means `child` wasn't a real process-group leader
+    // (e.g. `detached` wasn't honored) — only the direct child gets the
+    // signal, not whatever it spawned underneath itself. Surfaced so a
+    // report of "the dev server won't stop" comes with a concrete lead.
+    console.log(
+      `  [rasengan-server] Process-group signal failed (${(err as Error).message}) — falling back to direct kill.`
+    );
     child.kill(signal);
   }
 }
@@ -100,12 +107,24 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   function spawnChild(): ChildProcess {
     const opts = {
       stdio: 'inherit' as const,
+      // Makes `child` the leader of its OWN process group (POSIX) so
+      // `killProcessGroup()`'s `process.kill(-child.pid, signal)` targets
+      // a real group instead of throwing ESRCH and silently falling back
+      // to signaling only this direct child. Without this, `npx`/`tsx
+      // watch` never forwards the signal to the actual Node process it
+      // spawns underneath itself, so the dev server keeps running until
+      // the terminal's own repeated Ctrl+C eventually gets through.
+      detached: process.platform !== 'win32',
       env: {
         ...process.env,
         RASENGAN_SERVER_PORT: String(port),
         RASENGAN_SERVER_HOST: host,
         RASENGAN_SERVER_CONFIG: JSON.stringify(config),
         NODE_ENV: 'development',
+        // Tells the spawned server (utils/log-server-info.ts) that THIS
+        // process already owns Ctrl+C — see RASENGAN_SERVER_DEV_MANAGED
+        // doc comment there for why the server must not also grab it.
+        RASENGAN_SERVER_DEV_MANAGED: '1',
       },
     };
 
@@ -134,7 +153,7 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
         if (restarting || closing) return;
         if (code !== null && code !== 0) {
           console.error(
-            `\n  [rasengan-server] Worker exited with code ${code}. Waiting for changes to restart...\n`
+            `\n[rasengan-server] Worker exited with code ${code}. Waiting for changes to restart...\n`
           );
         }
         process.exit(code ?? 0);
@@ -142,14 +161,12 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
 
       child.on('error', (err) => {
         console.error(
-          `\n  [rasengan-server] Failed to start dev server: ${err.message}\n`
+          `\n[rasengan-server] Failed to start dev server: ${err.message}\n`
         );
         if (!restarting && !closing) process.exit(1);
       });
     } catch (err) {
-      console.error(
-        `\n  [rasengan-server] Failed to start dev server: ${err}\n`
-      );
+      console.error(`\n[rasengan-server] Failed to start dev server: ${err}\n`);
       if (!restarting && !closing) process.exit(1);
     }
   }
@@ -160,17 +177,21 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
   function stop() {
     if (closing) return;
     closing = true;
+    console.log('\n[rasengan-server] Stopping dev server...');
     watchers.forEach((w) => w.close());
     if (child && !child.killed) {
       killProcessGroup(child, 'SIGTERM');
       const force = setTimeout(() => {
+        console.log(
+          '[rasengan-server] Still running after 1.5s — forcing shutdown...'
+        );
         killProcessGroup(child!, 'SIGKILL');
-      }, 3000);
+      }, 1500);
       child.on('exit', () => {
         clearTimeout(force);
         process.exit(0);
       });
-      setTimeout(() => process.exit(0), 4000);
+      setTimeout(() => process.exit(0), 2500);
     } else {
       process.exit(0);
     }

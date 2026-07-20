@@ -83,9 +83,14 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
   console.log(`${arrow} ${bold('Runtime:')} ${isBun ? 'Bun' : 'Node.js'}`);
 
   console.log('');
-  console.log(
-    `${arrow} ${gray('Press')} ${bold('c')} ${gray('to clear the console')}`
-  );
+  // The "press c to clear" shortcut needs this process's own raw-mode
+  // stdin takeover, which is skipped under `rasengan-server dev` (see
+  // setupKeypress()) — don't advertise a shortcut that won't respond.
+  if (process.env.RASENGAN_SERVER_DEV_MANAGED !== '1') {
+    console.log(
+      `${arrow} ${gray('Press')} ${bold('c')} ${gray('to clear the console')}`
+    );
+  }
   console.log(
     `${arrow} ${gray('Press')} ${bold('ctrl+c')} ${gray('to stop the server')}`
   );
@@ -109,6 +114,31 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
  * @param log - Callback to re-display the server banner.
  */
 function setupKeypress(log: () => void): void {
+  /**
+   * `rasengan-server dev` (cli/dev.ts) spawns this process with
+   * `RASENGAN_SERVER_DEV_MANAGED=1` and already owns Ctrl+C: its own
+   * `process.on('SIGINT', stop)` forwards a real SIGTERM to this
+   * process's group, which `bootstrap()`'s own SIGTERM handler picks up
+   * — independent of stdin entirely.
+   *
+   * `setRawMode(true)` below is a TERMINAL-WIDE setting, not
+   * per-process: once this (inner, spawned) process enables it, the tty
+   * stops generating a natural SIGINT for Ctrl+C for EVERY process
+   * sharing that terminal, including dev.ts's own outer process (they
+   * share the same tty via `stdio: 'inherit'`). This process's manual
+   * `process.kill(process.pid, 'SIGINT')` below then only ever signals
+   * ITSELF, not dev.ts — so dev.ts's outer signal handler stops firing
+   * on Ctrl+C entirely, and only `tsx watch`/`bun --watch` (still
+   * waiting on their own child) are left hanging. Confirmed live: one
+   * Ctrl+C correctly killed this server (port freed) while `dev.ts` and
+   * `tsx watch` sat alive indefinitely above it.
+   *
+   * Skipping the raw-mode takeover here leaves the (already correct)
+   * outer layer as Ctrl+C's sole owner in dev mode. `rasengan-server
+   * start` (no dev.ts wrapper, single process) is unaffected.
+   */
+  if (process.env.RASENGAN_SERVER_DEV_MANAGED === '1') return;
+
   /**
    * Returns early if stdin is not a terminal (TTY).
    * When piping input or running in non-interactive environments (CI, Docker, rasengan-server &),
