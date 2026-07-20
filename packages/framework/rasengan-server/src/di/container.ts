@@ -109,6 +109,14 @@ export class Container {
   private lifecycleInstances: Provider[] = [];
 
   /**
+   * Entries currently mid-construction, in resolution order. `instantiate()`
+   * pushes before constructing and pops in a `finally` — re-entering the
+   * same entry while it's on this stack means a provider (transitively)
+   * depends on itself, caught here instead of overflowing the call stack.
+   */
+  private resolutionStack: Array<{ entry: object; name: string }> = [];
+
+  /**
    * Register a provider or provider definition with the container.
    *
    * @param provider - A class constructor extending `Provider`, or a
@@ -116,12 +124,29 @@ export class Container {
    * @param owner - The module declaring this provider. Omitted = root
    *                scope (visible to every module) — used by tests and
    *                programmatic setups that skip modules entirely.
+   * @throws If `token` is already owned by a DIFFERENT module — the same
+   *         class declared as a provider in two modules is always a
+   *         mistake (RFC-0003: a provider belongs to exactly one module;
+   *         share it via that module's `exports` instead). Re-registering
+   *         under the SAME owner is allowed (idempotent).
    */
   register(
     provider: ProviderLike | ProviderDefinition,
     owner?: ScopeOwner
   ): void {
     const token = typeof provider === 'function' ? provider : provider.provide;
+
+    const existingOwner = this.owners.get(token);
+    if (owner && existingOwner && existingOwner !== owner) {
+      const name = typeof token === 'function' ? token.name : `"${token}"`;
+      throw new Error(
+        `[rasengan-server] ${name} is already registered by ` +
+          `${this.describeModule(existingOwner)}. A provider can only belong ` +
+          `to one module — add it to that module's \`exports\` and import it ` +
+          `from here instead of declaring it twice.`
+      );
+    }
+
     if (typeof provider === 'function') {
       this.registry.set(provider, {});
     } else {
@@ -254,11 +279,14 @@ export class Container {
   /**
    * Resolve a dependency by its name (string-based lookup, used for
    * constructor parameter auto-wiring). Matches case-insensitively
-   * against registered class names or string keys — own providers first,
-   * then the rest of the visible set in registration order.
+   * against registered class names or string keys — own providers first
+   * (unambiguous by construction: a scope has at most one provider per
+   * name), then the rest of the visible set.
    *
    * @throws A directed error when the name exists but isn't visible from
-   *         `scope`, or when it doesn't exist at all.
+   *         `scope`, when two DIFFERENT visible (non-owned) providers
+   *         share the name — ambiguous, no implicit winner — or when it
+   *         doesn't exist at all.
    */
   private resolveByName(name: string, scope: ScopeOwner | undefined): any {
     const matches = (key: any) =>
@@ -266,8 +294,7 @@ export class Container {
         ? key.name.toLowerCase() === name.toLowerCase()
         : key === name;
 
-    // Own/visible pass — prefer the scope's own providers on collisions.
-    let fallback: { key: any; entry: any } | undefined;
+    // Own pass — the scope's own provider always wins, unambiguously.
     for (const [key, entry] of this.registry) {
       if (!matches(key) || !this.isVisible(key, scope)) continue;
       if (scope && this.owners.get(key) === scope) {
@@ -277,13 +304,34 @@ export class Container {
           scope
         );
       }
-      fallback ??= { key, entry };
     }
-    if (fallback) {
-      const owner = this.owners.get(fallback.key);
+
+    // Non-owned visible pass — collect every match instead of taking the
+    // first, so two different imported modules exporting a same-named
+    // provider throw instead of silently picking whichever registered
+    // first (the exact collision RFC-0003 exists to close).
+    const candidates: Array<{ key: any; entry: any }> = [];
+    for (const [key, entry] of this.registry) {
+      if (!matches(key) || !this.isVisible(key, scope)) continue;
+      candidates.push({ key, entry });
+    }
+
+    if (candidates.length > 1) {
+      const owners = candidates.map((c) =>
+        this.describeModule(this.owners.get(c.key))
+      );
+      throw new Error(
+        `[rasengan-server] "${name}" is ambiguous in ${this.describeModule(scope)} ` +
+          `— visible from multiple modules (${owners.join(', ')}). Disambiguate ` +
+          `with an explicit \`deps: [...]\` entry naming the exact class.`
+      );
+    }
+    if (candidates.length === 1) {
+      const { key, entry } = candidates[0];
+      const owner = this.owners.get(key);
       return this.instantiate(
-        fallback.entry,
-        typeof fallback.key === 'function' ? fallback.key : null,
+        entry,
+        typeof key === 'function' ? key : null,
         owner ?? scope
       );
     }
@@ -363,19 +411,36 @@ export class Container {
           `Use \`useClass\` or register a constructor function.`
       );
 
-    if (entry.deps) {
-      entry.instance = new target(
-        ...entry.deps.map((d) => this.resolveScoped(d, ownerScope))
+    const name = target.name || '(anonymous)';
+    const cycleStart = this.resolutionStack.findIndex((f) => f.entry === entry);
+    if (cycleStart !== -1) {
+      const chain = [
+        ...this.resolutionStack.slice(cycleStart).map((f) => f.name),
+        name,
+      ].join(' → ');
+      throw new Error(
+        `[rasengan-server] Circular dependency detected: ${chain}`
       );
-    } else {
-      const paramNames = getConstructorParamNames(target);
-      if (paramNames.length > 0) {
+    }
+
+    this.resolutionStack.push({ entry, name });
+    try {
+      if (entry.deps) {
         entry.instance = new target(
-          ...paramNames.map((n) => this.resolveByName(n, ownerScope))
+          ...entry.deps.map((d) => this.resolveScoped(d, ownerScope))
         );
       } else {
-        entry.instance = new target();
+        const paramNames = getConstructorParamNames(target);
+        if (paramNames.length > 0) {
+          entry.instance = new target(
+            ...paramNames.map((n) => this.resolveByName(n, ownerScope))
+          );
+        } else {
+          entry.instance = new target();
+        }
       }
+    } finally {
+      this.resolutionStack.pop();
     }
 
     if (entry.instance instanceof Provider) {

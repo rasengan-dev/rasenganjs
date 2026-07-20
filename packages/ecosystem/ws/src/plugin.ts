@@ -88,6 +88,12 @@ export function createWsPlugin(options: WsPluginOptions = {}): ModulePlugin {
         registerGateway(app, container, gatewayClass, adapter, heartbeat);
       }
     },
+    // Gateway extends Provider — the array IS already a set of real DI
+    // provider tokens, so compile() can register/export/eagerly-resolve
+    // them exactly like a hand-declared provider.
+    asProviders(value) {
+      return value as GatewayClass[];
+    },
   };
 }
 

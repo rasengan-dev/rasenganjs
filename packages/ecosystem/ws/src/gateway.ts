@@ -1,3 +1,5 @@
+import { Provider } from '@rasenganjs/server';
+
 import type {
   GatewayClient,
   GatewayMessageHandler,
@@ -9,6 +11,12 @@ import type {
  * `app.websocket()`. Registered via `defineModule({ gateways: [...] })`
  * (see `createWsPlugin`), resolved through the same DI container as
  * HTTP controllers, so constructor injection works identically.
+ *
+ * Extends `Provider`: a gateway is a real DI provider of its module —
+ * `onInit()`/`onDestroy()` fire exactly like any other provider (useful
+ * for async setup, e.g. subscribing to a cross-instance relay), and
+ * `defineModule({ gateways: [...], exports: [...] })` can export a
+ * gateway for another module to inject the same instance.
  *
  * @example
  * ```ts
@@ -30,7 +38,7 @@ import type {
  * }
  * ```
  */
-export abstract class Gateway {
+export abstract class Gateway extends Provider {
   /** The WebSocket path this gateway listens on, e.g. `'/chat'`. */
   abstract path: string;
 

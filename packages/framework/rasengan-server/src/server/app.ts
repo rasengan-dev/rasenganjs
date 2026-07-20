@@ -333,10 +333,24 @@ export class ServerApp {
     const container = new Container();
     this.container = container;
 
+    // Merge each module's explicit `providers` with provider tokens any
+    // registered `ModulePlugin` extracts from its extension key via
+    // `asProviders()` (e.g. `@rasenganjs/ws` gateways) — computed once so
+    // registration, visibility, and eager resolution all see the same
+    // set. Explicit `providers` entries win on token collisions.
+    const moduleProviders = new Map<
+      ModuleConfig,
+      (ProviderLike | ProviderDefinition)[]
+    >();
+    for (const mod of flatModules) {
+      moduleProviders.set(mod, this.mergedProviders(mod));
+    }
+
     // ── RFC-0003: register providers with their owning module ────────
     for (const mod of flatModules) {
-      validateExports(mod);
-      for (const provider of mod.providers || []) {
+      const providers = moduleProviders.get(mod)!;
+      validateExports(mod, providers);
+      for (const provider of providers) {
         container.register(provider, mod);
       }
     }
@@ -348,7 +362,7 @@ export class ServerApp {
       .flatMap((mod) => mod.exports ?? []);
     for (const mod of flatModules) {
       const visible = new Set<any>();
-      for (const provider of mod.providers || []) {
+      for (const provider of moduleProviders.get(mod)!) {
         visible.add(providerToken(provider));
       }
       for (const imported of mod.imports || []) {
@@ -377,9 +391,13 @@ export class ServerApp {
     // wiring mistake fails here instead of on the first request. Runs
     // after dispatchPlugins so plugin-populated handles (e.g.
     // `gateway.server` from @rasenganjs/ws) are set before any onInit().
+    // Plugin-derived providers (e.g. gateways) are almost always already
+    // cached by this point since `dispatchPlugins` resolved them above —
+    // this loop is then a cheap no-op for them and the real guarantee
+    // for providers nothing else touched.
     for (const mod of flatModules) {
       const scoped = container.forModule(mod);
-      for (const provider of mod.providers || []) {
+      for (const provider of moduleProviders.get(mod)!) {
         scoped.resolve(providerToken(provider));
       }
     }
@@ -491,6 +509,39 @@ export class ServerApp {
   }
 
   /**
+   * Merge a module's explicit `providers` with provider tokens any
+   * registered `ModulePlugin` extracts from its extension key via
+   * `asProviders()` (e.g. `@rasenganjs/ws` returns its `gateways` array
+   * unchanged, since `Gateway extends Provider`).
+   *
+   * A token already declared in the module's own `providers` is left
+   * alone — an explicit declaration (e.g. a test's `useValue` override)
+   * always wins over the plugin-derived one, and is never duplicated.
+   */
+  private mergedProviders(
+    mod: ModuleConfig
+  ): (ProviderLike | ProviderDefinition)[] {
+    const own = mod.providers || [];
+    const seen = new Set(own.map(providerToken));
+    const merged = [...own];
+
+    for (const [key, plugin] of this.plugins) {
+      if (!plugin.asProviders) continue;
+      const value = mod[key];
+      if (value === undefined) continue;
+
+      for (const provider of plugin.asProviders(value)) {
+        const token = providerToken(provider);
+        if (seen.has(token)) continue;
+        seen.add(token);
+        merged.push(provider);
+      }
+    }
+
+    return merged;
+  }
+
+  /**
    * Forward a module's extension-key values (anything beyond `prefix`,
    * `middlewares`, `imports`, `controllers`, `providers`) to the
    * `ModulePlugin` that claimed that key.
@@ -541,11 +592,15 @@ function providerToken(provider: ProviderLike | ProviderDefinition): any {
 
 /**
  * RFC-0003: every exported token must be declared in the same module's
- * `providers` — exporting something you don't own is always a mistake.
+ * `providers` (or resolve via a plugin's `asProviders()`, e.g. a
+ * gateway) — exporting something you don't own is always a mistake.
  */
-function validateExports(mod: ModuleConfig): void {
+function validateExports(
+  mod: ModuleConfig,
+  providers: (ProviderLike | ProviderDefinition)[]
+): void {
   if (!mod.exports?.length) return;
-  const own = new Set((mod.providers || []).map(providerToken));
+  const own = new Set(providers.map(providerToken));
   for (const token of mod.exports) {
     if (!own.has(token)) {
       const name = typeof token === 'function' ? token.name : `"${token}"`;

@@ -1,4 +1,4 @@
-import type { ContainerView } from '../di/container.js';
+import type { ContainerView, ProviderLike } from '../di/container.js';
 import type { ModuleConfig } from '../server/module.js';
 import type { ServerApp } from '../server/app.js';
 
@@ -41,4 +41,27 @@ export interface ModulePlugin {
     mod: ModuleConfig,
     value: unknown
   ): void;
+  /**
+   * Optional: extract the real DI-provider tokens hiding inside `value`
+   * (`mod[key]`) — e.g. `@rasenganjs/ws` returns its `gateways` array
+   * unchanged, since `Gateway extends Provider`.
+   *
+   * When present, `compile()` merges the returned tokens into the
+   * module's `providers` *before* registration, visibility (`exports`)
+   * computation, and eager resolution run — so a plugin-declared class
+   * becomes a real, exportable, eagerly-resolved singleton exactly like
+   * a hand-declared provider, instead of only becoming one implicitly
+   * (private, un-exportable) the first time `register()` resolves it.
+   *
+   * A token already present in the module's own `providers` is left
+   * alone — an explicit declaration (e.g. a test's `useValue` override)
+   * always wins over the plugin-derived one.
+   *
+   * `rasengan-server` core never inspects `value`'s shape itself; this
+   * hook is the only place that knowledge needs to live.
+   *
+   * @param value - `mod[key]`, the same value passed to `register()`.
+   * @returns Provider tokens to merge into the module's provider set.
+   */
+  asProviders?(value: unknown): ProviderLike[];
 }
