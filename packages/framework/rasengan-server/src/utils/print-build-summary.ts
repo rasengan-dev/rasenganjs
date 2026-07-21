@@ -79,12 +79,26 @@ function isEmpty(mod: ModuleSummary): boolean {
 export function printBuildSummary(summary: BuildSummary): void {
   console.log('');
 
-  // A pure "glue" module (only `imports`, e.g. a root AppModule) has
-  // nothing of its own to show — printing an empty block would just be
-  // noise.
-  const nonEmpty = summary.modules.filter((mod) => !isEmpty(mod));
-  for (const mod of nonEmpty) {
-    printModule(mod);
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
+  if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.RASENGAN_SERVER_DRY_RUN === '1'
+  ) {
+    if (summary.modules.length === 0) {
+      console.log(`${gray('No modules found')}`);
+      return;
+    }
+
+    // A pure "glue" module (only `imports`, e.g. a root AppModule) has
+    // nothing of its own to show — printing an empty block would just be
+    // noise.
+    const nonEmpty = summary.modules.filter((mod) => !isEmpty(mod));
+    for (const mod of nonEmpty) {
+      printModule(mod);
+    }
   }
 
   const routeCount = summary.modules.reduce(

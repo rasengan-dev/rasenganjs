@@ -41,6 +41,10 @@ export async function start(config: RasenganServerConfig): Promise<void> {
     RASENGAN_SERVER_PORT: String(config.port ?? 3000),
     RASENGAN_SERVER_HOST: config.host ?? '0.0.0.0',
     RASENGAN_SERVER_CONFIG: JSON.stringify(config),
+    // Tells the spawned server (utils/log-server-info.ts) that THIS
+    // process already owns Ctrl+C — see RASENGAN_SERVER_DEV_MANAGED
+    // doc comment there for why the server must not also grab it.
+    RASENGAN_SERVER_DEV_MANAGED: '1',
   };
 
   let child: ChildProcess | null = null;
@@ -69,6 +73,7 @@ export async function start(config: RasenganServerConfig): Promise<void> {
   });
 
   const onSignal = (signal: NodeJS.Signals) => {
+    console.log('\n[rasengan-server] Stopping prod server...');
     if (child && !child.killed) {
       child.kill(signal);
     }
