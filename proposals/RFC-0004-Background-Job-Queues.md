@@ -1,6 +1,6 @@
 # RFC 0004 — Background Job Queues (@rasenganjs/queue)
 
-**Status:** Draft  
+**Status:** Partially Implemented — Phase 1 (Core) landed 2026-07-21, Phases 2-4 outstanding  
 **Author:** Rasengan.js Core Team  
 **Date:** 2026-07-14
 
@@ -102,15 +102,20 @@ class SignupController extends Controller {
   register: RouteHandler = async (ctx) => {
     const user = await this.users.create(ctx.body);
     await this.emailQueue.add('welcome', { userId: user.id });
-    await this.emailQueue.add(
-      'followUp',
-      { userId: user.id },
-      { delay: 86_400_000 }
-    );
+    // Phase 2 (not yet implemented): a delayed followUp job.
+    // await this.emailQueue.add('followUp', { userId: user.id }, { delay: 86_400_000 });
     return ctx.res.json({ ok: true });
   };
 }
 ```
+
+> **Phase 1 note:** `.add()` ships with no options parameter at all
+> (`add(name, data): Promise<string>`) rather than accepting-and-ignoring
+> `{ delay }`/`{ repeat }` — an ignored option would silently turn a
+> caller's intended recurring digest into a single one-off job. Dropping
+> the parameter makes any Phase-2-only call an arity error today; adding
+> it back as optional in Phase 2 is non-breaking for every Phase-1 call
+> site.
 
 Repeatable jobs replace the scheduler-module idea:
 
@@ -251,9 +256,39 @@ which every runtime adapter already drives.
 
 # Delivery Phases
 
-1. **Core** — `Queue`/`JobRouter`/`JobHandler` contracts, `createQueuePlugin()`
-   (DI, `queues:` key, worker loop, retries/backoff, dead-letter, graceful
-   shutdown), `MemoryQueueAdapter`. Unit + integration tests.
+1. **Core — IMPLEMENTED 2026-07-21** — `Queue`/`JobRouter`/`JobHandler`
+   contracts, `createQueuePlugin()` (DI, `queues:` key, worker loop,
+   retries/backoff, dead-letter, graceful shutdown), `MemoryQueueAdapter`.
+   26 unit + integration tests, package `@rasenganjs/queue` builds clean
+   (ESM/CJS/DTS). Implementation notes:
+   - Mirrors `@rasenganjs/ws`'s `Gateway`/`GatewayRouter`/`ModulePlugin`
+     pattern file-for-file: `Queue extends Provider`, `asProviders()` is
+     a one-liner, validation errors use the same `[rasengan-queue] ...`
+     format as ws's `[rasengan-ws] ...`.
+   - **Worker loop lifecycle**: started synchronously inside
+     `plugin.register()` (during `dispatchPlugins()`, at boot) and
+     stopped via `app.onDestroy()` — exactly ws's heartbeat pattern, not
+     a `Queue`-owned `onInit()`/`onDestroy()`. This is deliberate:
+     `app.onDestroy()` handlers run in forward order and are fully
+     awaited _before_ any `Provider.onDestroy()` fires, which is the
+     only place "stop reserving, await in-flight jobs" (this RFC's own
+     wording) can run deterministically ahead of other providers'
+     cleanup.
+   - **`QueueAdapter` ships its full shape now**, including `sweep()`,
+     with `MemoryQueueAdapter.sweep()` a documented no-op — avoids a
+     breaking interface change when Phase 2 adds real sweeping.
+   - **Concurrency is enforced by the worker loop, above the adapter**
+     (a per-job-name in-flight counter + a local buffer for
+     over-reserved jobs) — `reserve()` stays queue-wide, matching this
+     RFC's "no priorities, no rate limiting" adapter philosophy, so
+     Phase 3's `RedisQueueAdapter` can satisfy the identical contract.
+   - **`.add()` has no options parameter in Phase 1** — see the note
+     under Proposed API above.
+   - Retry/backoff in `MemoryQueueAdapter.fail()` uses a bare
+     `setTimeout` — in-scope per this doc's own description of the
+     adapter as "timer-based", and distinct from Phase 2's producer-facing
+     `{ delay }` (which needs the `delayed`/`sweep()` machinery this
+     phase doesn't build).
 2. **Time** — delayed jobs, repeatable jobs (`every`), stalled-job reclaim,
    the sweeper. Millisecond-scale timer tests like the heartbeat suite.
 3. **Redis** — `RedisQueueAdapter` over `RedisLike`, Lua transition scripts,

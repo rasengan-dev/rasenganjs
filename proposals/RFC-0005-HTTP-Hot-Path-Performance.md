@@ -1,6 +1,6 @@
 # RFC 0005 — HTTP Hot-Path Performance (futon + Node adapter)
 
-**Status:** Draft  
+**Status:** Implemented (2026-07-21)  
 **Author:** Rasengan.js Core Team  
 **Date:** 2026-07-19
 
