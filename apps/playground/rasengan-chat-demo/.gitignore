@@ -3,3 +3,5 @@ dist
 .rasengan
 *.local
 uploads
+.env
+.env.*
