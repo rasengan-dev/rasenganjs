@@ -182,4 +182,45 @@ describe('bodyLimit', () => {
 
     expect(res.status).toBe(413);
   });
+
+  it('unwraps a lazy Request shim before reconstructing (RFC-0005, Phase 3b)', async () => {
+    // Simulates `@rasenganjs/runtime`'s lazy Request shim without a
+    // cross-package dependency: `Object.create(Request.prototype)` gives
+    // `instanceof Request` but none of Node's real internal slots — the
+    // same shape as the actual shim before it materializes. Handing this
+    // straight to `new Request(shim, init)` throws (confirmed: Node's
+    // constructor reads internal slots directly, not through getters).
+    // This proves bodyLimit calls the materialize hook first instead of
+    // forwarding the shim as-is.
+    const MATERIALIZE = Symbol.for('rasenganjs.request.materialize');
+    const real = new Request('http://localhost/data', {
+      method: 'POST',
+      body: 'hello',
+      headers: { 'Content-Type': 'text/plain' },
+    });
+
+    const shim = Object.create(Request.prototype) as Request;
+    Object.defineProperties(shim, {
+      method: { get: () => real.method },
+      url: { get: () => real.url },
+      headers: { get: () => real.headers },
+      body: { get: () => real.body },
+      [MATERIALIZE]: { value: () => real },
+    });
+
+    // Sanity check: this is the exact hazard the fix guards against.
+    expect(() => new Request(shim, {})).toThrow();
+
+    const ctx = createCtx(shim);
+    const next = vi.fn().mockImplementation(async () => {
+      expect(await ctx.request.text()).toBe('hello');
+      return new Response('ok');
+    });
+
+    const mw = bodyLimit({ maxSize: 1024 });
+    const res = await mw(ctx, next);
+
+    expect(res.status).toBe(200);
+    expect(next).toHaveBeenCalledOnce();
+  });
 });

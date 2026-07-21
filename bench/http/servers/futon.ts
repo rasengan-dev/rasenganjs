@@ -9,6 +9,14 @@
 
 import { createApp } from '../frameworks/futon.js';
 
+// RFC-0005 Phase 3b (lazy Request shim, Node adapter only — a no-op on
+// Bun). Default this benchmark to the lazy path so `pnpm bench:http`
+// reflects futon's current best result without needing
+// `RASENGAN_LAZY_REQUEST=1` set manually. `??=` still lets a caller
+// force it off (`RASENGAN_LAZY_REQUEST=0 pnpm bench:http`) to compare
+// against the eager path.
+process.env.RASENGAN_LAZY_REQUEST ??= '1';
+
 const port = Number(process.env.PORT ?? 3210);
 const host = '127.0.0.1';
 

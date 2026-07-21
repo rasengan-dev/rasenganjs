@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { WebSocket as WSClient } from 'ws';
 import { startNodeServer } from '../../../adapters/node/server.js';
 import type {
@@ -133,5 +133,52 @@ describe('Node WebSocket upgrade handling (RFC-0001)', () => {
 
     client.close();
     server.close();
+  });
+
+  describe('with RASENGAN_LAZY_REQUEST=1 (RFC-0005, Phase 3b)', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('ctx.request behaves like a real Request in the upgrade handler', async () => {
+      vi.stubEnv('RASENGAN_LAZY_REQUEST', '1');
+
+      let seen: {
+        method?: string;
+        isRequest?: boolean;
+        header?: string | null;
+      } = {};
+
+      const handlers: WebSocketHandlers = {
+        open(ctx) {
+          seen = {
+            method: ctx.request.method,
+            isRequest: ctx.request instanceof Request,
+            header: ctx.request.headers.get('x-test'),
+          };
+        },
+      };
+
+      const { port, server } = await startTestServer(
+        singleRouteMatcher('/lazy', handlers)
+      );
+
+      const client = new WSClient(`ws://127.0.0.1:${port}/lazy`, {
+        headers: { 'x-test': 'value' },
+      });
+
+      await new Promise<void>((resolve) => {
+        client.on('open', resolve);
+      });
+
+      expect(seen).toEqual({
+        method: 'GET',
+        isRequest: true,
+        header: 'value',
+      });
+
+      client.close();
+      server.close();
+    });
   });
 });

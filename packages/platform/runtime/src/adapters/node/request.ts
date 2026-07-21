@@ -9,6 +9,8 @@
 import type http from 'node:http';
 import { Readable } from 'node:stream';
 
+import { createLazyRequest } from './lazy-request.js';
+
 export async function incomingToRequest(
   req: http.IncomingMessage
 ): Promise<Request> {
@@ -41,6 +43,13 @@ export async function incomingToRequest(
   }
 
   if (req.method === 'GET' || req.method === 'HEAD') {
+    // RFC-0005, Phase 3b: defer `new Request()` (URL parse, header-list
+    // validation, abort-signal wiring) until something actually touches
+    // headers/body/clone() — most GET handlers only read method/pathname.
+    // Gated behind an env flag for a beta cycle before becoming default.
+    if (process.env.RASENGAN_LAZY_REQUEST === '1') {
+      return createLazyRequest(url, req.method, headers);
+    }
     return new Request(url, { method: req.method, headers });
   }
 

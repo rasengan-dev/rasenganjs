@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { Readable } from 'node:stream';
 import type http from 'node:http';
 import { incomingToRequest } from '../../../adapters/node/request.js';
@@ -80,6 +80,61 @@ describe('incomingToRequest', () => {
 
   it('treats an empty POST body as no body', async () => {
     const request = await incomingToRequest(fakeIncoming([]));
+    expect(request.body).toBeNull();
+  });
+});
+
+describe('incomingToRequest with RASENGAN_LAZY_REQUEST=1 (RFC-0005, Phase 3b)', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('returns a lazy shim for GET that is instanceof Request', async () => {
+    vi.stubEnv('RASENGAN_LAZY_REQUEST', '1');
+
+    const request = await incomingToRequest(
+      fakeIncoming([], {
+        method: 'GET',
+        headers: { 'x-test': 'value' },
+      })
+    );
+
+    expect(request).toBeInstanceOf(Request);
+    expect(request.method).toBe('GET');
+    expect(request.url).toBe('http://localhost/upload');
+    expect(request.headers.get('x-test')).toBe('value');
+    expect(request.body).toBeNull();
+  });
+
+  it('returns a lazy shim for HEAD', async () => {
+    vi.stubEnv('RASENGAN_LAZY_REQUEST', '1');
+
+    const request = await incomingToRequest(
+      fakeIncoming([], { method: 'HEAD' })
+    );
+
+    expect(request).toBeInstanceOf(Request);
+    expect(request.method).toBe('HEAD');
+  });
+
+  it('leaves POST on the eager (non-lazy) path unaffected', async () => {
+    vi.stubEnv('RASENGAN_LAZY_REQUEST', '1');
+
+    const request = await incomingToRequest(
+      fakeIncoming([Buffer.from('hello')], {
+        headers: { 'content-type': 'text/plain' },
+      })
+    );
+
+    expect(await request.text()).toBe('hello');
+  });
+
+  it('falls back to eager construction when the flag is unset', async () => {
+    const request = await incomingToRequest(
+      fakeIncoming([], { method: 'GET' })
+    );
+
+    expect(request).toBeInstanceOf(Request);
     expect(request.body).toBeNull();
   });
 });

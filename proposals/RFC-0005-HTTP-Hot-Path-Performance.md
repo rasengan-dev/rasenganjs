@@ -152,7 +152,7 @@ Properties:
 - Non-GET/HEAD: pass the socket stream through instead of buffering — `new Request(url, { method, headers, body: Readable.toWeb(req), duplex: 'half' })`. One copy and one event-listener setup disappear; `ctx.request.json()`/upload streaming read directly. Byte-exactness for multipart is preserved (it is the same bytes, just not double-copied) and covered by the existing RFC-0002 upload tests.
 - Headers: build from `req.rawHeaders` (flat `[k1, v1, k2, v2, …]` pairs) in a single loop instead of `Object.entries().filter().map()` over the joined-object view. `Headers` handles duplicate keys per spec, including `set-cookie`.
 
-### 3b. Lazy Request shim (gated, last)
+### 3b. Lazy Request shim (gated, last) — IMPLEMENTED 2026-07-21
 
 The remaining GET cost is the undici `Request` constructor itself. Proposal: an internal `LazyRequest` that carries `method`/`url` as plain fields and materializes a real `Request` behind a getter the first time `headers`, `body`, `clone()` etc. are touched — the Hono technique. Ships **behind an env flag** (`RASENGAN_LAZY_REQUEST=1`) for one beta cycle before becoming the default.
 
@@ -162,16 +162,33 @@ Known hazards, called out for review:
 - Anything that forwards `ctx.request` to `fetch()` or `Response`-related APIs must receive a fully materialized object — the getters guarantee that, but it needs dedicated tests (futon middleware suite + ws upgrade path both touch the request).
 - If review finds the risk/benefit unconvincing, 3b is severable — Phases 1–3a stand alone.
 
+**Amended at implementation time.** Shipped exactly as drafted, with one scope narrowing and one hazard confirmed and fixed:
+
+- **Scoped to GET/HEAD only** (`packages/platform/runtime/src/adapters/node/lazy-request.ts`). Non-GET/HEAD requests keep building a real `Request` eagerly — the benchmark evidence (post-json already at parity with Hono) shows there's no GET-shaped cost to defer once a body is involved, so narrowing the shim's blast radius to exactly the cost the RFC identifies costs nothing and keeps RFC-0002 (uploads) and the streaming-body path (3a) completely untouched.
+- **The `instanceof` hazard is real, not theoretical.** Empirically confirmed: Node's native `Request` constructor reads internal slots directly rather than duck-typing through getters, so `new Request(shim, init)` throws (`Cannot read properties of undefined (reading 'window')`) even though `shim instanceof Request` is `true`. `packages/framework/futon/src/middlewares/body-limit.ts` does exactly `new Request(ctx.request, {...})` — fixed by exporting a `Symbol.for('rasenganjs.request.materialize')` escape hatch (`materializeRequest()` in the runtime package, duplicated as a local no-import check in `body-limit.ts`, matching the existing `RAW_BODY` registry-symbol decoupling pattern from Phase 2) that resolves a lazy shim to its real, memoized `Request` before it's used as constructor input. In practice this path is unreachable today (GET/HEAD never has a body, and `bodyLimit` returns early when `!body`), but it's wired defensively and covered by a dedicated test since the RFC explicitly calls this out as needing one.
+- The WebSocket upgrade path (RFC-0001, always a GET handshake) needed no code change — `ctx.request` in `WebSocketContext` just works, tested with the flag on.
+
+**Measured (bench/http, 2026-07-21, Node 22.22, same machine as the 2026-07-19 baseline, `RASENGAN_LAZY_REQUEST=1`):**
+
+| Scenario   | futon (3a only) | futon (3a+3b)    | Hono   | Ratio (3a only → 3a+3b) |
+| ---------- | --------------- | ---------------- | ------ | ----------------------- |
+| hello      | 21,372 req/s    | **24,485 req/s** | 30,271 | 0.69x → **0.81x**       |
+| routing    | 20,353          | **23,449**       | 28,805 | 0.71x → **0.76x**       |
+| middleware | 20,388          | **23,755**       | 27,628 | 0.72x → **0.78x**       |
+| post-json  | 13,595          | 13,872           | 13,258 | unchanged, still ahead  |
+
+All futon (334) and runtime (98) unit tests pass with the flag both on and off.
+
 ---
 
 # Phasing & deliverables
 
-| Phase | Package               | Risk   | Deliverable                                                  |
-| ----- | --------------------- | ------ | ------------------------------------------------------------ |
-| 1     | `@rasenganjs/futon`   | Low    | chain cache + `getPathname` + hook guard, bench before/after |
-| 2     | `@rasenganjs/runtime` | Low    | two-read response fast path, direct header copy              |
-| 3a    | `@rasenganjs/runtime` | Medium | streaming request bodies, rawHeaders loop                    |
-| 3b    | `@rasenganjs/runtime` | High   | LazyRequest behind env flag → default after one beta         |
+| Phase | Package               | Risk   | Deliverable                                                                            |
+| ----- | --------------------- | ------ | -------------------------------------------------------------------------------------- |
+| 1     | `@rasenganjs/futon`   | Low    | chain cache + `getPathname` + hook guard, bench before/after                           |
+| 2     | `@rasenganjs/runtime` | Low    | two-read response fast path, direct header copy                                        |
+| 3a    | `@rasenganjs/runtime` | Medium | streaming request bodies, rawHeaders loop                                              |
+| 3b    | `@rasenganjs/runtime` | High   | LazyRequest behind `RASENGAN_LAZY_REQUEST=1` — implemented 2026-07-21, not yet default |
 
 Each phase: green `pnpm test` in both packages, full `bench:micro` + `bench:http` (Node and Bun) attached to the PR, no scenario regresses on Bun.
 
