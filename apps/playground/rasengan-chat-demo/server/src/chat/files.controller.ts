@@ -9,6 +9,7 @@ import {
 } from '@rasenganjs/server';
 import { diskStorage } from '@rasenganjs/server/upload/disk';
 import { classify, contentTypeFor } from './media.js';
+import { MediaQueue } from './media.queue.js';
 import { LIMITS, type Attachment } from './protocol.js';
 
 const UPLOADS_DIR = 'uploads';
@@ -29,6 +30,10 @@ const upload = fileUpload({
 });
 
 export class FilesController extends Controller {
+  constructor(private mediaQueue: MediaQueue) {
+    super();
+  }
+
   routes(router: Router) {
     router.post('/upload', upload.single('file'), this.upload);
     router.get('/files/:name', this.serve);
@@ -49,6 +54,14 @@ export class FilesController extends Controller {
       mimetype: file.mimetype,
       size: file.size,
     };
+
+    // RFC-0004 dogfood: hand off to the background queue instead of
+    // doing any "processing" inline on the request.
+    await this.mediaQueue.add('scan', {
+      url: attachment.url,
+      originalname: attachment.originalname,
+    });
+
     return ctx.res.json({ ok: true, attachment });
   };
 

@@ -403,6 +403,9 @@ importers:
       '@rasenganjs/futon':
         specifier: workspace:*
         version: link:../../../../packages/framework/futon
+      '@rasenganjs/queue':
+        specifier: workspace:*
+        version: link:../../../../packages/ecosystem/queue
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../../../packages/platform/runtime

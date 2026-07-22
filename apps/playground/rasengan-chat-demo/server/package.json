@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/queue": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "@rasenganjs/ws": "workspace:*"
