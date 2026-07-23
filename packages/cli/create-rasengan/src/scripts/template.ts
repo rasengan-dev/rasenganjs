@@ -1,6 +1,6 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 import { rimraf } from 'rimraf';
-import { githubTemplatesURL, GithubTemplatesURL } from '../constants/index.js';
+import { GithubTemplatesURL } from '../constants/index.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ora from 'ora';
@@ -21,7 +21,7 @@ const spinner = (text: string) =>
 export default async function createProjectFromTemplate(options: {
   projectPath: string;
   templateName: string;
-  repository?: GithubTemplatesURL;
+  repository: GithubTemplatesURL;
   subDirectory?: string;
   currentDirectory: boolean;
 }) {
@@ -31,8 +31,8 @@ export default async function createProjectFromTemplate(options: {
   const {
     projectPath,
     templateName,
-    repository = githubTemplatesURL.rasengan,
-    subDirectory = 'apps/examples',
+    repository,
+    subDirectory = 'apps',
   } = options;
 
   // Get the temporary folder path, the place where the repository will be cloned

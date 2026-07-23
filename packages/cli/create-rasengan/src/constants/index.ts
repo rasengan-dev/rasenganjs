@@ -1,7 +1,14 @@
 /**
- * Template list
+ * Project kind list
  */
-export const Templates = ['blank', 'tailwind'];
+export const Kinds = ['frontend', 'futon', 'server', 'monorepo'] as const;
+
+export type Kind = (typeof Kinds)[number];
+
+/**
+ * Template list (frontend kind only)
+ */
+export const Templates = ['blank', 'tailwind', 'shadcn'];
 
 /**
  * Language list
@@ -29,15 +36,8 @@ export const Versions: {
   beta: null,
 };
 
-/*
- * Template github url
- * @type {string}
- */
-export const TEMPLATE_GITHUB_URL: string =
-  'https://github.com/rasengan-dev/rasenganjs.git';
-
 export const githubTemplatesURL = {
-  rasengan: 'https://github.com/rasengan-dev/rasenganjs.git',
+  starter: 'https://github.com/rasengan-dev/rasenganjs-starter.git',
   chidori: 'https://github.com/rasengan-dev/chidori.git',
 } as const;
 

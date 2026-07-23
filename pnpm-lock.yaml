@@ -440,6 +440,9 @@ importers:
       '@rasenganjs/ws':
         specifier: workspace:*
         version: link:../../../../../../packages/ecosystem/ws
+      ioredis:
+        specifier: ^5.11.1
+        version: 5.11.1
 
   apps/playground/rasengan-chat-demo/web:
     dependencies:
@@ -815,6 +818,9 @@ importers:
       '@types/node':
         specifier: ^20.8.6
         version: 20.19.43
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/cli/shuriken:
     dependencies:

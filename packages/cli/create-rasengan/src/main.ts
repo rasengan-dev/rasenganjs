@@ -24,32 +24,23 @@
  * pnpm create rasengan <project-name>
  */
 
-import { simpleGit, SimpleGitOptions } from 'simple-git';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import ora from 'ora';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import ncp from 'ncp';
 import { consola } from 'consola';
 import {
   githubTemplatesURL,
+  Kinds,
+  Kind,
   Languages,
   Templates,
   Versions,
 } from './constants/index.js';
 import __dirname from './utils/dirname.js';
-import { logInfo } from './scripts/log-info.js';
 import createProjectFromTemplate from './scripts/template.js';
+import fetchStarterTemplate from './scripts/fetch-starter.js';
 import { logoTextAsciiCode } from './data/logo.js';
-
-// Spinner
-const spinner = (text: string) =>
-  ora({
-    text,
-    spinner: 'dots',
-    color: 'blue',
-  });
 
 const program = new Command();
 
@@ -60,14 +51,20 @@ program
   .option('--beta, --experimental', 'Consider latest beta version of Rasengan')
   .option('-y, --yes', 'Skip the questions and use the default values')
   .option('--git', 'Initialize a git repository')
-  // .option('--template <template-name>', 'Choose a template')
+  .option('--kind <kind>', `Choose a project kind (${Kinds.join(' | ')})`)
+  .option(
+    '--template <template-name>',
+    `Choose a template (frontend kind only: ${Templates.join(' | ')})`
+  )
   .option('--language <language-name>', 'Choose a language')
-  .option('--with-shadcn', 'Use shadcn template')
   .option('--chidori', 'Create a documentation website with chidori')
   .action(async (projectName, options) => {
-    // Read the package.json file
+    // Read the package.json file. __dirname is dist/ — tsup bundles
+    // everything (including utils/dirname.ts) into a single dist/main.js,
+    // so import.meta.url now resolves relative to the bundle's own
+    // location, one level shallower than the old per-file tsc output.
     const packageJson = await fs.readFile(
-      path.join(__dirname, '../../package.json'),
+      path.join(__dirname, '../package.json'),
       'utf-8'
     );
 
@@ -91,7 +88,8 @@ program
       yes: skip,
       language,
       git: initGit,
-      withShadcn,
+      kind: kindOption,
+      template: templateOption,
       chidori,
     } = options;
 
@@ -126,6 +124,38 @@ program
         // Log the correct languages
         console.log(
           `Available languages: ${Languages.map((lang) => chalk.blue(lang))}`
+        );
+        console.log('');
+        return;
+      }
+    }
+
+    // Checking if the kind is well provided or not
+    if (kindOption) {
+      if (!Kinds.includes(kindOption)) {
+        console.error(
+          chalk.red(
+            `The project kind ${chalk.bold.blue(`"${kindOption}"`)} is not supported!`
+          )
+        );
+        console.log(
+          `Available kinds: ${Kinds.map((kind) => chalk.blue(kind))}`
+        );
+        console.log('');
+        return;
+      }
+    }
+
+    // Checking if the template is well provided or not
+    if (templateOption) {
+      if (!Templates.includes(templateOption)) {
+        console.error(
+          chalk.red(
+            `The template ${chalk.bold.blue(`"${templateOption}"`)} is not supported!`
+          )
+        );
+        console.log(
+          `Available templates: ${Templates.map((tpl) => chalk.blue(tpl))}`
         );
         console.log('');
         return;
@@ -199,25 +229,8 @@ program
         throw new Error('Folder exist but empty');
       }
     } catch (err) {
-      // Handling the case when custom template is provided
-      // Shadcn template
-      if (withShadcn) {
-        const languageCode = language
-          ? language === 'typescript'
-            ? 'ts'
-            : 'js'
-          : 'ts';
-
-        await createProjectFromTemplate({
-          projectPath,
-          templateName: `shadcn-${languageCode}`,
-          currentDirectory: nameOfProject === '' ? true : false,
-        });
-
-        return;
-      }
-
-      // Chidori template
+      // Chidori template — a separate, standalone repo/product, not part
+      // of the frontend/futon/server/monorepo kind axis below.
       if (chidori) {
         await createProjectFromTemplate({
           projectPath,
@@ -230,8 +243,6 @@ program
         return;
       }
 
-      // TODO: other templates
-
       // Getting the version based on the --beta option
       let versionName = '';
 
@@ -243,177 +254,119 @@ program
         versionName = Versions.stable;
       }
 
-      // Ask for the language
-      let languageName = '';
+      // Resolve the project kind
+      let kind: Kind;
 
-      // Get the template name
-      let templateName = '';
-
-      // Version of tailwind if the template is tailwind
-      let tailwindVersion = '';
-
-      // Routing mode
-      let routingMode = '';
-
-      // Prepare question about tools
-      // let tools = [];
-
-      // Prepare question for the state manager
-      // let stateManager = "";
-
-      if (!skip) {
-        if (!language) {
-          // Prepare the question for the language
-          const answer = await consola.prompt(
-            'Which language would you like to use for your project?',
-            {
-              type: 'select',
-              options: Languages,
-            }
-          );
-
-          languageName = answer;
-        } else {
-          languageName = language;
-        }
-
-        // Prepare the question for the template
+      if (kindOption) {
+        kind = kindOption;
+      } else if (skip) {
+        kind = 'frontend';
+      } else {
         const answer = await consola.prompt(
-          'Which template would you like to use?',
+          'What kind of project would you like to create?',
           {
             type: 'select',
-            options: Templates,
+            options: [...Kinds],
           }
         );
 
-        templateName = answer;
+        kind = answer as Kind;
+      }
 
-        // Check if the template is tailwind
+      // Resolve the meta.json key for the chosen kind
+      let templateKey: string;
+
+      if (kind === 'frontend') {
+        // Ask for the language
+        const languageName = language
+          ? language
+          : skip
+            ? 'typescript'
+            : await consola.prompt(
+                'Which language would you like to use for your project?',
+                {
+                  type: 'select',
+                  options: Languages,
+                }
+              );
+
+        // Get the template name
+        const templateName = templateOption
+          ? templateOption
+          : skip
+            ? 'blank'
+            : await consola.prompt('Which template would you like to use?', {
+                type: 'select',
+                options: Templates,
+              });
+
+        // Version of tailwind if the template is tailwind
+        let tailwindVersion = '';
+
         if (templateName === 'tailwind') {
-          // Prepare the question for the tailwind version
-          const answer = await consola.prompt(
-            'Which version of Tailwind would you like to use?',
+          tailwindVersion = skip
+            ? 'v4'
+            : await consola.prompt(
+                'Which version of Tailwind would you like to use?',
+                {
+                  type: 'select',
+                  options: ['v3', 'v4'],
+                }
+              );
+        }
+
+        // shadcn only ships a file-based variant — skip the routing
+        // question and force it, rather than prompting for a
+        // combination that doesn't exist.
+        let routingMode: string;
+
+        if (templateName === 'shadcn') {
+          routingMode = 'file-based';
+        } else if (skip) {
+          routingMode = 'file-based';
+        } else {
+          const routingModeAnswer = await consola.prompt(
+            'Do you want to enable file-based routing?',
             {
-              type: 'select',
-              options: ['v3', 'v4'],
+              type: 'confirm',
             }
           );
 
-          tailwindVersion = answer;
+          routingMode = routingModeAnswer ? 'file-based' : 'config-based';
         }
 
-        // Prepare the question for the routing mode
-        const routingModeAnswer = await consola.prompt(
-          'Do you want to enable file-based routing?',
-          {
-            type: 'confirm',
-          }
-        );
+        if (skip) {
+          // Display the selected values
+          console.log('');
+          console.log(chalk.bold.blue('Default values:'));
+          console.log('');
 
-        routingMode = routingModeAnswer ? 'file-based' : 'config-based';
+          console.log(`Kind: ${chalk.blue(kind)}`);
+          console.log(`Language: ${chalk.blue(languageName)}`);
+          console.log(`Template: ${chalk.blue(templateName)}`);
+          console.log(`Routing mode: ${chalk.blue(routingMode)}`);
+        }
+
+        const routingPart = routingMode === 'file-based' ? 'file' : 'config';
+        const langPart = languageName === 'typescript' ? 'ts' : 'js';
+        const templatePart =
+          templateName === 'tailwind'
+            ? `tailwind-${tailwindVersion}`
+            : templateName;
+
+        templateKey = `frontend-${routingPart}-${templatePart}-${langPart}`;
       } else {
-        languageName = 'typescript';
-        templateName = 'blank';
-        routingMode = 'file-based';
-
-        // Display the selected values
-        console.log('');
-        console.log(chalk.bold.blue('Default values:'));
-        console.log('');
-
-        console.log(`Language: ${chalk.blue(languageName)}`);
-        console.log(`Template: ${chalk.blue(templateName)}`);
-        console.log(`Routing mode: ${chalk.blue(routingMode)}`);
+        // futon / server / monorepo only ship a single TypeScript,
+        // blank variant today — the "blank" slot in the key leaves
+        // room to add more variants (and a matching prompt) later.
+        templateKey = `${kind}-blank-ts`;
       }
 
-      // Handling all answers
-      const templatePath = path.join(
-        __dirname,
-        '../..',
-        `templates/${routingMode}/${templateName}${
-          templateName === 'tailwind' ? `-${tailwindVersion}` : ''
-        }-${languageName === 'typescript' ? 'ts' : 'js'}`
-      );
-
-      // Starting the spinner for creating the project
-      const createSpinner = spinner('Creating project...');
-
-      console.log('\n');
-
-      createSpinner.start();
-
-      // Copying the template files to the project directory
-      ncp(templatePath, projectPath, async (err) => {
-        if (err) {
-          console.log(err);
-          createSpinner.fail(chalk.red('Error while creating the project!'));
-          console.log('');
-          return;
-        }
-
-        // Copying content of gitignore to .gitignore file
-        await fs.copyFile(
-          path.join(templatePath, 'gitignore'),
-          path.join(projectPath, '.gitignore')
-        );
-
-        // Removing gitignore file from the project
-        await fs.rm(path.join(projectPath, 'gitignore'));
-
-        // Updating the package.json file
-        let packageJson = await fs.readFile(
-          path.join(projectPath, 'pkg.json'),
-          'utf-8'
-        );
-
-        // Removing gitignore file from the project
-        await fs.rm(path.join(projectPath, 'pkg.json'));
-
-        // Parsing the package.json file
-        const parsedPackageJson = JSON.parse(packageJson);
-
-        // Setting the project name
-        if (nameOfProject === '') {
-          parsedPackageJson.name = currentDirectory.split('/').pop();
-        } else parsedPackageJson.name = nameOfProject;
-
-        // Setting the version
-        parsedPackageJson.dependencies['rasengan'] = versionName;
-
-        // Writing the package.json file
-        await fs.writeFile(
-          path.join(projectPath, 'package.json'),
-          JSON.stringify(parsedPackageJson, null, 2)
-        );
-
-        if (initGit) {
-          // Initialization of git repository
-          const options: Partial<SimpleGitOptions> = {
-            baseDir: projectPath,
-            binary: 'git',
-            maxConcurrentProcesses: 6,
-            trimmed: false,
-          };
-
-          const git = simpleGit(options);
-
-          // Initializing the git repository
-          await git.init();
-          await git.add('-A');
-          await git.commit('Initial commit');
-        }
-
-        await new Promise((resolve) =>
-          setTimeout(() => {
-            createSpinner.succeed(chalk.green('Project created successfully!'));
-
-            resolve('');
-          }, 2000)
-        );
-        console.log('');
-
-        // Logging next steps
-        logInfo(nameOfProject);
+      await fetchStarterTemplate({
+        projectPath,
+        templateKey,
+        initGit: Boolean(initGit),
+        rasenganVersion: versionName || undefined,
       });
     }
   });
