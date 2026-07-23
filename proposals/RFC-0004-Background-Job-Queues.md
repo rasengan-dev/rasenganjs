@@ -1,6 +1,6 @@
 # RFC 0004 — Background Job Queues (@rasenganjs/queue)
 
-**Status:** Partially Implemented — Phases 1 (Core) and 2 (Time) landed 2026-07-21/22, Phases 3-4 outstanding  
+**Status:** Partially Implemented — Phases 1 (Core), 2 (Time), and 3 (Redis) landed 2026-07-21/22/23, Phase 4 outstanding  
 **Author:** Rasengan.js Core Team  
 **Date:** 2026-07-14
 
@@ -205,6 +205,16 @@ Per queue: a `waiting` list, an `active` list with a deadline zset, a
 SUBSCRIBE); completion, retry scheduling, delayed promotion and stall
 reclaim are single Lua scripts, so every state transition is atomic.
 
+> **Implemented as sketched, with one deliberate amendment:** retry
+> scheduling and delayed-job promotion share the same `delayed` zset
+> rather than the `delayed` zset and a separate retry mechanism — see
+> the Delivery Phases entry below for why this diverges from
+> `MemoryQueueAdapter`'s Phase 2 design (which keeps them apart). The
+> dedicated blocking connection's `BLMOVE` timeout is kept short
+> (`0.02`s default) to fit the existing fixed-interval worker-loop poll
+> rather than blocking for real — see the Delivery Phases entry for the
+> throughput trade-off this implies.
+
 ---
 
 # Runtime Portability (Node, Bun, Deno)
@@ -342,9 +352,60 @@ which every runtime adapter already drives.
    - `QueuePluginOptions` gained `stallTimeout` (default `30_000`) and
      `sweepInterval` (default `5_000`), per the Plugin Options section
      above.
-3. **Redis** — `RedisQueueAdapter` over `RedisLike`, Lua transition scripts,
-   tests against a faked client (same approach as the ws Redis adapter —
-   live-Redis verification flagged as outstanding).
+3. **Redis — IMPLEMENTED 2026-07-23** — `RedisQueueAdapter` over
+   `RedisLike`, Lua transition scripts, 22 new tests against a faked
+   client (same approach as the ws Redis adapter — live-Redis
+   verification flagged as outstanding, matching that precedent
+   exactly). 72 tests total, zero changes needed to `types.ts`/
+   `queue.ts`/`job-key.ts`/`plugin.ts` — a pure drop-in `QueueAdapter`.
+   Implementation notes:
+   - **Key layout**: the `jobs` hash is the single source of truth for
+     a `StoredJob`'s content; every list/zset elsewhere (`waiting`,
+     `active` + its deadline zset, `delayed`, `repeats` + its schedule
+     zset, `dead`) stores only an id or `jobKey` as a pointer into it.
+   - **`RedisLike` audited down to 4 methods** (`eval`, `blmove`,
+     `lrange`, `hmget`) — smaller than this doc's own ~8-command
+     sketch above, since every mutating operation ended up needing Lua
+     for atomicity; `zadd`/`hset`/`hget`/`hdel`/`lrem`/`zrem`/
+     `zrangebyscore` are only ever called inside scripts, never as
+     direct JS bindings. No `import type { Redis } from 'ioredis'`
+     anywhere (unlike `RedisGatewayAdapter`) — `RedisLike` is fully
+     self-defined so Bun's `Bun.redis` also satisfies it structurally.
+   - **Retry-backoff and `{ delay }` jobs are unified into one
+     `delayed` zset here** — reversing Phase 2's deliberate separation
+     for `MemoryQueueAdapter`. That separation existed only because a
+     bare timer was cheap and the adapter already loses everything on
+     restart regardless; neither premise survives to Redis, which has
+     no `setTimeout`-equivalent at all, so retry-backoff must be a
+     durable, polled structure here regardless of the unification
+     question.
+   - **`reserve()` is two round trips, not one**: `BLMOVE` on a
+     dedicated blocking connection, then a separate script to stamp
+     the stall deadline and fetch the job — Redis disallows blocking
+     commands inside `EVAL`. The gap this opens (a crash between the
+     two calls) is closed by making the stall-reclaim script
+     self-heal: an id present in `active` but missing from the
+     deadline zset is treated as immediately due, caught on the next
+     sweep tick instead of leaking forever.
+   - **`blockTimeoutSeconds` defaults to 20ms**, not a real blocking
+     wait — `plugin.ts`'s worker loop is an unmodified, fixed 25ms
+     poll tick; a long block would let queued `BLMOVE` calls pile up
+     on the connection faster than they drain. Consequence: this
+     adapter gets the `BLMOVE` primitive but not its usual
+     near-zero-latency wakeup win — throughput stays bounded by the
+     25ms tick, same as `MemoryQueueAdapter`. Fixing that for real
+     needs a `plugin.ts` change (a long-block code path some adapters
+     opt into) — flagged as future work, not solved in this phase.
+   - Repeat-job idempotency (`add()`'s check-then-set on `jobKey`) is
+     now a real distributed-systems concern the single-process
+     `Map`-based memory adapter never had to face — `ADD_REPEAT_SCRIPT`
+     makes it atomic via one `EVAL`.
+   - Spawned repeat-instance ids are deterministic
+     (`` `${jobKey}:${nextRunAt}` ``), not random — Lua has no
+     `crypto.randomUUID()`.
+   - Sweep passes are capped at `sweepBatchSize` (default `1000`)
+     entries to bound single-threaded Lua runtime under a thundering
+     herd of due jobs — a concern the in-memory adapter never faces.
 4. **Ship** — README/CHANGELOG, chat-demo thumbnail dogfood, produce-only
    mode exercised (web process enqueues, separate worker consumes).
 

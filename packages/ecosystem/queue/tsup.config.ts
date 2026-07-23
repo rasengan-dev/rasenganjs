@@ -7,5 +7,5 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  external: ['@rasenganjs/server'],
+  external: ['@rasenganjs/server', 'ioredis'],
 });

@@ -166,8 +166,8 @@ createQueuePlugin({
 
 - **`adapter`** — job storage. Defaults to `MemoryQueueAdapter`, which
   is in-process and **loses all jobs on restart** — fine for local
-  development, not for production. Pass a persisted adapter once one is
-  available for your backend.
+  development, not for production. Pass a `RedisQueueAdapter` (below)
+  in production.
 - **`worker`** — whether this process consumes jobs. Set to `false` for
   a produce-only process (e.g. your web servers enqueue jobs; a
   separate deployment with `worker: true` and the same adapter actually
@@ -180,6 +180,49 @@ createQueuePlugin({
   // Worker process — same adapter, actually processes jobs.
   app.registerPlugin(createQueuePlugin({ adapter, worker: true }));
   ```
+
+## Production storage: `RedisQueueAdapter`
+
+`MemoryQueueAdapter` is dev-only. For production, use
+`RedisQueueAdapter` — persists across restarts and is safe with
+multiple processes sharing one queue (e.g. several worker instances, or
+a produce-only web tier alongside a separate worker deployment).
+
+```bash
+pnpm add ioredis
+```
+
+```ts
+import { createQueuePlugin, RedisQueueAdapter } from '@rasenganjs/queue';
+import Redis from 'ioredis';
+
+const client = new Redis(process.env.REDIS_URL);
+
+const adapter = new RedisQueueAdapter({
+  client,
+  // reserve()'s BLMOVE needs a connection of its own — Redis puts a
+  // connection into a different mode while blocking, the same reason
+  // @rasenganjs/ws's Redis adapter needs a separate SUBSCRIBE connection.
+  blockingClient: client.duplicate(),
+});
+
+app.registerPlugin(createQueuePlugin({ adapter }));
+```
+
+`ioredis` isn't required as a hard dependency — `RedisQueueAdapter`
+takes a small structural interface (`eval`, `blmove`, `lrange`,
+`hmget`), so any client implementing those commands works, including
+Bun's built-in `Bun.redis`.
+
+```ts
+interface RedisQueueAdapterOptions {
+  client: RedisLike;
+  blockingClient: RedisLike;
+  blockTimeoutSeconds?: number; // default: 0.02
+  sweepBatchSize?: number; // default: 1000 — caps work done per sweep tick
+  keyPrefix?: string; // default: 'queue:'
+}
+```
 
 ## `router.process()` options
 
@@ -200,17 +243,20 @@ await this.emailQueue.retryDead(dead[0].id);
 
 ## Current limitations
 
-`@rasenganjs/queue` has shipped Phase 1 (Core) and Phase 2 (Time) of
-its RFC:
+`@rasenganjs/queue` has shipped Phases 1 (Core), 2 (Time), and 3
+(Redis) of its RFC:
 
-- Only `MemoryQueueAdapter` ships today — in-process, and **all jobs
-  (including delayed/repeat schedules) are lost on restart**. A
-  persisted (Redis) adapter satisfying the same `QueueAdapter` contract
-  is planned next.
 - A handler that consistently outlives `stallTimeout` can be reclaimed
   and reprocessed indefinitely — stalled-job reclaim doesn't consult
   `attempts`/dead-letter (matches the underlying job lifecycle model;
   see [ARCHITECTURE.md](./ARCHITECTURE.md) for why).
+- `RedisQueueAdapter`'s live-Redis behavior is untested against a real
+  server today (tests run against a faked client only — same bar
+  `@rasenganjs/ws`'s Redis adapter shipped at).
+- `reserve()`'s `BLMOVE` is capped to a short timeout to fit
+  `@rasenganjs/queue`'s existing fixed-interval poll loop, so it
+  doesn't yet deliver `BLMOVE`'s usual near-zero-latency wakeup —
+  throughput is still bounded by that poll interval.
 
 See `proposals/RFC-0004-Background-Job-Queues.md` in the monorepo for
 the full roadmap, and [ARCHITECTURE.md](./ARCHITECTURE.md) for how the

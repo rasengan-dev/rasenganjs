@@ -13,7 +13,8 @@
     "@rasenganjs/queue": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/server": "workspace:*",
-    "@rasenganjs/ws": "workspace:*"
+    "@rasenganjs/ws": "workspace:*",
+    "ioredis": "^5.11.1"
   },
   "devDependencies": {
     "tsx": "^4.19.0"

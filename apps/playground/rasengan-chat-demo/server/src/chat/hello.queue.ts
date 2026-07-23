@@ -13,9 +13,9 @@ import { Queue, JobRouter, type JobHandler } from '@rasenganjs/queue';
 export class HelloQueue extends Queue {
   name = 'hello';
 
-  async onInit() {
-    await this.add('tick', {}, { repeat: { every: 1_000 } });
-  }
+  // async onInit() {
+  //   await this.add('tick', {}, { repeat: { every: 1_000 } });
+  // }
 
   jobs(router: JobRouter) {
     router.process('tick', this.sayHello);

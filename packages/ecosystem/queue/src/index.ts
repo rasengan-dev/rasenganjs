@@ -44,7 +44,19 @@
  * ## Storage
  * `createQueuePlugin({ adapter })` accepts a `QueueAdapter` — the default
  * `MemoryQueueAdapter` is in-process and **loses jobs on restart**
- * (dev-only). A persisted adapter (Redis) is a later phase.
+ * (dev-only). `RedisQueueAdapter` persists across restarts and is safe
+ * across multiple processes sharing one queue:
+ * ```ts
+ * import { RedisQueueAdapter } from '@rasenganjs/queue';
+ * import Redis from 'ioredis';
+ *
+ * const client = new Redis();
+ * const adapter = new RedisQueueAdapter({
+ *   client,
+ *   blockingClient: client.duplicate(), // reserve()'s BLMOVE needs its own connection
+ * });
+ * app.registerPlugin(createQueuePlugin({ adapter }));
+ * ```
  *
  * ## Delayed and repeatable jobs
  * `queue.add(name, data, { delay })` defers a job; `queue.add(name,
@@ -54,11 +66,6 @@
  * schedule. A sweeper (`createQueuePlugin({ sweepInterval })`) promotes
  * due delayed/repeat jobs and reclaims stalled reservations
  * (`stallTimeout`) on a timer.
- *
- * ## Phase 3 scope (not yet implemented)
- * Only `MemoryQueueAdapter` ships today — see
- * `proposals/RFC-0004-Background-Job-Queues.md` for the Redis-backed
- * adapter planned next.
  */
 
 import './augment.js';
@@ -83,4 +90,5 @@ export type {
 } from './types.js';
 
 // ── Adapters ─────────────────────────────────────────────────────────
-export { MemoryQueueAdapter } from './adapters/index.js';
+export { MemoryQueueAdapter, RedisQueueAdapter } from './adapters/index.js';
+export type { RedisLike, RedisQueueAdapterOptions } from './adapters/index.js';

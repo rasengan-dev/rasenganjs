@@ -4,8 +4,8 @@ This document describes how the package works internally: every public
 class, type, and function, and the mechanics behind them. For "how do I
 use this in my app," see [README.md](./README.md) instead.
 
-Status: **Phase 1 (Core) + Phase 2 (Time)** of RFC-0004. No Redis
-adapter yet — see `proposals/RFC-0004-Background-Job-Queues.md` in the
+Status: **Phase 1 (Core) + Phase 2 (Time) + Phase 3 (Redis)** of
+RFC-0004 — see `proposals/RFC-0004-Background-Job-Queues.md` in the
 monorepo root for the full multi-phase plan.
 
 ## 1. Design
@@ -155,7 +155,7 @@ Design notes:
 - `sweep()` shipped as a no-op in Phase 1 specifically so its
   responsibilities could widen without a breaking interface change. As
   of Phase 2 it has three real jobs, run once per tick by the plugin's
-  sweeper (§9): promote due delayed jobs, spawn due repeat-job
+  sweeper (§8): promote due delayed jobs, spawn due repeat-job
   instances, and reclaim active jobs whose stall deadline has passed.
 - `fail()` with `retryAt` present means "re-schedule"; omitted means
   "exhausted or unroutable — dead-letter." Unchanged since Phase 1 —
@@ -197,8 +197,8 @@ Per-queue state (Phase 2): `{ waiting: StoredJob[]; delayed: StoredJob[]; active
 
 **Jobs are lost on restart** — unlike `@rasenganjs/ws`'s memory adapter
 (production-legitimate for a single-process app), a queue's entire
-value proposition is surviving the process. Use a persisted adapter in
-production once one ships (Phase 3: `RedisQueueAdapter`).
+value proposition is surviving the process. Use `RedisQueueAdapter`
+(§9) in production.
 
 ## 6. `createQueuePlugin()` (`src/plugin.ts`)
 
@@ -350,7 +350,140 @@ function startSweeper(
   the identical ordering reason (forward-order, fully-awaited teardown
   ahead of any `Provider.onDestroy()`).
 
-## 9. Deliberate scope decisions
+## 9. `RedisQueueAdapter` (`src/adapters/redis.ts`, `src/adapters/redis-scripts.ts`)
+
+The production `QueueAdapter` — persists across restarts, safe across
+multiple processes sharing one queue. Mirrors `@rasenganjs/ws`'s
+`RedisGatewayAdapter` in spirit ("caller supplies the client, we don't
+bundle a driver"; tested against a faked client, no real Redis server)
+but not in mechanism — see below for why.
+
+### Key layout
+
+The `jobs` hash is the single source of truth for a `StoredJob`'s
+content; every other structure stores only an id (or `jobKey`, for
+repeat descriptors) as a pointer into it. `reservedAt` is never
+persisted in the hash — it lives only in `active:deadline`, read back
+and attached to the object `reserve()` returns.
+
+```
+queue:{name}:waiting             LIST    ids, FIFO (BLMOVE source)
+queue:{name}:active              LIST    ids currently reserved (BLMOVE destination)
+queue:{name}:active:deadline     ZSET    score=stall deadline, member=id
+queue:{name}:delayed             ZSET    score=readyAt, member=id — unified, see below
+queue:{name}:repeats             HASH    field=jobKey, value=JSON{name,data,every}
+queue:{name}:repeats:schedule    ZSET    score=nextRunAt, member=jobKey
+queue:{name}:dead                LIST    ids
+queue:{name}:jobs                HASH    field=id, value=JSON StoredJob (minus reservedAt)
+```
+
+Default prefix `queue:`, configurable via `keyPrefix`.
+
+### `RedisLike` — 4 methods, not the ~8 the RFC sketched
+
+```ts
+interface RedisLike {
+  eval(
+    script: string,
+    numKeys: number,
+    ...args: (string | number)[]
+  ): Promise<unknown>;
+  blmove(
+    source: string,
+    destination: string,
+    sourceDirection: 'LEFT' | 'RIGHT',
+    destinationDirection: 'LEFT' | 'RIGHT',
+    timeoutSeconds: number
+  ): Promise<string | null>;
+  lrange(key: string, start: number, stop: number): Promise<string[]>;
+  hmget(key: string, ...fields: string[]): Promise<(string | null)[]>;
+}
+```
+
+Every mutating operation ended up needing Lua for atomicity, so
+`zadd`/`hset`/`hget`/`hdel`/`lrem`/`zrem`/`zrangebyscore` are only ever
+called _inside_ scripts via `redis.call(...)` — never as direct
+JS-level bindings. All four are real `ioredis` method names/signatures
+(and match Bun's `Bun.redis` where it implements the same command
+surface), so a real client satisfies `RedisLike` with zero glue. No
+`import type { Redis } from 'ioredis'` anywhere in `redis.ts` —
+deliberate divergence from `RedisGatewayAdapter`: the portability goal
+here (any Redis-command-compatible client, any runtime) is broader than
+what ws's Node/ioredis-only adapter needed to solve.
+
+### Every `QueueAdapter` method, as one (or two) Redis round trips
+
+- **`add()`** — one of three scripts depending on the branch (repeat /
+  delayed / immediate), same three-way split as `MemoryQueueAdapter`.
+  The repeat branch's idempotency (`jobKey` already registered → no-op)
+  is the one place true cross-process atomicity matters that the
+  single-process `Map`-based memory adapter never had to think about:
+  `ADD_REPEAT_SCRIPT` does the check-then-set inside one `EVAL`, so two
+  processes racing to register the same `jobKey` can't both win.
+- **`reserve(queue, stallTimeout)`** — genuinely two round trips, since
+  Redis disallows blocking commands inside `EVAL`: `blockingClient.blmove(waiting, active, ...)`
+  on the dedicated blocking connection, then `client.eval(STAMP_DEADLINE_SCRIPT, ...)`
+  on the primary connection to record the stall deadline and fetch the
+  job. The gap between them (a crash mid-way leaves a reservation with
+  no deadline entry) is closed by `RECLAIM_STALLED_SCRIPT`'s self-heal
+  (below) — worst case, an orphan is caught on the next sweep tick
+  instead of leaking forever.
+- **`complete()` / `fail()`** — one script each, guarded by
+  `ZSCORE(active:deadline, id) == false` → silent no-op (matches
+  `MemoryQueueAdapter`'s behavior on an already-completed/failed id).
+  `fail()` with no `retryAt` pushes straight to `dead`; with `retryAt`,
+  increments `attempt` and adds to `delayed` — **the same zset `{ delay }`
+  jobs use.**
+- **`sweep(queue, now)`** — three independent scripts, each capped at
+  `sweepBatchSize` (default `1000`) entries per pass, to bound
+  single-threaded Lua runtime under a thundering herd of due jobs (a
+  real concern here the in-memory adapter never faces): promote due
+  `delayed` entries, spawn due repeat instances (id = `` `${jobKey}:${nextRunAt}` ``
+  — deterministic, since Lua has no `crypto.randomUUID()`) and advance
+  `nextRunAt`, and reclaim stalled `active` entries (plus the
+  self-healing scan for the `reserve()` crash window above) — no
+  `attempts`-exhaustion check, same as `MemoryQueueAdapter`.
+- **`getDead()` / `retryDead()`** — plain reads (`lrange` + batched
+  `hmget`) and one script, respectively.
+
+### Why retry-backoff and `{ delay }` are unified here, unlike `MemoryQueueAdapter`
+
+`MemoryQueueAdapter` keeps them on two mechanisms (bare `setTimeout` vs.
+a `delayed` array) because a timer was cheap and already available, and
+the adapter discards everything on restart regardless — unifying would
+have bought no durability there. Neither premise survives to Redis:
+there is no `setTimeout`-equivalent in Redis at all, so retry-backoff
+_must_ become a durable, polled (zset + sweep) structure here regardless
+of the unification question. Once both are the same shape, two zsets
+would buy nothing. The one honest trade-off: a Redis-backed retry
+becomes reservable at the next sweep tick on/after `retryAt` (≤
+`sweepInterval` slack), not the instant a bare timer would fire — the
+same precision `{ delay }` jobs already have, just applied uniformly.
+
+### A known throughput ceiling
+
+`plugin.ts`'s worker loop is an unmodified, fixed 25ms `setInterval`
+tick calling `reserve()`. `blockTimeoutSeconds` therefore defaults short
+(`0.02`s) — a long block would let queued `BLMOVE` calls pile up on the
+blocking connection faster than they drain. Consequence: this adapter
+gets `BLMOVE`-the-primitive (per the RFC's mandate) but not its actual
+efficiency win (near-zero-latency wakeup without polling) — throughput
+stays bounded by the 25ms tick, same as `MemoryQueueAdapter`. Fixing
+that for real needs a `plugin.ts` change (a long-block code path some
+adapters opt into) — out of scope here, flagged as future work.
+
+### Testing bar
+
+`src/__tests__/redis-adapter.test.ts` mirrors `RedisGatewayAdapter`'s
+test file exactly: no real Redis server anywhere. A real Lua
+interpreter is impractical to fake, so tests assert at the
+orchestration grain — the right script (by identity to the exported
+constant) with the right `KEYS`/`ARGV`, `eval()`'s resolved value
+stubbed directly to drive downstream parsing. Live-Redis verification
+is explicitly flagged as outstanding (`it.todo(...)`), matching the
+RFC's own stated bar for this phase.
+
+## 10. Deliberate scope decisions
 
 **Phase 1:**
 
@@ -392,3 +525,28 @@ function startSweeper(
 - **The sweeper is gated on `worker !== false`** (§8) — not explicit in
   the RFC's Plugin Options text, but the only placement that makes sense
   given what `sweep()` actually does.
+
+**Phase 3:**
+
+- **`RedisQueueAdapter` unifies retry-backoff and `{ delay }`** (§9),
+  reversing Phase 2's deliberate separation for `MemoryQueueAdapter` —
+  both premises behind that separation (a cheap timer already
+  available, no durability to gain from unifying) are specific to the
+  in-memory adapter and don't survive to Redis, which has no
+  `setTimeout`-equivalent at all.
+- **`reserve()` is two Redis round trips, not one** (§9) — Redis
+  disallows blocking commands inside `EVAL`, so the stall-deadline
+  stamp can't be fused with the `BLMOVE`. Closed with a self-healing
+  reclaim pass rather than pretending the gap doesn't exist.
+- **`RedisLike` ended up smaller than the RFC's own sketch** (4 methods,
+  not ~8) — audited from the actual design rather than assumed: every
+  mutating command turned out to need Lua, so only `eval`/`blmove`/
+  `lrange`/`hmget` are called directly.
+- **`blockTimeoutSeconds` defaults to 20ms, not a "real" blocking
+  wait** (§9) — a deliberate ceiling on the win `BLMOVE` normally
+  provides, imposed by `plugin.ts`'s existing fixed-interval poll loop,
+  which this phase does not modify. Flagged as future work, not solved
+  here.
+- **No live-Redis integration test** — matches the RFC's own explicitly
+  stated bar for this phase (same as `RedisGatewayAdapter`), not an
+  oversight.
