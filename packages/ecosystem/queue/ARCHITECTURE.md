@@ -186,7 +186,7 @@ Per-queue state (Phase 2): `{ waiting: StoredJob[]; delayed: StoredJob[]; active
   `delayed`/`sweep()`.
 - `sweep(queue, now)` — three independent passes:
   1. Promote any `delayed` entry whose `readyAt <= now` into `waiting`.
-  2. For each `RepeatDescriptor` with `nextRunAt <= now`, push a fresh job instance into `waiting` (tagged `repeat: { every, jobKey }`) and advance `nextRunAt += every` — fixed cadence, so a late sweep tick doesn't push the whole schedule back.
+  2. For each `RepeatDescriptor` with `nextRunAt <= now`, push a fresh job instance into `waiting` (tagged `repeat: { every, jobKey }`) and advance `nextRunAt` to the next tick **strictly after `now`** (`nextRunAt += periods * every`, where `periods = floor((now - nextRunAt) / every) + 1`) — fixed cadence, so a late sweep tick doesn't push the whole schedule back, _and_ a single jump past `now` rather than a naive `+= every`, so a long gap since the last sweep (process downtime with a persisted adapter, or a long pause) produces exactly one catch-up run, not a replay burst re-firing on every subsequent sweep tick until caught up. (Bug found and fixed post-Phase-2: a naive single-increment reschedule stayed overdue after a long gap and fired once per sweep tick until it caught up.)
   3. Reclaim any `active` entry whose `reservedAt <= now`: delete from `active`, increment `attempt`, clear `reservedAt`, push to `waiting`. No `attempts`-exhaustion check here — see the note below.
 - `getDead()` returns a shallow copy of `dead`.
 - `retryDead()` splices a job out of `dead`, resets `attempt` to `1`, pushes to `waiting`.
@@ -439,8 +439,11 @@ what ws's Node/ioredis-only adapter needed to solve.
   single-threaded Lua runtime under a thundering herd of due jobs (a
   real concern here the in-memory adapter never faces): promote due
   `delayed` entries, spawn due repeat instances (id = `` `${jobKey}:${nextRunAt}` ``
-  — deterministic, since Lua has no `crypto.randomUUID()`) and advance
-  `nextRunAt`, and reclaim stalled `active` entries (plus the
+  — deterministic, since Lua has no `crypto.randomUUID()`) and jump
+  `nextRunAt` to the next tick strictly after `now` (not a naive
+  `+= every` — see `MemoryQueueAdapter`'s §5 note on why a single
+  increment causes a replay burst after a long gap since the last
+  sweep), and reclaim stalled `active` entries (plus the
   self-healing scan for the `reserve()` crash window above) — no
   `attempts`-exhaustion check, same as `MemoryQueueAdapter`.
 - **`getDead()` / `retryDead()`** — plain reads (`lrange` + batched

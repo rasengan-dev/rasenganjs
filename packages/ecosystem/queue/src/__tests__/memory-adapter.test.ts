@@ -172,6 +172,31 @@ describe('MemoryQueueAdapter', () => {
       await adapter.sweep('digests', Date.now());
       expect(await adapter.reserve('digests', 30_000)).toBeNull();
     });
+
+    it('collapses missed ticks after a long gap into a single catch-up run, not a replay burst', async () => {
+      // Regression: a naive `nextRunAt += every` reschedule stays overdue
+      // after a long gap since the last sweep (process downtime with a
+      // persisted adapter, or a long pause) and re-fires on every
+      // subsequent sweep tick until it catches up — replaying every
+      // missed occurrence instead of just resuming.
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add(
+        'digests',
+        job({ repeat: { every: 10, jobKey: 'digest' } })
+      );
+
+      // Let many "every" periods elapse without sweeping.
+      await new Promise((r) => setTimeout(r, 120));
+
+      // Simulate the sweeper ticking repeatedly while "catching up".
+      for (let i = 0; i < 10; i++) {
+        await adapter.sweep('digests', Date.now());
+      }
+
+      let spawned = 0;
+      while (await adapter.reserve('digests', 30_000)) spawned++;
+      expect(spawned).toBe(1);
+    });
   });
 
   describe('stalled-job reclaim', () => {

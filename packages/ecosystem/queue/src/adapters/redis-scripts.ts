@@ -183,7 +183,13 @@ while i <= #due do
     job['repeat'] = { every = descriptor.every, jobKey = jobKey }
     redis.call('HSET', KEYS[3], newId, cjson.encode(job))
     redis.call('RPUSH', KEYS[4], newId)
-    redis.call('ZADD', KEYS[1], nextRunAt + descriptor.every, jobKey)
+    -- Jump straight to the next tick strictly after "now" instead of
+    -- advancing by a single "every" -- otherwise a long gap since the
+    -- last sweep (process downtime, the schedule persisting in Redis)
+    -- re-fires on every subsequent sweep tick until caught up, replaying
+    -- every missed occurrence as a burst instead of just resuming.
+    local periods = math.floor((now - nextRunAt) / descriptor.every) + 1
+    redis.call('ZADD', KEYS[1], nextRunAt + periods * descriptor.every, jobKey)
     count = count + 1
   else
     -- Descriptor missing (shouldn't happen) — drop the stale schedule entry.

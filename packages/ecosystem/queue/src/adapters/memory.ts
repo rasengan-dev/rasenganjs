@@ -142,7 +142,15 @@ export class MemoryQueueAdapter implements QueueAdapter {
           enqueuedAt: now,
           repeat: { every: descriptor.every, jobKey: descriptor.jobKey },
         });
-        descriptor.nextRunAt += descriptor.every;
+        // Jump straight to the next tick strictly after `now` instead
+        // of advancing by a single `every` — a large gap since the
+        // last sweep (process downtime with a persisted adapter, or a
+        // long pause) would otherwise re-fire on every subsequent
+        // sweep tick until the schedule catches up, replaying every
+        // missed occurrence as a burst instead of just resuming.
+        const periods =
+          Math.floor((now - descriptor.nextRunAt) / descriptor.every) + 1;
+        descriptor.nextRunAt += periods * descriptor.every;
       }
     }
 
