@@ -1,6 +1,11 @@
 import { Provider } from '@rasenganjs/server';
 
-import type { JobHandler, ProcessOptions, StoredJob } from './types.js';
+import type {
+  AddJobOptions,
+  JobHandler,
+  ProcessOptions,
+  StoredJob,
+} from './types.js';
 
 /**
  * Producer surface wired onto `Queue.handle` by `createQueuePlugin()`
@@ -8,7 +13,7 @@ import type { JobHandler, ProcessOptions, StoredJob } from './types.js';
  * Structurally the same shape as `Gateway.server` from `@rasenganjs/ws`.
  */
 export interface QueueHandle {
-  add(name: string, data: unknown): Promise<string>;
+  add(name: string, data: unknown, options?: AddJobOptions): Promise<string>;
   getDead(): Promise<StoredJob[]>;
   retryDead(id: string): Promise<void>;
 }
@@ -56,9 +61,14 @@ export abstract class Queue extends Provider {
    */
   abstract jobs(router: JobRouter): void;
 
-  /** Enqueue a job. Resolves once the adapter has stored it. */
-  add(name: string, data: unknown): Promise<string> {
-    return this.handle.add(name, data);
+  /**
+   * Enqueue a job. Resolves once the adapter has stored it, with the
+   * job's id — except for a `{ repeat }` registration, where it
+   * resolves with the recurring job's `jobKey` instead (the stable
+   * identity `repeat` idempotency is keyed on, not a fresh random id).
+   */
+  add(name: string, data: unknown, options?: AddJobOptions): Promise<string> {
+    return this.handle.add(name, data, options);
   }
 
   /** Jobs that exhausted their retry attempts. */

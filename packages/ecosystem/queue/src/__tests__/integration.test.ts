@@ -252,4 +252,206 @@ describe('@rasenganjs/queue — end-to-end', () => {
 
     await app.close();
   });
+
+  it('add(name, data, { delay }) — job is not processed until the delay elapses', async () => {
+    const runs: number[] = [];
+
+    class DelayedQueue extends Queue {
+      name = 'delayed';
+      jobs(router: JobRouter) {
+        router.process('task', async () => {
+          runs.push(Date.now());
+        });
+      }
+    }
+
+    let capturedQueue: DelayedQueue | undefined;
+    class C extends Controller {
+      constructor(delayedQueue: DelayedQueue) {
+        super();
+        capturedQueue = delayedQueue;
+      }
+      routes(_router: Router) {}
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(createQueuePlugin({ sweepInterval: 15 }));
+    app.registerModule(
+      defineModule({ name: 'M', queues: [DelayedQueue], controllers: [C] })
+    );
+    app.compile();
+
+    await capturedQueue!.add('task', {}, { delay: 60 });
+
+    await new Promise((r) => setTimeout(r, 30));
+    expect(runs).toEqual([]);
+
+    await new Promise((r) => setTimeout(r, 80));
+    expect(runs).toHaveLength(1);
+
+    await app.close();
+  });
+
+  it('add(name, data, { repeat: { every } }) — handler runs repeatedly on the configured cadence', async () => {
+    const runs: number[] = [];
+
+    class DigestQueue extends Queue {
+      name = 'digest';
+      jobs(router: JobRouter) {
+        router.process('run', async () => {
+          runs.push(Date.now());
+        });
+      }
+    }
+
+    let capturedQueue: DigestQueue | undefined;
+    class C extends Controller {
+      constructor(digestQueue: DigestQueue) {
+        super();
+        capturedQueue = digestQueue;
+      }
+      routes(_router: Router) {}
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(createQueuePlugin({ sweepInterval: 15 }));
+    app.registerModule(
+      defineModule({ name: 'M', queues: [DigestQueue], controllers: [C] })
+    );
+    app.compile();
+
+    await capturedQueue!.add('run', {}, { repeat: { every: 30 } });
+
+    await new Promise((r) => setTimeout(r, 150));
+
+    expect(runs.length).toBeGreaterThanOrEqual(2);
+
+    await app.close();
+  });
+
+  it('calling add() twice at boot with the same repeat spec does not double the processing rate', async () => {
+    const runs: number[] = [];
+
+    class DigestQueue extends Queue {
+      name = 'digest-idempotent';
+      jobs(router: JobRouter) {
+        router.process('run', async () => {
+          runs.push(Date.now());
+        });
+      }
+    }
+
+    let capturedQueue: DigestQueue | undefined;
+    class C extends Controller {
+      constructor(digestQueue: DigestQueue) {
+        super();
+        capturedQueue = digestQueue;
+      }
+      routes(_router: Router) {}
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(createQueuePlugin({ sweepInterval: 15 }));
+    app.registerModule(
+      defineModule({ name: 'M', queues: [DigestQueue], controllers: [C] })
+    );
+    app.compile();
+
+    // Same name + data (empty object both times) → same default jobKey.
+    await capturedQueue!.add('run', {}, { repeat: { every: 30 } });
+    await capturedQueue!.add('run', {}, { repeat: { every: 30 } });
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    // ~3 fires expected at this cadence/window if registered once;
+    // a doubled registration would show roughly twice that.
+    expect(runs.length).toBeGreaterThanOrEqual(2);
+    expect(runs.length).toBeLessThanOrEqual(4);
+
+    await app.close();
+  });
+
+  it('add() throws when both delay and repeat are passed', async () => {
+    class BadQueue extends Queue {
+      name = 'bad-options';
+      jobs(router: JobRouter) {
+        router.process('task', async () => {});
+      }
+    }
+
+    let capturedQueue: BadQueue | undefined;
+    class C extends Controller {
+      constructor(badQueue: BadQueue) {
+        super();
+        capturedQueue = badQueue;
+      }
+      routes(_router: Router) {}
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(createQueuePlugin());
+    app.registerModule(
+      defineModule({ name: 'M', queues: [BadQueue], controllers: [C] })
+    );
+    app.compile();
+
+    await expect(
+      capturedQueue!.add('task', {}, { delay: 10, repeat: { every: 10 } })
+    ).rejects.toThrow(/cannot combine/);
+
+    await app.close();
+  });
+
+  it('a job whose handler outlives stallTimeout is reclaimed by the sweeper and reprocessed (attempt 2)', async () => {
+    const attempts: number[] = [];
+
+    class SlowOnceQueue extends Queue {
+      name = 'slow-once';
+      jobs(router: JobRouter) {
+        router.process(
+          'task',
+          async (job: Job) => {
+            attempts.push(job.attempt);
+            if (job.attempt === 1) {
+              // Simulates a worker that "died": outlives the stall
+              // deadline below, but still resolves eventually so
+              // app.close()'s Promise.all(inFlight) never hangs.
+              await new Promise((r) => setTimeout(r, 200));
+            }
+          },
+          { attempts: 2, concurrency: 2 }
+        );
+      }
+    }
+
+    let capturedQueue: SlowOnceQueue | undefined;
+    class C extends Controller {
+      constructor(slowOnceQueue: SlowOnceQueue) {
+        super();
+        capturedQueue = slowOnceQueue;
+      }
+      routes(_router: Router) {}
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(
+      createQueuePlugin({ stallTimeout: 30, sweepInterval: 15 })
+    );
+    app.registerModule(
+      defineModule({ name: 'M', queues: [SlowOnceQueue], controllers: [C] })
+    );
+    app.compile();
+
+    await capturedQueue!.add('task', {});
+
+    // attempt 1 is reserved (~25ms tick) and starts its 200ms sleep;
+    // the 30ms stall deadline passes well before that, so the sweeper
+    // reclaims it and attempt 2 dispatches and resolves quickly.
+    await new Promise((r) => setTimeout(r, 300));
+
+    expect(attempts).toContain(1);
+    expect(attempts).toContain(2);
+
+    await app.close();
+  });
 });

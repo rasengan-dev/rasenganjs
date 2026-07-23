@@ -9,38 +9,85 @@
  * enforced by the worker loop *above* the adapter, not by the adapter
  * itself — see `plugin.ts`.
  *
- * `sweep()` is part of the contract from Phase 1 onward even though
- * nothing calls it yet (`MemoryQueueAdapter.sweep()` is a documented
- * no-op): widening the interface later, once Phase 2 adds delayed/repeat
- * jobs and stalled-job reclaim, would be a breaking change for anyone who
- * implemented a custom adapter against a narrower Phase-1 shape.
+ * `sweep()` shipped as a no-op in Phase 1 specifically so widening its
+ * responsibilities later wouldn't be a breaking interface change. As of
+ * Phase 2, `sweep()` has three real jobs, run once per tick by the
+ * plugin's sweeper timer (see `plugin.ts`): promote due delayed jobs
+ * into `waiting`, spawn due repeat-job instances, and reclaim active
+ * jobs whose stall deadline (`StoredJob.reservedAt`) has passed.
  */
 
 /**
  * A job as stored by a `QueueAdapter` — includes bookkeeping fields
- * (`attempt`, `reservedAt`) a handler never needs to see directly.
+ * (`attempt`, `reservedAt`, `readyAt`, `repeat`) a handler never needs
+ * to see directly.
  */
 export interface StoredJob {
   id: string;
   name: string;
   data: unknown;
-  /** 1-based. Incremented on each retry. */
+  /** 1-based. Incremented on each retry and on stalled-job reclaim. */
   attempt: number;
   enqueuedAt: number;
   /**
-   * Set when a job is reserved. Bookkeeping only in Phase 1 — nothing
-   * reads it yet, since stalled-job reclaim is a Phase 2 addition.
+   * Stall deadline (Phase 2): set by `reserve()` to `now + stallTimeout`
+   * when a job is reserved. `sweep()` reclaims any active job whose
+   * `reservedAt` has passed, returning it to `waiting` with
+   * `attempt` incremented. Not an "instant" — a deadline.
    */
   reservedAt?: number;
+  /**
+   * Delayed jobs (Phase 2): not reservable until `Date.now() >= readyAt`.
+   * `sweep()` promotes a due delayed job into `waiting`. Absent for
+   * jobs enqueued without `{ delay }`.
+   */
+  readyAt?: number;
+  /**
+   * Present only on repeat-job instances (Phase 2) — informational for
+   * handlers/inspection; the adapter's own repeat-descriptor
+   * bookkeeping (next run time) lives separately, not on the instance.
+   */
+  repeat?: { every: number; jobKey: string };
 }
 
 /** The handler-facing view of a job — drops adapter-only bookkeeping. */
-export type Job<T = unknown> = Omit<StoredJob, 'reservedAt' | 'data'> & {
+export type Job<T = unknown> = Omit<
+  StoredJob,
+  'reservedAt' | 'data' | 'readyAt' | 'repeat'
+> & {
   data: T;
 };
 
 /** A handler for one named job, registered via `JobRouter.process()`. */
 export type JobHandler<T = unknown> = (job: Job<T>) => void | Promise<void>;
+
+/**
+ * Options for `Queue.add()` (Phase 2). Omitted entirely — not
+ * accepted-and-ignored — in Phase 1, specifically so this could be
+ * added back as an optional parameter without breaking any Phase 1
+ * call site.
+ */
+export interface AddJobOptions {
+  /** Milliseconds from now before this job becomes reservable. */
+  delay?: number;
+  /**
+   * Register a recurring job. Idempotent by `jobKey` — calling `.add()`
+   * again with the same name/data (or the same explicit `key`) does
+   * not create a second recurring registration. Mutually exclusive
+   * with `delay`.
+   */
+  repeat?: {
+    /** Milliseconds between runs. */
+    every: number;
+    /**
+     * Explicit stable identity for this recurring job. Defaults to a
+     * key derived from `name` + `data` — set this when two repeat
+     * registrations would otherwise share a name and data shape (e.g.
+     * per-tenant digests) but must be tracked as distinct schedules.
+     */
+    key?: string;
+  };
+}
 
 /**
  * Options for `JobRouter.process()`. All optional — Phase 1 defaults are

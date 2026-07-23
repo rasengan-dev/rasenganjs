@@ -11,8 +11,15 @@ import {
   type QueueHandle,
   type RegisteredJob,
 } from './queue.js';
-import type { Job, QueueAdapter, QueueClass, StoredJob } from './types.js';
+import type {
+  AddJobOptions,
+  Job,
+  QueueAdapter,
+  QueueClass,
+  StoredJob,
+} from './types.js';
 import { MemoryQueueAdapter } from './adapters/memory.js';
+import { defaultJobKey } from './job-key.js';
 
 export interface QueuePluginOptions {
   /**
@@ -27,11 +34,25 @@ export interface QueuePluginOptions {
    * reserved/processed here) — deployment topology, not a code change.
    */
   worker?: boolean;
+  /**
+   * How long a reserved job may go without `complete()`/`fail()` before
+   * the sweeper reclaims it as stalled (its worker presumed dead).
+   * Defaults to `30_000`ms.
+   */
+  stallTimeout?: number;
+  /**
+   * How often the sweeper runs: promoting due delayed/repeat jobs and
+   * reclaiming stalled reservations, for every queue this plugin
+   * instance registers. Defaults to `5_000`ms.
+   */
+  sweepInterval?: number;
 }
 
-/** Passed to `reserve()` — Phase 1 doesn't reclaim stalled jobs yet, so this is inert. */
+/** Default for `QueuePluginOptions.stallTimeout`. */
 const DEFAULT_STALL_TIMEOUT_MS = 30_000;
-/** Internal implementation detail — Phase 2/3 may replace polling with an adapter-specific blocking reserve. */
+/** Default for `QueuePluginOptions.sweepInterval`. */
+const DEFAULT_SWEEP_INTERVAL_MS = 5_000;
+/** Internal implementation detail — Phase 3 may replace polling with an adapter-specific blocking reserve. */
 const WORKER_POLL_INTERVAL_MS = 25;
 
 /**
@@ -50,6 +71,14 @@ export function createQueuePlugin(
 ): ModulePlugin {
   const adapter = options.adapter ?? new MemoryQueueAdapter();
   const worker = options.worker ?? true;
+  const stallTimeout = options.stallTimeout ?? DEFAULT_STALL_TIMEOUT_MS;
+  const sweepInterval = options.sweepInterval ?? DEFAULT_SWEEP_INTERVAL_MS;
+
+  // Shared across every `register()` call this plugin instance
+  // receives (multiple modules may each declare `queues: [...]`) — one
+  // sweeper, not one per queue, iterating every queue name seen so far.
+  const queueNames = new Set<string>();
+  let sweeperStarted = false;
 
   return {
     key: 'queues',
@@ -62,7 +91,22 @@ export function createQueuePlugin(
       const queueClasses = value as QueueClass[];
 
       for (const queueClass of queueClasses) {
-        registerQueue(app, container, queueClass, adapter, worker);
+        const queueName = registerQueue(
+          app,
+          container,
+          queueClass,
+          adapter,
+          worker,
+          stallTimeout
+        );
+        queueNames.add(queueName);
+      }
+
+      // A produce-only process has nothing local to reclaim/promote —
+      // the worker process sharing this adapter sweeps for it.
+      if (worker && !sweeperStarted) {
+        sweeperStarted = true;
+        startSweeper(app, adapter, queueNames, sweepInterval);
       }
     },
     // Queue extends Provider — the array IS already a set of real DI
@@ -79,8 +123,9 @@ function registerQueue(
   container: ContainerView,
   queueClass: QueueClass,
   adapter: QueueAdapter,
-  worker: boolean
-): void {
+  worker: boolean,
+  stallTimeout: number
+): string {
   const instance = container.resolve(queueClass) as Queue;
 
   if (!(instance instanceof Queue)) {
@@ -108,8 +153,10 @@ function registerQueue(
   instance.handle = createQueueHandle(queueName, adapter);
 
   if (worker) {
-    startWorkerLoop(queueName, jobs, adapter, app);
+    startWorkerLoop(queueName, jobs, adapter, app, stallTimeout);
   }
+
+  return queueName;
 }
 
 function createQueueHandle(
@@ -117,14 +164,43 @@ function createQueueHandle(
   adapter: QueueAdapter
 ): QueueHandle {
   return {
-    async add(name: string, data: unknown): Promise<string> {
+    async add(
+      name: string,
+      data: unknown,
+      options?: AddJobOptions
+    ): Promise<string> {
+      if (options?.delay !== undefined && options?.repeat !== undefined) {
+        throw new Error(
+          '[rasengan-queue] ".add()" cannot combine `delay` and `repeat`.'
+        );
+      }
+
+      const now = Date.now();
+
+      if (options?.repeat) {
+        const jobKey = options.repeat.key ?? defaultJobKey(name, data);
+        const job: StoredJob = {
+          id: jobKey,
+          name,
+          data,
+          attempt: 1,
+          enqueuedAt: now,
+          repeat: { every: options.repeat.every, jobKey },
+        };
+        await adapter.add(queueName, job);
+        // The stable jobKey, not a fresh id — the only channel to hand
+        // the caller a reusable identity for this recurring job.
+        return jobKey;
+      }
+
       const id = crypto.randomUUID();
       const job: StoredJob = {
         id,
         name,
         data,
         attempt: 1,
-        enqueuedAt: Date.now(),
+        enqueuedAt: now,
+        readyAt: options?.delay !== undefined ? now + options.delay : undefined,
       };
       await adapter.add(queueName, job);
       return id;
@@ -156,7 +232,8 @@ function startWorkerLoop(
   queueName: string,
   jobs: Map<string, RegisteredJob>,
   adapter: QueueAdapter,
-  app: ServerApp
+  app: ServerApp,
+  stallTimeout: number
 ): void {
   let stopped = false;
   const inFlightCount = new Map<string, number>();
@@ -230,7 +307,7 @@ function startWorkerLoop(
     if (stopped) return;
     drainBuffer();
 
-    const stored = await adapter.reserve(queueName, DEFAULT_STALL_TIMEOUT_MS);
+    const stored = await adapter.reserve(queueName, stallTimeout);
     if (!stored) return;
 
     if (hasCapacity(stored.name)) {
@@ -249,9 +326,36 @@ function startWorkerLoop(
     stopped = true;
     clearInterval(timer);
     await Promise.all(inFlight);
-    // Anything still sitting in readyBuffer was reserved (visibility
-    // deadline ticking) but never dispatched. Phase 1 ships no sweep()/
-    // stall-reclaim — recovering it is Phase 2's job, same as any other
-    // stalled reservation elsewhere.
+    // Anything still sitting in readyBuffer was reserved (stall
+    // deadline ticking) but never dispatched. The sweeper (running in a
+    // separate process, or restarted alongside this one) reclaims it
+    // once its deadline passes — same path as any other stalled
+    // reservation.
   });
+}
+
+/**
+ * Periodic housekeeping: promotes due delayed/repeat jobs and reclaims
+ * stalled reservations, for every queue this plugin instance has
+ * registered so far. One timer per plugin instance, not one per queue.
+ *
+ * Same lifecycle discipline as `startWorkerLoop()` and, before it, ws's
+ * heartbeat: started synchronously in `register()` (at boot), stopped
+ * via `app.onDestroy()` — the only pass guaranteed to run forward-order
+ * and fully awaited before any `Provider.onDestroy()` fires.
+ */
+function startSweeper(
+  app: ServerApp,
+  adapter: QueueAdapter,
+  queueNames: Set<string>,
+  sweepInterval: number
+): void {
+  const timer = setInterval(() => {
+    const now = Date.now();
+    for (const queueName of queueNames) {
+      void adapter.sweep(queueName, now);
+    }
+  }, sweepInterval);
+
+  app.onDestroy(() => clearInterval(timer));
 }

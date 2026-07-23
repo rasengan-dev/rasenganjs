@@ -3,6 +3,7 @@ import { ChatGateway } from './chat.gateway.js';
 import { ChatService } from './chat.service.js';
 import { FilesController } from './files.controller.js';
 import { MediaQueue } from './media.queue.js';
+import { HelloQueue } from './hello.queue.js';
 
 export default defineModule({
   name: 'ChatModule',
@@ -11,7 +12,7 @@ export default defineModule({
   // and exportable from `gateways:`/`queues:` alone. MediaQueue injects
   // ChatGateway directly (same module — no `exports` needed for that).
   gateways: [ChatGateway],
-  queues: [MediaQueue],
+  queues: [MediaQueue, HelloQueue],
   providers: [ChatService],
   controllers: [FilesController],
   exports: [ChatService],

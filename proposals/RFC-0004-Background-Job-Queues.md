@@ -1,6 +1,6 @@
 # RFC 0004 — Background Job Queues (@rasenganjs/queue)
 
-**Status:** Partially Implemented — Phase 1 (Core) landed 2026-07-21, Phases 2-4 outstanding  
+**Status:** Partially Implemented — Phases 1 (Core) and 2 (Time) landed 2026-07-21/22, Phases 3-4 outstanding  
 **Author:** Rasengan.js Core Team  
 **Date:** 2026-07-14
 
@@ -102,20 +102,25 @@ class SignupController extends Controller {
   register: RouteHandler = async (ctx) => {
     const user = await this.users.create(ctx.body);
     await this.emailQueue.add('welcome', { userId: user.id });
-    // Phase 2 (not yet implemented): a delayed followUp job.
-    // await this.emailQueue.add('followUp', { userId: user.id }, { delay: 86_400_000 });
+    // Phase 2: a delayed followUp job.
+    await this.emailQueue.add(
+      'followUp',
+      { userId: user.id },
+      { delay: 86_400_000 }
+    );
     return ctx.res.json({ ok: true });
   };
 }
 ```
 
-> **Phase 1 note:** `.add()` ships with no options parameter at all
-> (`add(name, data): Promise<string>`) rather than accepting-and-ignoring
-> `{ delay }`/`{ repeat }` — an ignored option would silently turn a
-> caller's intended recurring digest into a single one-off job. Dropping
-> the parameter makes any Phase-2-only call an arity error today; adding
-> it back as optional in Phase 2 is non-breaking for every Phase-1 call
-> site.
+> **Phase 1 note (superseded by Phase 2):** `.add()` shipped with no
+> options parameter at all (`add(name, data): Promise<string>`) rather
+> than accepting-and-ignoring `{ delay }`/`{ repeat }` — an ignored
+> option would have silently turned a caller's intended recurring
+> digest into a single one-off job. Dropping the parameter made any
+> Phase-2-only call an arity error instead. Phase 2 added it back as an
+> **optional** third parameter, non-breaking for every Phase 1 call site
+> (`add(name, data)` still compiles and behaves identically).
 
 Repeatable jobs replace the scheduler-module idea:
 
@@ -289,8 +294,54 @@ which every runtime adapter already drives.
      adapter as "timer-based", and distinct from Phase 2's producer-facing
      `{ delay }` (which needs the `delayed`/`sweep()` machinery this
      phase doesn't build).
-2. **Time** — delayed jobs, repeatable jobs (`every`), stalled-job reclaim,
-   the sweeper. Millisecond-scale timer tests like the heartbeat suite.
+2. **Time — IMPLEMENTED 2026-07-22** — delayed jobs, repeatable jobs
+   (`every`), stalled-job reclaim, the sweeper. Existing Phase 1 test
+   suite (26 tests) required zero call-site changes; 24 new tests added
+   (50 total), all using real timers at millisecond scale like the ws
+   heartbeat suite. Implementation notes:
+   - `Queue.add()`/`QueueHandle.add()` gained an **optional** third
+     `AddJobOptions` parameter (`{ delay }` / `{ repeat: { every, key? } }`,
+     mutually exclusive) — see the Proposed API note above.
+   - **Repeat-job idempotency key (`jobKey`) is not specified by this
+     RFC** — implemented as `` `${name}:${stableStringify(data)}` ``
+     (`src/job-key.ts`), deterministic and key-order-independent, with
+     an explicit `repeat.key` override for repeat jobs that would
+     otherwise share a name and data shape (e.g. per-tenant digests).
+     `.add()` resolves with the `jobKey` for repeat registrations, not a
+     fresh random id — the only channel to hand the caller a reusable
+     identity.
+   - **Repeat rescheduling is `sweep()`-owned**, decoupled from any
+     specific job instance: a `{ jobKey, name, data, every, nextRunAt }`
+     descriptor lives in adapter state; `sweep()` spawns a new instance
+     when due and advances `nextRunAt += every` (fixed cadence, no drift
+     accumulation). Required zero changes to `complete()`/`fail()`.
+   - **`StoredJob.reservedAt`'s meaning changed** from "reservation
+     instant" (Phase 1, unread) to "stall deadline": `reserve()` now
+     sets it to `now + stallTimeout`; `sweep()` reclaims any active job
+     past that deadline, returning it to `waiting` with `attempt++` —
+     matching this RFC's own lifecycle diagram, which has no
+     stalled→dead transition, so stall-reclaim deliberately does not
+     consult `attempts`.
+   - **Retry-backoff (`fail()`) and delayed jobs (`{ delay }`)
+     deliberately use two different mechanisms** in `MemoryQueueAdapter`
+     — retry-backoff kept its existing bare `setTimeout`; delayed jobs
+     got a real `delayed` list promoted by `sweep()`. Verified this was
+     the right call rather than just convenient: unifying them would
+     have required an existing Phase 1 test to call `sweep()` explicitly
+     instead of just waiting — a real behavior/test break — for no
+     actual durability gain, since this adapter already discards
+     everything on restart regardless. `RedisQueueAdapter` (Phase 3) can
+     independently choose a fully unified durable model; the shared
+     `QueueAdapter` interface doesn't force today's in-memory
+     implementation to prefigure that.
+   - **One shared sweeper `setInterval` per plugin instance** (not per
+     queue), gated on `worker !== false`, iterating every queue name
+     registered through that plugin instance. Same lifecycle discipline
+     as the worker loop and ws's heartbeat: started in `plugin.register()`
+     at boot, stopped via `app.onDestroy()`.
+   - `QueuePluginOptions` gained `stallTimeout` (default `30_000`) and
+     `sweepInterval` (default `5_000`), per the Plugin Options section
+     above.
 3. **Redis** — `RedisQueueAdapter` over `RedisLike`, Lua transition scripts,
    tests against a faked client (same approach as the ws Redis adapter —
    live-Redis verification flagged as outstanding).

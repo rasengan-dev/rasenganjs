@@ -12,7 +12,11 @@ bootstrap(async (app) => {
   // Claims the `gateways` key consumed by app.module.ts.
   app.registerPlugin(createWsPlugin());
   // Claims the `queues` key — see chat/media.queue.ts (RFC-0004 dogfood).
-  app.registerPlugin(createQueuePlugin());
+  app.registerPlugin(
+    createQueuePlugin({
+      sweepInterval: 30,
+    })
+  );
 
   // The web app (another origin in dev) POSTs uploads to /upload and
   // loads /files/* — WebSockets don't need CORS, but fetch() does.

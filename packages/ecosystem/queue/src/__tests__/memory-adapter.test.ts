@@ -85,7 +85,7 @@ describe('MemoryQueueAdapter', () => {
     expect(retried?.attempt).toBe(1);
   });
 
-  it('sweep() resolves without throwing and has no observable effect (Phase 1 no-op)', async () => {
+  it('sweep() has no effect on a queue with nothing delayed, stalled, or repeating', async () => {
     const adapter = new MemoryQueueAdapter();
     await adapter.add('emails', job());
 
@@ -103,5 +103,114 @@ describe('MemoryQueueAdapter', () => {
 
     expect((await adapter.reserve('emails', 30_000))?.id).toBe('a');
     expect((await adapter.reserve('sms', 30_000))?.id).toBe('b');
+  });
+
+  describe('delayed jobs', () => {
+    it('keeps a job with a future readyAt out of waiting until sweep() promotes it', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add('emails', job({ readyAt: Date.now() + 10_000 }));
+
+      expect(await adapter.reserve('emails', 30_000)).toBeNull();
+    });
+
+    it('sweep() promotes a delayed job to waiting once its readyAt has passed, not before', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add('emails', job({ readyAt: Date.now() + 20 }));
+
+      await adapter.sweep('emails', Date.now());
+      expect(await adapter.reserve('emails', 30_000)).toBeNull(); // not yet due
+
+      await new Promise((r) => setTimeout(r, 30));
+      await adapter.sweep('emails', Date.now());
+
+      const promoted = await adapter.reserve('emails', 30_000);
+      expect(promoted?.id).toBe('job-1');
+    });
+  });
+
+  describe('repeat jobs', () => {
+    it('add() with repeat registers a descriptor without enqueueing a job immediately', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add(
+        'digests',
+        job({ repeat: { every: 1_000, jobKey: 'digest' } })
+      );
+
+      expect(await adapter.reserve('digests', 30_000)).toBeNull();
+    });
+
+    it('calling add() twice with the same repeat spec does not create a second descriptor', async () => {
+      const adapter = new MemoryQueueAdapter();
+      const repeatJob = job({ repeat: { every: 20, jobKey: 'digest' } });
+      await adapter.add('digests', repeatJob);
+      await adapter.add('digests', repeatJob);
+
+      await new Promise((r) => setTimeout(r, 30));
+      await adapter.sweep('digests', Date.now());
+
+      // Only one instance spawned, not two.
+      expect(await adapter.reserve('digests', 30_000)).not.toBeNull();
+      expect(await adapter.reserve('digests', 30_000)).toBeNull();
+    });
+
+    it('sweep() spawns a new instance once every ms have elapsed and reschedules the next run', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add(
+        'digests',
+        job({ repeat: { every: 20, jobKey: 'digest' } })
+      );
+
+      await new Promise((r) => setTimeout(r, 30));
+      await adapter.sweep('digests', Date.now());
+
+      const spawned = await adapter.reserve('digests', 30_000);
+      expect(spawned).not.toBeNull();
+      expect(spawned?.repeat).toEqual({ every: 20, jobKey: 'digest' });
+      expect(spawned?.attempt).toBe(1);
+
+      // Not due again immediately after just running.
+      await adapter.sweep('digests', Date.now());
+      expect(await adapter.reserve('digests', 30_000)).toBeNull();
+    });
+  });
+
+  describe('stalled-job reclaim', () => {
+    it('sweep() returns an active job to waiting with attempt incremented once its stall deadline passes', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add('emails', job({ attempt: 1 }));
+      await adapter.reserve('emails', 20); // deadline in 20ms
+
+      await new Promise((r) => setTimeout(r, 30));
+      await adapter.sweep('emails', Date.now());
+
+      const reclaimed = await adapter.reserve('emails', 30_000);
+      expect(reclaimed?.id).toBe('job-1');
+      expect(reclaimed?.attempt).toBe(2);
+    });
+
+    it('sweep() leaves an active job alone before its stall deadline arrives', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add('emails', job());
+      await adapter.reserve('emails', 30_000); // long deadline
+
+      await adapter.sweep('emails', Date.now());
+
+      // Still active, not reclaimed — nothing waiting to reserve.
+      expect(await adapter.reserve('emails', 30_000)).toBeNull();
+    });
+
+    it('a reclaimed job is reservable again like any other waiting job', async () => {
+      const adapter = new MemoryQueueAdapter();
+      await adapter.add('emails', job());
+      await adapter.reserve('emails', 10);
+
+      await new Promise((r) => setTimeout(r, 20));
+      await adapter.sweep('emails', Date.now());
+
+      const reclaimed = await adapter.reserve('emails', 30_000);
+      expect(reclaimed?.id).toBe('job-1');
+      // Gone from waiting once more, like any other reservation.
+      expect(await adapter.reserve('emails', 30_000)).toBeNull();
+    });
   });
 });

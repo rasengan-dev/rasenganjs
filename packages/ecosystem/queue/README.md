@@ -109,14 +109,60 @@ export class SignupController extends Controller {
 }
 ```
 
+## 5. Delayed and repeatable jobs
+
+Pass a third argument to `.add()`:
+
+```ts
+// Runs 24 hours from now instead of immediately.
+await this.emailQueue.add(
+  'followUp',
+  { userId: user.id },
+  { delay: 86_400_000 }
+);
+
+// Registered once at startup — safe to call every time your app boots.
+await this.statsQueue.add('digest', {}, { repeat: { every: 3_600_000 } });
+```
+
+Repeat registration is **idempotent by `jobKey`**: calling `.add()`
+again with the same job name and data (or the same explicit `key`)
+does not create a second recurring schedule — so it's safe to call at
+every boot rather than needing separate first-run logic. `jobKey`
+defaults to a value derived from the job name and data; supply your own
+if two repeat jobs would otherwise share both and need to stay distinct
+(e.g. a per-tenant digest):
+
+```ts
+await this.statsQueue.add(
+  'digest',
+  { tenantId },
+  { repeat: { every: 3_600_000, key: `digest:${tenantId}` } }
+);
+```
+
+For a `{ repeat }` registration, `.add()` resolves with the `jobKey`
+(not a random id) — that's the identity you'd use to reason about or
+remove that schedule going forward. `delay` and `repeat` can't be
+combined in the same call.
+
 ## Plugin options
 
 ```ts
 createQueuePlugin({
-  adapter?: QueueAdapter; // default: MemoryQueueAdapter (dev only)
-  worker?: boolean;       // default: true
+  adapter?: QueueAdapter;  // default: MemoryQueueAdapter (dev only)
+  worker?: boolean;        // default: true
+  stallTimeout?: number;   // default: 30_000
+  sweepInterval?: number;  // default: 5_000
 });
 ```
+
+- **`stallTimeout`** — how long a reserved job may go unacknowledged
+  (no `complete()`/`fail()`) before it's presumed abandoned by a dead
+  worker and returned to the queue, with its attempt count incremented.
+- **`sweepInterval`** — how often the plugin checks for delayed/repeat
+  jobs that have become due and reservations that have stalled, across
+  every queue it registers.
 
 - **`adapter`** — job storage. Defaults to `MemoryQueueAdapter`, which
   is in-process and **loses all jobs on restart** — fine for local
@@ -154,13 +200,17 @@ await this.emailQueue.retryDead(dead[0].id);
 
 ## Current limitations
 
-This is the Core (Phase 1) release of `@rasenganjs/queue`:
+`@rasenganjs/queue` has shipped Phase 1 (Core) and Phase 2 (Time) of
+its RFC:
 
-- No delayed jobs (`{ delay }`) or repeatable jobs (`{ repeat }`) yet —
-  `.add(name, data)` takes no options.
-- No stalled-job reclaim — a job reserved by a worker that crashes
-  mid-task stays reserved.
-- Only `MemoryQueueAdapter` ships today (dev-only, in-process).
+- Only `MemoryQueueAdapter` ships today — in-process, and **all jobs
+  (including delayed/repeat schedules) are lost on restart**. A
+  persisted (Redis) adapter satisfying the same `QueueAdapter` contract
+  is planned next.
+- A handler that consistently outlives `stallTimeout` can be reclaimed
+  and reprocessed indefinitely — stalled-job reclaim doesn't consult
+  `attempts`/dead-letter (matches the underlying job lifecycle model;
+  see [ARCHITECTURE.md](./ARCHITECTURE.md) for why).
 
 See `proposals/RFC-0004-Background-Job-Queues.md` in the monorepo for
 the full roadmap, and [ARCHITECTURE.md](./ARCHITECTURE.md) for how the

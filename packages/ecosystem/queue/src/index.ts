@@ -46,9 +46,19 @@
  * `MemoryQueueAdapter` is in-process and **loses jobs on restart**
  * (dev-only). A persisted adapter (Redis) is a later phase.
  *
- * ## Phase 1 scope
- * No delayed jobs, no repeatable jobs, no stalled-job reclaim/sweeper —
- * see `proposals/RFC-0004-Background-Job-Queues.md` for the full plan.
+ * ## Delayed and repeatable jobs
+ * `queue.add(name, data, { delay })` defers a job; `queue.add(name,
+ * data, { repeat: { every } })` registers a recurring job, idempotent
+ * by `jobKey` (derived from `name`+`data`, or an explicit `repeat.key`)
+ * — calling it again with the same spec doesn't create a duplicate
+ * schedule. A sweeper (`createQueuePlugin({ sweepInterval })`) promotes
+ * due delayed/repeat jobs and reclaims stalled reservations
+ * (`stallTimeout`) on a timer.
+ *
+ * ## Phase 3 scope (not yet implemented)
+ * Only `MemoryQueueAdapter` ships today — see
+ * `proposals/RFC-0004-Background-Job-Queues.md` for the Redis-backed
+ * adapter planned next.
  */
 
 import './augment.js';
@@ -63,6 +73,7 @@ export type { QueueHandle, RegisteredJob } from './queue.js';
 
 // ── Types ────────────────────────────────────────────────────────────
 export type {
+  AddJobOptions,
   Job,
   JobHandler,
   ProcessOptions,
