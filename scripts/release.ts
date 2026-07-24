@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { release } from '@vitejs/release-scripts';
 import colors from 'picocolors';
+import { pkgPath, getPkgDir } from './pkg-path.js';
 
 function getLastTag(pkgName: string, version: string): string | null {
   const pattern = pkgName === 'rasengan' ? 'v*' : `${pkgName}@*`;
@@ -54,40 +55,6 @@ async function generateAutoEntries(
   return body;
 }
 
-// Kept in sync with the actual on-disk layout by hand — the monorepo
-// went through a directory-renaming/consolidation pass (rasengan-*
-// prefixes dropped from ecosystem/cli/deploy directories, the four
-// separate rasengan-runtime-{node,bun,workerd} packages merged into one
-// packages/platform/runtime with adapter subpath exports) that this map
-// didn't originally track. `pkg` here is a release-tag/changelog slug —
-// decoupled from both the directory name and the npm package.json
-// "name" (e.g. rasengan-server's tag is "rasengan-server@x", its npm
-// name is "@rasenganjs/server") — so renaming a directory again only
-// ever means updating the path on the right, never the slug on the left.
-const pkgPath: Record<string, string> = {
-  'create-rasengan': 'packages/cli/create-rasengan',
-  rasengan: 'packages/framework/rasengan',
-  'rasengan-futon': 'packages/framework/futon',
-  'rasengan-mdx': 'packages/framework/mdx',
-  'rasengan-server': 'packages/framework/rasengan-server',
-  'rasengan-image': 'packages/ecosystem/image',
-  'rasengan-i18n': 'packages/ecosystem/i18n',
-  'rasengan-theme': 'packages/ecosystem/theme',
-  'rasengan-kurama': 'packages/ecosystem/kurama',
-  'rasengan-kage-demo': 'packages/ecosystem/kage-demo',
-  'rasengan-io': 'packages/ecosystem/io',
-  'rasengan-ws': 'packages/ecosystem/ws',
-  'rasengan-validators': 'packages/ecosystem/validators',
-  'rasengan-drizzle': 'packages/ecosystem/drizzle',
-  'rasengan-serve': 'packages/deploy/serve',
-  'rasengan-vercel': 'packages/deploy/vercel',
-  'rasengan-shuriken': 'packages/cli/shuriken',
-  // Single package now (adapters/node|bun|workerd subpath exports) —
-  // the old rasengan-runtime-{node,bun,workerd} slugs are retired, not
-  // remapped, since those are no longer independently publishable units.
-  'rasengan-runtime': 'packages/platform/runtime',
-};
-
 release({
   repo: 'rasenganjs',
   packages: [
@@ -120,9 +87,11 @@ release({
   // Without this, release()'s own internal package-dir resolution
   // defaults to `packages/${pkg}` (per @vitejs/release-scripts' own
   // docs) — which doesn't exist for a single one of these slugs. Share
-  // the same map the changelog callbacks below already need, so there
-  // is exactly one place that maps a slug to its real directory.
-  getPkgDir: (pkg: string) => pkgPath[pkg] || `packages/${pkg}`,
+  // the same map (scripts/pkg-path.ts) the changelog callbacks below
+  // already need, so there is exactly one place that maps a slug to its
+  // real directory — see that file for why forking this map is what
+  // broke scripts/publishCI.ts.
+  getPkgDir,
   logChangelog: async (pkgName: string) => {
     const changelog = readFileSync(
       `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`,
