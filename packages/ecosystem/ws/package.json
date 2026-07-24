@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/ws",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "NestJS-inspired WebSocket Gateways for Rasengan Server — module-native registration, rooms, broadcasting, and pluggable storage (in-memory or Redis), built on RFC-0001's runtime-agnostic app.websocket().",
   "type": "module",
   "license": "MIT",
