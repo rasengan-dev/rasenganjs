@@ -38,7 +38,7 @@
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "dependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.28.1"
   },
   "peerDependencies": {
     "@rasenganjs/futon": "workspace:*",
