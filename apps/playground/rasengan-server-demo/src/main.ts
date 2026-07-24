@@ -1,5 +1,6 @@
 import { bootstrap } from '@rasenganjs/server';
 import { createWsPlugin } from '@rasenganjs/ws';
+import { createQueuePlugin } from '@rasenganjs/queue';
 import appModule from './app.module';
 import { zodAdapter } from '@rasenganjs/validators';
 
@@ -7,6 +8,12 @@ bootstrap(async (app) => {
   // Claims the `gateways` key on defineModule() — must run before
   // registerModule() picks up ChatRoomModule's `gateways: [ChatRoomGateway]`.
   app.registerPlugin(createWsPlugin());
+
+  // Claims the `queues` key on defineModule() — must run before
+  // registerModule() picks up QueueModule's `queues: [HelloQueue]`. No
+  // `adapter` option -> defaults to MemoryQueueAdapter (dev only, no
+  // Redis required).
+  app.registerPlugin(createQueuePlugin());
 
   app.registerModule(appModule);
 
