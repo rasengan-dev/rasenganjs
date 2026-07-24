@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/validators",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Schema validation middleware for @rasenganjs/runtime. Zod adapter included, pluggable adapter interface for any schema library.",
   "type": "module",
   "license": "MIT",
