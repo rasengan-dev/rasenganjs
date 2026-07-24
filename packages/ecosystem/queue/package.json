@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/queue",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Background job queues for Rasengan Server — module-native declaration, constructor DI, retries with backoff, dead-letter, and pluggable storage (in-memory or Redis).",
   "type": "module",
   "license": "MIT",

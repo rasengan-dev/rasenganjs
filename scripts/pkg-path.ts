@@ -28,6 +28,7 @@ export const pkgPath: Record<string, string> = {
   'rasengan-ws': 'packages/ecosystem/ws',
   'rasengan-validators': 'packages/ecosystem/validators',
   'rasengan-drizzle': 'packages/ecosystem/drizzle',
+  'rasengan-queue': 'packages/ecosystem/queue',
   'rasengan-serve': 'packages/deploy/serve',
   'rasengan-vercel': 'packages/deploy/vercel',
   'rasengan-shuriken': 'packages/cli/shuriken',

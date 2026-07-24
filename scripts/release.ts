@@ -72,6 +72,7 @@ release({
     'rasengan-ws',
     'rasengan-validators',
     'rasengan-drizzle',
+    'rasengan-queue',
     'rasengan-serve',
     'rasengan-vercel',
     'rasengan-shuriken',
