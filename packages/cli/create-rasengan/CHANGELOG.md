@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.5.0-beta.4 (2026-07-24)
+
+### Bug Fixes
+
+- **create-rasengan:** remove '--filter-blob:none' option from git.clone() c159d2e
+
 ## 1.5.0-beta.3 (2026-07-24)
 
 ## 1.5.0-beta.2 (2026-07-24)
