@@ -1339,7 +1339,7 @@ importers:
   packages/platform/runtime:
     dependencies:
       '@rasenganjs/futon':
-        specifier: workspace:^*
+        specifier: workspace:*
         version: link:../../framework/futon
       ws:
         specifier: ^8.21.0
