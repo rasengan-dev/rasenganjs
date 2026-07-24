@@ -40,12 +40,15 @@ bun add @rasenganjs/server @rasenganjs/runtime-node
 Create a server entry file (`src/main.ts`):
 
 ```ts
-import { bootstrap } from '@rasenganjs/server';
+import { bootstrap, defineModule } from '@rasenganjs/server';
+import HelloController from './hello.controller.js';
 
 bootstrap((app) => {
-  app.registerModule({
-    controllers: [HelloController],
-  });
+  app.registerModule(
+    defineModule({
+      controllers: [HelloController],
+    })
+  );
 });
 ```
 

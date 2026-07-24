@@ -38,11 +38,11 @@
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "dependencies": {
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*"
   },
   "peerDependencies": {
-    "@rasenganjs/futon": "workspace:*",
-    "@rasenganjs/runtime": "workspace:*",
     "@rasenganjs/validators": "workspace:*"
   },
   "devDependencies": {
