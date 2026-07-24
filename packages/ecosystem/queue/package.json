@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "pack": "pnpm pack --pack-destination ./release"
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
   },
   "peerDependencies": {
     "@rasenganjs/server": "workspace:*",
