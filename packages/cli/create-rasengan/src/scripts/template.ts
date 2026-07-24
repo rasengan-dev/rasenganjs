@@ -66,8 +66,17 @@ export default async function createProjectFromTemplate(options: {
     createSpinner.text = 'Cloning the project...';
 
     try {
-      // Clone the template repository
-      await git.clone(repository, '.tmp', ['--no-checkout', '--depth', '1']);
+      // Clone the template repository. --filter=blob:none makes the
+      // sparse-checkout below actually cheap: without it, clone already
+      // downloads every file's content for the whole repo before
+      // sparse-checkout gets a say in what's written to disk. See
+      // fetch-starter.ts for the measured before/after numbers.
+      await git.clone(repository, '.tmp', [
+        '--no-checkout',
+        '--depth',
+        '1',
+        '--filter=blob:none',
+      ]);
     } catch (error) {
       createSpinner.fail(
         chalk.red(

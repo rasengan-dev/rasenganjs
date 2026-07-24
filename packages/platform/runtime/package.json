@@ -44,7 +44,7 @@
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "peerDependencies": {
-    "@rasenganjs/futon": "workspace:^*"
+    "@rasenganjs/futon": "workspace:*"
   },
   "devDependencies": {
     "@types/ws": "^8.18.1",
