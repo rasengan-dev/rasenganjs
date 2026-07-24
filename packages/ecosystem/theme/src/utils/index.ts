@@ -1,4 +1,12 @@
 /**
+ * The localStorage key theme preference is persisted under. Shared between
+ * `loadSavedTheme`/`saveTheme` (read by `Provider` after hydration) and
+ * `ThemeScript` (read before hydration, to avoid a flash of the wrong theme)
+ * so both always agree on where the saved value lives.
+ */
+export const THEME_STORAGE_KEY = 'rasengan-theme';
+
+/**
  * Generates a unique identifier string.
  * @returns {string} A unique 9-character string.
  */
@@ -21,9 +29,9 @@ export const getPreferredColorScheme = (): 'dark' | 'light' => {
 };
 
 export const loadSavedTheme = () => {
-  return localStorage.getItem('rasengan-theme') || null;
+  return localStorage.getItem(THEME_STORAGE_KEY) || null;
 };
 
 export const saveTheme = (theme: string) => {
-  localStorage.setItem('rasengan-theme', theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
 };

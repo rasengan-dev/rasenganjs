@@ -43,6 +43,17 @@ export default function Provider({ children }: Props) {
     })();
   }, [preferedTheme]);
 
+  // Keep `<html class="dark">` in sync with the resolved theme so
+  // Tailwind's `dark:` variant (and any `.dark`-scoped CSS) reacts
+  // automatically — consumers don't need their own effect for this.
+  // `ThemeScript` applies the initial class before hydration to avoid a
+  // flash of the wrong theme; this effect takes over from there.
+  useEffect(() => {
+    if (theme.actual === null) return;
+
+    document.documentElement.classList.toggle('dark', theme.actual === 'dark');
+  }, [theme.actual]);
+
   // Handlers
   const handleSetTheme = (theme: ThemesType) => {
     setTheme({
