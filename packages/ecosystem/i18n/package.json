@@ -4,17 +4,17 @@
   "version": "1.0.0",
   "description": "Library that handles internationalization for Rasengan.JS applications",
   "type": "module",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./plugin": {
-      "types": "./lib/plugin.d.ts",
-      "import": "./lib/plugin.js",
-      "require": "./lib/plugin.js"
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js",
+      "require": "./dist/plugin.cjs"
     },
     "./types/client": {
       "types": "./types/client.d.ts"
@@ -34,8 +34,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "build:clean": "rimraf ./lib",
-    "build": "pnpm run build:clean && tsc",
+    "build:clean": "rimraf ./dist",
+    "build": "pnpm run build:clean && tsup",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public"
   },
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.1"
+    "@types/react-dom": "^19.0.1",
+    "tsup": "^8.5.1"
   }
 }

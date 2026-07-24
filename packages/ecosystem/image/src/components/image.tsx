@@ -85,7 +85,7 @@ export default ({
    */
   useEffect(() => {
     if (!startLoading) return;
-    const isDev = (import.meta as any).env.DEV;
+    const isDev = process.env.NODE_ENV !== 'production';
     if (isDev && (!props.width || !props.height))
       console.warn(
         '[rasengan]: Add width and height props to Image component for a better UI experience.'
@@ -110,7 +110,7 @@ export default ({
         img.src = fallbackSrc;
         img.onerror = null;
       } else {
-        const isDev = (import.meta as any).env.DEV;
+        const isDev = process.env.NODE_ENV !== 'production';
         if (isDev)
           console.warn(
             '[rasengan]: Image failed to load. Add a fallbackSrc prop to Image component to handle this.'

@@ -16,14 +16,13 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build:compile": "tsc",
     "build:clean": "rimraf ./dist",
-    "build": "pnpm run build:clean & pnpm run build:compile",
+    "build": "pnpm run build:clean && tsup",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -40,5 +39,8 @@
   ],
   "dependencies": {
     "execa": "^8.0.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1"
   }
 }

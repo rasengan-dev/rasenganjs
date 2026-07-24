@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build:clean": "rimraf ./dist",
-    "build": "pnpm run build:clean && tsc",
+    "build": "pnpm run build:clean && tsup",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release"
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/ncp": "^2.0.6",
-    "@types/node": "^20.8.6"
+    "@types/node": "^20.8.6",
+    "tsup": "^8.5.1"
   }
 }

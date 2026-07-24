@@ -849,6 +849,9 @@ importers:
       '@types/node':
         specifier: ^20.8.6
         version: 20.19.43
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/deploy/serve:
     dependencies:
@@ -886,6 +889,9 @@ importers:
       '@types/source-map-support':
         specifier: ^0.5.10
         version: 0.5.10
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/deploy/vercel:
     dependencies:
@@ -895,6 +901,10 @@ importers:
       rasengan:
         specifier: workspace:^
         version: link:../../framework/rasengan
+    devDependencies:
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/drizzle:
     devDependencies:
@@ -947,6 +957,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.1
         version: 19.2.3(@types/react@19.2.17)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/image:
     dependencies:
@@ -963,6 +976,9 @@ importers:
       ncp:
         specifier: ^2.0.0
         version: 2.0.0
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/io:
     dependencies:
@@ -1022,6 +1038,9 @@ importers:
       clean-css:
         specifier: ^5.3.3
         version: 5.3.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/kurama:
     dependencies:
@@ -1038,6 +1057,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.1 || ^19.0.0
         version: 19.2.3(@types/react@19.2.17)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/queue:
     devDependencies:
@@ -1075,6 +1097,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.1
         version: 19.2.3(@types/react@19.2.17)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.4)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/ecosystem/validators:
     dependencies:

@@ -19,9 +19,8 @@
     "rasengan-serve": "bin.js"
   },
   "scripts": {
-    "build:compile": "tsc",
     "build:clean": "rimraf ./dist",
-    "build": "pnpm run build:clean & pnpm run build:compile",
+    "build": "pnpm run build:clean && tsup",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -41,7 +40,8 @@
     "@types/compression": "^1.7.5",
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
-    "@types/source-map-support": "^0.5.10"
+    "@types/source-map-support": "^0.5.10",
+    "tsup": "^8.5.1"
   },
   "files": [
     "dist/",
