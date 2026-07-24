@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "start": "node --import tsx main.js",
+    "start:prod": "node main.js"
+  }
+}

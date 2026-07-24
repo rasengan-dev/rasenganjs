@@ -1,0 +1,34 @@
+{
+  "name": "@rasenganjs/bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "tsx router.bench.ts",
+    "bench:micro": "tsx http/micro.bench.ts",
+    "bench:micro:bun": "bun http/micro.bench.ts",
+    "bench:http": "tsx http/load.ts --runtime node",
+    "bench:http:bun": "tsx http/load.ts --runtime bun"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.5",
+    "@koa/bodyparser": "^6.0.0",
+    "@koa/router": "^13.1.0",
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "express": "^5.1.0",
+    "fastify": "^5.2.0",
+    "hono": "^4.7.0",
+    "koa": "^2.16.0"
+  },
+  "devDependencies": {
+    "@types/autocannon": "^7.12.5",
+    "@types/express": "^5.0.0",
+    "@types/koa": "^2.15.0",
+    "@types/koa__router": "^12.0.4",
+    "@types/node": "^22.10.0",
+    "autocannon": "^8.0.0",
+    "mitata": "^1.0.34",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  }
+}

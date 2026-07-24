@@ -1,0 +1,14 @@
+{
+  "name": "rasengan-runtime-bun-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "start": "bun run server/index.mjs"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*"
+  }
+}

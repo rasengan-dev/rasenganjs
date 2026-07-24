@@ -1,0 +1,57 @@
+{
+  "name": "@rasenganjs/server",
+  "version": "1.0.0-beta.0",
+  "description": "Rasengan Server — modular backend framework built on @rasenganjs/runtime. Controllers, providers, DI, auto-detected adapters (Node, Bun, workerd).",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "rasengan-server": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./upload/disk": {
+      "types": "./dist/upload/disk.d.ts",
+      "import": "./dist/upload/disk.js",
+      "require": "./dist/upload/disk.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues",
+    "directory": "packages/framework/rasengan-server"
+  },
+  "scripts": {
+    "build:clean": "rimraf ./dist",
+    "build": "pnpm build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.1"
+  },
+  "peerDependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/validators": "workspace:*"
+  },
+  "devDependencies": {
+    "@rasenganjs/validators": "workspace:*"
+  },
+  "files": [
+    "dist/",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ]
+}

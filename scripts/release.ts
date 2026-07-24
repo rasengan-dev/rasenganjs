@@ -38,7 +38,7 @@ async function generateAutoEntries(
     .commits({
       from: lastTag,
       to: 'HEAD',
-      path: `packages/${pkgName}`,
+      path: pkgPath[pkgName] || `packages/${pkgName}`,
     })
     .write()) {
     chunks.push(chunk);
@@ -54,21 +54,61 @@ async function generateAutoEntries(
   return body;
 }
 
+// Kept in sync with the actual on-disk layout by hand — the monorepo
+// went through a directory-renaming/consolidation pass (rasengan-*
+// prefixes dropped from ecosystem/cli/deploy directories, the four
+// separate rasengan-runtime-{node,bun,workerd} packages merged into one
+// packages/platform/runtime with adapter subpath exports) that this map
+// didn't originally track. `pkg` here is a release-tag/changelog slug —
+// decoupled from both the directory name and the npm package.json
+// "name" (e.g. rasengan-server's tag is "rasengan-server@x", its npm
+// name is "@rasenganjs/server") — so renaming a directory again only
+// ever means updating the path on the right, never the slug on the left.
+const pkgPath: Record<string, string> = {
+  'create-rasengan': 'packages/cli/create-rasengan',
+  rasengan: 'packages/framework/rasengan',
+  'rasengan-futon': 'packages/framework/futon',
+  'rasengan-mdx': 'packages/framework/mdx',
+  'rasengan-server': 'packages/framework/rasengan-server',
+  'rasengan-image': 'packages/ecosystem/image',
+  'rasengan-i18n': 'packages/ecosystem/i18n',
+  'rasengan-theme': 'packages/ecosystem/theme',
+  'rasengan-kurama': 'packages/ecosystem/kurama',
+  'rasengan-kage-demo': 'packages/ecosystem/kage-demo',
+  'rasengan-io': 'packages/ecosystem/io',
+  'rasengan-ws': 'packages/ecosystem/ws',
+  'rasengan-validators': 'packages/ecosystem/validators',
+  'rasengan-drizzle': 'packages/ecosystem/drizzle',
+  'rasengan-serve': 'packages/deploy/serve',
+  'rasengan-vercel': 'packages/deploy/vercel',
+  'rasengan-shuriken': 'packages/cli/shuriken',
+  // Single package now (adapters/node|bun|workerd subpath exports) —
+  // the old rasengan-runtime-{node,bun,workerd} slugs are retired, not
+  // remapped, since those are no longer independently publishable units.
+  'rasengan-runtime': 'packages/platform/runtime',
+};
+
 release({
   repo: 'rasenganjs',
   packages: [
+    'create-rasengan',
     'rasengan',
+    'rasengan-futon',
+    'rasengan-mdx',
+    'rasengan-server',
     'rasengan-image',
     'rasengan-i18n',
-    'rasengan-mdx',
-    'rasengan-serve',
     'rasengan-theme',
-    'rasengan-vercel',
-    'rasengan-shuriken',
     'rasengan-kurama',
     'rasengan-kage-demo',
     'rasengan-io',
-    'create-rasengan',
+    'rasengan-ws',
+    'rasengan-validators',
+    'rasengan-drizzle',
+    'rasengan-serve',
+    'rasengan-vercel',
+    'rasengan-shuriken',
+    'rasengan-runtime',
   ],
   toTag: (pkg, version) => {
     if (pkg === 'rasengan') {
@@ -77,8 +117,17 @@ release({
 
     return `${pkg}@${version}`;
   },
+  // Without this, release()'s own internal package-dir resolution
+  // defaults to `packages/${pkg}` (per @vitejs/release-scripts' own
+  // docs) — which doesn't exist for a single one of these slugs. Share
+  // the same map the changelog callbacks below already need, so there
+  // is exactly one place that maps a slug to its real directory.
+  getPkgDir: (pkg: string) => pkgPath[pkg] || `packages/${pkg}`,
   logChangelog: async (pkgName: string) => {
-    const changelog = readFileSync(`packages/${pkgName}/CHANGELOG.md`, 'utf-8');
+    const changelog = readFileSync(
+      `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`,
+      'utf-8'
+    );
     if (!changelog.includes('## Unreleased')) {
       throw new Error("Can't find '## Unreleased' section in CHANGELOG.md");
     }
@@ -88,7 +137,7 @@ release({
     );
   },
   generateChangelog: async (pkgName: string, version: string) => {
-    const changelogPath = `packages/${pkgName}/CHANGELOG.md`;
+    const changelogPath = `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`;
     let changelog = readFileSync(changelogPath, 'utf-8');
 
     // Auto-generate entries from conventional commits since last tag

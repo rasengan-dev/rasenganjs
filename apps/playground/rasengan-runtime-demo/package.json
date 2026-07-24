@@ -1,0 +1,15 @@
+{
+  "name": "rasengan-runtime-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "node server/index.mjs",
+    "start:bun": "bun server/bun.mjs",
+    "start:deno": "deno run --allow-net --allow-env server/deno.mjs"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*"
+  }
+}

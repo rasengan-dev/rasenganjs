@@ -1,0 +1,14 @@
+{
+  "name": "rasengan-runtime-node-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "node server/index.mjs"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*"
+  }
+}
