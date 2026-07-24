@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/server",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Rasengan Server — modular backend framework built on @rasenganjs/runtime. Controllers, providers, DI, auto-detected adapters (Node, Bun, workerd).",
   "type": "module",
   "main": "dist/index.js",
