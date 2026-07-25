@@ -1,0 +1,110 @@
+---
+metadata:
+  title: Futon | API Reference | Futon | Rasengan.js
+  description: The Futon class API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Futon
+
+```ts
+import { Futon } from '@rasenganjs/futon';
+```
+
+The top-level orchestrator for the request pipeline. Maintains the global middleware stack, owns an internal `Router`, and exposes `fetch()` as its WinterCG-compatible entry point.
+
+## Constructor
+
+```ts
+new Futon();
+```
+
+Takes no arguments.
+
+## Middleware
+
+| Method                  | Signature                                | Description                                 |
+| ----------------------- | ---------------------------------------- | ------------------------------------------- |
+| `use(middleware)`       | `(mw: Middleware) => this`               | Register global middleware                  |
+| `use(path, middleware)` | `(path: string, mw: Middleware) => this` | Register middleware scoped to a path prefix |
+
+## Routes
+
+| Method                      | Signature                                               |
+| --------------------------- | ------------------------------------------------------- |
+| `get(pattern, handler)`     | `(string, (ctx: Context) => Promise<Response>) => this` |
+| `post(pattern, handler)`    | Same shape, `POST`                                      |
+| `put(pattern, handler)`     | Same shape, `PUT`                                       |
+| `patch(pattern, handler)`   | Same shape, `PATCH`                                     |
+| `delete(pattern, handler)`  | Same shape, `DELETE`                                    |
+| `head(pattern, handler)`    | Same shape, `HEAD`                                      |
+| `options(pattern, handler)` | Same shape, `OPTIONS`                                   |
+
+See [Route Patterns](/docs/futon/routing/route-patterns) for pattern syntax.
+
+## Groups
+
+```ts
+group(prefix: string, callback: (router: Router) => void): this
+group(prefix: string, options: { middlewares?: Middleware[] }, callback: (router: Router) => void): this
+```
+
+See [Route Groups](/docs/futon/routing/route-groups).
+
+## Router Access
+
+```ts
+getRouter(): Router
+```
+
+Returns the internal `Router` instance for direct manipulation.
+
+## Error / 404 Handlers
+
+| Method              | Signature                                                     | Description          |
+| ------------------- | ------------------------------------------------------------- | -------------------- |
+| `notFound(handler)` | `((ctx: Context) => Promise<Response>) => this`               | Custom 404 handler   |
+| `onError(handler)`  | `((error: Error, ctx: Context) => Promise<Response>) => this` | Global error handler |
+
+See [Error Handling](/docs/futon/error-handling).
+
+## App Lifecycle
+
+| Method               | Signature                               | Description                                                    |
+| -------------------- | --------------------------------------- | -------------------------------------------------------------- |
+| `onInit(handler)`    | `(() => void \| Promise<void>) => this` | Runs once before the server accepts requests                   |
+| `onDestroy(handler)` | `(() => void \| Promise<void>) => this` | Runs during graceful shutdown                                  |
+| `init()`             | `() => Promise<void>`                   | Fires all `onInit` handlers — called by the runtime adapter    |
+| `destroy()`          | `() => Promise<void>`                   | Fires all `onDestroy` handlers — called by the runtime adapter |
+
+## Server / Environment
+
+| Method / Property                   | Description                                                |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `configureServer(info: ServerInfo)` | Sets `app.serverInfo`; called automatically by the adapter |
+| `loadEnv(vars: EnvironmentMap)`     | Merges environment variables into `app.env`                |
+| `serverInfo?: ServerInfo`           | Accessible outside the request lifecycle                   |
+| `env?: EnvironmentMap`              | Accessible outside the request lifecycle                   |
+| `hooks: HookSystem`                 | See [Hooks](/docs/futon/hooks)                             |
+
+## Request Entry Point
+
+```ts
+fetch(request: Request, runtime?: RuntimeContext): Promise<Response>
+```
+
+The WinterCG `fetch` handler signature — process a `Request` through the full middleware + router pipeline and return a `Response`. This is what every [runtime adapter](/docs/futon/adapters/runtime) calls under the hood, and what you can call directly in tests without a real server.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/performance/lazy-request',
+    label: 'Lazy Request',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/router',
+    label: 'Router',
+  }}
+/>

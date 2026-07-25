@@ -1,0 +1,105 @@
+---
+metadata:
+  title: Error Handling | Core Concepts | Futon | Rasengan.js
+  description: HttpError classes and the onError/notFound handlers in Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Error Handling
+
+Futon gives you a small `HttpError` class hierarchy for representing HTTP-status-bearing errors, plus two hooks — `app.onError()` and `app.notFound()` — for turning uncaught exceptions and unmatched routes into responses.
+
+## The Error Hierarchy
+
+```ts title="Error classes" showLineNumbers
+import {
+  HttpError,
+  NotFoundError,
+  MethodNotAllowedError,
+  InternalServerError,
+} from '@rasenganjs/futon';
+
+throw new NotFoundError('User not found');
+throw new HttpError(422, 'Validation failed');
+```
+
+| Class                   | Status                | Default message                                                 |
+| ----------------------- | --------------------- | --------------------------------------------------------------- |
+| `HttpError`             | Any (constructor arg) | `"Unknown Error"` unless given a message or matched status text |
+| `NotFoundError`         | `404`                 | `"Not Found"`                                                   |
+| `MethodNotAllowedError` | `405`                 | `"Method Not Allowed"`                                          |
+| `InternalServerError`   | `500`                 | `"Internal Server Error"`                                       |
+
+Every `HttpError` carries a numeric `.status` property.
+
+<Note title="HttpError isn't auto-mapped" type="warning">
+  Futon does not automatically turn a thrown `HttpError` into a response with
+  the matching status code — your `onError` handler needs to check `error
+  instanceof HttpError` and use `error.status` yourself. Without an `onError`
+  handler, every thrown error (including `HttpError`s) becomes a generic `500`
+  response.
+</Note>
+
+```ts title="Mapping HttpError to the right status" showLineNumbers
+import { json, HttpError } from '@rasenganjs/futon';
+
+app.onError(async (error, ctx) => {
+  if (error instanceof HttpError) {
+    return json({ error: error.message }, { status: error.status });
+  }
+  console.error(error);
+  return json({ error: 'Internal Server Error' }, { status: 500 });
+});
+```
+
+## `app.onError()`
+
+Registers a global handler for any error that escapes the middleware chain — thrown from a handler, a middleware, or the router itself:
+
+```ts title="app.onError()" showLineNumbers
+app.onError(async (error, ctx) => {
+  console.error(`[${ctx.request.method}] ${ctx.request.url}`, error);
+  return json({ error: error.message }, { status: 500 });
+});
+```
+
+Without an `onError` handler registered, Futon falls back to a plain-text `500 Internal Server Error` response containing the error's message.
+
+## `app.notFound()`
+
+Registers a handler for requests that don't match any registered route:
+
+```ts title="app.notFound()" showLineNumbers
+app.notFound(async (ctx) => {
+  return json(
+    { error: `No route for ${ctx.request.method} ${ctx.request.url}` },
+    { status: 404 }
+  );
+});
+```
+
+Futon enforces the `404` status on the response even if your handler forgets to set it — if your `notFoundHandler` returns a `200`, Futon rewrites it to `404` while preserving the body and headers. Without a custom handler, Futon returns a plain-text `"Not Found"` response.
+
+## Order of Operations
+
+On every request, Futon:
+
+1. Emits the `beforeRequest` hook (see [Hooks](/docs/futon/hooks)).
+2. Runs the composed middleware + router chain.
+3. If nothing matched, falls through to `notFound()`.
+4. If anything threw, emits the `onError` hook, then calls `errorHandler()` (or the default 500 fallback).
+5. Emits the `afterResponse` hook with the final `Response`.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/file-uploads/storage-engines',
+    label: 'Storage Engines',
+  }}
+  next={{
+    href: '/docs/futon/hooks',
+    label: 'Hooks',
+  }}
+/>

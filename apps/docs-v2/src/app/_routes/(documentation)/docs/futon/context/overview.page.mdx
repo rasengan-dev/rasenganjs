@@ -1,0 +1,94 @@
+---
+metadata:
+  title: Context Object | Core Concepts | Futon | Rasengan.js
+  description: The ctx object every Futon middleware and handler receives.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Context Object
+
+Every middleware and route handler receives a single `Context` (`ctx`) object. It carries the request, path params, query params, a shared state bag, and a chainable response builder.
+
+## Shape
+
+```ts title="Context shape"
+interface Context<
+  Body = any,
+  Params = Record<string, string>,
+  Query = QueryParams,
+> {
+  request: Request; // the incoming Web API Request
+  req: Request; // alias for `request`
+
+  body: Body; // set by a body-parsing middleware; undefined until then
+  params: Params; // path params extracted by the Router
+  query: Query & QueryParams; // lazily-parsed query params
+
+  runtime: RuntimeContext; // env vars + server info (see below)
+
+  response: ResponseBuilder; // chainable response builder
+  res: ResponseBuilder; // alias for `response`
+
+  state: Record<string, unknown>; // shared mutable bag between middleware/handlers
+  set<T>(key: string, value: T): void;
+  get<T>(key: string): T | undefined;
+}
+```
+
+## `state` — Passing Data Between Middleware
+
+`ctx.state` (plus the `ctx.set()` / `ctx.get()` helpers) is the primary channel for middleware-to-middleware and middleware-to-handler communication:
+
+```ts title="Auth middleware writes, handler reads" showLineNumbers
+app.use(async (ctx, next) => {
+  ctx.set('user', await authenticate(ctx.request));
+  return next();
+});
+
+app.get('/me', async (ctx) => {
+  const user = ctx.get('user');
+  return json(user);
+});
+```
+
+## `runtime` — Environment and Server Info
+
+`ctx.runtime.env` carries environment variables loaded by the adapter, and `ctx.runtime.server` exposes info about the running server:
+
+```ts title="Reading runtime info" showLineNumbers
+app.get('/debug', async (ctx) => {
+  return json({
+    databaseUrl: ctx.runtime.env?.DATABASE_URL,
+    preset: ctx.runtime.server?.preset, // 'node' | 'bun' | 'express' | 'workerd' | ...
+    mode: ctx.runtime.server?.mode, // 'development' | 'production'
+  });
+});
+```
+
+## `response` / `res` — the Chainable Builder
+
+`ctx.res` is created lazily on first access — see [Response Helpers](/docs/futon/request-response/response) for the full fluent API (`.status().json()`, `.redirect()`, `.stream()`, etc.).
+
+```ts title="Chainable response" showLineNumbers
+app.get('/api', async (ctx) => {
+  return ctx.res.status(201).json({ created: true });
+});
+```
+
+## Typed Context
+
+`Context` accepts three type parameters — `Body`, `Params`, and `Query` — so `ctx.body`, `ctx.params`, and `ctx.query` can be narrowed by a validation layer (this is what [`@rasenganjs/server`](/server/getting-started/introduction)'s schema-typed routes do). Used directly with Futon, these default to `any` / `Record<string, string>` / `QueryParams`.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/routing/route-groups',
+    label: 'Route Groups',
+  }}
+  next={{
+    href: '/docs/futon/context/query-params',
+    label: 'Query Parameters',
+  }}
+/>

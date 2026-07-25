@@ -1,0 +1,87 @@
+---
+metadata:
+  title: Custom Middleware | Core Concepts | Futon | Rasengan.js
+  description: Write your own onion-model middleware for Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Custom Middleware
+
+A `Middleware` is a function of `(ctx, next) => Promise<Response>`. It's the single abstraction every layer of Futon's pipeline is built from — global middleware, route-level middleware, and the router itself all share this same shape.
+
+## The Onion Model
+
+```
+Request → M1 → M2 → Handler → M2 → M1 → Response
+```
+
+Each middleware calls `next()` to hand control to the next layer, then does something with the `Response` it gets back:
+
+```ts title="A timing middleware" showLineNumbers
+import type { Middleware } from '@rasenganjs/futon';
+
+const timing: Middleware = async (ctx, next) => {
+  const start = Date.now();
+  const response = await next();
+  const ms = Date.now() - start;
+  console.log(`${ctx.request.method} ${ctx.request.url} — ${ms}ms`);
+  return response;
+};
+
+app.use(timing);
+```
+
+## Short-circuiting
+
+A middleware can return a `Response` **without** calling `next()` — nothing downstream runs:
+
+```ts title="Rejecting a request early" showLineNumbers
+const requireApiKey: Middleware = async (ctx, next) => {
+  if (!ctx.request.headers.get('x-api-key')) {
+    return json({ error: 'Missing API key' }, { status: 401 });
+  }
+  return next();
+};
+```
+
+## Path-scoped Middleware
+
+`app.use(path, middleware)` — passing a string as the first argument — scopes the middleware to requests whose path starts with that prefix:
+
+```ts title="Path-scoped middleware" showLineNumbers
+app.use('/api', requireApiKey); // only runs for /api/*
+```
+
+Internally this just wraps your middleware in a check against `getPathname(ctx.request.url).startsWith(path)` before calling it — everything else falls through to `next()` unchanged.
+
+## Rules to Keep In Mind
+
+- **Call `next()` at most once.** Calling it twice throws `"next() called multiple times"` — `compose()` enforces this to catch bugs early.
+- **Always return the `Response`** that `next()` (or your short-circuit) produces — a middleware that forgets to `return` breaks the chain.
+- **Registration order is execution order** for the "downstream" half, and reverse order for the "upstream" half — the first middleware registered is the outermost layer of the onion.
+
+## Composing Middleware Manually
+
+`compose()` is the function Futon uses internally to chain an array of middleware into one. You can use it directly if you want to build a reusable middleware bundle:
+
+```ts title="Bundling middleware with compose()" showLineNumbers
+import { compose, cors, logger, requestId } from '@rasenganjs/futon';
+
+const commonMiddleware = compose([cors(), logger(), requestId()]);
+
+app.use(commonMiddleware);
+```
+
+<Pagination
+  prev={{
+    href: '/docs/futon/middleware/built-in',
+    label: 'Built-in Middleware',
+  }}
+  next={{
+    href: '/docs/futon/file-uploads/overview',
+    label: 'fileUpload() Middleware',
+  }}
+/>

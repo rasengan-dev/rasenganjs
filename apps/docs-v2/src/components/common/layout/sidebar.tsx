@@ -30,12 +30,14 @@ export default function SidebarNavigation({ className, onClose }: Props) {
   const { show: showBanner } = useBannerStore();
 
   useEffect(() => {
-    if (pathname.includes('/docs')) {
-      setActiveTab(NavigationGroup.DOCUMENTATION);
-    } else if (pathname.includes('/futon')) {
+    // Nested sections (e.g. /docs/futon) must be checked before the
+    // generic /docs catch-all (Rasengan), since they contain it as a substring.
+    if (pathname.includes('/docs/futon')) {
       setActiveTab(NavigationGroup.FUTON);
     } else if (pathname.includes('/server')) {
       setActiveTab(NavigationGroup.SERVER);
+    } else if (pathname.includes('/docs')) {
+      setActiveTab(NavigationGroup.DOCUMENTATION);
     } else if (pathname.includes('/packages')) {
       setActiveTab(NavigationGroup.PACKAGES);
     }

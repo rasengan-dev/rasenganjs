@@ -1,0 +1,94 @@
+---
+metadata:
+  title: Installation | Getting Started | Futon | Rasengan.js
+  description: Install @rasenganjs/futon and its runtime adapter.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# Installation
+
+Futon ships as a single zero-dependency package. You'll also want a runtime adapter from `@rasenganjs/runtime` to actually bind a port — Futon itself only turns a `Request` into a `Response`.
+
+## Install Futon
+
+```bash title="Terminal"
+npm install @rasenganjs/futon
+```
+
+<Tabs
+  tabs={[
+    { title: 'npm' },
+    { title: 'pnpm' },
+    { title: 'yarn' },
+    { title: 'bun' },
+  ]}
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```bash npm install @rasenganjs/futon @rasenganjs/runtime ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash pnpm add @rasenganjs/futon @rasenganjs/runtime ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash yarn add @rasenganjs/futon @rasenganjs/runtime ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash bun add @rasenganjs/futon @rasenganjs/runtime ```
+  </Tabs.Item>
+</Tabs>
+
+<Note title="Already using @rasenganjs/server?" type="info">
+  If you're building a full application with controllers and dependency
+  injection, install
+  [`@rasenganjs/server`](/server/getting-started/introduction) instead — it
+  depends on Futon and Runtime for you.
+</Note>
+
+## Requirements
+
+- **Node.js 18+** (for the Web `Request`/`Response`/`Headers` globals), or Bun / Deno / Cloudflare Workers.
+- An ESM project — Futon is published as `"type": "module"`.
+
+## Package Layout
+
+Futon's main entry (`@rasenganjs/futon`) exports everything except one thing:
+
+```ts title="What lives where"
+import { fileUpload, MemoryStorage } from '@rasenganjs/futon';
+// diskStorage is NOT in the main entry —
+// it imports node:fs, which must stay out of WinterCG/workerd bundles.
+import { diskStorage } from '@rasenganjs/futon/upload/disk';
+```
+
+See [Storage Engines](/docs/futon/file-uploads/storage-engines) for why `diskStorage` lives behind its own subpath.
+
+## Verifying the Install
+
+Create a minimal handler and run it in-process, without a server, using `Futon.fetch()` directly:
+
+```ts title="smoke-test.ts" showLineNumbers
+import { Futon, json } from '@rasenganjs/futon';
+
+const app = new Futon();
+app.get('/', async () => json({ ok: true }));
+
+const response = await app.fetch(new Request('http://localhost/'));
+console.log(await response.json()); // { ok: true }
+```
+
+This is exactly how Futon's own test suite works — no HTTP server required to exercise the pipeline.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/getting-started/introduction',
+    label: 'Introduction',
+  }}
+  next={{
+    href: '/docs/futon/getting-started/quick-start',
+    label: 'Quick Start',
+  }}
+/>

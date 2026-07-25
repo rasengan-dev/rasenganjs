@@ -1,0 +1,97 @@
+---
+metadata:
+  title: Router | API Reference | Futon | Rasengan.js
+  description: The Router class API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Router
+
+```ts
+import { Router } from '@rasenganjs/futon';
+import type { HTTPMethod, RouterGroupOptions } from '@rasenganjs/futon';
+```
+
+Registers typed route handlers by method + pattern and produces a `Middleware` that dispatches incoming requests via radix-tree matching — O(k) regardless of route count. `Futon` owns one internal `Router` instance; `app.get()`/`app.post()`/etc. delegate to it directly.
+
+## Constructor
+
+```ts
+new Router();
+```
+
+## HTTP Method Shortcuts
+
+```ts
+get(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+post(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+put(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+patch(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+delete(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+head(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+options(pattern: string, handler: (ctx: Context) => Promise<Response>): this
+```
+
+## Middleware
+
+```ts
+use(...middlewares: Middleware[]): this
+```
+
+Registers route-level middleware — only applies to routes registered **after** this call on the same `Router` instance.
+
+## Groups
+
+```ts
+group(prefix: string, callback: (router: Router) => void): this
+group(prefix: string, options: RouterGroupOptions, callback: (router: Router) => void): this
+```
+
+```ts title="RouterGroupOptions"
+interface RouterGroupOptions {
+  prefix?: string;
+  middlewares?: Middleware[];
+}
+```
+
+See [Route Groups](/docs/futon/routing/route-groups).
+
+## Dispatch
+
+```ts
+middleware(): Middleware
+```
+
+Produces a `Middleware` that dispatches to matching routes. Snapshots the currently-registered route trees — routes added after calling `.middleware()` are not picked up by that snapshot.
+
+## Introspection
+
+```ts
+readonly version: number   // bumped on every route/middleware registration
+routesCount(): number      // total registered routes across every method
+```
+
+## `HTTPMethod`
+
+```ts
+type HTTPMethod =
+  'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+```
+
+## Automatic 405 Responses
+
+If a pathname matches a registered route under a _different_ method, the router's dispatch middleware responds `405 Method Not Allowed` with an `Allow` header listing the methods that do match, instead of falling through to your 404 handler.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/futon',
+    label: 'Futon',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/middleware',
+    label: 'Middleware',
+  }}
+/>

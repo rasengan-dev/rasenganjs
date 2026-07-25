@@ -1,0 +1,76 @@
+---
+metadata:
+  title: Route Groups | Core Concepts | Futon | Rasengan.js
+  description: Scope a URL prefix and shared middleware to a set of routes with router.group().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Route Groups
+
+`router.group()` scopes a URL prefix and a shared middleware stack to every route registered inside its callback. Groups can be nested.
+
+## Basic Usage
+
+```ts title="Route group" showLineNumbers
+router.group('/api/v1', (api) => {
+  api.get('/users', listUsers); // → GET /api/v1/users
+  api.post('/users', createUser); // → POST /api/v1/users
+});
+```
+
+## Shared Middleware
+
+Pass an options object with `middlewares` to apply middleware to every route in the group:
+
+```ts title="Group with middleware" showLineNumbers
+router.group('/api/v1', { middlewares: [authMiddleware] }, (api) => {
+  api.get('/users', listUsers); // authMiddleware runs first
+  api.get('/orders', listOrders); // authMiddleware runs first
+});
+
+// Routes outside the group are unaffected
+router.get('/health', healthCheck); // no authMiddleware
+```
+
+## Nesting Groups
+
+Groups combine their prefixes and middleware stacks as you nest them:
+
+```ts title="Nested groups" showLineNumbers
+router.group('/api', { middlewares: [cors()] }, (api) => {
+  api.group('/v1', { middlewares: [authMiddleware] }, (v1) => {
+    v1.get('/users', listUsers); // → GET /api/v1/users, runs cors() then authMiddleware
+  });
+});
+```
+
+## On `Futon` Directly
+
+`app.group()` is a thin delegate to the same method on Futon's internal router, so you can skip creating a standalone `Router` entirely:
+
+```ts title="app.group()" showLineNumbers
+app.group('/api/v1', { middlewares: [authMiddleware] }, (api) => {
+  api.get('/users', listUsers);
+});
+```
+
+<Note title="Groups only affect registration" type="info">
+  A group's prefix and middleware only apply to routes registered **inside** its
+  callback. Once the callback returns, the router's middleware stack is restored
+  to what it was before the group — sibling routes registered after the group
+  are unaffected.
+</Note>
+
+<Pagination
+  prev={{
+    href: '/docs/futon/routing/route-patterns',
+    label: 'Route Patterns',
+  }}
+  next={{
+    href: '/docs/futon/context/overview',
+    label: 'Context Object',
+  }}
+/>

@@ -23,9 +23,9 @@ const tabs: Tab[] = [
   {
     id: NavigationGroup.FUTON,
     name: 'Futon',
-    link: '/futon/getting-started/introduction',
+    link: '/docs/futon/getting-started/introduction',
     icon: <Zap size={16} />,
-    match: '/futon',
+    match: '/docs/futon',
   },
   {
     id: NavigationGroup.SERVER,
@@ -43,12 +43,23 @@ const tabs: Tab[] = [
   },
 ];
 
+// Ordered most-specific-first so nested sections (e.g. /docs/futon) win over
+// the generic /docs catch-all (Rasengan).
+const matchPriority = [...tabs].sort((a, b) => b.match.length - a.match.length);
+
+function getActiveTabId(pathname: string): NavigationType | null {
+  const tab = matchPriority.find((tab) => pathname.includes(tab.match));
+
+  return tab?.id ?? null;
+}
+
 type Props = {
   className?: ComponentProps<'nav'>['className'];
 };
 
 export default function DocsNavTabs({ className }: Props) {
   const { pathname } = useLocation();
+  const activeTabId = getActiveTabId(pathname);
 
   return (
     <nav
@@ -60,7 +71,7 @@ export default function DocsNavTabs({ className }: Props) {
     >
       <ul className="flex h-full items-center gap-x-6">
         {tabs.map((tab) => {
-          const active = pathname.includes(tab.match);
+          const active = tab.id === activeTabId;
 
           return (
             <li key={tab.id} className="h-full">

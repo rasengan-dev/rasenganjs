@@ -1,0 +1,90 @@
+---
+metadata:
+  title: Cookies | Core Concepts | Futon | Rasengan.js
+  description: Read and write cookies in Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Cookies
+
+Futon has no cookie jar on `ctx` — cookies are read from the request's `Cookie` header and written to a response's `Set-Cookie` header via standalone helper functions.
+
+## Reading Cookies
+
+```ts title="Reading cookies" showLineNumbers
+import { parseCookies, getCookie } from '@rasenganjs/futon';
+
+app.get('/me', async (ctx) => {
+  const cookies = parseCookies(ctx.request);
+  const session = cookies['session'];
+
+  // or read a single cookie directly:
+  const sessionAgain = getCookie(ctx.request, 'session');
+
+  return json({ session });
+});
+```
+
+## Writing Cookies
+
+`setCookie()` and `clearCookie()` take a `Response` and return a **new** `Response` with the `Set-Cookie` header appended — they don't mutate the original:
+
+```ts title="Setting a cookie" showLineNumbers
+import { json, setCookie, clearCookie } from '@rasenganjs/futon';
+
+app.post('/login', async (ctx) => {
+  const token = await createSession(ctx.body);
+  const response = json({ ok: true });
+
+  return setCookie(response, 'session', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Lax',
+    maxAge: 86_400, // 24 hours, in seconds
+  });
+});
+
+app.post('/logout', async () => {
+  return clearCookie(json({ ok: true }), 'session');
+});
+```
+
+`clearCookie()` is `setCookie()` with `maxAge: 0` — it's a convenience wrapper, not a separate mechanism.
+
+## `CookieOptions`
+
+| Option     | Type                          | Description                                     |
+| ---------- | ----------------------------- | ----------------------------------------------- |
+| `domain`   | `string`                      | Domain the cookie belongs to                    |
+| `path`     | `string`                      | URL path the cookie applies to (default `"/"`)  |
+| `maxAge`   | `number`                      | Lifetime in seconds (omit for a session cookie) |
+| `httpOnly` | `boolean`                     | Not readable from JavaScript                    |
+| `secure`   | `boolean`                     | Only sent over HTTPS                            |
+| `sameSite` | `'Strict' \| 'Lax' \| 'None'` | Cross-site sending policy                       |
+| `expires`  | `Date`                        | Explicit expiration date                        |
+
+## Multiple Cookies on One Response
+
+Chain `setCookie()` calls — each call returns a fresh `Response` you can pass into the next:
+
+```ts title="Setting multiple cookies" showLineNumbers
+let response = json({ ok: true });
+response = setCookie(response, 'session', token, { httpOnly: true });
+response = setCookie(response, 'theme', 'dark', { maxAge: 31_536_000 });
+
+return response;
+```
+
+<Pagination
+  prev={{
+    href: '/docs/futon/request-response/response',
+    label: 'Response Helpers',
+  }}
+  next={{
+    href: '/docs/futon/middleware/built-in',
+    label: 'Built-in Middleware',
+  }}
+/>
