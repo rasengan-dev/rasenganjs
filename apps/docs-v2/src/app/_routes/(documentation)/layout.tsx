@@ -66,6 +66,13 @@ const DocsLayout: LayoutComponent = () => {
           </AnimatePresence>
 
           <main className="w-full min-w-0">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-[320px] overflow-hidden"
+            >
+              <div className="absolute left-1/2 top-[-140px] h-[320px] w-[70%] -translate-x-1/2 rounded-full bg-linear-to-b from-primary via-primary/40 to-transparent opacity-20 blur-3xl dark:opacity-40" />
+            </div>
+
             <div className="w-full h-auto">
               <Outlet />
             </div>

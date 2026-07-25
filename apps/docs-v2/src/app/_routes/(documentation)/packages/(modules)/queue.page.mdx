@@ -1,0 +1,142 @@
+---
+metadata:
+  title: Rasengan Queue Package - Modules | Packages | Rasengan.js
+  description: Documentation for the Rasengan Queue package — background job queues for Rasengan Server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  PACKAGES
+</span>
+# Rasengan Queue
+
+<Note title="Beta — Phase 4 still outstanding" type="warning">
+  `@rasenganjs/queue` is functional and tested, but its governing RFC (RFC-0004)
+  has a Phase 4 that hasn't landed yet. Expect rougher edges and possible API
+  changes before it's fully stable.
+</Note>
+
+`@rasenganjs/queue` adds background job queues to [Rasengan Server](/docs/server/getting-started/introduction) — the `Controller` equivalent for async work, mirroring [`@rasenganjs/ws`](/packages/ws)'s `Gateway` pattern.
+
+<Note title="Requires @rasenganjs/server" type="info">
+  `Queue` extends `Provider` from `@rasenganjs/server`, and queues are
+  registered through that package's module plugin system. This isn't a
+  standalone job-queue library — it's a convenience layer that plugs into
+  Rasengan Server's DI container.
+</Note>
+
+## Installation
+
+```bash title="Terminal"
+npm install @rasenganjs/queue
+```
+
+## Usage
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+import { createQueuePlugin } from '@rasenganjs/queue';
+import appModule from './app.module';
+
+bootstrap((app) => {
+  app.registerPlugin(createQueuePlugin()); // defaults to MemoryQueueAdapter
+  app.registerModule(appModule); // may declare queues: [EmailQueue]
+});
+```
+
+```ts title="email.queue.ts" showLineNumbers
+import { Queue, JobRouter, type JobHandler } from '@rasenganjs/queue';
+
+export class EmailQueue extends Queue {
+  name = 'emails';
+
+  jobs(router: JobRouter) {
+    router.process('welcome', this.sendWelcome, {
+      attempts: 3,
+      backoff: 5_000,
+    });
+  }
+
+  sendWelcome: JobHandler<{ userId: string }> = async (job) => {
+    await sendWelcomeEmail(job.data.userId);
+    // resolve -> job completes; throw -> retried per backoff policy
+  };
+}
+```
+
+```ts title="queue.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { EmailQueue } from './email.queue';
+
+export default defineModule({
+  queues: [EmailQueue],
+});
+```
+
+## Enqueuing Jobs
+
+Inject the queue anywhere it's exported and visible, then call `.add()`:
+
+```ts title="Enqueuing a job" showLineNumbers
+await this.emailQueue.add('welcome', { userId: user.id });
+await this.emailQueue.add('reminder', { userId }, { delay: 60_000 }); // delayed
+await this.reportQueue.add(
+  'dailyDigest',
+  {},
+  { repeat: { every: 86_400_000 } }
+); // recurring
+```
+
+## Scaling with Redis
+
+The default `MemoryQueueAdapter` is in-process and **loses jobs on restart** (dev only). `RedisQueueAdapter` persists across restarts and is safe across multiple processes:
+
+```ts title="Redis adapter" showLineNumbers
+import { createQueuePlugin, RedisQueueAdapter } from '@rasenganjs/queue';
+import Redis from 'ioredis';
+
+const client = new Redis();
+app.registerPlugin(
+  createQueuePlugin({
+    adapter: new RedisQueueAdapter({
+      client,
+      blockingClient: client.duplicate(),
+    }),
+  })
+);
+```
+
+## Full Documentation
+
+For the complete API — retry semantics, dead-letter handling, `ProcessOptions`, and the sweeper — see [Background Queues](/docs/server/ecosystem/queues) under the Server docs.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a
+    href="https://github.com/rasengan-dev/rasenganjs/discussions"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    GitHub Discussions
+  </a>
+  – Ask questions and share ideas.
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">
+    X (Twitter)
+  </a>
+  – Stay updated with the latest news.
+- <a
+    href="https://www.linkedin.com/company/rasenganjs/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Linkedin
+  </a>
+  – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).
