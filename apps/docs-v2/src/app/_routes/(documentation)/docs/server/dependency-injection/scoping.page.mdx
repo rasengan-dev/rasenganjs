@@ -1,0 +1,91 @@
+---
+metadata:
+  title: Module Scoping | Dependency Injection | Rasengan Server | Rasengan.js
+  description: How visibility works between modules — imports, exports, and global providers.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Module Scoping
+
+Rasengan Server's DI container uses **one registry and one instance per token** — singletons are shared by every module that can see them. Scoping is a **visibility filter** on top of that single registry, never a second cache. A provider's own constructor dependencies always resolve in the scope of the module that _owns_ the provider — not the module that triggered its construction — so a shared singleton behaves identically no matter who resolves it first.
+
+## What a Module Can See
+
+A module's visible token set is exactly:
+
+1. Its own `providers`.
+2. The `exports` of every module in its `imports` list.
+3. The `exports` of every module marked `global: true`, anywhere in the app.
+
+```ts title="Only visible via import + export" showLineNumbers
+// database.module.ts
+export default defineModule({
+  providers: [DatabaseService],
+  exports: [DatabaseService],
+});
+
+// user.module.ts
+export default defineModule({
+  imports: [databaseModule], // now UserService can inject DatabaseService
+  providers: [UserService],
+  controllers: [UserController],
+});
+```
+
+```ts title="Global — visible everywhere, no import needed" showLineNumbers
+// config.module.ts
+export default defineModule({
+  providers: [ConfigService],
+  exports: [ConfigService],
+  global: true,
+});
+```
+
+## Directed Errors, Not Silent Failures
+
+Trying to inject something outside your module's visible set doesn't silently return `undefined` — it throws with an actionable message pointing at exactly what's missing:
+
+```
+[rasengan-server] module "UserModule" cannot resolve "DatabaseService".
+DatabaseService exists in module "DatabaseModule" but is not visible here —
+add it to that module's `exports` and add that module to this module's
+`imports` (or mark the owning module `global: true`).
+```
+
+## A Provider Belongs to Exactly One Module
+
+Registering the same class as a provider in two different modules is always a mistake and throws immediately:
+
+```
+[rasengan-server] DatabaseService is already registered by module "DatabaseModule".
+A provider can only belong to one module — add it to that module's `exports`
+and import it from here instead of declaring it twice.
+```
+
+Share a provider by exporting it from its owning module and importing that module elsewhere — never by declaring the same class in two `providers` arrays.
+
+## Name Collisions Across Imports
+
+If two _different_ visible modules each export a same-named provider, resolving by constructor parameter name is ambiguous — the container refuses to guess:
+
+```
+[rasengan-server] "logger" is ambiguous in module "UserModule" — visible from
+multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
+with an explicit `deps: [...]` entry naming the exact class.
+```
+
+Fix it with an explicit `deps` array on a `ProviderDefinition`, naming the exact class you mean (see [Providers & Tokens](/docs/server/dependency-injection/providers)).
+
+<Pagination
+  prev={{
+    href: '/docs/server/dependency-injection/providers',
+    label: 'Providers & Tokens',
+  }}
+  next={{
+    href: '/docs/server/dependency-injection/lifecycle',
+    label: 'Lifecycle Hooks',
+  }}
+/>

@@ -1,0 +1,90 @@
+---
+metadata:
+  title: Config & Build | Core Concepts | Rasengan Server | Rasengan.js
+  description: rasengan.server.ts options and the production build output formats.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Config & Build
+
+`defineConfig()` is a typed pass-through helper for your `rasengan.server.ts` file, read by both the CLI and `bootstrap()`.
+
+```ts title="rasengan.server.ts" showLineNumbers
+import { defineConfig } from '@rasenganjs/server';
+
+export default defineConfig({
+  entry: 'src/main.ts',
+  port: 4000,
+  host: '0.0.0.0',
+  preset: 'node',
+  watchDir: 'src/',
+  build: {
+    outDir: 'dist',
+    minify: true,
+    formats: ['single-file'],
+  },
+});
+```
+
+## `RasenganServerConfig`
+
+| Option     | Type                           | Default         | Description                          |
+| ---------- | ------------------------------ | --------------- | ------------------------------------ |
+| `entry`    | `string`                       | `"src/main.ts"` | Path to the server entry file        |
+| `port`     | `number`                       | `3000`          | Port the server listens on           |
+| `host`     | `string`                       | `"0.0.0.0"`     | Host address to bind to              |
+| `preset`   | `'node' \| 'bun' \| 'workerd'` | `"node"`        | Target runtime                       |
+| `watchDir` | `string \| string[]`           | `"src/"`        | Directory(ies) watched in `dev` mode |
+| `build`    | `BuildConfig`                  | see below       | Production build output options      |
+
+## `BuildConfig`
+
+| Option    | Type                                  | Default                        | Description                 |
+| --------- | ------------------------------------- | ------------------------------ | --------------------------- |
+| `outDir`  | `string`                              | `"dist"`                       | Output directory            |
+| `minify`  | `boolean`                             | `true`                         | Minify the bundled output   |
+| `formats` | `Array<'single-file' \| 'directory'>` | `['single-file', 'directory']` | Output format(s) to produce |
+
+## Resolution Order
+
+Configuration merges from three sources, later ones winning:
+
+1. Built-in defaults (the table above).
+2. `rasengan.server.js` or `rasengan.server.ts` at the project root.
+3. CLI flag overrides (`--port`, `--host`, `--entry`, `--preset`, `--watch-dir`) — see [CLI](/docs/server/getting-started/cli).
+
+## Build Output Formats
+
+`rasengan-server build` bundles your server with esbuild:
+
+- **`single-file`** — everything bundled into one `server.bundle.mjs`. Simplest to deploy — copy one file.
+- **`directory`** — one `.mjs` per source file, preserving your project's structure. Useful when you want to inspect or patch individual output files.
+
+Both formats can be produced in the same build by listing both in `formats`.
+
+## Programmatic Overrides
+
+`bootstrap()` accepts an optional second argument — a partial config that merges on top of everything else, useful for tests or embedding:
+
+```ts title="Overriding config programmatically" showLineNumbers
+bootstrap(
+  (app) => {
+    app.registerModule(appModule);
+  },
+  { port: 0 }
+); // port 0 lets the OS assign a free port, handy in tests
+```
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/module-plugins',
+    label: 'Module Plugins',
+  }}
+  next={{
+    href: '/docs/server/ecosystem/websocket-gateways',
+    label: 'WebSocket Gateways',
+  }}
+/>

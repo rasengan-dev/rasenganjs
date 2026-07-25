@@ -1,0 +1,101 @@
+---
+metadata:
+  title: Validation Adapters | Server Ecosystem | Rasengan Server | Rasengan.js
+  description: The @rasenganjs/validators package that powers schema validation, and how to adapt other schema libraries.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  SERVER ECOSYSTEM
+</span>
+# Validation Adapters
+
+`@rasenganjs/validators` is the package behind [Validation](/docs/server/core-concepts/validation) — Rasengan Server depends on it directly, so it's already installed as part of `@rasenganjs/server`.
+
+<Note title="Import path, not @rasenganjs/validation" type="warning">
+  The installable package is `@rasenganjs/validators` (plural). You may see
+  `@rasenganjs/validation` (singular) in older comments or examples — that path
+  doesn't resolve to anything installable. Always `npm install
+  @rasenganjs/validators` and `import ... from '@rasenganjs/validators'`.
+</Note>
+
+## Using It Directly with Futon
+
+Rasengan Server wires this up for you automatically, but you can use it standalone with plain Futon too:
+
+```ts title="Standalone usage" showLineNumbers
+import { z } from 'zod';
+import { createValidationMiddleware, zodAdapter } from '@rasenganjs/validators';
+
+const schemas = { body: z.object({ name: z.string() }) };
+const validate = createValidationMiddleware(schemas, { adapter: zodAdapter });
+
+app.post('/users', validate, handler);
+```
+
+## `SchemaAdapter` — Bring Your Own Schema Library
+
+Validation is adapter-based by design — `zodAdapter` is the only one shipped today, but any schema library can plug in by implementing `SchemaAdapter`:
+
+```ts
+interface SchemaAdapter<TSchema = any, TOutput = any> {
+  parse<O = TOutput>(
+    schema: TSchema,
+    data: unknown
+  ): { success: true; data: O } | { success: false; errors: ValidationError[] };
+
+  infer<T>(schema: T): unknown; // type-level only, no runtime effect
+}
+```
+
+```ts title="A minimal custom adapter" showLineNumbers
+import type { SchemaAdapter } from '@rasenganjs/validators';
+
+const myAdapter: SchemaAdapter = {
+  parse(schema, data) {
+    const result = schema.safeParse(data); // whatever your library's API looks like
+    if (result.success) return { success: true, data: result.data };
+    return { success: false, errors: result.errors.map(toValidationError) };
+  },
+  infer: (schema) => schema,
+};
+
+app.configureValidation({ adapter: myAdapter });
+```
+
+## `ValidationError`
+
+```ts
+interface ValidationError {
+  path: (string | number)[]; // e.g. ["address", "city"]
+  message: string;
+  code?: string; // adapter-specific
+}
+```
+
+## Exports at a Glance
+
+| Export                                        | Description                                                           |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| `createValidationMiddleware(schemas, config)` | Factory for a runtime `Middleware`                                    |
+| `zodAdapter`                                  | The built-in `SchemaAdapter` for Zod                                  |
+| `SchemaAdapter`                               | Interface for implementing other schema libraries                     |
+| `SchemaDefinition`                            | Per-route `{ body?, params?, query?, onError? }` shape                |
+| `InferBody` / `InferParams` / `InferQuery`    | Type-level extraction of a schema's inferred output                   |
+| `ValidationConfig`                            | Global `{ adapter, onError }` shape (see `app.configureValidation()`) |
+| `ValidationError`                             | Single field error shape                                              |
+| `defaultErrorHandler`                         | Built-in 400 JSON error response                                      |
+| `formatZodError`                              | Converts a Zod error into `ValidationError[]`                         |
+
+See [Controllers & Routing](/docs/server/core-concepts/controllers) and [Validation](/docs/server/core-concepts/validation) for how this integrates with the Router and `Controller.schemas`.
+
+<Pagination
+  prev={{
+    href: '/docs/server/ecosystem/queues',
+    label: 'Background Queues',
+  }}
+  next={{
+    href: '/docs/server/ecosystem/drizzle',
+    label: 'Database (Drizzle)',
+  }}
+/>

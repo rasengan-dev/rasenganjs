@@ -24,7 +24,7 @@ const DocsLayout: LayoutComponent = () => {
       <ScrollRestoration target={targetRef} />
 
       <div className="fixed top-0 left-0 w-full border-b border-b-border/40 dark:border-b-border flex flex-col bg-background z-30">
-        <div className="max-w-[1430px] mx-auto w-full px-4 2xl:px-0">
+        <div className="max-w-[1430px] mx-auto w-full px-4 lg:px-8 2xl:px-0">
           <Navbar className="border-b-transparent px-0" />
           <DocsNavTabs />
         </div>

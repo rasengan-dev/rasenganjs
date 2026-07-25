@@ -1,0 +1,93 @@
+---
+metadata:
+  title: Controller | API Reference | Rasengan Server | Rasengan.js
+  description: The Controller abstract class and Router API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Controller
+
+```ts
+import { Controller, type RouteHandler, type Router } from '@rasenganjs/server';
+```
+
+Abstract base class for defining a set of related routes.
+
+```ts
+abstract class Controller {
+  middlewares: Middleware[];
+  schemas?: Record<string, SchemaDefinition>;
+  abstract routes(router: Router): void;
+}
+```
+
+| Member           | Description                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `middlewares`    | Runs before every route in this controller — after module-level middleware, before route-level middleware |
+| `schemas`        | Per-method schema definitions, matched to handlers by function name                                       |
+| `routes(router)` | Register this controller's routes — called during compilation                                             |
+
+## `RouteHandler`
+
+```ts
+type RouteHandler<S extends SchemaDefinition = {}> = (
+  ctx: Context<InferBody<S>, InferParams<S>, InferQuery<S>>
+) => Response | Promise<Response>;
+```
+
+Generic over a `SchemaDefinition` so `ctx.body`/`ctx.params`/`ctx.query` narrow to the schema's inferred types when one is provided.
+
+## `Router`
+
+```ts
+import type { Router } from '@rasenganjs/server';
+```
+
+Wraps the Futon router with a middleware-friendly API and automatic schema validation. Passed to `Controller.routes()`.
+
+```ts title="Method overloads (get/post/put/patch/delete — no head/options)"
+router.get(path: string, handler: RouteHandler): void;
+router.get(path: string, middleware: Middleware, handler: RouteHandler): void;
+router.get(path: string, middlewares: Middleware[], handler: RouteHandler): void;
+router.get<S>(path: string, handler: RouteHandler<S>, schema: S): void;
+router.get<S>(path: string, middleware: Middleware, handler: RouteHandler<S>, schema: S): void;
+router.get<S>(path: string, middlewares: Middleware[], handler: RouteHandler<S>, schema: S): void;
+```
+
+The same six overload shapes exist for `post`, `put`, `patch`, and `delete`.
+
+## Schema Resolution
+
+When a `SchemaDefinition` is passed as the trailing argument, validation middleware is injected automatically, behind any route-level middleware. When omitted, the router falls back to matching the handler's function name against the controller's `schemas` dictionary:
+
+```ts
+class UsersController extends Controller {
+  schemas = {
+    create: { body: CreateUserSchema },
+  };
+
+  routes(router: Router) {
+    router.post('/users', this.create); // resolves schemas.create by name — no 3rd arg needed
+  }
+
+  create: RouteHandler = async (ctx) => {
+    /* ... */
+  };
+}
+```
+
+Name-based resolution requires the handler to have a `.name` — arrow function class fields keep the property name (`this.create.name === 'create'`), but a bound method or reassigned reference may not. Pass the schema explicitly as the trailing argument in that case — doing so is also what triggers TypeScript's schema-aware overload for `ctx.body`/`ctx.params`/`ctx.query` type inference.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/server-app',
+    label: 'ServerApp',
+  }}
+  next={{
+    href: '/docs/server/api-reference/container',
+    label: 'Container',
+  }}
+/>

@@ -1,0 +1,109 @@
+---
+metadata:
+  title: Providers & Tokens | Dependency Injection | Rasengan Server | Rasengan.js
+  description: Registering and resolving providers in Rasengan Server's DI container.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Providers & Tokens
+
+Rasengan Server resolves constructor dependencies automatically, by **matching parameter names against registered provider class names** — no decorators, no manual token wiring for the common case.
+
+```ts title="Constructor injection" showLineNumbers
+export class UserController extends Controller {
+  constructor(private userService: UserService) {
+    super();
+  }
+  // ...
+}
+```
+
+```ts title="Registering the provider" showLineNumbers
+export default defineModule({
+  controllers: [UserController],
+  providers: [UserService],
+});
+```
+
+The container inspects `UserController`'s constructor source, sees a parameter named `userService`, and resolves it against a registered class named `UserService` (case-insensitive).
+
+## Provider Shapes
+
+A provider is either a plain class, or a `ProviderDefinition` object for more control:
+
+```ts title="ProviderDefinition"
+interface ProviderDefinition {
+  provide: any; // injection token — a class or a string
+  useClass?: new (...args: any[]) => any; // class to instantiate (defaults to `provide`)
+  useValue?: any; // static value, skips instantiation entirely
+  deps?: any[]; // explicit constructor dependency tokens
+}
+```
+
+```ts title="Value provider — a string token" showLineNumbers
+export default defineModule({
+  providers: [
+    { provide: 'CONFIG', useValue: { apiUrl: 'https://api.example.com' } },
+  ],
+});
+```
+
+```ts title="Class alias" showLineNumbers
+export default defineModule({
+  providers: [{ provide: Logger, useClass: FileLogger }],
+});
+```
+
+```ts title="Explicit deps (disambiguates when name-matching is ambiguous)" showLineNumbers
+export default defineModule({
+  providers: [{ provide: EmailService, deps: ['CONFIG', SmtpClient] }],
+});
+```
+
+## Resolving a String Token
+
+```ts title="Injecting a string-token provider" showLineNumbers
+export class BillingService {
+  constructor(private config: { apiUrl: string }) {} // param name must match the token, case-insensitively
+}
+```
+
+For string tokens, the constructor parameter name is matched against the token string itself (not a class name) — `constructor(config)` resolves `"CONFIG"` (case-insensitive).
+
+## Singletons by Default
+
+Every provider is a **singleton** — one instance per token, shared by every module that can see it. There's no scope-per-request or transient lifetime; if you need per-request state, put it on `ctx.state` instead (see [Futon's Context](/docs/futon/context/overview)).
+
+## Auto-registration
+
+Resolving a class that was never explicitly listed in any `providers` array still works — the container auto-registers it as a private provider owned by whichever module triggered the resolution, then caches it as a singleton. This is how controllers themselves become resolvable without appearing in `providers`. Prefer explicit registration for anything you intend to export or inject elsewhere — auto-registered providers are always private to the resolving module.
+
+## Errors You'll Actually See
+
+```
+[rasengan-server] Cannot resolve dependency "userService" from module "UserModule".
+Make sure the provider is registered in your module with a matching class name.
+Providers visible here: UserController
+```
+
+```
+[rasengan-server] "config" is ambiguous in module "UserModule" — visible from
+multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
+with an explicit `deps: [...]` entry naming the exact class.
+```
+
+The first happens when nothing matching is registered or visible; the second when two _different_ visible providers share a name — resolved by adding an explicit `deps` entry naming the exact one you want.
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/controllers',
+    label: 'Controllers & Routing',
+  }}
+  next={{
+    href: '/docs/server/dependency-injection/scoping',
+    label: 'Module Scoping',
+  }}
+/>

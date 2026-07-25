@@ -1,0 +1,81 @@
+---
+metadata:
+  title: CLI | API Reference | Rasengan Server | Rasengan.js
+  description: rasengan-server command and flag reference, plus defineConfig().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# CLI
+
+See [CLI](/docs/server/getting-started/cli) and [Config & Build](/docs/server/core-concepts/config-and-build) for usage and examples — this page is the flat reference.
+
+## Commands
+
+```bash
+rasengan-server dev [flags]
+rasengan-server build [flags]
+rasengan-server start [flags]
+```
+
+| Command | Description                                                                               |
+| ------- | ----------------------------------------------------------------------------------------- |
+| `dev`   | Hot-reloading development server (runs the entry file via `tsx`, restarts on file change) |
+| `build` | Bundles the server for production with esbuild                                            |
+| `start` | Runs the production build produced by `build`                                             |
+
+## Flags
+
+| Flag                 | Shorthand | Config field | Default       |
+| -------------------- | --------- | ------------ | ------------- |
+| `--port <number>`    | `-p`      | `port`       | `3000`        |
+| `--host <address>`   | —         | `host`       | `0.0.0.0`     |
+| `--entry <path>`     | `-e`      | `entry`      | `src/main.ts` |
+| `--preset <name>`    | —         | `preset`     | `node`        |
+| `--watch-dir <path>` | —         | `watchDir`   | `src/`        |
+
+## `defineConfig`
+
+```ts
+import {
+  defineConfig,
+  type RasenganServerConfig,
+  type BuildConfig,
+} from '@rasenganjs/server';
+
+function defineConfig(config: RasenganServerConfig): RasenganServerConfig;
+```
+
+```ts
+interface RasenganServerConfig {
+  entry?: string; // default "src/main.ts"
+  port?: number; // default 3000
+  host?: string; // default "0.0.0.0"
+  preset?: 'node' | 'bun' | 'workerd'; // default "node"
+  watchDir?: string | string[]; // default "src/"
+  build?: BuildConfig;
+}
+
+interface BuildConfig {
+  outDir?: string; // default "dist"
+  minify?: boolean; // default true
+  formats?: Array<'single-file' | 'directory'>; // default ['single-file', 'directory']
+}
+```
+
+## `ConfigHolder`
+
+```ts
+import { ConfigHolder } from '@rasenganjs/server';
+```
+
+Internal-facing config cache used by `bootstrap()` — loads `rasengan.server.ts`/`.js` from disk on first access (or accepts a pre-set config, e.g. from the CLI process), then merges any `overrides` passed to `bootstrap()` on top. Most apps never touch this directly; `bootstrap()` and the CLI both go through it.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/define-module',
+    label: 'defineModule',
+  }}
+/>

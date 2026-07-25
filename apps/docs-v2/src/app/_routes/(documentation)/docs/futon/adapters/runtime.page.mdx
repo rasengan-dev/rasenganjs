@@ -51,19 +51,20 @@ Workers don't have a long-running dev server process in the same sense — deplo
 
 ## Choosing the Right Adapter
 
-| You're building                         | Use                                                                                              |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| A standalone Node app/API               | `NodeDevAdapter` / `NodeProdAdapter`                                                             |
-| A standalone Bun app/API                | `BunDevAdapter` / `BunProdAdapter`                                                               |
-| A Cloudflare Worker                     | `toWinterCgHandler()` + the workerd production adapter                                           |
-| Mounting inside existing Express routes | [`toExpressHandler()`](/docs/futon/adapters/express)                                             |
-| A full backend with controllers + DI    | [`@rasenganjs/server`](/server/getting-started/introduction), which wraps these adapters for you |
+| You're building                         | Use                                                                                                   |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| A standalone Node app/API               | `NodeDevAdapter` / `NodeProdAdapter`                                                                  |
+| A standalone Bun app/API                | `BunDevAdapter` / `BunProdAdapter`                                                                    |
+| A Cloudflare Worker                     | `toWinterCgHandler()` + the workerd production adapter                                                |
+| Mounting inside existing Express routes | [`toExpressHandler()`](/docs/futon/adapters/express)                                                  |
+| A full backend with controllers + DI    | [`@rasenganjs/server`](/docs/server/getting-started/introduction), which wraps these adapters for you |
 
 <Note title="You rarely configure this by hand" type="info">
-  If you're using [`@rasenganjs/server`](/server/getting-started/introduction),
-  the `preset` field in `rasengan.server.ts` (`'node' | 'bun' | 'workerd'`)
-  selects the right runtime adapter automatically — this page is most relevant
-  if you're using Futon standalone.
+  If you're using
+  [`@rasenganjs/server`](/docs/server/getting-started/introduction), the
+  `preset` field in `rasengan.server.ts` (`'node' | 'bun' | 'workerd'`) selects
+  the right runtime adapter automatically — this page is most relevant if you're
+  using Futon standalone.
 </Note>
 
 ## `RuntimeContext` and `ServerInfo`

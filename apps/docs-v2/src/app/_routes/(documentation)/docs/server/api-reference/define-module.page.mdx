@@ -1,0 +1,87 @@
+---
+metadata:
+  title: defineModule | API Reference | Rasengan Server | Rasengan.js
+  description: defineModule(), ModuleConfig, and ModulePlugin API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# defineModule
+
+```ts
+import { defineModule, type ModuleConfig } from '@rasenganjs/server';
+```
+
+```ts
+function defineModule(config: ModuleConfig): ModuleConfig;
+```
+
+Typed pass-through helper — returns the same object you pass in, with type-checking. See [Modules](/docs/server/core-concepts/modules) for usage.
+
+## `ModuleConfig`
+
+```ts
+interface ModuleConfig {
+  name?: string;
+  prefix?: string;
+  middlewares?: Middleware[];
+  imports?: ModuleConfig[];
+  controllers?: (new (...args: any[]) => Controller)[];
+  providers?: (ProviderLike | ProviderDefinition)[];
+  exports?: any[];
+  global?: boolean;
+  [extensionKey: string]: unknown;
+}
+```
+
+| Field            | Description                                                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | Diagnostic only — used in DI error messages                                                                                              |
+| `prefix`         | URL prefix applied to all of this module's routes                                                                                        |
+| `middlewares`    | Module-level middleware, applied after global, before controller/route-level                                                             |
+| `imports`        | Sub-modules to flatten into the route tree                                                                                               |
+| `controllers`    | Controller classes registered within this module                                                                                         |
+| `providers`      | DI providers — private to this module unless listed in `exports`                                                                         |
+| `exports`        | Tokens from `providers` that importing modules may resolve                                                                               |
+| `global`         | Make this module's `exports` visible to every module, no import needed                                                                   |
+| `[extensionKey]` | Open extension point for ecosystem plugins (`gateways`, `queues`, ...) — see [Module Plugins](/docs/server/core-concepts/module-plugins) |
+
+## `ModulePlugin`
+
+```ts
+import type { ModulePlugin } from '@rasenganjs/server';
+```
+
+```ts
+interface ModulePlugin {
+  key: string;
+  register(
+    app: ServerApp,
+    container: ContainerView,
+    mod: ModuleConfig,
+    value: unknown
+  ): void;
+  asProviders?(value: unknown): ProviderLike[];
+}
+```
+
+| Member                | Description                                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `key`                 | The `ModuleConfig` field this plugin claims, e.g. `'gateways'`                                                                     |
+| `register(...)`       | Called once per flattened module that declares a value at `key`                                                                    |
+| `asProviders?(value)` | Extract real DI-provider tokens from `value`, merged into the module's `providers` before registration/visibility/eager resolution |
+
+Register with `app.registerPlugin(plugin)`. See [Module Plugins](/docs/server/core-concepts/module-plugins) for a full worked example.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/provider',
+    label: 'Provider',
+  }}
+  next={{
+    href: '/docs/server/api-reference/cli',
+    label: 'CLI',
+  }}
+/>

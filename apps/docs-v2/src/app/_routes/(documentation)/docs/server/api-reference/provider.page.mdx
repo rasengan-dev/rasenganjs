@@ -1,0 +1,73 @@
+---
+metadata:
+  title: Provider | API Reference | Rasengan Server | Rasengan.js
+  description: The Provider abstract class API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Provider
+
+```ts
+import { Provider } from '@rasenganjs/server';
+```
+
+Abstract base class for dependency-injectable classes that want lifecycle hooks. See [Lifecycle Hooks](/docs/server/dependency-injection/lifecycle) for the full explanation of when each hook fires and why every provider is resolved eagerly at boot.
+
+```ts
+abstract class Provider {
+  onInit?(): void | Promise<void>;
+  onDestroy?(): void | Promise<void>;
+}
+```
+
+| Member      | Signature                     | Description                                                                                      |
+| ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `onInit`    | `() => void \| Promise<void>` | Called once all providers are resolved and routes are wired — before the server accepts requests |
+| `onDestroy` | `() => void \| Promise<void>` | Called on graceful shutdown (`SIGTERM`/`SIGINT`), in reverse registration order                  |
+
+Both hooks are optional — a `Provider` subclass that implements neither behaves exactly like a plain class as far as the DI container is concerned.
+
+## Extending `Provider` Is Opt-in
+
+Any class is a valid DI provider (see [`ProviderLike`](/docs/server/api-reference/container#providerlike)) — extending `Provider` only matters if you need `onInit()`/`onDestroy()`. A plain `UserService` class with no lifecycle needs works fine as a provider without extending anything.
+
+```ts title="A provider with lifecycle hooks" showLineNumbers
+import { Provider } from '@rasenganjs/server';
+
+export class DatabaseService extends Provider {
+  connection?: Connection;
+
+  async onInit() {
+    this.connection = await createConnection(process.env.DATABASE_URL);
+  }
+
+  async onDestroy() {
+    await this.connection?.close();
+  }
+}
+```
+
+```ts title="app.module.ts" showLineNumbers
+export default defineModule({
+  providers: [DatabaseService],
+  exports: [DatabaseService],
+});
+```
+
+## Who Else Extends It
+
+`Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider` — that's exactly why a gateway or queue's `onInit()`/`onDestroy()` fire like any other provider's, and why they can be exported from a module for another module to inject the same instance.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/container',
+    label: 'Container',
+  }}
+  next={{
+    href: '/docs/server/api-reference/define-module',
+    label: 'defineModule',
+  }}
+/>

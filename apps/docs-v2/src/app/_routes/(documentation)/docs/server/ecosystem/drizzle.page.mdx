@@ -1,0 +1,107 @@
+---
+metadata:
+  title: Database (Drizzle) | Server Ecosystem | Rasengan Server | Rasengan.js
+  description: Connecting Drizzle ORM to Rasengan Server via DrizzleModule.forRoot().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  SERVER ECOSYSTEM
+</span>
+# Database (Drizzle)
+
+<Note title="Early / experimental integration" type="warning">
+  `@rasenganjs/drizzle` is the most experimental of the ecosystem packages — its
+  governing RFC (RFC-0006) is still in Draft status, even though the package
+  itself has working code and tests. Expect this integration to change more than
+  `@rasenganjs/ws` or `@rasenganjs/queue`.
+</Note>
+
+`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to Rasengan Server's DI container — `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject.
+
+```bash title="Terminal"
+npm install @rasenganjs/drizzle drizzle-orm pg
+```
+
+## Connecting
+
+```ts title="app.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { DrizzleModule } from '@rasenganjs/drizzle';
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+import * as schema from './schema';
+import userModule from './user.module';
+
+export default defineModule({
+  imports: [
+    DrizzleModule.forRoot({
+      adapter: nodePostgresAdapter(),
+      connection: { connectionString: process.env.DATABASE_URL! },
+      schema,
+    }),
+    userModule,
+  ],
+});
+```
+
+`DrizzleModule.forRoot()` connects **eagerly** at call time — not lazily on first `.db` access — and is `global: true` by default, so `DataSource` is visible everywhere without importing the Drizzle module explicitly in every feature module.
+
+<Note title="Call forRoot() exactly once per process" type="warning">
+  A second `DrizzleModule.forRoot()` call throws — `DataSource` holds one
+  connection via shared module state, and a second call would silently redirect
+  every existing `DataSource` instance to a different connection.
+</Note>
+
+## Injecting `DataSource`
+
+```ts title="user.service.ts" showLineNumbers
+import { DataSource } from '@rasenganjs/drizzle';
+import { users } from './schema';
+import { eq } from 'drizzle-orm';
+
+export class UserService {
+  constructor(private dataSource: DataSource) {}
+
+  findById(id: number) {
+    return this.dataSource.db.select().from(users).where(eq(users.id, id));
+  }
+}
+```
+
+`dataSource.db` is your normal Drizzle client — typed against whatever `schema` you passed to `forRoot()`.
+
+## Driver Adapters
+
+Driver adapters are separate subpath exports, so the core package never pulls in a driver client you're not using. Only Postgres (`node-postgres`) ships today:
+
+```ts
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+```
+
+## Running Migrations
+
+`runMigrations()` uses a **separate, short-lived connection** from the module's — migration scripts run standalone, outside the DI container, and close their connection when done rather than reusing the long-lived one `DrizzleModule` holds:
+
+```ts title="migrate.ts (run standalone, e.g. in CI)" showLineNumbers
+import { runMigrations } from '@rasenganjs/drizzle';
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+import * as schema from './schema';
+
+await runMigrations(
+  nodePostgresAdapter(),
+  { connectionString: process.env.DATABASE_URL! },
+  schema,
+  './drizzle/migrations'
+);
+```
+
+<Pagination
+  prev={{
+    href: '/docs/server/ecosystem/validation-adapters',
+    label: 'Validation Adapters',
+  }}
+  next={{
+    href: '/docs/server/api-reference/server-app',
+    label: 'ServerApp',
+  }}
+/>

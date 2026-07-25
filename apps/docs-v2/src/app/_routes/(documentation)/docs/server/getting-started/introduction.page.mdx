@@ -1,0 +1,93 @@
+---
+metadata:
+  title: What's Rasengan Server? | Getting Started | Rasengan.js
+  description: A NestJS-inspired backend framework built on Futon — controllers, modules, and dependency injection.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# Welcome to Rasengan Server
+
+`@rasenganjs/server` is a production-grade backend framework built on top of [Futon](/docs/futon/getting-started/introduction) — it adds controllers, modules, dependency injection, and schema validation on top of Futon's HTTP engine.
+
+## What is Rasengan Server?
+
+If Futon gives you a router and a middleware pipeline, Rasengan Server gives you the structure to organize a real application on top of it: **modules** that group related **controllers** and **providers**, a **DI container** that wires everything together, and automatic **validation** for routes with schemas.
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+import appModule from './app.module';
+
+bootstrap((app) => {
+  app.registerModule(appModule);
+});
+```
+
+## Key Features
+
+| Feature                    | Description                                                                                                                 |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **`Modules`**              | Group controllers, providers, and middleware under an optional URL prefix, with import/export visibility.                   |
+| **`Controllers`**          | Declare related routes as a class, with controller-level middleware and schemas.                                            |
+| **`Dependency Injection`** | Module-scoped DI container — constructor injection, lifecycle hooks, circular-dependency detection.                         |
+| **`Validation`**           | Zod-backed request validation, injected automatically for routes with schemas.                                              |
+| **`Module Plugins`**       | The extension mechanism that lets `@rasenganjs/ws` and `@rasenganjs/queue` add their own `defineModule()` fields.           |
+| **`WebSockets`**           | Low-level `app.websocket()` today; NestJS-style Gateways via [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways). |
+
+## A Minimal Example
+
+```ts title="user.controller.ts" showLineNumbers
+import { Controller, type RouteHandler, type Router } from '@rasenganjs/server';
+import { UserService } from './user.service';
+
+export class UserController extends Controller {
+  constructor(private userService: UserService) {
+    super();
+  }
+
+  routes(router: Router) {
+    router.get('/', this.findAll);
+  }
+
+  findAll: RouteHandler = async (ctx) => {
+    const users = await this.userService.findAll();
+    return ctx.res.json(users);
+  };
+}
+```
+
+```ts title="app.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+
+export default defineModule({
+  prefix: '/users',
+  controllers: [UserController],
+  providers: [UserService],
+});
+```
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+import appModule from './app.module';
+
+bootstrap((app) => {
+  app.registerModule(appModule);
+});
+```
+
+`UserController`'s constructor parameter `userService` is resolved automatically from the DI container by matching the parameter name against a registered provider — no decorators, no manual wiring.
+
+## Built on Futon and Runtime
+
+Rasengan Server depends on [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) for the HTTP pipeline and `@rasenganjs/runtime` for the Node/Bun/Workerd adapters — `bootstrap()` handles both for you. If you only need routing and middleware without controllers/DI/modules, Futon alone may be all you need.
+
+## How This Documentation Is Organized
+
+- **Getting Started** — install, project structure, and the CLI.
+- **Core Concepts** — bootstrap, modules, controllers, dependency injection, middleware, validation, file uploads, WebSockets, module plugins, and config/build.
+- **Server Ecosystem** — the optional packages (`@rasenganjs/ws`, `@rasenganjs/queue`, `@rasenganjs/validators`, `@rasenganjs/drizzle`) that plug into Rasengan Server via the module plugin system.
+- **API Reference** — the full exported surface of `@rasenganjs/server`.

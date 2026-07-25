@@ -30,11 +30,11 @@ export default function SidebarNavigation({ className, onClose }: Props) {
   const { show: showBanner } = useBannerStore();
 
   useEffect(() => {
-    // Nested sections (e.g. /docs/futon) must be checked before the
-    // generic /docs catch-all (Rasengan), since they contain it as a substring.
+    // Nested sections (e.g. /docs/futon, /docs/server) must be checked before
+    // the generic /docs catch-all (Rasengan), since they contain it as a substring.
     if (pathname.includes('/docs/futon')) {
       setActiveTab(NavigationGroup.FUTON);
-    } else if (pathname.includes('/server')) {
+    } else if (pathname.includes('/docs/server')) {
       setActiveTab(NavigationGroup.SERVER);
     } else if (pathname.includes('/docs')) {
       setActiveTab(NavigationGroup.DOCUMENTATION);
@@ -64,7 +64,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
           'flex flex-col w-full h-(--mobile-main-height) lg:h-[calc(100vh-[100px)] lg:sticky lg:top-[100px] lg:border-r lg:border-border/40 dark:lg:border-border'
         )}
       >
-        <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 2xl:pl-0">
+        <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 lg:pl-8 2xl:pl-0">
           {activeTab &&
             NavigationData[activeTab].map((nav) => {
               return (

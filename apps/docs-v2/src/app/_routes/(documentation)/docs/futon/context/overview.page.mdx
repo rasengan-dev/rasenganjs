@@ -80,7 +80,7 @@ app.get('/api', async (ctx) => {
 
 ## Typed Context
 
-`Context` accepts three type parameters — `Body`, `Params`, and `Query` — so `ctx.body`, `ctx.params`, and `ctx.query` can be narrowed by a validation layer (this is what [`@rasenganjs/server`](/server/getting-started/introduction)'s schema-typed routes do). Used directly with Futon, these default to `any` / `Record<string, string>` / `QueryParams`.
+`Context` accepts three type parameters — `Body`, `Params`, and `Query` — so `ctx.body`, `ctx.params`, and `ctx.query` can be narrowed by a validation layer (this is what [`@rasenganjs/server`](/docs/server/getting-started/introduction)'s schema-typed routes do). Used directly with Futon, these default to `any` / `Record<string, string>` / `QueryParams`.
 
 <Pagination
   prev={{

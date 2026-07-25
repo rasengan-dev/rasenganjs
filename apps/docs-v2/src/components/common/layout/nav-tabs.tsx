@@ -30,9 +30,9 @@ const tabs: Tab[] = [
   {
     id: NavigationGroup.SERVER,
     name: 'Server',
-    link: '/server/getting-started/introduction',
+    link: '/docs/server/getting-started/introduction',
     icon: <Server size={16} />,
-    match: '/server',
+    match: '/docs/server',
   },
   {
     id: NavigationGroup.PACKAGES,

@@ -1,0 +1,83 @@
+---
+metadata:
+  title: WebSockets | Core Concepts | Rasengan Server | Rasengan.js
+  description: Low-level app.websocket() routes — the foundation @rasenganjs/ws builds Gateways on top of.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# WebSockets
+
+`app.websocket(path, handlers)` registers a low-level WebSocket route — the runtime-agnostic core abstraction from RFC-0001. It's the primitive [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)'s Gateway/room/broadcast layer builds on; nothing about it is bypassed by that convenience layer.
+
+```ts title="A raw echo endpoint" showLineNumbers
+bootstrap((app) => {
+  app.websocket('/chat', {
+    open(ctx) {
+      console.log('client connected:', ctx.request.url);
+    },
+    message(ctx, data) {
+      ctx.socket.send(`echo: ${data}`);
+    },
+    close(ctx, code, reason) {
+      console.log('client disconnected:', code, reason);
+    },
+    error(ctx, error) {
+      console.error('connection error:', error);
+    },
+  });
+});
+```
+
+## `WebSocketHandlers`
+
+```ts
+interface WebSocketHandlers {
+  open?(ctx: WebSocketContext): void | Promise<void>;
+  message?(
+    ctx: WebSocketContext,
+    data: string | ArrayBuffer
+  ): void | Promise<void>;
+  close?(
+    ctx: WebSocketContext,
+    code?: number,
+    reason?: string
+  ): void | Promise<void>;
+  error?(ctx: WebSocketContext, error: Error): void | Promise<void>;
+}
+
+interface WebSocketContext {
+  request: Request; // the original upgrade request — headers, cookies, query params
+  socket: WebSocketConnection;
+}
+
+interface WebSocketConnection {
+  send(data: string | ArrayBuffer): void;
+  close(code?: number, reason?: string): void;
+  readonly readyState: number;
+  readonly protocol: string;
+}
+```
+
+## Current Limitations
+
+- **Static paths only** — no `:param` dynamic segments yet (e.g. `/chat/:room` isn't supported at this layer).
+- **No DI/container access** in `WebSocketContext` — deliberately minimal, matching the RFC's current scope.
+- **No built-in rooms/broadcast** — that's exactly what [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways) adds on top, if you need it.
+
+## When to Reach for `@rasenganjs/ws` Instead
+
+Use `app.websocket()` directly for a single simple connection handler. Reach for [Gateways](/docs/server/ecosystem/websocket-gateways) once you need multiple named events over one connection, rooms, broadcasting, or DI-injected services inside your WebSocket handlers — the demo app registers both side by side specifically to contrast them (`/chat` raw vs. a Gateway-based `/rooms`).
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/file-uploads',
+    label: 'File Uploads',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/module-plugins',
+    label: 'Module Plugins',
+  }}
+/>
