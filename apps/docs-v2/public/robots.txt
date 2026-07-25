@@ -1,0 +1,7 @@
+user-agent: *
+  disallow: /downloads/
+  disallow: /private/
+  allow: /
+  
+  user-agent: magicsearchbot
+  disallow: /uploads/

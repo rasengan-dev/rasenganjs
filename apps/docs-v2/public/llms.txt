@@ -1,0 +1,246 @@
+# Rasengan.js
+> A modern, high-performance React meta-framework built on Vite and react-router v7. Supports SSR, SSG, SPA, file-based routing, config-based routing, MDX, and deployment adapters.
+
+## Core Concepts
+
+- [Introduction](https://rasengan.dev/docs/getting-started/introduction): Overview of Rasengan.js and its features
+- [Installation](https://rasengan.dev/docs/getting-started/installation): Create a new project with `npx create-rasengan@latest` or manual setup
+- [Project Structure](https://rasengan.dev/docs/getting-started/project-structure): Default layout of a Rasengan.js project
+
+## Routing
+
+- [Base Concepts](https://rasengan.dev/docs/routing/base-concepts): How routing works in Rasengan.js
+- [Router Configuration](https://rasengan.dev/docs/routing/router-config): Config-based routing with `defineRouter()`
+- [Routes & Pages](https://rasengan.dev/docs/routing/routes): Page components, layouts, and the `RouterComponent` class
+- [Layouts](https://rasengan.dev/docs/routing/layouts): Layout components for shared UI around pages
+- [File-based Routing](https://rasengan.dev/docs/routing/file-based-routing): Automatic routing via `src/app/_routes/` directory
+- [Linking & Navigation](https://rasengan.dev/docs/routing/linking-and-navigation): Client-side navigation with `Link` and `NavLink`
+- [Dynamic Routes](https://rasengan.dev/docs/routing/dynamic-routes): Dynamic segments `[param]`, optional `[_param]`, route groups `(group)`
+- [Error Handling](https://rasengan.dev/docs/routing/error-handling): Error boundaries and 404 handling
+- [Redirecting](https://rasengan.dev/docs/routing/redirecting): Defining redirects in config or from loaders
+
+## Rendering
+
+- [SSR](https://rasengan.dev/docs/rendering/ssr): Server-Side Rendering with streaming
+- [CSR](https://rasengan.dev/docs/rendering/csr): Client-Side Rendering (SPA mode)
+- [Prerendering](https://rasengan.dev/docs/rendering/prerendering): Static Site Generation (SSG) with `prerender: true`
+
+## Styling
+
+- [CSS Modules](https://rasengan.dev/docs/styling/css-modules): Component-scoped CSS
+- [Tailwind CSS](https://rasengan.dev/docs/styling/tailwindcss): Tailwind CSS integration
+- [Preprocessors](https://rasengan.dev/docs/styling/preprocessors): Sass, Less, Stylus support
+
+## Optimizing
+
+- [Images](https://rasengan.dev/docs/optimizing/images): Image optimization with `@rasenganjs/image`
+- [Metadata](https://rasengan.dev/docs/optimizing/metadata): Title, description, Open Graph, Twitter cards
+- [Static Assets](https://rasengan.dev/docs/optimizing/static-assets): Public directory and asset handling
+- [React Compiler](https://rasengan.dev/docs/optimizing/react-compiler): Sage Mode with React Compiler
+
+## Configuring
+
+- [TypeScript](https://rasengan.dev/docs/configuring/typescript): TypeScript setup
+- [Environment Variables](https://rasengan.dev/docs/configuring/environment-variables): Managing env vars
+- [Module Aliases](https://rasengan.dev/docs/configuring/modules-aliases): Path aliases like `@/`
+
+## Deploying
+
+- [Vercel](https://rasengan.dev/docs/deploying/vercel): Deploy to Vercel with `@rasenganjs/vercel`
+- [Node](https://rasengan.dev/docs/deploying/node): Self-host with `@rasenganjs/serve`
+
+## API Reference
+
+### Components
+- [Link](https://rasengan.dev/docs/api-reference/components/Link): Client-side navigation component
+- [NavLink](https://rasengan.dev/docs/api-reference/components/NavLink): Link with active state
+- [Outlet](https://rasengan.dev/docs/api-reference/components/Outlet): Renders child route content
+- [Component](https://rasengan.dev/docs/api-reference/components/Component): Root app component wrapper
+- [Template](https://rasengan.dev/docs/api-reference/components/Template): HTML document shell with Head, Body, Script
+- [Layout](https://rasengan.dev/docs/api-reference/components/Layout): Layout component pattern
+- [Page](https://rasengan.dev/docs/api-reference/components/Page): Page component pattern
+- [Router](https://rasengan.dev/docs/api-reference/components/Router): Router component class
+- [ScrollRestoration](https://rasengan.dev/docs/api-reference/components/ScrollRestoration): Scroll position management
+
+### Functions
+- [defineConfig](https://rasengan.dev/docs/api-reference/functions/defineConfig): Framework configuration
+- [defineRouter](https://rasengan.dev/docs/api-reference/functions/defineRouter): Config-based router definition
+- [defineRoutesGroup](https://rasengan.dev/docs/api-reference/functions/defineRoutesGroup): Group routes under a path prefix
+- [defineStaticPaths](https://rasengan.dev/docs/api-reference/functions/defineStaticPaths): SSG static path generation
+- [renderApp](https://rasengan.dev/docs/api-reference/functions/renderApp): Client entry point for hydration
+
+### Conventions
+- [Layout File Convention](https://rasengan.dev/docs/api-reference/conventions/layout-component): `layout.tsx` naming
+- [Page File Convention](https://rasengan.dev/docs/api-reference/conventions/page-component): `*.page.tsx` naming
+- [Router File Convention](https://rasengan.dev/docs/api-reference/conventions/router-component): `app.router.ts` naming
+
+### CLI
+- [create-rasengan CLI](https://rasengan.dev/docs/api-reference/create-rasengan-cli): Project scaffolding tool
+- [rasengan CLI](https://rasengan.dev/docs/api-reference/rasengan-cli): Dev server and build commands
+
+## Packages
+
+- [@rasenganjs/create-rasengan](https://rasengan.dev/packages/create-rasengan): Project scaffolding
+- [@rasenganjs/kurama](https://rasengan.dev/packages/kurama): Zustand-like state management
+- [@rasenganjs/mdx](https://rasengan.dev/packages/mdx): MDX content support
+- [@rasenganjs/serve](https://rasengan.dev/packages/serve): Production server
+- [@rasenganjs/vercel](https://rasengan.dev/packages/vercel): Vercel deployment adapter
+- [@rasenganjs/image](https://rasengan.dev/packages/image): Optimized Image component
+- [@rasenganjs/theme](https://rasengan.dev/packages/theme): Light/dark/system theme
+- [@rasenganjs/i18n](https://rasengan.dev/packages/i18n): Internationalization
+- [@rasenganjs/kage-demo](https://rasengan.dev/packages/kage-demo): Interactive feature tours
+
+## Quick Reference
+
+### AppConfig
+```ts
+interface AppConfig {
+  ssr?: boolean;                                   // default: true
+  prerender?: boolean | { routes: string[] };      // SSG mode
+  sageMode?: { reactCompiler?: boolean | { compilationMode: 'annotation' } };
+  server?: { development?: { port?: number; open?: boolean } };
+  vite?: ViteConfig;                               // partial Vite overrides
+  redirects?: () => Promise<Redirect[]>;            // static redirect rules
+}
+```
+
+### RouterComponent properties
+| Property | Type | Description |
+|----------|------|-------------|
+| `layout` | `LayoutComponent \| RouteNode` | Layout component for the router |
+| `routers` | `RouterComponent[]` | Nested sub-routers |
+| `pages` | `PageComponent[] \| RouteNode[]` | Page components |
+| `loaderComponent` | `FunctionComponent` | Loading fallback |
+| `notFoundComponent` | `FunctionComponent` | 404 component |
+| `useParentLayout` | `boolean` | Inherit parent layout |
+
+### Metadata
+```ts
+type Metadata = {
+  title?: string;
+  description?: string;
+  openGraph?: { type?, title?, description?, url, image, width?, height? };
+  twitter?: { card: 'summary_large_image'|'summary', image, title, description?, creator?, site? };
+  links?: Array<{ rel, type?, sizes?, href }>;
+  metaTags?: Array<{ name?, property?, content }>;
+};
+```
+
+### File-based routing conventions
+| File pattern | Route segment |
+|-------------|---------------|
+| `layout.tsx` | Layout for the route group |
+| `*.page.tsx` | Page component |
+| `[param].page.tsx` | Dynamic segment `:param` |
+| `[_param].page.tsx` | Optional dynamic `:param?` |
+| `(group)/` | Route group (ignored in path) |
+| `_name/` | Optional static segment `name?` |
+
+### Required project files
+- `rasengan.config.js` — Framework config using `defineConfig()`
+- `src/main.{jsx,tsx}` — Root App component (default export, receives `AppProps`)
+- `src/template.{jsx,tsx}` — HTML template (default export, receives `TemplateProps`)
+- `src/app/app.router.{js,ts}` — Router definition (default export, `RouterComponent`)
+- `src/index.{js,ts}` — Entry point calling `renderApp(App, AppRouter?)`
+- `src/app/_routes/` — File-based route definitions (optional)
+
+### Entry point pattern
+```ts
+import { renderApp } from 'rasengan/client';
+import App from './main';
+
+renderApp(App, AppRouter); // or renderApp(App) for config-based
+renderApp(App, AppRouter, { reactStrictMode: true }); // with strict mode
+```
+
+### Router definition (config-based)
+```ts
+import { RouterComponent, defineRouter } from 'rasengan';
+import Home from './home.page';
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  pages: [Home],
+  layout: AppLayout,
+  notFoundComponent: NotFound,
+})(AppRouter);
+```
+
+### Router definition (file-based)
+```ts
+import { RouterComponent, defineRouter } from 'rasengan';
+import Router from 'virtual:rasengan/router';
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({ imports: [Router] })(AppRouter);
+```
+
+### Page component
+```ts
+import { PageComponent } from 'rasengan';
+
+const Home: PageComponent = () => <main>Home</main>;
+Home.path = '/';
+Home.metadata = { title: 'Home', description: 'Home page' };
+export default Home;
+```
+
+### Layout component
+```ts
+import { Outlet, LayoutComponent } from 'rasengan';
+
+const AppLayout: LayoutComponent = () => <div><Outlet /></div>;
+AppLayout.path = '/';
+export default AppLayout;
+```
+
+### CLI commands
+```bash
+rasengan dev    # Start development server (port 5320)
+rasengan build  # Build for production
+rasengan-serve ./dist  # Serve production build
+```
+
+### Loader function
+```ts
+import { LoaderFunction } from 'rasengan';
+
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const data = await fetchData(params.id);
+  return { props: { data }, meta: { title: 'Page Title' } };
+};
+```
+
+### Build output structure
+```
+dist/
+  client/        # Client bundle + manifest.json
+    assets/      # JS, CSS, config.json
+    .vite/       # Vite manifest
+  server/        # SSR server bundle
+static/          # Pre-rendered HTML (SSG)
+```
+
+## Architecture
+
+Rasengan.js is built on three pillars:
+- **Vite** for fast development (HMR) and optimized builds
+- **React Router v7** for client/server routing with loaders and actions
+- **Express** for the dev and production SSR server
+
+Rendering modes:
+| Mode | Config | Description |
+|------|--------|-------------|
+| SSR | `ssr: true` (default) | Server renders HTML, client hydrates |
+| SPA | `ssr: false` | Client-side only rendering |
+| SSG | `prerender: true` | Pre-renders HTML at build time |
+
+## Ecosystem packages
+- **State management**: `@rasenganjs/kurama` — Zustand-inspired stores
+- **MDX**: `@rasenganjs/mdx` — MDX transform + components (MDXRenderer, TableOfContents, CodeBlock)
+- **Images**: `@rasenganjs/image` — Optimized lazy images with blur/wave placeholders
+- **Theme**: `@rasenganjs/theme` — Light/dark/system with localStorage persistence
+- **i18n**: `@rasenganjs/i18n` — Locale management with URL-based detection
+- **Deployment**: `@rasenganjs/vercel` (Vercel adapter), `@rasenganjs/serve` (Node server)
