@@ -292,9 +292,21 @@ function EmptyEditorState() {
 
 // ── Framework editor ─────────────────────────────────────────
 
+const DEFAULT_OPEN_FILE: Record<string, string> = {
+  rasengan: 'src/app/_routes/index.page.tsx',
+  futon: 'src/index.ts',
+  server: 'src/hello.controller.ts',
+};
+
 function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
-  const [openFiles, setOpenFiles] = useState<string[]>([]);
-  const [activeFile, setActiveFile] = useState<string | null>(null);
+  const defaultFile = DEFAULT_OPEN_FILE[framework.key];
+
+  const [openFiles, setOpenFiles] = useState<string[]>(() =>
+    defaultFile ? [defaultFile] : []
+  );
+  const [activeFile, setActiveFile] = useState<string | null>(
+    () => defaultFile ?? null
+  );
 
   const tree = useMemo(() => buildTree(framework.files), [framework]);
   const filesByPath = useMemo(() => {
@@ -335,7 +347,7 @@ function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
       <ResizablePanelGroup
         id={`showcase-${framework.key}`}
         direction="horizontal"
-        className="h-[460px]!"
+        className="h-[660px]!"
       >
         <ResizablePanel
           id={`showcase-${framework.key}-tree`}
