@@ -4,6 +4,7 @@ import {
   NavigationItem,
   NavigationType,
 } from '@/data/docs';
+import { SectionVersions } from '@/data/docs/versions';
 import { cn } from '@/lib/utils';
 import { useBannerStore } from '@/store/banner';
 import {
@@ -65,6 +66,13 @@ export default function SidebarNavigation({ className, onClose }: Props) {
         )}
       >
         <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 lg:pl-8 2xl:pl-0">
+          {activeTab && SectionVersions[activeTab] && (
+            <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 font-mono mb-6">
+              <Tag size={14} className="text-primary" />
+              <span>v{SectionVersions[activeTab]}</span>
+            </div>
+          )}
+
           {activeTab &&
             NavigationData[activeTab].map((nav) => {
               return (
