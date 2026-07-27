@@ -45,7 +45,7 @@ export default function Pillars() {
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mt-12 max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {pillars.map((pillar) => (
           <Link
             key={pillar.name}

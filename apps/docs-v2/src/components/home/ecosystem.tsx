@@ -103,12 +103,12 @@ export default function Ecosystem() {
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mt-12 max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 rounded-xl border-t border-l border-dashed border-border overflow-hidden">
         {packages.map((pkg) => (
           <Link
             key={pkg.name}
             to={pkg.href}
-            className="group flex flex-col gap-3 rounded-xl border border-border p-5 transition-colors duration-200 ease-out hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="group relative flex flex-col gap-3 border-r border-b border-dashed border-border p-5 transition-colors duration-200 ease-out hover:z-10 hover:bg-muted/40 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
           >
             <div className="flex items-center justify-between">
               <div

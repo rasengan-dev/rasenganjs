@@ -16,6 +16,7 @@ const HomeLayout: LayoutComponent = () => {
           <Outlet />
         </div>
       </main>
+
       <Footer />
     </section>
   );

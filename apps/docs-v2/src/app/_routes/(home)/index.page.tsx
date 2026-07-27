@@ -4,6 +4,7 @@ import Pillars from '@/components/home/pillars';
 import Showcase from '@/components/home/showcase';
 import Features from '@/components/home/features';
 import Ecosystem from '@/components/home/ecosystem';
+import Cta from '@/components/home/cta';
 import {
   getHighlightedShowcase,
   type HighlightedFramework,
@@ -21,6 +22,7 @@ const Home: PageComponent = ({ showcase }: HomeProps) => {
       <Showcase frameworks={showcase} />
       <Features />
       <Ecosystem />
+      <Cta />
     </div>
   );
 };

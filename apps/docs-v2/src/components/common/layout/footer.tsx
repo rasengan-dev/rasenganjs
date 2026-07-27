@@ -58,7 +58,7 @@ export default function Footer() {
         isDark ? 'bg-white/2' : 'bg-black/2'
       )}
     >
-      <div className="max-w-[1500px] mx-auto">
+      <div className="max-w-[1200px] mx-auto">
         <div className="flex flex-col xl:flex-row items-start justify-between gap-x-2 gap-y-8">
           <div className="w-full xl:w-7/10 flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-1/4">
