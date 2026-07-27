@@ -401,7 +401,7 @@ export default defineMDXConfig({
 
   layout: ({ children, toc }) => {
     return (
-      <section className="w-full min-w-0 shrink px-4 lg:px-10 py-10 flex gap-10">
+      <section className="w-full min-w-0 shrink px-4 lg:px-10 py-20 flex gap-10">
         <div className="relative w-full min-w-0 flex shrink flex-col items-center">
           <div className="relative xl:max-w-[700px] min-w-0 mx-auto w-full">
             {children}

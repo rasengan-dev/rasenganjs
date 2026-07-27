@@ -66,7 +66,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
           'flex flex-col w-full h-(--mobile-main-height) lg:h-[calc(100vh-[100px)] lg:sticky lg:top-[100px] lg:border-r lg:border-border/40 dark:lg:border-border'
         )}
       >
-        <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 lg:pl-8 2xl:pl-0">
+        <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 pt-20 lg:pl-8 2xl:pl-0">
           {activeTab && SectionVersions[activeTab] && (
             <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 font-mono mb-6">
               <Button

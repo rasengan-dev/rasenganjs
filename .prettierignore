@@ -2,3 +2,4 @@ node_modules
 build
 dist
 apps/docs/**/*.mdx
+apps/docs-v2/**/*.mdx

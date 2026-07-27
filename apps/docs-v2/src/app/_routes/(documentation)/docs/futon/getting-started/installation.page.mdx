@@ -12,6 +12,12 @@ toc: true
 
 Futon ships as a single zero-dependency package. You'll also want a runtime adapter from `@rasenganjs/runtime` to actually bind a port — Futon itself only turns a `Request` into a `Response`.
 
+
+## Requirements
+
+- **Node.js 18+** (for the Web `Request`/`Response`/`Headers` globals), or Bun / Deno / Cloudflare Workers.
+- An ESM project — Futon is published as `"type": "module"`.
+
 ## Installation
 
 ### Automatic Installation
@@ -24,7 +30,9 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
   content={`Run the following command to create a new project.`}
   className="mt-8"
 >
-  ```bash title="Terminal" npx create-rasengan@beta --kind futon ```
+  ```bash title="Terminal" 
+  npx create-rasengan@beta --kind futon 
+  ```
 </StepItem>
 
 <StepItem
@@ -34,8 +42,10 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
     If you didn't pass --kind, you'll be asked which kind of project to create — select "futon". You'll also be asked to name your project.
   `}
 >
-  ```bash title="Terminal" - What would you like to name your project? - What
-  kind of project would you like to create? ```
+  ```bash title="Terminal" 
+  - What would you like to name your project? 
+  - What kind of project would you like to create? 
+  ```
 </StepItem>
 
 <StepItem
@@ -45,7 +55,10 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
     create-rasengan copies the template files but doesn't install dependencies for you. Move into the new folder and install them.
   `}
 >
-  ```bash title="Terminal" cd my-app npm install ```
+  ```bash title="Terminal" 
+  cd my-app 
+  npm install 
+  ```
 </StepItem>
 
 <StepItem
@@ -55,7 +68,9 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
     Run the following command to start the development server.
   `}
 >
-  ```bash title="Terminal" npm run dev ```
+  ```bash title="Terminal" 
+  npm run dev 
+  ```
 </StepItem>
 
 The scaffolded project is a minimal Futon app wired to `NodeDevAdapter` — a `/` route, a `/health` route, and an `onError` handler, ready to extend.
@@ -77,16 +92,24 @@ The scaffolded project is a minimal Futon app wired to `NodeDevAdapter` — a `/
   activeIndex={0}
 >
   <Tabs.Item>
-    ```bash npm install @rasenganjs/futon @rasenganjs/runtime ```
+    ```bash 
+    npm install @rasenganjs/futon @rasenganjs/runtime 
+    ```
   </Tabs.Item>
   <Tabs.Item>
-    ```bash pnpm add @rasenganjs/futon @rasenganjs/runtime ```
+    ```bash 
+    pnpm add @rasenganjs/futon @rasenganjs/runtime 
+    ```
   </Tabs.Item>
   <Tabs.Item>
-    ```bash yarn add @rasenganjs/futon @rasenganjs/runtime ```
+    ```bash 
+    yarn add @rasenganjs/futon @rasenganjs/runtime 
+    ```
   </Tabs.Item>
   <Tabs.Item>
-    ```bash bun add @rasenganjs/futon @rasenganjs/runtime ```
+    ```bash 
+    bun add @rasenganjs/futon @rasenganjs/runtime 
+    ```
   </Tabs.Item>
 </Tabs>
 
@@ -97,10 +120,6 @@ The scaffolded project is a minimal Futon app wired to `NodeDevAdapter` — a `/
   depends on Futon and Runtime for you.
 </Note>
 
-## Requirements
-
-- **Node.js 18+** (for the Web `Request`/`Response`/`Headers` globals), or Bun / Deno / Cloudflare Workers.
-- An ESM project — Futon is published as `"type": "module"`.
 
 ## Package Layout
 

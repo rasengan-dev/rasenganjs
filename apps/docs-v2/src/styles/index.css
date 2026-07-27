@@ -194,6 +194,15 @@ code[data-theme*=' '] span {
   }
 }
 
+/* Raw shiki.codeToHtml() output (used outside the MDX pipeline, e.g. the
+   homepage showcase) uses a `.shiki` class + `--shiki-dark` variable per
+   span, instead of rehype-pretty-code's `data-theme` attribute above. */
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
 .grid-section {
   position: relative;
   overflow: hidden;
