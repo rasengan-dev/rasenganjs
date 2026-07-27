@@ -35,7 +35,7 @@ export default defineMDXConfig({
     a: ({ children, ...props }) => (
       <a
         {...props}
-        className="text-foreground font-semibold underline underline-offset-4 cursor-pointer"
+        className="inline text-foreground font-semibold underline underline-offset-4 cursor-pointer"
       >
         {children}
       </a>
@@ -80,12 +80,12 @@ export default defineMDXConfig({
       </h6>
     ),
     ol: ({ children, ...props }) => (
-      <ol {...props} className="my-6 ml-6 list-decimal">
+      <ol {...props} className="inline my-6 ml-6 list-decimal">
         {children}
       </ol>
     ),
     ul: ({ children, ...props }) => (
-      <ul {...props} className="my-6 ml-6 list-decimal list-inside">
+      <ul {...props} className="inline my-6 ml-6 list-decimal list-inside">
         {children}
       </ul>
     ),

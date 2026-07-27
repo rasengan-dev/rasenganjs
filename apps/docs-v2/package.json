@@ -11,7 +11,7 @@
   "dependencies": {
     "@rasenganjs/image": "^1.0.0",
     "@rasenganjs/kage-demo": "1.0.1",
-    "@rasenganjs/mdx": "1.2.1",
+    "@rasenganjs/mdx": "1.2.2",
     "@rasenganjs/serve": "^1.2.0",
     "@rasenganjs/theme": "^1.1.0",
     "@rasenganjs/vercel": "^1.1.3",

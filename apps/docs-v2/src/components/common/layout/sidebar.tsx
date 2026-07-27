@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   NavigationData,
   NavigationGroup,
@@ -68,8 +69,19 @@ export default function SidebarNavigation({ className, onClose }: Props) {
         <nav className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-6 lg:pl-8 2xl:pl-0">
           {activeTab && SectionVersions[activeTab] && (
             <div className="flex items-center gap-1.5 text-[12px] text-foreground/60 font-mono mb-6">
-              <Tag size={14} className="text-primary" />
-              <span>v{SectionVersions[activeTab]}</span>
+              <Button
+                size={'icon'}
+                variant={'outline'}
+                className="bg-primary/5 border-primary/20 dark:bg-primary/5 dark:border-primary/20"
+              >
+                <Tag size={14} className="text-primary" />
+              </Button>
+              <div className="w-full flex flex-col">
+                <span className="text-foreground font-bold">
+                  Latest version
+                </span>
+                <span>{SectionVersions[activeTab]}</span>
+              </div>
             </div>
           )}
 
