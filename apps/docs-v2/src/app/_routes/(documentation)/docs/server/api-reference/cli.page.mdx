@@ -36,46 +36,21 @@ rasengan-server start [flags]
 | `--preset <name>`    | —         | `preset`     | `node`        |
 | `--watch-dir <path>` | —         | `watchDir`   | `src/`        |
 
-## `defineConfig`
+See [`defineConfig`](/docs/server/api-reference/define-config) for `RasenganServerConfig`, `BuildConfig`, and `ConfigHolder` — the types and cache backing every field above.
+
+## `logServerInfo()`
 
 ```ts
-import {
-  defineConfig,
-  type RasenganServerConfig,
-  type BuildConfig,
-} from '@rasenganjs/server';
+import { logServerInfo } from '@rasenganjs/server';
 
-function defineConfig(config: RasenganServerConfig): RasenganServerConfig;
+function logServerInfo(port: number, host?: string): void; // host default "0.0.0.0"
 ```
 
-```ts
-interface RasenganServerConfig {
-  entry?: string; // default "src/main.ts"
-  port?: number; // default 3000
-  host?: string; // default "0.0.0.0"
-  preset?: 'node' | 'bun' | 'workerd'; // default "node"
-  watchDir?: string | string[]; // default "src/"
-  build?: BuildConfig;
-}
-
-interface BuildConfig {
-  outDir?: string; // default "dist"
-  minify?: boolean; // default true
-  formats?: Array<'single-file' | 'directory'>; // default ['single-file', 'directory']
-}
-```
-
-## `ConfigHolder`
-
-```ts
-import { ConfigHolder } from '@rasenganjs/server';
-```
-
-Internal-facing config cache used by `bootstrap()` — loads `rasengan.server.ts`/`.js` from disk on first access (or accepts a pre-set config, e.g. from the CLI process), then merges any `overrides` passed to `bootstrap()` on top. Most apps never touch this directly; `bootstrap()` and the CLI both go through it.
+Prints the startup banner — server name/version, local and network URLs, detected runtime (Bun vs. Node.js), and keyboard shortcut hints (`c` to clear, `ctrl+c` to stop). Called internally by `bootstrap()` once the server starts listening; exported mainly for custom bootstrap flows that bypass `bootstrap()` and want the same banner.
 
 <Pagination
   prev={{
-    href: '/docs/server/api-reference/define-module',
-    label: 'defineModule',
+    href: '/docs/server/api-reference/define-config',
+    label: 'defineConfig',
   }}
 />

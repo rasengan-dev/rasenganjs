@@ -1,0 +1,154 @@
+---
+metadata:
+  title: Upload | API Reference | Rasengan Server | Rasengan.js
+  description: fileUpload() and every file-upload type re-exported from @rasenganjs/futon by Rasengan Server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Upload
+
+```ts
+import {
+  fileUpload,
+  MemoryStorage,
+  UPLOAD_ERROR_CODES,
+} from '@rasenganjs/server';
+import { diskStorage } from '@rasenganjs/server/upload/disk';
+```
+
+Rasengan Server re-exports Futon's entire file-upload API unchanged, so controllers can use `fileUpload()` without an extra dependency on `@rasenganjs/futon`. See [File Uploads](/docs/server/core-concepts/file-uploads) for controller-level usage, and the [Futon Upload reference](/docs/futon/api-reference/upload) for the full behavioral details — this page lists the re-exported surface.
+
+## `fileUpload()`
+
+```ts
+function fileUpload(options?: UploadOptions): Uploader;
+
+interface Uploader {
+  single(field: string): Middleware;
+  array(field: string, maxCount?: number): Middleware;
+  fields(specs: FieldSpec[]): Middleware;
+  none(): Middleware;
+  any(): Middleware;
+}
+```
+
+```ts title="As route-level middleware" showLineNumbers
+class UploadsController extends Controller {
+  routes(router: Router) {
+    router.post('/avatar', fileUpload().single('avatar'), this.upload);
+  }
+
+  upload: RouteHandler = async (ctx) => {
+    const file = ctx.get<UploadedFile>('file'); // set by .single('avatar')
+    return json({ received: file?.originalname });
+  };
+}
+```
+
+`.single(field)` stores the result on `ctx.state.file` (read via `ctx.get('file')`); `.array()`/`.fields()`/`.any()` store theirs on `ctx.state.files` instead — see [`Uploader`](#fileupload) above for which shape each method produces.
+
+## `UploadOptions` and Related Types
+
+```ts
+interface UploadOptions {
+  storage?: StorageEngine; // defaults to MemoryStorage
+  limits?: UploadLimits;
+  fileFilter?: FileFilter;
+}
+
+interface UploadLimits {
+  fileSize?: number;
+  files?: number;
+  fields?: number;
+}
+
+type FileFilter = (ctx: Context, info: FileInfo) => boolean | Promise<boolean>;
+
+interface FieldSpec {
+  name: string;
+  maxCount?: number; // default 1
+}
+```
+
+## `FileInfo` and `UploadedFile`
+
+```ts
+interface FileInfo {
+  fieldname: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+}
+
+interface UploadedFile extends FileInfo {
+  buffer?: Uint8Array; // present with MemoryStorage
+  path?: string; // present with DiskStorage
+  filename?: string; // present with DiskStorage
+  destination?: string; // present with DiskStorage
+  [key: string]: unknown;
+}
+```
+
+## `StorageEngine`
+
+```ts
+interface StorageEngine {
+  handleFile(
+    ctx: Context,
+    file: File,
+    info: FileInfo
+  ): Promise<Partial<UploadedFile>>;
+  removeFile(file: UploadedFile): Promise<void>;
+}
+```
+
+### `MemoryStorage`
+
+The default engine, works on every runtime including workerd — buffers file contents on `file.buffer`.
+
+### `diskStorage()`
+
+```ts
+// import from '@rasenganjs/server/upload/disk'
+function diskStorage(options: DiskStorageOptions): StorageEngine;
+
+interface DiskStorageOptions {
+  destination:
+    string | ((ctx: Context, info: FileInfo) => string | Promise<string>);
+  filename?: (ctx: Context, info: FileInfo) => string | Promise<string>;
+}
+```
+
+Writes to the filesystem via `node:fs`. Behind the `/upload/disk` subpath so the main `@rasenganjs/server` entry stays free of Node built-ins — identical rationale to Futon's own `/upload/disk` split.
+
+## `UPLOAD_ERROR_CODES`
+
+```ts
+const UPLOAD_ERROR_CODES = {
+  LIMIT_FILE_SIZE: 'LIMIT_FILE_SIZE',
+  LIMIT_FILE_COUNT: 'LIMIT_FILE_COUNT',
+  LIMIT_FIELD_COUNT: 'LIMIT_FIELD_COUNT',
+  LIMIT_UNEXPECTED_FILE: 'LIMIT_UNEXPECTED_FILE',
+  FILE_FILTER_REJECTED: 'FILE_FILTER_REJECTED',
+  MALFORMED_BODY: 'MALFORMED_BODY',
+} as const;
+
+type UploadErrorCode =
+  (typeof UPLOAD_ERROR_CODES)[keyof typeof UPLOAD_ERROR_CODES];
+```
+
+Every rejection responds with `{ error: { code: UploadErrorCode, message: string } }` and a matching HTTP status.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/websocket',
+    label: 'WebSocket',
+  }}
+  next={{
+    href: '/docs/server/api-reference/logger',
+    label: 'Logger',
+  }}
+/>

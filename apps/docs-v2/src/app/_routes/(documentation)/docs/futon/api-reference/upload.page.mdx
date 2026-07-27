@@ -37,6 +37,16 @@ interface Uploader {
 }
 ```
 
+| Method                     | Accepts                              | Result lands on                                   |
+| -------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `.single(field)`           | One file on `field`                  | `ctx.state.file: UploadedFile`                    |
+| `.array(field, maxCount?)` | Up to `maxCount` files on `field`    | `ctx.state.files: UploadedFile[]`                 |
+| `.fields(specs)`           | The declared fields                  | `ctx.state.files: Record<string, UploadedFile[]>` |
+| `.none()`                  | No files — text fields only          | `ctx.body` (parsed text fields)                   |
+| `.any()`                   | Every file, regardless of field name | `ctx.state.files: UploadedFile[]`                 |
+
+Read these back with `ctx.get('file')` / `ctx.get('files')`. Text fields are always available on `ctx.body`, regardless of which method is used.
+
 ## `UploadOptions`
 
 ```ts

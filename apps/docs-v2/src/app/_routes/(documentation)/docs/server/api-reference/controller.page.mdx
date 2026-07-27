@@ -40,6 +40,14 @@ type RouteHandler<S extends SchemaDefinition = {}> = (
 
 Generic over a `SchemaDefinition` so `ctx.body`/`ctx.params`/`ctx.query` narrow to the schema's inferred types when one is provided.
 
+<Note title="Context is re-exported from @rasenganjs/futon" type="info">
+  `@rasenganjs/server` re-exports Futon's `Context` type unchanged (`import type{' '}
+  {Context} from '@rasenganjs/server'` works) so you don't need a separate
+  dependency on `@rasenganjs/futon` just to type a handler. See the [Context
+  reference](/docs/futon/api-reference/context) for its full shape (`request`,
+  `body`, `params`, `query`, `runtime`, `res`, `state`, `get`/`set`).
+</Note>
+
 ## `Router`
 
 ```ts

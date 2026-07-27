@@ -133,6 +133,7 @@ export const serverNavigation: NavigationItem[] = [
         name: 'WebSocket Gateways',
         link: '/docs/server/ecosystem/websocket-gateways',
         level: 2,
+        isBeta: true,
       },
       {
         id: randomId(),
@@ -146,6 +147,7 @@ export const serverNavigation: NavigationItem[] = [
         name: 'Validation Adapters',
         link: '/docs/server/ecosystem/validation-adapters',
         level: 2,
+        isBeta: true,
       },
       {
         id: randomId(),
@@ -190,6 +192,30 @@ export const serverNavigation: NavigationItem[] = [
         id: randomId(),
         name: 'defineModule',
         link: '/docs/server/api-reference/define-module',
+        level: 2,
+      },
+      {
+        id: randomId(),
+        name: 'WebSocket',
+        link: '/docs/server/api-reference/websocket',
+        level: 2,
+      },
+      {
+        id: randomId(),
+        name: 'Upload',
+        link: '/docs/server/api-reference/upload',
+        level: 2,
+      },
+      {
+        id: randomId(),
+        name: 'Logger',
+        link: '/docs/server/api-reference/logger',
+        level: 2,
+      },
+      {
+        id: randomId(),
+        name: 'defineConfig',
+        link: '/docs/server/api-reference/define-config',
         level: 2,
       },
       {
