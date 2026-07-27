@@ -140,10 +140,7 @@ export default function Navbar({ className }: Props) {
         {/* vertical separator */}
         {/* <div className='h-4 w-[1px] bg-border dark:bg-input'></div> */}
 
-        <Link
-          to="https://github.com/rasengan-dev/rasenganjs/tree/main/docs"
-          target="_blank"
-        >
+        <Link to="https://github.com/rasengan-dev/rasenganjs" target="_blank">
           <div className="flex items-center gap-2 text-foreground px-4">
             <svg viewBox="0 0 1024 1024" fill="currentColor" className="size-4">
               <path

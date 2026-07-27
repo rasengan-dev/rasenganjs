@@ -48,7 +48,7 @@ export default defineModule({
 
 Trying to inject something outside your module's visible set doesn't silently return `undefined` — it throws with an actionable message pointing at exactly what's missing:
 
-```
+```txt
 [rasengan-server] module "UserModule" cannot resolve "DatabaseService".
 DatabaseService exists in module "DatabaseModule" but is not visible here —
 add it to that module's `exports` and add that module to this module's
@@ -59,7 +59,7 @@ add it to that module's `exports` and add that module to this module's
 
 Registering the same class as a provider in two different modules is always a mistake and throws immediately:
 
-```
+```txt
 [rasengan-server] DatabaseService is already registered by module "DatabaseModule".
 A provider can only belong to one module — add it to that module's `exports`
 and import it from here instead of declaring it twice.
@@ -71,7 +71,7 @@ Share a provider by exporting it from its owning module and importing that modul
 
 If two _different_ visible modules each export a same-named provider, resolving by constructor parameter name is ambiguous — the container refuses to guess:
 
-```
+```txt
 [rasengan-server] "logger" is ambiguous in module "UserModule" — visible from
 multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
 with an explicit `deps: [...]` entry naming the exact class.

@@ -1,0 +1,86 @@
+---
+metadata:
+  title: Errors | API Reference | Futon | Rasengan.js
+  description: The HttpError class hierarchy exported by Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Errors
+
+```ts
+import {
+  HttpError,
+  NotFoundError,
+  MethodNotAllowedError,
+  InternalServerError,
+} from '@rasenganjs/futon';
+```
+
+A small HTTP-status-bearing error hierarchy. See [Error Handling](/docs/futon/error-handling) for how these interact with `app.onError()` and `app.notFound()`.
+
+## `HttpError`
+
+```ts
+class HttpError extends Error {
+  status: number;
+  constructor(status: number, message?: string);
+}
+```
+
+Base class. `message` defaults to a standard reason phrase for the given `status` (e.g. `404` → `"Not Found"`) when omitted, falling back to `"Unknown Error"` for unrecognized codes.
+
+<Note title="Not auto-mapped to a response" type="warning">
+  Futon does not automatically turn a thrown `HttpError` into a response with
+  the matching status — your `onError` handler needs to check `error instanceof
+  HttpError` and read `error.status` itself.
+</Note>
+
+## Built-in Subclasses
+
+```ts
+class NotFoundError extends HttpError {
+  constructor(message?: string); // status 404, default "Not Found"
+}
+
+class MethodNotAllowedError extends HttpError {
+  constructor(message?: string); // status 405, default "Method Not Allowed"
+}
+
+class InternalServerError extends HttpError {
+  constructor(message?: string); // status 500, default "Internal Server Error"
+}
+```
+
+| Class                   | Status | Default message           |
+| ----------------------- | ------ | ------------------------- |
+| `NotFoundError`         | `404`  | `"Not Found"`             |
+| `MethodNotAllowedError` | `405`  | `"Method Not Allowed"`    |
+| `InternalServerError`   | `500`  | `"Internal Server Error"` |
+
+```ts title="Mapping HttpError to a response" showLineNumbers
+import { json, HttpError } from '@rasenganjs/futon';
+
+app.onError(async (error, ctx) => {
+  if (error instanceof HttpError) {
+    return json({ error: error.message }, { status: error.status });
+  }
+  return json({ error: 'Internal Server Error' }, { status: 500 });
+});
+```
+
+<Note title="Router-generated errors" type="info">
+  `MethodNotAllowedError`'s status (405) is what the
+  [`Router`](/docs/futon/api-reference/router)'s automatic method-mismatch
+  response uses, though the router responds directly rather than throwing this
+  class.
+</Note>
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/hooks',
+    label: 'Hooks',
+  }}
+/>

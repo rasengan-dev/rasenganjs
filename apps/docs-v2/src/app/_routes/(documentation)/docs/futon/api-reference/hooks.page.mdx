@@ -1,0 +1,75 @@
+---
+metadata:
+  title: Hooks | API Reference | Futon | Rasengan.js
+  description: The HookSystem class and its HookName / HookHandler types.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Hooks
+
+```ts
+import type { HookName, HookHandler } from '@rasenganjs/futon';
+```
+
+`HookSystem` isn't imported directly — every `Futon` instance owns one at `app.hooks`. See [Hooks](/docs/futon/hooks) for the full lifecycle explanation and examples.
+
+## `HookSystem`
+
+```ts
+class HookSystem {
+  on(name: HookName, handler: HookHandler): void;
+  off(name: HookName, handler: HookHandler): void;
+  has(name: HookName): boolean;
+  emit(name: HookName, ...args: unknown[]): Promise<void>;
+  clear(): void;
+}
+```
+
+| Method                | Description                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `on(name, handler)`   | Register a handler. Handlers run in registration order and may be async.                                                                  |
+| `off(name, handler)`  | Remove a previously registered handler.                                                                                                   |
+| `has(name)`           | Whether any handler is registered for `name` — used internally to skip `emit()`'s overhead when unused.                                   |
+| `emit(name, ...args)` | Fire all handlers for `name`, awaiting every async one. If a handler throws, the error is swallowed and the remaining handlers still run. |
+| `clear()`             | Remove every registered handler across all hook names — mainly useful for test teardown.                                                  |
+
+```ts title="Registering and removing a hook" showLineNumbers
+const onRequest = (ctx) => console.log(ctx.request.method, ctx.request.url);
+
+app.hooks.on('beforeRequest', onRequest);
+app.hooks.off('beforeRequest', onRequest);
+```
+
+## `HookName`
+
+```ts
+type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
+```
+
+| Hook              | Fires                                                            | Handler receives  |
+| ----------------- | ---------------------------------------------------------------- | ----------------- |
+| `'beforeRequest'` | Once per request, before the middleware chain runs.              | `(ctx)`           |
+| `'afterResponse'` | After the `Response` is produced — both success and error paths. | `(ctx, response)` |
+| `'onError'`       | When an unhandled error escapes the middleware chain.            | `(error, ctx)`    |
+
+## `HookHandler`
+
+```ts
+type HookHandler = (...args: unknown[]) => void | Promise<void>;
+```
+
+The generic handler shape — its effective arguments depend on which `HookName` it's registered under (see the table above).
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/adapters',
+    label: 'Adapters',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/errors',
+    label: 'Errors',
+  }}
+/>

@@ -1,0 +1,93 @@
+---
+metadata:
+  title: Adapters | API Reference | Futon | Rasengan.js
+  description: toExpressHandler(), toWinterCgHandler(), and the FetchHandler type.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Adapters
+
+```ts
+import { toExpressHandler, toWinterCgHandler } from '@rasenganjs/futon';
+```
+
+Both adapters convert a `Futon` instance's `fetch()` into the handler shape a specific host expects. See [Express Adapter](/docs/futon/adapters/express), [WinterCG Adapter](/docs/futon/adapters/wintercg), and [Runtime Adapters](/docs/futon/adapters/runtime) for usage and deployment notes.
+
+## `toExpressHandler()`
+
+```ts
+function toExpressHandler(
+  app: Futon,
+  runtime?: RuntimeContext
+): (
+  req: ExpressRequest,
+  res: ExpressResponse,
+  next: ExpressNextFunction
+) => Promise<void>;
+```
+
+Bridges the WinterCG pipeline to an Express `(req, res, next)` handler:
+
+1. Builds a Web API `Request` from the Express request (headers, method, and body — including piping the raw Node stream when no body-parsing Express middleware ran first).
+2. Calls `app.fetch(request, runtime)`.
+3. Writes the resulting status, headers, and body back onto the Express response, streaming the body chunk-by-chunk.
+
+Errors thrown while building the request or running `fetch()` are forwarded to Express via `next(error)`.
+
+```ts title="Usage" showLineNumbers
+import express from 'express';
+import { Futon, toExpressHandler } from '@rasenganjs/futon';
+
+const app = new Futon();
+// ...routes
+
+const expressApp = express();
+expressApp.use(toExpressHandler(app));
+expressApp.listen(3000);
+```
+
+## `toWinterCgHandler()`
+
+```ts
+function toWinterCgHandler(
+  app: Futon,
+  defaultRuntime?: RuntimeContext
+): (
+  request: Request,
+  envOrCtx?: Record<string, unknown> | WinterCgFetchContext,
+  platformCtx?: WinterCgFetchContext
+) => Promise<Response>;
+```
+
+Produces a `{ fetch }`-shaped handler compatible with every WinterCG runtime — Cloudflare Workers `(request, env, ctx)`, Deno / Bun `(request, info)`, and plain Service Workers `(request)`. It normalizes whichever argument shape the platform passes, merges the platform's `env` into `defaultRuntime.env`, and forwards `ctx.waitUntil` when the platform provides one and the response sets an `X-Rasengan-Background` header.
+
+```ts title="Cloudflare Workers" showLineNumbers
+import { Futon, toWinterCgHandler } from '@rasenganjs/futon';
+
+const app = new Futon();
+// ...routes
+
+export default { fetch: toWinterCgHandler(app) };
+```
+
+## `FetchHandler`
+
+```ts
+type FetchHandler = (request: Request, runtime?: any) => Promise<Response>;
+```
+
+The fundamental request-handler shape every adapter ultimately produces or consumes — `Futon.fetch` itself conforms to this signature. Every middleware, route handler, and error handler exists to eventually produce a `Response` this way; adapters exist purely to translate a platform's native handler shape into (and the resulting `Response` out of) this one.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/upload',
+    label: 'Upload',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/hooks',
+    label: 'Hooks',
+  }}
+/>

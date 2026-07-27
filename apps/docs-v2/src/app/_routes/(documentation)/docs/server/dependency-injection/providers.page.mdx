@@ -83,13 +83,13 @@ Resolving a class that was never explicitly listed in any `providers` array stil
 
 ## Errors You'll Actually See
 
-```
+```txt
 [rasengan-server] Cannot resolve dependency "userService" from module "UserModule".
 Make sure the provider is registered in your module with a matching class name.
 Providers visible here: UserController
 ```
 
-```
+```txt
 [rasengan-server] "config" is ambiguous in module "UserModule" — visible from
 multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
 with an explicit `deps: [...]` entry naming the exact class.

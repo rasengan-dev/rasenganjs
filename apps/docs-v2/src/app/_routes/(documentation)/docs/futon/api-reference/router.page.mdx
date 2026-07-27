@@ -85,13 +85,89 @@ type HTTPMethod =
 
 If a pathname matches a registered route under a _different_ method, the router's dispatch middleware responds `405 Method Not Allowed` with an `Allow` header listing the methods that do match, instead of falling through to your 404 handler.
 
+## Low-Level Primitives
+
+```ts
+import {
+  RasenganTreeRouter,
+  matchPath,
+  parseQueryString,
+} from '@rasenganjs/futon';
+import type { TreeMatchResult } from '@rasenganjs/futon';
+```
+
+These are the building blocks `Router` is implemented on top of. Most apps never touch them directly — they're exported for advanced cases like building a custom router or matching paths outside of a `Futon` instance.
+
+### `RasenganTreeRouter`
+
+```ts
+class RasenganTreeRouter<T = unknown> {
+  add(pattern: string, handler: T): void;
+  match(pathname: string): TreeMatchResult<T>;
+}
+```
+
+A radix (compressed trie) tree for HTTP path matching — one tree node per `/`-separated segment, giving O(k) lookup (k = number of path segments) regardless of how many routes are registered. This is what `Router` uses internally instead of a linear route scan. Handles static segments, `:param`, `:param?`, `:param*`, and bare `*` catch-alls, with static matches taking priority over dynamic ones at each level.
+
+```ts title="Standalone usage" showLineNumbers
+const tree = new RasenganTreeRouter();
+tree.add('/users/:id', handler);
+tree.add('/static/*', staticHandler);
+
+tree.match('/users/42');
+// → { handler, params: { id: '42' } }
+
+tree.match('/unknown');
+// → { handler: undefined, params: {} }
+```
+
+### `TreeMatchResult`
+
+```ts
+interface TreeMatchResult<T = unknown> {
+  handler?: T;
+  params: Record<string, string>;
+}
+```
+
+The return type of `RasenganTreeRouter.match()`.
+
+### `matchPath()`
+
+```ts
+function matchPath(
+  pattern: string,
+  pathname: string
+): Record<string, string> | null;
+```
+
+Matches a single route pattern against a pathname directly (no tree, no registration) — returns the captured params, or `null` if the pattern doesn't match.
+
+```ts title="Examples" showLineNumbers
+matchPath('/users/:id', '/users/42'); // → { id: '42' }
+matchPath('/users/:id?', '/users'); // → {}
+matchPath('/files/:path*', '/files/a/b'); // → { path: 'a/b' }
+matchPath('/static/*', '/static/foo.js'); // → { _: 'foo.js' }
+matchPath('/users/:id', '/posts'); // → null
+```
+
+See [Route Patterns](/docs/futon/routing/route-patterns) for the full pattern syntax reference.
+
+### `parseQueryString()`
+
+```ts
+function parseQueryString(url: string): Record<string, string>;
+```
+
+Parses the query string portion of a URL into a plain key-value object, handling URL-encoded keys and values. This is what powers `ctx.query` internally.
+
 <Pagination
   prev={{
     href: '/docs/futon/api-reference/futon',
     label: 'Futon',
   }}
   next={{
-    href: '/docs/futon/api-reference/middleware',
-    label: 'Middleware',
+    href: '/docs/futon/api-reference/context',
+    label: 'Context',
   }}
 />

@@ -123,7 +123,24 @@ export async function plugin(options?: MDXConfig): Promise<Plugin> {
 
       let newCode = result.code;
 
-      newCode = newCode.replace(/export default\s+/, 'const MDXContent = ');
+      // Rename the MDX component's own `export default` to a const so it can be
+      // re-exported as part of MDXWrapper below. We must target the LAST match,
+      // not the first: MDX content can legitimately contain the literal text
+      // "export default" inside inline code or code blocks (e.g. documenting a
+      // WinterCG handler), which appears earlier in the compiled output than the
+      // real `export default function MDXContent(...)` the compiler emits at the
+      // very end. Replacing the first match would corrupt that unrelated text and
+      // leave the real export untouched, producing a duplicate `export default`.
+      const exportDefaultMatches = [...newCode.matchAll(/export default\s+/g)];
+      const lastMatch = exportDefaultMatches[exportDefaultMatches.length - 1];
+
+      if (lastMatch && lastMatch.index !== undefined) {
+        const start = lastMatch.index;
+        const end = start + lastMatch[0].length;
+
+        newCode =
+          newCode.slice(0, start) + 'const MDXContent = ' + newCode.slice(end);
+      }
 
       return {
         code: `
