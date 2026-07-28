@@ -8,7 +8,6 @@ import {
   FolderOpen,
   X,
 } from 'lucide-react';
-import { Tabs } from '@/components/common/molecules/tab';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -179,6 +178,43 @@ function TrafficLights() {
   );
 }
 
+// ── Framework switcher ───────────────────────────────────────
+
+function FrameworkSwitcher({
+  frameworks,
+  activeKey,
+  onSelect,
+}: {
+  frameworks: HighlightedFramework[];
+  activeKey: string;
+  onSelect: (key: string) => void;
+}) {
+  return (
+    <div className="flex shrink-0 items-center gap-1 p-1 border border-foreground/10 rounded-lg">
+      {frameworks.map((framework) => {
+        const isActive = framework.key === activeKey;
+
+        return (
+          <button
+            key={framework.key}
+            type="button"
+            onClick={() => onSelect(framework.key)}
+            aria-pressed={isActive}
+            className={cn(
+              'cursor-pointer whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              isActive
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground/60 hover:bg-muted hover:text-foreground'
+            )}
+          >
+            {framework.title}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Tabs ─────────────────────────────────────────────────────
 
 function EditorTabBar({
@@ -193,42 +229,44 @@ function EditorTabBar({
   onClose: (path: string) => void;
 }) {
   return (
-    <div className="no-scrollbar flex items-stretch overflow-x-auto border-b border-border bg-muted/20">
-      {openFiles.map((path) => {
-        const isActive = path === activeFile;
-        const name = path.split('/').pop() ?? path;
+    <div className="flex items-stretch justify-between border-b border-border bg-muted/20">
+      <div className="no-scrollbar flex items-stretch overflow-x-auto">
+        {openFiles.map((path) => {
+          const isActive = path === activeFile;
+          const name = path.split('/').pop() ?? path;
 
-        return (
-          <div
-            key={path}
-            onClick={() => onSelect(path)}
-            className={cn(
-              'group flex h-9 shrink-0 cursor-pointer items-center gap-2 border-r border-border pl-3 pr-2 text-xs font-mono transition-colors duration-200 ease-out',
-              isActive
-                ? 'bg-(--code-block-bg) text-foreground'
-                : 'bg-muted/40 text-foreground/60 hover:text-foreground'
-            )}
-          >
-            <FileCode2
-              size={13}
-              aria-hidden="true"
-              className={cn('shrink-0', fileIconColor(name))}
-            />
-            <span>{name}</span>
-            <button
-              type="button"
-              aria-label={`Close ${name}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose(path);
-              }}
-              className="ml-1 cursor-pointer rounded-sm p-0.5 text-foreground/40 hover:bg-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          return (
+            <div
+              key={path}
+              onClick={() => onSelect(path)}
+              className={cn(
+                'group flex h-9 shrink-0 cursor-pointer items-center gap-2 border-r border-border pl-3 pr-2 text-xs font-mono transition-colors duration-200 ease-out',
+                isActive
+                  ? 'bg-(--code-block-bg) text-foreground'
+                  : 'bg-muted/40 text-foreground/60 hover:text-foreground'
+              )}
             >
-              <X size={12} />
-            </button>
-          </div>
-        );
-      })}
+              <FileCode2
+                size={13}
+                aria-hidden="true"
+                className={cn('shrink-0', fileIconColor(name))}
+              />
+              <span>{name}</span>
+              <button
+                type="button"
+                aria-label={`Close ${name}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose(path);
+                }}
+                className="ml-1 cursor-pointer rounded-sm p-0.5 text-foreground/40 hover:bg-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -264,6 +302,9 @@ function CodePane({ file }: { file: HighlightedFile }) {
           'h-full overflow-auto p-4 text-sm leading-relaxed',
           '[&_pre]:!bg-transparent',
           '[&_code]:font-mono',
+          '[&_code]:flex',
+          '[&_code]:flex-col',
+          '[&_code]:items-start',
           '[&_[data-line-numbers]_span]:!bg-transparent',
           '[&_[data-line-numbers]]:[counter-reset:line]',
           '[&_[data-line-numbers]_span[data-line]::before]:mr-4',
@@ -290,7 +331,7 @@ function EmptyEditorState() {
   );
 }
 
-// ── Framework editor ─────────────────────────────────────────
+// ── Code editor ──────────────────────────────────────────────
 
 const DEFAULT_OPEN_FILE: Record<string, string> = {
   rasengan: 'src/app/_routes/index.page.tsx',
@@ -298,38 +339,90 @@ const DEFAULT_OPEN_FILE: Record<string, string> = {
   server: 'src/hello.controller.ts',
 };
 
-function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
-  const defaultFile = DEFAULT_OPEN_FILE[framework.key];
+type FileState = { openFiles: string[]; activeFile: string | null };
 
-  const [openFiles, setOpenFiles] = useState<string[]>(() =>
-    defaultFile ? [defaultFile] : []
-  );
-  const [activeFile, setActiveFile] = useState<string | null>(
-    () => defaultFile ?? null
+export default function CodeEditor({
+  frameworks,
+}: {
+  frameworks: HighlightedFramework[];
+}) {
+  const [activeFrameworkKey, setActiveFrameworkKey] = useState(
+    frameworks[0]?.key
   );
 
-  const tree = useMemo(() => buildTree(framework.files), [framework]);
+  const [fileStateByFramework, setFileStateByFramework] = useState<
+    Record<string, FileState>
+  >(() => {
+    const initial: Record<string, FileState> = {};
+    for (const framework of frameworks) {
+      const defaultFile = DEFAULT_OPEN_FILE[framework.key];
+      initial[framework.key] = {
+        openFiles: defaultFile ? [defaultFile] : [],
+        activeFile: defaultFile ?? null,
+      };
+    }
+    return initial;
+  });
+
+  const activeFramework =
+    frameworks.find((f) => f.key === activeFrameworkKey) ?? frameworks[0];
+
+  const tree = useMemo(
+    () => buildTree(activeFramework.files),
+    [activeFramework]
+  );
   const filesByPath = useMemo(() => {
     const map = new Map<string, HighlightedFile>();
-    framework.files.forEach((file) => map.set(file.filename, file));
+    activeFramework.files.forEach((file) => map.set(file.filename, file));
     return map;
-  }, [framework]);
+  }, [activeFramework]);
+
+  const { openFiles, activeFile } = fileStateByFramework[
+    activeFramework.key
+  ] ?? { openFiles: [], activeFile: null };
 
   const openFile = (path: string) => {
-    setOpenFiles((prev) => (prev.includes(path) ? prev : [...prev, path]));
-    setActiveFile(path);
+    setFileStateByFramework((prev) => {
+      const current = prev[activeFramework.key];
+      const nextOpenFiles = current.openFiles.includes(path)
+        ? current.openFiles
+        : [...current.openFiles, path];
+
+      return {
+        ...prev,
+        [activeFramework.key]: { openFiles: nextOpenFiles, activeFile: path },
+      };
+    });
+  };
+
+  const setActiveFile = (path: string) => {
+    setFileStateByFramework((prev) => ({
+      ...prev,
+      [activeFramework.key]: { ...prev[activeFramework.key], activeFile: path },
+    }));
   };
 
   const closeFile = (path: string) => {
-    setOpenFiles((prev) => {
-      const index = prev.indexOf(path);
-      const next = prev.filter((p) => p !== path);
+    setFileStateByFramework((prev) => {
+      const current = prev[activeFramework.key];
+      const index = current.openFiles.indexOf(path);
+      const nextOpenFiles = current.openFiles.filter((p) => p !== path);
 
-      if (activeFile === path) {
-        setActiveFile(next.length === 0 ? null : next[Math.max(0, index - 1)]);
+      let nextActiveFile = current.activeFile;
+      if (current.activeFile === path) {
+        nextActiveFile =
+          nextOpenFiles.length === 0
+            ? null
+            : nextOpenFiles[Math.max(0, index - 1)];
       }
 
-      return next;
+      return {
+        ...prev,
+        [activeFramework.key]: {
+          openFiles: nextOpenFiles,
+          activeFile: nextActiveFile,
+        },
+      };
     });
   };
 
@@ -337,20 +430,28 @@ function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
 
   return (
     <div className="w-full overflow-hidden rounded-xl border border-border bg-(--code-block-bg)">
-      <div className="flex h-10 items-center gap-3 border-b border-border bg-muted px-4">
-        <TrafficLights />
-        <span className="truncate font-mono text-xs text-foreground/50">
-          {activeFile ?? framework.title}
-        </span>
+      <div className="w-full flex items-center justify-between bg-muted px-4 pr-1">
+        <div className="flex h-10 items-center gap-3 border-b border-border">
+          <TrafficLights />
+          <span className="truncate font-mono text-xs text-foreground/50">
+            {activeFile ?? activeFramework.title}
+          </span>
+        </div>
+
+        <FrameworkSwitcher
+          frameworks={frameworks}
+          activeKey={activeFramework.key}
+          onSelect={setActiveFrameworkKey}
+        />
       </div>
 
       <ResizablePanelGroup
-        id={`showcase-${framework.key}`}
+        id="home-code-editor"
         direction="horizontal"
         className="h-[660px]!"
       >
         <ResizablePanel
-          id={`showcase-${framework.key}-tree`}
+          id="home-code-editor-tree"
           defaultSize={22}
           minSize={16}
           maxSize={40}
@@ -367,21 +468,19 @@ function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
           ))}
         </ResizablePanel>
 
-        <ResizableHandle id={`showcase-${framework.key}-handle`} />
+        <ResizableHandle id="home-code-editor-handle" />
 
         <ResizablePanel
-          id={`showcase-${framework.key}-editor`}
+          id="home-code-editor-content"
           defaultSize={78}
           className="flex min-w-0 flex-col bg-(--code-block-bg)"
         >
-          {openFiles.length > 0 && (
-            <EditorTabBar
-              openFiles={openFiles}
-              activeFile={activeFile}
-              onSelect={setActiveFile}
-              onClose={closeFile}
-            />
-          )}
+          <EditorTabBar
+            openFiles={openFiles}
+            activeFile={activeFile}
+            onSelect={setActiveFile}
+            onClose={closeFile}
+          />
 
           {activeContent ? (
             <CodePane file={activeContent} />
@@ -391,37 +490,5 @@ function FrameworkEditor({ framework }: { framework: HighlightedFramework }) {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
-  );
-}
-
-// ── Section ──────────────────────────────────────────────────
-
-export default function Showcase({
-  frameworks,
-}: {
-  frameworks: HighlightedFramework[];
-}) {
-  return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-[620px] text-center">
-        <h2 className="text-3xl font-bold text-foreground lg:text-4xl">
-          One API, Every Layer
-        </h2>
-        <p className="mt-4 text-lg leading-relaxed text-foreground/70">
-          The same conventions, whether you're rendering a page, handling a
-          request, or wiring a controller.
-        </p>
-      </div>
-
-      <div className="mt-12 w-full max-w-[1200px] mx-auto">
-        <Tabs tabs={frameworks.map((f) => ({ title: f.title }))}>
-          {frameworks.map((framework) => (
-            <Tabs.Item key={framework.key}>
-              <FrameworkEditor framework={framework} />
-            </Tabs.Item>
-          ))}
-        </Tabs>
-      </div>
-    </section>
   );
 }

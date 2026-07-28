@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { Link } from 'rasengan';
 import { ArrowRight, Check, Copy } from 'lucide-react';
 import Button from '@/components/common/atoms/buttons/button';
+import CodeEditor from '@/components/home/showcase';
+import type { HighlightedFramework } from '@/data/home/highlight';
 
 const INSTALL_COMMAND = 'npx create-rasengan@latest';
 
-export default function Hero() {
+export default function Hero({
+  frameworks,
+}: {
+  frameworks: HighlightedFramework[];
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -68,6 +74,10 @@ export default function Hero() {
             <Copy size={14} />
           )}
         </button>
+      </div>
+
+      <div className="relative mt-16 w-full max-w-[1200px]">
+        <CodeEditor frameworks={frameworks} />
       </div>
     </section>
   );

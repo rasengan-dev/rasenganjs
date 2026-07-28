@@ -6,6 +6,6 @@ import { NavigationGroup, NavigationType } from './types';
  */
 export const SectionVersions: Partial<Record<NavigationType, string>> = {
   [NavigationGroup.DOCUMENTATION]: '1.2.4', // rasengan
-  [NavigationGroup.FUTON]: '1.0.0-beta.1', // @rasenganjs/futon
-  [NavigationGroup.SERVER]: '1.0.0-beta.3', // @rasenganjs/server
+  [NavigationGroup.FUTON]: '1.0.0 (Beta)', // @rasenganjs/futon
+  [NavigationGroup.SERVER]: '1.0.0 (Beta)', // @rasenganjs/server
 };

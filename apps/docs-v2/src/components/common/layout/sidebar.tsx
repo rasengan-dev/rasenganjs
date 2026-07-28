@@ -80,7 +80,7 @@ export default function SidebarNavigation({ className, onClose }: Props) {
                 <span className="text-foreground font-bold">
                   Latest version
                 </span>
-                <span>{SectionVersions[activeTab]}</span>
+                <span>v{SectionVersions[activeTab]}</span>
               </div>
             </div>
           )}

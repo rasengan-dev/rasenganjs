@@ -194,7 +194,7 @@ export default defineMDXConfig({
 
       if (!props['data-language']) {
         return (
-          <code className="rounded-md text-[0.8rem] px-1 bg-muted" {...props}>
+          <code className="rounded-md px-1 py-[2px] bg-muted" {...props}>
             {children}
           </code>
         );
