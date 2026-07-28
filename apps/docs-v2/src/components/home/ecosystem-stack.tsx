@@ -247,7 +247,7 @@ function StackTap({
 
 export default function EcosystemStack() {
   return (
-    <section className="py-16 lg:py-20 border border-border">
+    <section className="py-16 lg:py-20 border border-border p-4">
       <div className="border-b border-border pb-16 text-center lg:pb-20">
         <h2 className="mx-auto max-w-[620px] text-3xl font-bold text-foreground lg:text-4xl">
           Built on a Foundation of Fast, Production-Grade Runtimes
@@ -311,20 +311,27 @@ export default function EcosystemStack() {
           ))}
         </svg>
 
-        {/* Futon chip */}
+        {/* Futon chip — a real IC package, so it stays dark on both themes */}
         <Link
           to="/docs/futon/getting-started/introduction"
           style={{ left: '50%', top: '45.3%' }}
-          className="absolute z-10 grid h-[9.8cqw] min-h-[60px] w-[21.8cqw] min-w-[132px] -translate-x-1/2 -translate-y-1/2 place-items-center gap-0.5 overflow-hidden rounded-2xl border border-primary/40 bg-linear-to-b from-(--code-block-bg) to-background shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-200 ease-out hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="absolute z-10 grid h-[9.8cqw] min-h-[60px] w-[21.8cqw] min-w-[132px] -translate-x-1/2 -translate-y-1/2 place-items-center gap-0.5 overflow-hidden rounded-lg border border-[#2f3b56] bg-[linear-gradient(180deg,#1a2338_0%,#0a0e18_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-12px_20px_-16px_rgba(0,0,0,0.8),0_12px_28px_-14px_rgba(0,0,0,0.7),0_0_36px_-10px_rgba(77,157,255,0.45)] transition-[border-color,box-shadow] duration-300 ease-out hover:border-[#4d9dff] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-12px_20px_-16px_rgba(0,0,0,0.8),0_12px_28px_-14px_rgba(0,0,0,0.7),0_0_46px_-6px_rgba(77,157,255,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4d9dff] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
+          {/* pin-1 orientation mark, like a real IC package */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 motion-safe:[animation:chip-shine_4.5s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/15 to-transparent"
+            className="absolute left-[10%] top-[16%] size-[3px] rounded-full bg-[#6fa8ff]/70"
           />
-          <span className="font-mono text-[clamp(9px,2.1cqw,11px)] uppercase tracking-[0.22em] text-primary/80">
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 motion-safe:[animation:chip-shine_4.5s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/10 to-transparent"
+          />
+
+          <span className="font-mono text-[clamp(9px,2.1cqw,11px)] uppercase tracking-[0.22em] text-[#6fa8ff]">
             core
           </span>
-          <span className="font-mono text-[clamp(13px,3.4cqw,15px)] font-semibold text-foreground">
+          <span className="font-mono text-[clamp(13px,3.4cqw,15px)] font-semibold text-white">
             Futon
           </span>
         </Link>
