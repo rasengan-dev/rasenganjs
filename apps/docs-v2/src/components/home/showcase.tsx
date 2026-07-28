@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   Check,
   ChevronRight,
@@ -510,90 +511,192 @@ export default function CodeEditor({
 
   const activeContent = activeFile ? filesByPath.get(activeFile) : undefined;
 
+  const [mobileTreeOpen, setMobileTreeOpen] = useState(false);
+  const [mobileTerminalOpen, setMobileTerminalOpen] = useState(false);
+
   return (
     <div className="w-full overflow-hidden rounded-xl border border-border bg-(--code-block-bg)">
-      <div className="w-full flex items-center justify-between bg-muted  border-b border-border px-4 pr-1">
-        <div className="flex h-10 items-center gap-3">
-          <TrafficLights />
-          <span className="truncate font-mono text-xs text-foreground/50">
-            {activeFile ?? activeFramework.title}
-          </span>
+      {/* ── Desktop / tablet ── */}
+      <div className="hidden md:block">
+        <div className="w-full flex items-center justify-between bg-muted  border-b border-border px-4 pr-1">
+          <div className="flex h-10 items-center gap-3">
+            <TrafficLights />
+            <span className="truncate font-mono text-xs text-foreground/50">
+              {activeFile ?? activeFramework.title}
+            </span>
+          </div>
+
+          <FrameworkSwitcher
+            frameworks={frameworks}
+            activeKey={activeFramework.key}
+            onSelect={setActiveFrameworkKey}
+          />
         </div>
 
-        <FrameworkSwitcher
-          frameworks={frameworks}
-          activeKey={activeFramework.key}
-          onSelect={setActiveFrameworkKey}
-        />
+        <ResizablePanelGroup
+          id="home-code-editor-vertical"
+          direction="vertical"
+          className="h-[660px]!"
+        >
+          <ResizablePanel
+            id="home-code-editor-main"
+            defaultSize={72}
+            minSize={40}
+          >
+            <ResizablePanelGroup
+              id="home-code-editor"
+              direction="horizontal"
+              className="h-full!"
+            >
+              <ResizablePanel
+                id="home-code-editor-tree"
+                defaultSize={22}
+                minSize={16}
+                maxSize={40}
+                className="overflow-y-auto bg-muted/50 py-2"
+              >
+                {tree.map((node) => (
+                  <FileTreeNode
+                    key={node.path}
+                    node={node}
+                    depth={0}
+                    activeFile={activeFile}
+                    onSelectFile={openFile}
+                  />
+                ))}
+              </ResizablePanel>
+
+              <ResizableHandle id="home-code-editor-handle" />
+
+              <ResizablePanel
+                id="home-code-editor-content"
+                defaultSize={78}
+                className="flex min-w-0 flex-col bg-(--code-block-bg)"
+              >
+                <EditorTabBar
+                  openFiles={openFiles}
+                  activeFile={activeFile}
+                  onSelect={setActiveFile}
+                  onClose={closeFile}
+                />
+
+                {activeContent ? (
+                  <CodePane file={activeContent} />
+                ) : (
+                  <EmptyEditorState />
+                )}
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+
+          <ResizableHandle id="home-code-editor-terminal-handle" />
+
+          <ResizablePanel
+            id="home-code-editor-terminal"
+            defaultSize={28}
+            minSize={15}
+            maxSize={60}
+          >
+            <Terminal frameworkKey={activeFramework.key} />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
 
-      <ResizablePanelGroup
-        id="home-code-editor-vertical"
-        direction="vertical"
-        className="h-[660px]!"
-      >
-        <ResizablePanel
-          id="home-code-editor-main"
-          defaultSize={72}
-          minSize={40}
-        >
-          <ResizablePanelGroup
-            id="home-code-editor"
-            direction="horizontal"
-            className="h-full!"
-          >
-            <ResizablePanel
-              id="home-code-editor-tree"
-              defaultSize={22}
-              minSize={16}
-              maxSize={40}
-              className="overflow-y-auto bg-muted/50 py-2"
+      {/* ── Mobile ── */}
+      <div className="md:hidden">
+        <div className="flex h-10 items-center justify-between border-b border-border bg-muted px-3">
+          <TrafficLights />
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setMobileTreeOpen(true)}
+              aria-label="Open file tree"
+              className="cursor-pointer rounded-sm p-1.5 text-foreground/60 transition-colors duration-200 ease-out hover:bg-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              {tree.map((node) => (
-                <FileTreeNode
-                  key={node.path}
-                  node={node}
-                  depth={0}
-                  activeFile={activeFile}
-                  onSelectFile={openFile}
-                />
-              ))}
-            </ResizablePanel>
-
-            <ResizableHandle id="home-code-editor-handle" />
-
-            <ResizablePanel
-              id="home-code-editor-content"
-              defaultSize={78}
-              className="flex min-w-0 flex-col bg-(--code-block-bg)"
-            >
-              <EditorTabBar
-                openFiles={openFiles}
-                activeFile={activeFile}
-                onSelect={setActiveFile}
-                onClose={closeFile}
-              />
-
-              {activeContent ? (
-                <CodePane file={activeContent} />
-              ) : (
-                <EmptyEditorState />
+              <FolderOpen size={16} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTerminalOpen((prev) => !prev)}
+              aria-label="Toggle terminal"
+              aria-pressed={mobileTerminalOpen}
+              className={cn(
+                'cursor-pointer rounded-sm p-1.5 transition-colors duration-200 ease-out hover:bg-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                mobileTerminalOpen
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-foreground/60'
               )}
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
+            >
+              <TerminalSquare size={16} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
 
-        <ResizableHandle id="home-code-editor-terminal-handle" />
+        <div className="no-scrollbar overflow-x-auto border-b border-border bg-muted/20 px-2 py-1.5">
+          <FrameworkSwitcher
+            frameworks={frameworks}
+            activeKey={activeFramework.key}
+            onSelect={setActiveFrameworkKey}
+          />
+        </div>
 
-        <ResizablePanel
-          id="home-code-editor-terminal"
-          defaultSize={28}
-          minSize={15}
-          maxSize={60}
-        >
-          <Terminal frameworkKey={activeFramework.key} />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        <EditorTabBar
+          openFiles={openFiles}
+          activeFile={activeFile}
+          onSelect={setActiveFile}
+          onClose={closeFile}
+        />
+
+        <div className="relative h-[420px]">
+          {activeContent ? (
+            <CodePane file={activeContent} />
+          ) : (
+            <EmptyEditorState />
+          )}
+
+          <AnimatePresence>
+            {mobileTreeOpen && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setMobileTreeOpen(false)}
+                  className="absolute inset-0 z-20 bg-background/80"
+                />
+                <motion.div
+                  initial={{ x: '-100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '-100%' }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-0 top-0 z-30 h-full w-[75%] max-w-[260px] overflow-y-auto border-r border-border bg-muted/95 py-2"
+                >
+                  {tree.map((node) => (
+                    <FileTreeNode
+                      key={node.path}
+                      node={node}
+                      depth={0}
+                      activeFile={activeFile}
+                      onSelectFile={(path) => {
+                        openFile(path);
+                        setMobileTreeOpen(false);
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {mobileTerminalOpen && (
+          <div className="h-[180px] border-t border-border">
+            <Terminal frameworkKey={activeFramework.key} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
