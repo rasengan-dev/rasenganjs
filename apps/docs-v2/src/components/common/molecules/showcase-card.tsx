@@ -1,6 +1,5 @@
 import Image from '@rasenganjs/image';
 import { ExternalLink } from 'lucide-react';
-import { motion } from 'motion/react';
 import { Link } from 'rasengan';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -19,16 +18,11 @@ export const ShowcaseCard = ({ image, title, link, className }: Props) => {
       target="_blank"
       className={twMerge('h-full w-full', className)}
     >
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, type: 'spring' }}
-        whileHover={{ scale: 1.02, y: -4 }}
+      <article
         className={twMerge(
-          'h-full w-full group cursor-pointer',
+          'h-full w-full group cursor-pointer transition-all duration-300',
           'border border-border/40 rounded-2xl overflow-hidden',
-          'hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5',
+          'hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1',
           'bg-background'
         )}
       >
@@ -40,7 +34,7 @@ export const ShowcaseCard = ({ image, title, link, className }: Props) => {
             width="100%"
             height="auto"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
         <div className="flex items-center justify-between px-4 py-4">
@@ -54,7 +48,7 @@ export const ShowcaseCard = ({ image, title, link, className }: Props) => {
             />
           </span>
         </div>
-      </motion.article>
+      </article>
     </Link>
   );
 };

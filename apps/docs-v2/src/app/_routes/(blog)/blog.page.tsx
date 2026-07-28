@@ -59,33 +59,18 @@ const Page: PageComponent = () => {
 
       <section className="pb-16 lg:pb-24">
         {filtered.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
-          >
-            {filtered.map((post, i) => (
-              <motion.div
-                key={post.id}
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.4 }}
-              >
-                <BlogCard post={post} />
-              </motion.div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {filtered.map((post) => (
+              <BlogCard key={post.id} post={post} />
             ))}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="py-20 text-center"
-          >
+          <div className="py-20 text-center">
             <p className="mb-2 text-lg text-foreground/50">No posts found</p>
             <p className="text-sm text-foreground/40">
               Try a different search term.
             </p>
-          </motion.div>
+          </div>
         )}
       </section>
 
