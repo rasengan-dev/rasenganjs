@@ -203,6 +203,30 @@ code[data-theme*=' '] span {
   background-color: var(--shiki-dark-bg) !important;
 }
 
+/* Traveling light-pulse along an SVG path, used by the homepage's "Built on
+   a foundation" PCB diagram. Paths must set `pathLength={1}` so this stays
+   independent of each curve's actual geometry. */
+@keyframes comet {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Diagonal shine sweep across the Futon chip in the same diagram. */
+@keyframes chip-shine {
+  0%,
+  12% {
+    transform: translateX(-120%);
+  }
+  40%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 .grid-section {
   position: relative;
   overflow: hidden;

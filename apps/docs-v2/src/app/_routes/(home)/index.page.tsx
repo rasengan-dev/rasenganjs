@@ -1,6 +1,6 @@
 import { PageComponent } from 'rasengan';
 import Hero from '@/components/home/hero';
-import Pillars from '@/components/home/pillars';
+import EcosystemStack from '@/components/home/ecosystem-stack';
 import Features from '@/components/home/features';
 import Ecosystem from '@/components/home/ecosystem';
 import Cta from '@/components/home/cta';
@@ -17,7 +17,7 @@ const Home: PageComponent = ({ showcase }: HomeProps) => {
   return (
     <div>
       <Hero frameworks={showcase} />
-      <Pillars />
+      <EcosystemStack />
       <Features />
       <Ecosystem />
       <Cta />
