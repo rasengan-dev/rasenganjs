@@ -6,6 +6,7 @@ import {
   FileCode2,
   Folder,
   FolderOpen,
+  TerminalSquare,
   X,
 } from 'lucide-react';
 import {
@@ -331,6 +332,87 @@ function EmptyEditorState() {
   );
 }
 
+// ── Terminal ─────────────────────────────────────────────────
+
+type TerminalLine = { text: string; className?: string };
+
+const TERMINAL_LOGS: Record<string, TerminalLine[]> = {
+  rasengan: [
+    { text: '$ npm run dev', className: 'text-foreground/40' },
+    { text: '' },
+    { text: '> my-rasengan-app@1.0.0 dev' },
+    { text: '> rasengan dev' },
+    { text: '' },
+    { text: '- Starting server in development mode...' },
+    { text: '✔ Rasengan v1.2.2 is running 🚀', className: 'text-emerald-500' },
+    { text: '' },
+    { text: '→ Local:   http://localhost:5320', className: 'text-blue-400' },
+    { text: '→ Network: http://192.168.1.42:5320', className: 'text-blue-400' },
+    { text: '→ Press c to clear', className: 'text-foreground/40' },
+    {
+      text: '→ Press ctrl + c to close the server',
+      className: 'text-foreground/40',
+    },
+  ],
+  futon: [
+    {
+      text: '$ node --import tsx --watch src/index.ts',
+      className: 'text-foreground/40',
+    },
+    { text: '' },
+    {
+      text: '✔ Futon app listening on http://0.0.0.0:3000',
+      className: 'text-emerald-500',
+    },
+    { text: '' },
+    { text: '[12:04:21] GET    / 200 2ms 42B' },
+    { text: '[12:04:23] GET    /health 200 1ms 15B' },
+  ],
+  server: [
+    { text: '$ npm run dev', className: 'text-foreground/40' },
+    { text: '' },
+    {
+      text: 'Rasengan Server v1.0.0-beta.3 running',
+      className: 'text-emerald-500',
+    },
+    { text: '' },
+    { text: '→ Local:   http://localhost:3000', className: 'text-blue-400' },
+    { text: '→ Network: http://192.168.1.42:3000', className: 'text-blue-400' },
+    { text: '→ Runtime: Node.js' },
+    { text: '' },
+    { text: '→ Press c to clear the console', className: 'text-foreground/40' },
+    {
+      text: '→ Press ctrl+c to stop the server',
+      className: 'text-foreground/40',
+    },
+  ],
+};
+
+function Terminal({ frameworkKey }: { frameworkKey: string }) {
+  const lines = TERMINAL_LOGS[frameworkKey] ?? [];
+
+  return (
+    <div className="flex h-full flex-col bg-(--code-block-bg)">
+      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border bg-muted/20 px-3">
+        <TerminalSquare
+          size={14}
+          aria-hidden="true"
+          className="text-foreground/50"
+        />
+        <span className="text-xs font-medium text-foreground/60">Terminal</span>
+      </div>
+
+      <div className="flex-1 flex flex-col items-start overflow-auto p-3 font-mono text-xs leading-relaxed">
+        {lines.map((line, i) => (
+          <div key={i} className={cn('whitespace-pre', line.className)}>
+            {line.text || ' '}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Code editor ──────────────────────────────────────────────
 
 const DEFAULT_OPEN_FILE: Record<string, string> = {
@@ -430,8 +512,8 @@ export default function CodeEditor({
 
   return (
     <div className="w-full overflow-hidden rounded-xl border border-border bg-(--code-block-bg)">
-      <div className="w-full flex items-center justify-between bg-muted px-4 pr-1">
-        <div className="flex h-10 items-center gap-3 border-b border-border">
+      <div className="w-full flex items-center justify-between bg-muted  border-b border-border px-4 pr-1">
+        <div className="flex h-10 items-center gap-3">
           <TrafficLights />
           <span className="truncate font-mono text-xs text-foreground/50">
             {activeFile ?? activeFramework.title}
@@ -446,47 +528,70 @@ export default function CodeEditor({
       </div>
 
       <ResizablePanelGroup
-        id="home-code-editor"
-        direction="horizontal"
+        id="home-code-editor-vertical"
+        direction="vertical"
         className="h-[660px]!"
       >
         <ResizablePanel
-          id="home-code-editor-tree"
-          defaultSize={22}
-          minSize={16}
-          maxSize={40}
-          className="overflow-y-auto bg-muted/50 py-2"
+          id="home-code-editor-main"
+          defaultSize={72}
+          minSize={40}
         >
-          {tree.map((node) => (
-            <FileTreeNode
-              key={node.path}
-              node={node}
-              depth={0}
-              activeFile={activeFile}
-              onSelectFile={openFile}
-            />
-          ))}
+          <ResizablePanelGroup
+            id="home-code-editor"
+            direction="horizontal"
+            className="h-full!"
+          >
+            <ResizablePanel
+              id="home-code-editor-tree"
+              defaultSize={22}
+              minSize={16}
+              maxSize={40}
+              className="overflow-y-auto bg-muted/50 py-2"
+            >
+              {tree.map((node) => (
+                <FileTreeNode
+                  key={node.path}
+                  node={node}
+                  depth={0}
+                  activeFile={activeFile}
+                  onSelectFile={openFile}
+                />
+              ))}
+            </ResizablePanel>
+
+            <ResizableHandle id="home-code-editor-handle" />
+
+            <ResizablePanel
+              id="home-code-editor-content"
+              defaultSize={78}
+              className="flex min-w-0 flex-col bg-(--code-block-bg)"
+            >
+              <EditorTabBar
+                openFiles={openFiles}
+                activeFile={activeFile}
+                onSelect={setActiveFile}
+                onClose={closeFile}
+              />
+
+              {activeContent ? (
+                <CodePane file={activeContent} />
+              ) : (
+                <EmptyEditorState />
+              )}
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </ResizablePanel>
 
-        <ResizableHandle id="home-code-editor-handle" />
+        <ResizableHandle id="home-code-editor-terminal-handle" />
 
         <ResizablePanel
-          id="home-code-editor-content"
-          defaultSize={78}
-          className="flex min-w-0 flex-col bg-(--code-block-bg)"
+          id="home-code-editor-terminal"
+          defaultSize={28}
+          minSize={15}
+          maxSize={60}
         >
-          <EditorTabBar
-            openFiles={openFiles}
-            activeFile={activeFile}
-            onSelect={setActiveFile}
-            onClose={closeFile}
-          />
-
-          {activeContent ? (
-            <CodePane file={activeContent} />
-          ) : (
-            <EmptyEditorState />
-          )}
+          <Terminal frameworkKey={activeFramework.key} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
