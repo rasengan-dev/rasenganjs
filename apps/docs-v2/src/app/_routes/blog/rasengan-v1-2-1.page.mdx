@@ -1,0 +1,363 @@
+---
+metadata: 
+  title: Rasengan v1.2.1
+  description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+  openGraph:
+    title: Rasengan v1.2.1
+    description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.1.png'
+  twitter:
+    title: Rasengan v1.2.1
+    description: We are publishing Rasengan v1.2.1, a new version of the framework that introduces you custom MDX components.
+    image: 'https://rasengan.dev/assets/blog/rasengan-1.2.1.png'
+---
+
+
+<BlogDetailsHeader />
+
+`Rasengan v1.2.1` is now available on [npm](https://www.npmjs.com/package/rasengan).
+
+
+We are excited to announce the release of Rasengan.js v1.2.1 🎉
+This version is a patch version of v1.2.x that aims to support the new version of `@rasenganjs/mdx` which introduces custom MDX components under the hood.
+
+## What's new in Rasengan v1.2.1?
+
+Rasengan v1.2.1 introduces just one key feature: `Custom MDX components via @rasenganjs/mdx package`
+
+The `@rasenganjs/mdx` package now supports custom MDX components, allowing you to completely customize how your MDX content is rendered. This powerful feature gives you full control over the styling, behavior, and layout of your markdown content.
+
+<Note type="info" title="Info">
+Learn more about the <Link to="/packages/mdx">@rasenganjs/mdx</Link> package that support **Markdown** into Rasengan.js
+</Note>
+
+## How it works
+
+The MDX system automatically detects a `mdx-components.{js,jsx,ts,tsx}` file in your project root and uses it to configure how MDX content is rendered. This file exports a configuration object created using the `defineMDXConfig` function.
+
+## Setting up custom MDX components
+
+### 1. Create the configuration file
+
+Create a `mdx-components.tsx` (or `.jsx`) file in your project root:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+import { defineMDXConfig } from '@rasenganjs/mdx';
+
+export default defineMDXConfig({
+  components: {
+    // Your custom components here
+  },
+  toc: (toc) => {
+    // Custom table of contents rendering
+  },
+  layout: ({ children, toc }) => {
+    // Custom layout component
+  },
+});
+```
+
+### 2. Customize markdown elements
+
+You can override any standard markdown element by providing custom React components:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    // Custom headings
+    h1: ({ children, ...props }) => (
+      <h1 {...props} className="text-4xl font-bold mt-8 mb-6 text-foreground">
+        {children}
+      </h1>
+    ),
+    
+    h2: ({ children, ...props }) => (
+      <h2 {...props} className="text-2xl font-bold mt-6 mb-4 text-foreground">
+        {children}
+      </h2>
+    ),
+
+    // Custom paragraphs
+    p: ({ children, ...props }) => (
+      <p {...props} className="text-foreground/90 leading-relaxed my-4">
+        {children}
+      </p>
+    ),
+
+    // Custom links
+    a: ({ children, href, ...props }) => (
+      <a 
+        href={href} 
+        {...props}
+        className="text-primary font-semibold underline underline-offset-4 hover:text-primary/80"
+      >
+        {children}
+      </a>
+    ),
+
+    // Custom code blocks
+    code: ({ className, children, ...props }) => {
+      // Inline code
+      if (!props['data-language']) {
+        return (
+          <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+            {children}
+          </code>
+        );
+      }
+      
+      // Block code (handled by pre element)
+      return (
+        <code {...props} className={className}>
+          {children}
+        </code>
+      );
+    },
+
+    // Custom blockquotes
+    blockquote: ({ children, ...props }) => (
+      <blockquote 
+        {...props}
+        className="border-l-4 border-primary pl-4 italic text-foreground/70 my-4"
+      >
+        {children}
+      </blockquote>
+    ),
+  },
+});
+```
+
+### 3. Enhanced code block styling
+
+The system provides special handling for code blocks with language detection and syntax highlighting:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+import { getIconForLanguageExtension } from '@rasenganjs/mdx';
+
+export default defineMDXConfig({
+  components: {
+    // Code block wrapper
+    figure: ({ className, ...props }) => (
+      <figure 
+        className={`
+          my-4 rounded-lg border bg-muted overflow-hidden
+          ${className}
+        `}
+        {...props}
+      />
+    ),
+
+    // Code block header with language icon
+    figcaption: ({ children, ...props }) => {
+      const iconExtension = props['data-language'] 
+        ? getIconForLanguageExtension(props['data-language'])
+        : null;
+
+      return (
+        <figcaption className="flex items-center gap-2 px-4 py-2 border-b bg-muted/50">
+          {iconExtension}
+          {children}
+        </figcaption>
+      );
+    },
+
+    // Enhanced code element
+    code: ({ className, children, ...props }) => {
+      if (!props['data-language']) {
+        return <code className="bg-muted px-1 py-0.5 rounded text-sm">{children}</code>;
+      }
+
+      return (
+        <code 
+          className={`
+            font-mono text-sm p-4 block overflow-x-auto
+            ${className}
+          `}
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    },
+  },
+});
+```
+
+### 4. Custom table of contents
+
+Create a custom table of contents with active section tracking:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+import { useActiveTocItem } from '@rasenganjs/mdx';
+
+export default defineMDXConfig({
+  toc: (toc) => {
+    const [activeId] = useActiveTocItem(toc, {
+      threshold: 0.5,
+      rootMargin: '0px 0px -80% 0px',
+    });
+
+    return (
+      <nav className="sticky top-24 w-64 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <h2 className="text-sm font-semibold mb-4 text-foreground/60">
+          On This Page
+        </h2>
+        <ul className="space-y-2 text-sm">
+          {toc.map((item) => (
+            <li key={item.anchor.id}>
+              <a
+                href={`#${item.anchor.id}`}
+                className={`
+                  block transition-colors
+                  ${activeId === item.anchor.id 
+                    ? 'text-foreground font-medium' 
+                    : 'text-foreground/60 hover:text-foreground/80'
+                  }
+                `}
+              >
+                {item.anchor.text}
+              </a>
+              {item.children?.length > 0 && (
+                <ul className="ml-4 mt-1 space-y-1">
+                  {item.children.map((child) => (
+                    <li key={child.anchor.id}>
+                      <a
+                        href={`#${child.anchor.id}`}
+                        className={`
+                          block text-xs transition-colors
+                          ${activeId === child.anchor.id 
+                            ? 'text-foreground font-medium' 
+                            : 'text-foreground/50 hover:text-foreground/70'
+                          }
+                        `}
+                      >
+                        {child.anchor.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+    );
+  },
+});
+```
+
+### 5. Custom layout component
+
+Define the overall layout structure for your MDX pages:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  layout: ({ children, toc }) => (
+    <article className="max-w-4xl mx-auto px-6 py-8">
+      <div className="flex gap-8">
+        <main className="flex-1 min-w-0">
+          {children}
+        </main>
+        {toc && (
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            {toc}
+          </aside>
+        )}
+      </div>
+    </article>
+  ),
+});
+```
+
+### 6. Adding custom components
+
+You can also add completely custom components that can be used directly in your MDX files:
+
+```tsx title="mdx-components.jsx" showLineNumbers
+// Custom alert component
+const Alert = ({ type = 'info', children }) => (
+  <div className={`
+    p-4 rounded-lg border-l-4 my-4
+    ${type === 'warning' && 'bg-yellow-50 border-yellow-400 text-yellow-800'}
+    ${type === 'error' && 'bg-red-50 border-red-400 text-red-800'}
+    ${type === 'info' && 'bg-blue-50 border-blue-400 text-blue-800'}
+  `}>
+    {children}
+  </div>
+);
+
+// Custom callout component
+const Callout = ({ title, children }) => (
+  <div className="bg-muted/50 border border-border rounded-lg p-4 my-4">
+    <div className="font-semibold text-foreground mb-2">{title}</div>
+    <div className="text-foreground/80">{children}</div>
+  </div>
+);
+
+export default defineMDXConfig({
+  components: {
+    // Standard markdown components...
+    Alert,
+    Callout,
+  },
+});
+```
+
+Now you can use these components directly in your MDX:
+
+```mdx title="markdown.mdx"
+## Using Custom Components
+
+<Alert type="warning">
+  This is an important warning message!
+</Alert>
+
+<Callout title="Pro Tip">
+  You can create any custom component and use it in your MDX files.
+</Callout>
+```
+
+## Available utilities
+
+The `@rasenganjs/mdx` package provides several utility functions:
+
+- `defineMDXConfig(config)` - Creates the MDX configuration object
+- `useActiveTocItem(toc, options)` - Hook for tracking active TOC items
+- `getIconForLanguageExtension(language)` - Gets icon for code block languages
+- `extractTOC(content)` - Extracts table of contents from markdown content
+
+## Configuration options
+
+The `defineMDXConfig` function accepts the following options:
+
+```tsx
+type MDXConfigProps = {
+  // Override standard markdown elements
+  components?: {
+    h1?: React.ComponentType;
+    h2?: React.ComponentType;
+    // ... all other HTML elements
+  };
+  
+  // Custom table of contents rendering
+  toc?: (toc: TOCItem[]) => React.ReactNode;
+  
+  // Overall layout component
+  layout?: React.FC<{ 
+    children: React.ReactNode; 
+    toc?: React.ReactNode 
+  }>;
+};
+```
+
+## Automatic detection
+
+The MDX system automatically:
+- Detects `mdx-components.{js,jsx,ts,tsx}` in your project root
+- Loads the configuration and applies it to all MDX pages
+- Provides the configuration to the `MDXRenderer` component
+- Handles both client-side and server-side rendering
+
+This feature makes it incredibly easy to create consistent, beautifully styled documentation sites with Rasengan.js!
+
