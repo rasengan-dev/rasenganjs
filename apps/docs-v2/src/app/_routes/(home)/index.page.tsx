@@ -25,6 +25,34 @@ const Home: PageComponent = ({ showcase }: HomeProps) => {
   );
 };
 
+Home.metadata = {
+  title: 'Rasengan.js',
+  description:
+    'Rasengan.js pairs a modern React meta-framework with Futon and Rasengan Server — one ecosystem covering every layer of your stack, from rendering to WebSockets.',
+  openGraph: {
+    type: 'website',
+    title: 'Rasengan.js — Beyond the Frontend',
+    description:
+      'A full-stack JavaScript ecosystem: a React meta-framework, a WinterCG-compatible runtime, and a complete backend framework.',
+    url: 'https://rasengan.dev',
+    image: 'https://rasengan.dev/assets/images/metadata/home.png',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rasengan.js — Beyond the Frontend',
+    description:
+      'A full-stack JavaScript ecosystem: a React meta-framework, a WinterCG-compatible runtime, and a complete backend framework.',
+    image: 'https://rasengan.dev/assets/images/metadata/home.png',
+  },
+  metaTags: [
+    {
+      name: 'keywords',
+      content:
+        'rasengan, react, framework, ssr, ssg, backend, websocket, ecosystem',
+    },
+  ],
+};
+
 Home.loader = async () => {
   const showcase = await getHighlightedShowcase();
 
