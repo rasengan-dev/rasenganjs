@@ -1,0 +1,87 @@
+---
+metadata:
+  title: Container | API Reference | Rasengan Server | Rasengan.js
+  description: The DI Container, Provider, and ProviderDefinition API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Container
+
+```ts
+import {
+  Container,
+  Provider,
+  type ContainerView,
+  type ProviderDefinition,
+} from '@rasenganjs/server';
+```
+
+Lightweight dependency-injection container with module-scoped visibility. See [Providers & Tokens](/docs/server/dependency-injection/providers) and [Module Scoping](/docs/server/dependency-injection/scoping) for usage and semantics.
+
+## Container
+
+```ts
+class Container {
+  register(
+    provider: ProviderLike | ProviderDefinition,
+    owner?: ScopeOwner
+  ): void;
+  setScope(owner: ScopeOwner, visible: Set<any>): void;
+  forModule(owner: ScopeOwner): ContainerView;
+  resolve<T>(token: new (...args: any[]) => T): T; // root scope — sees every registration
+  initAll(): Promise<void>;
+  destroyAll(): Promise<void>;
+}
+```
+
+| Method                       | Description                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `register(provider, owner?)` | Register a provider or `ProviderDefinition`. Omitted `owner` = root scope (visible everywhere) |
+| `setScope(owner, visible)`   | Set the visible-token set for a module — computed once by `compile()`                          |
+| `forModule(owner)`           | A `ContainerView` bound to that module's scope                                                 |
+| `resolve(token)`             | Resolve in the root scope                                                                      |
+| `initAll()`                  | Call `onInit()` on every resolved `Provider` instance, in registration order                   |
+| `destroyAll()`               | Call `onDestroy()` on every resolved `Provider` instance, in **reverse** registration order    |
+
+## ContainerView
+
+```ts
+interface ContainerView {
+  resolve<T>(token: new (...args: any[]) => T): T;
+}
+```
+
+The resolution surface handed to controllers and `ModulePlugin.register()` during compile — a module-scoped view of the container. `Container` itself satisfies this interface (root scope sees everything).
+
+## ProviderDefinition
+
+```ts
+interface ProviderDefinition {
+  provide: any;
+  useClass?: new (...args: any[]) => any; // defaults to `provide`
+  useValue?: any;
+  deps?: any[];
+}
+```
+
+## ProviderLike
+
+```ts
+type ProviderLike = new (...args: any[]) => any;
+```
+
+Any class is a valid provider — extending [`Provider`](/docs/server/api-reference/provider) is purely opt-in, for lifecycle hooks (`onInit`/`onDestroy`). See the dedicated [Provider](/docs/server/api-reference/provider) reference page for its full API.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/controller',
+    label: 'Controller',
+  }}
+  next={{
+    href: '/docs/server/api-reference/provider',
+    label: 'Provider',
+  }}
+/>

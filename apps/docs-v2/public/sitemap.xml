@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://www.rasengan.dev/</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/getting-started/introduction</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/blog</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/showcase</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/getting-started/installation</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/blog/rasengan-1-beta</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/blog/rasengan-v1-stable</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/create-rasengan</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/getting-started/project-structure</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/core/routing/base-concepts</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/core/styling/css-module</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/core/rendering/introduction</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/core/rendering/data-fetching</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages/mdx</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages/image</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/base-concepts</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.41</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/router-configuration</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.33</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/routes</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.26</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/optimizing/metadata</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.21</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/layouts</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.21</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/optimizing/images</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.17</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/optimizing/static-assets</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.17</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/linking-and-navigation</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.17</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/create-rasengan-cli</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/styling/preprocessors</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/configuring/typescript</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/core/routing/linking</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/link-component</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/dynamic-routes</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.13</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages/create-rasengan</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/rasengan-config</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/rasengan-cli</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/styling/tailwindcss</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/configuring/environment-variables</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/error-handling</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.11</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/conventions/router</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.09</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/styling/css-modules</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.09</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/configuring/modules-aliases</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.09</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/routing/redirecting</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.09</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/conventions/page</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.07</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/file-conventions/main</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.07</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/rendering/prerendering</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.07</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/deploying/vercel</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.07</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/rendering/ssr</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.07</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/conventions/layout</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.05</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages/vercel</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.05</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/deploying/node</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.05</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/rendering/csr</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.05</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/functions/render-app</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.04</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/packages/serve</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.04</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/link</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.04</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/functions/define-routes-group</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.04</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/outlet</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.04</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/component</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.03</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/template</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.02</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/layout-component</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.02</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/page-component</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.01</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/components/router-component</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.01</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/functions/define-router</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.01</priority>
+</url>
+<url>
+  <loc>https://www.rasengan.dev/docs/api-reference/functions/define-config</loc>
+  <lastmod>2025-04-26T16:10:05+00:00</lastmod>
+  <priority>0.01</priority>
+</url>
+
+
+</urlset>

@@ -1,0 +1,96 @@
+---
+metadata:
+  title: Request | API Reference | Futon | Rasengan.js
+  description: Every request-parsing utility exported by Futon — URL helpers, body parsers, and cookie readers.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Request
+
+```ts
+import {
+  getPathname,
+  getQueryParams,
+  getQueryParam,
+  parseJson,
+  parseUrlEncoded,
+  parseFormData,
+  parseText,
+  parseBody,
+  parseCookies,
+  getCookie,
+} from '@rasenganjs/futon';
+```
+
+Standalone functions over the Web API `Request` — every one of them takes a `Request` and returns a plain value, so they work equally well inside a handler, a middleware, or a test. See [Request Utilities](/docs/futon/request-response/request) and [Cookies](/docs/futon/request-response/cookies) for usage.
+
+## URL Helpers
+
+```ts
+function getPathname(request: Request): string;
+function getQueryParams(request: Request): Record<string, string>;
+function getQueryParam(request: Request, key: string): string | null;
+```
+
+| Function                      | Returns                                        |
+| ----------------------------- | ---------------------------------------------- |
+| `getPathname(request)`        | The request's pathname (e.g. `"/users/42"`).   |
+| `getQueryParams(request)`     | Every query parameter as a plain object.       |
+| `getQueryParam(request, key)` | A single query parameter, or `null` if absent. |
+
+<Note title="ctx.query vs. these helpers" type="info">
+  Inside a handler, prefer `ctx.query` — it's lazily parsed and cached per
+  request. Reach for `getQueryParams()` / `getQueryParam()` when you only have a
+  raw `Request` and no `Context` (e.g. inside a custom adapter or a test).
+</Note>
+
+## Body Parsers
+
+```ts
+function parseJson<T = unknown>(request: Request): Promise<T>;
+function parseUrlEncoded(request: Request): Promise<Record<string, string>>;
+function parseFormData(request: Request): Promise<FormData>;
+function parseText(request: Request): Promise<string>;
+function parseBody<T = unknown>(
+  request: Request
+): Promise<T | Record<string, string> | FormData | string>;
+```
+
+| Function                   | Parses                                                           |
+| -------------------------- | ---------------------------------------------------------------- |
+| `parseJson(request)`       | `application/json` bodies. Throws `SyntaxError` on invalid JSON. |
+| `parseUrlEncoded(request)` | `application/x-www-form-urlencoded` bodies.                      |
+| `parseFormData(request)`   | `multipart/form-data` bodies — returns the native `FormData`.    |
+| `parseText(request)`       | Any body as plain text.                                          |
+| `parseBody(request)`       | Auto-detects `Content-Type` and delegates to one of the above.   |
+
+`parseBody()`'s detection order: `application/json` → `application/x-www-form-urlencoded` → `multipart/form-data` → falls back to text for everything else (including `text/*`).
+
+<Note title="A Request body can only be read once" type="warning">
+  These parsers consume the underlying `ReadableStream`. Call exactly one of
+  them per request, and do it early in the middleware chain — a second call will
+  throw or return an empty result.
+</Note>
+
+## Cookies
+
+```ts
+function parseCookies(request: Request): Record<string, string>;
+function getCookie(request: Request, name: string): string | undefined;
+```
+
+`parseCookies()` reads the `Cookie` header into a plain key-value map (handling multiple cookies and URL-decoding). `getCookie()` is a shorthand for a single name. For setting cookies on the way out, see [`setCookie()`](/docs/futon/api-reference/response#setcookie) on the Response reference.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/context',
+    label: 'Context',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/response',
+    label: 'Response',
+  }}
+/>

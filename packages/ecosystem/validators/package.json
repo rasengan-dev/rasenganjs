@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/validators",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Schema validation middleware for @rasenganjs/runtime. Zod adapter included, pluggable adapter interface for any schema library.",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "pack": "pnpm pack --pack-destination ./release"
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
   },
   "peerDependencies": {
     "@rasenganjs/futon": "workspace:*",

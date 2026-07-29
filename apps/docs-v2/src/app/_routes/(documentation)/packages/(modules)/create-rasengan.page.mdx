@@ -1,0 +1,179 @@
+---
+metadata:
+  title: Create Rasengan Package - Modules | Packages | Rasengan.js
+  description: Documentation for the Create Rasengan package.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  PACKAGES
+</span>
+# Create Rasengan CLI
+
+The easiest way to get started with Rasengan.js is by using `create-rasengan`. This CLI tool enables you to quickly start building a new Rasengan.js project — frontend, [Futon](/docs/futon/getting-started/introduction), [Rasengan Server](/docs/server/getting-started/introduction), or a full-stack monorepo — with everything set up for you.
+
+## Usage
+
+You can create a new project just by running one of the following commands:
+
+<Tabs
+  tabs={[
+    { title: 'npx' },
+    { title: 'npm' },
+    { title: 'pnpm' },
+    { title: 'yarn' },
+  ]}
+  activeIndex={0}
+  className="mb-4"
+>
+  <Tabs.Item>```bash title="Terminal" npx create-rasengan@latest ```</Tabs.Item>
+  <Tabs.Item>```bash title="Terminal" npm create rasengan ```</Tabs.Item>
+  <Tabs.Item>```bash title="Terminal" pnpm create rasengan ```</Tabs.Item>
+  <Tabs.Item>```bash title="Terminal" yarn create rasengan ```</Tabs.Item>
+</Tabs>
+
+You'll then be prompted to name your project and choose what kind of project to create:
+
+```bash title="Terminal"
+- What would you like to name your project?
+- What kind of project would you like to create?
+```
+
+If you choose **frontend** (the default), you'll be asked further:
+
+```bash title="Terminal"
+- Which language would you like to use for your project?
+- Which template would you like to use?
+- Do you want to enable file-based routing?
+```
+
+**futon**, **server**, and **monorepo** currently ship a single TypeScript "blank" variant each, so no further prompts are asked for those kinds.
+
+Once you've answered the prompts, a new project is created and copied into place — dependencies aren't installed automatically, so `cd` into the folder and run your package manager's install command, then `npm run dev`.
+
+### Options
+
+You can also pass the following options to the `create-rasengan` command instead of answering prompts interactively:
+
+#### project name
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app
+```
+
+#### kind (--kind)
+
+`--kind` selects the project kind, skipping the interactive prompt. One of `frontend`, `futon`, `server`, or `monorepo`.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --kind futon
+```
+
+<Note
+  title="Futon, Server, and Monorepo kinds require the beta CLI"
+  type="warning"
+>
+  `--kind futon` / `--kind server` / `--kind monorepo` shipped in a newer
+  `create-rasengan` release than what the `latest` npm dist-tag currently points
+  to. Use `npx create-rasengan@beta --kind futon` (etc.) until `latest` catches
+  up. See the [Futon](/docs/futon/getting-started/installation) and
+  [Server](/docs/server/getting-started/installation) installation pages for
+  kind-specific walkthroughs.
+</Note>
+
+#### template (--template, frontend kind only)
+
+`--template` selects a frontend template directly: `blank`, `tailwind`, or `shadcn`.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --kind frontend --template tailwind
+```
+
+#### skip questions (-y or --yes)
+
+`-y` stands for `yes` — the CLI takes all default answers (frontend, TypeScript, blank template, file-based routing) without prompting.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app -y
+```
+
+#### beta (--beta or --experimental)
+
+`--beta` scaffolds the project with the latest beta version of the `rasengan` dependency itself (not the CLI). This only affects the frontend kind's `rasengan` dependency — it has no effect for `futon`/`server`/`monorepo` kinds, which pin their own package versions directly. If no beta version is currently available, this option has no effect.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --beta
+```
+
+<Note title="Don't confuse this with @beta on the CLI itself" type="info">
+  `create-rasengan@beta` (the npm dist-tag) and `--beta`/`--experimental` (the
+  CLI flag) are two different things. The dist-tag gets you a newer version of
+  the `create-rasengan` tool — currently required for the
+  `futon`/`server`/`monorepo` kinds. The flag selects a beta version of the
+  *scaffolded* `rasengan` dependency, for frontend projects only.
+</Note>
+
+#### git (--git)
+
+`--git` initializes a git repository and creates the first commit after the project has been generated.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --git
+```
+
+#### language (--language, frontend kind only)
+
+`--language` selects `typescript` or `javascript` directly.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --language typescript
+```
+
+The default language is `typescript`.
+
+#### chidori (--chidori)
+
+`--chidori` scaffolds a documentation website using [Chidori](https://chidori.rasengan.dev) instead of any of the four project kinds above — it's a separate, standalone template.
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --chidori
+```
+
+## Why use create-rasengan?
+
+`create-rasengan` lets you create a new Rasengan.js project — frontend or backend — within seconds. It's officially maintained by the creators of Rasengan.js, and includes a number of benefits:
+
+- **Interactive Experience**: Running `npx create-rasengan@latest` launches an interactive experience that guides you through setting up a project.
+- **Direct use**: You don't need to install the CLI globally before using it.
+- **One tool, four project kinds**: The same CLI scaffolds a frontend app, a standalone Futon service, a full Rasengan Server backend, or a monorepo combining a frontend and a backend.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a
+    href="https://github.com/rasengan-dev/rasenganjs/discussions"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    GitHub Discussions
+  </a>
+  – Ask questions and share ideas.
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">
+    X (Twitter)
+  </a>
+  – Stay updated with the latest news.
+- <a
+    href="https://www.linkedin.com/company/rasenganjs/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Linkedin
+  </a>
+  – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).

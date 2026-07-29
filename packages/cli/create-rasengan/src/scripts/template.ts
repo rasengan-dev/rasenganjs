@@ -66,7 +66,6 @@ export default async function createProjectFromTemplate(options: {
     createSpinner.text = 'Cloning the project...';
 
     try {
-      // Clone the template repository
       await git.clone(repository, '.tmp', ['--no-checkout', '--depth', '1']);
     } catch (error) {
       createSpinner.fail(

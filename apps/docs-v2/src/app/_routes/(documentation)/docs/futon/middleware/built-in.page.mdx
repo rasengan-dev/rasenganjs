@@ -1,0 +1,159 @@
+---
+metadata:
+  title: Built-in Middleware | Core Concepts | Futon | Rasengan.js
+  description: CORS, logging, compression, auth, and body parsing middleware shipped with Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Built-in Middleware
+
+Futon ships a small set of production-ready middleware, all exported from `@rasenganjs/futon`.
+
+## cors()
+
+Handles preflight `OPTIONS` requests and decorates responses with CORS headers.
+
+```ts title="cors()" showLineNumbers
+import { cors } from '@rasenganjs/futon';
+
+app.use(
+  cors({
+    origin: 'https://myapp.com',
+    credentials: true,
+  })
+);
+```
+
+| Option           | Default                                    | Description                         |
+| ---------------- | ------------------------------------------ | ----------------------------------- |
+| `origin`         | `"*"`                                      | Allowed origin(s) — string or array |
+| `methods`        | `"GET, POST, PUT, PATCH, DELETE, OPTIONS"` | Allowed methods                     |
+| `allowedHeaders` | `"Content-Type, Authorization"`            | Allowed request headers             |
+| `exposedHeaders` | —                                          | Headers visible to the browser      |
+| `credentials`    | `false`                                    | Allow cookies / auth headers        |
+| `maxAge`         | —                                          | Preflight cache duration (seconds)  |
+| `optionsStatus`  | `204`                                      | Status code for preflight responses |
+
+## logger()
+
+Logs method, path, status, duration, and response size for every request.
+
+```ts title="logger()" showLineNumbers
+import { logger } from '@rasenganjs/futon';
+
+app.use(logger()); // default, colorized single-line
+app.use(logger({ skip: ['/health'] })); // skip noisy paths
+app.use(logger({ log: (entry) => pino.info(entry) })); // structured logging
+```
+
+`log` receives a structured `LogEntry` (`{ method, pathname, search, status, duration, size }`) instead of a pre-formatted string, so you control the output format entirely.
+
+## bodyParser()
+
+Eagerly parses the request body based on `Content-Type` and stores the result on `ctx.state` (default key `"body"`) and `ctx.body`.
+
+```ts title="bodyParser()" showLineNumbers
+import { bodyParser } from '@rasenganjs/futon';
+
+app.use(bodyParser());
+
+app.post('/api/data', async (ctx) => {
+  return json({ received: ctx.body });
+});
+```
+
+| Option          | Description                                                                      |
+| --------------- | -------------------------------------------------------------------------------- |
+| `key`           | State key to store the parsed body under (default `"body"`)                      |
+| `maxSize`       | Enforces a byte limit via `bodyLimit()` internally                               |
+| `allowedTypes`  | Only parse matching `Content-Type`s                                              |
+| `skipMultipart` | Leave `multipart/form-data` bodies unread, so `fileUpload()` parses them instead |
+
+GET, HEAD, and DELETE requests are never parsed.
+
+## basicAuth() and bearerToken()
+
+Extract credentials from the `Authorization` header. Both accept an optional `verify` callback — without it, credentials are decoded/extracted but not validated, leaving that decision to your handler.
+
+```ts title="basicAuth()" showLineNumbers
+import { basicAuth } from '@rasenganjs/futon';
+
+app.use(
+  basicAuth({
+    verify: (username, password) =>
+      username === 'admin' && password === 'secret',
+  })
+);
+
+app.get('/protected', async (ctx) => {
+  const { username } = ctx.get('auth');
+  return json({ user: username });
+});
+```
+
+```ts title="bearerToken()" showLineNumbers
+import { bearerToken } from '@rasenganjs/futon';
+
+app.use(
+  bearerToken({
+    verify: async (token) => (await db.users.findByToken(token)) ?? false,
+  })
+);
+
+app.get('/me', async (ctx) => json({ user: ctx.get('token') }));
+```
+
+With `verify` provided, a missing/invalid credential short-circuits with `401 Unauthorized` (plus the matching `WWW-Authenticate` header) before your route handler ever runs.
+
+## compress()
+
+Gzip/Brotli/deflate-compresses response bodies over a size threshold, based on `Accept-Encoding`.
+
+```ts title="compress()" showLineNumbers
+import { compress } from '@rasenganjs/futon';
+
+app.use(compress()); // compresses bodies over 1 KB by default
+```
+
+Uses the Web `CompressionStream` API — available in modern Node (22+), Bun, Deno, and browsers. Skips compression silently where unavailable.
+
+## requestId()
+
+Assigns a unique ID to every request — reads `X-Request-Id` if the client sent one, otherwise generates a UUID.
+
+```ts title="requestId()" showLineNumbers
+import { requestId } from '@rasenganjs/futon';
+
+app.use(requestId());
+
+app.use(async (ctx, next) => {
+  console.log('Handling request', ctx.get('requestId'));
+  return next();
+});
+```
+
+## bodyLimit()
+
+Enforces a maximum request body size, rejecting with `413 Payload Too Large` before the body is fully buffered:
+
+```ts title="bodyLimit()" showLineNumbers
+import { bodyLimit } from '@rasenganjs/futon';
+
+app.use(bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5 MB
+```
+
+It checks `Content-Length` first, then streams and counts bytes as a fallback — so a request lying about its size is still caught mid-stream.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/request-response/cookies',
+    label: 'Cookies',
+  }}
+  next={{
+    href: '/docs/futon/middleware/custom',
+    label: 'Custom Middleware',
+  }}
+/>

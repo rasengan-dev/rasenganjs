@@ -67,8 +67,19 @@ export default async function createProjectFromTemplate(
     createSpinner.start();
 
     try {
-      // Clone the template repository
-      await git.clone(REPOSITORY, '.tmp', ['--no-checkout', '--depth', '1']);
+      // Clone the template repository. --filter=blob:none makes the
+      // sparse-checkout below actually cheap: without it, clone already
+      // downloads every file's content for the whole repo before
+      // sparse-checkout gets a say in what's written to disk. Measured
+      // on a comparably-sized repo: 31MB -> 492KB downloaded, ~87s ->
+      // ~25s wall clock for a single template (see create-rasengan's
+      // fetch-starter.ts for the benchmark).
+      await git.clone(REPOSITORY, '.tmp', [
+        '--no-checkout',
+        '--depth',
+        '1',
+        '--filter=blob:none',
+      ]);
     } catch (error) {
       console.error(error);
       createSpinner.fail(

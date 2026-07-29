@@ -1,0 +1,63 @@
+---
+metadata:
+  title: Query Parameters | Core Concepts | Futon | Rasengan.js
+  description: Read URL query parameters via ctx.query in Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Query Parameters
+
+`ctx.query` gives you access to the request's URL query string. It's both **callable** and **indexable** — pick whichever reads better at the call site.
+
+## Reading Query Params
+
+```ts title="Both access styles work" showLineNumbers
+app.get('/search', async (ctx) => {
+  const page = ctx.query('page'); // callable style
+  const limit = ctx.query.limit; // property style
+
+  return json({ page, limit });
+});
+```
+
+A request to `/search?page=2&limit=20` produces `page: "2"`, `limit: "20"`. All values are plain strings — parse numbers/booleans yourself if needed.
+
+## Iterating All Params
+
+Since query values are also set as own properties on the `query` function, `Object.keys()` gives you every param name:
+
+```ts title="List every query param" showLineNumbers
+app.get('/debug', async (ctx) => {
+  const keys = Object.keys(ctx.query);
+  return json({ keys });
+});
+```
+
+## Lazy Parsing
+
+`ctx.query` is parsed from the request URL **on first access** and cached for the rest of the request. If a handler never reads `ctx.query`, the query string is never parsed at all — a small but deliberate performance detail.
+
+## Missing Params
+
+Accessing a param that wasn't provided returns `undefined` — there's no throwing:
+
+```ts title="Missing params are undefined" showLineNumbers
+app.get('/items', async (ctx) => {
+  const sort = ctx.query.sort ?? 'created_at'; // fall back to a default
+  return json({ sort });
+});
+```
+
+<Pagination
+  prev={{
+    href: '/docs/futon/context/overview',
+    label: 'Context Object',
+  }}
+  next={{
+    href: '/docs/futon/request-response/request',
+    label: 'Request Utilities',
+  }}
+/>

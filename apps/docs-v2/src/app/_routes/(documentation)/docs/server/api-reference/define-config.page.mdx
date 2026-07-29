@@ -1,0 +1,118 @@
+---
+metadata:
+  title: defineConfig | API Reference | Rasengan Server | Rasengan.js
+  description: defineConfig(), RasenganServerConfig, BuildConfig, and ConfigHolder API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# defineConfig
+
+```ts
+import {
+  defineConfig,
+  type RasenganServerConfig,
+  type BuildConfig,
+} from '@rasenganjs/server';
+```
+
+See [Config & Build](/docs/server/core-concepts/config-and-build) for usage and how config interacts with CLI flags — this page is the flat type reference.
+
+## defineConfig()
+
+```ts
+function defineConfig(config: RasenganServerConfig): RasenganServerConfig;
+```
+
+Typed pass-through helper — returns the same object you pass in, with type-checking. Used in `rasengan.server.ts`:
+
+```ts title="rasengan.server.ts" showLineNumbers
+import { defineConfig } from '@rasenganjs/server';
+
+export default defineConfig({
+  entry: 'src/main.ts',
+  port: 4000,
+});
+```
+
+## RasenganServerConfig
+
+```ts
+interface RasenganServerConfig {
+  entry?: string; // default "src/main.ts"
+  port?: number; // default 3000
+  host?: string; // default "0.0.0.0"
+  preset?: 'node' | 'bun' | 'workerd'; // default "node"
+  watchDir?: string | string[]; // default "src/"
+  build?: BuildConfig;
+}
+```
+
+| Field      | Description                                                                   |
+| ---------- | ----------------------------------------------------------------------------- |
+| `entry`    | Path to the server entry file.                                                |
+| `port`     | Port the server listens on.                                                   |
+| `host`     | Host address to bind to.                                                      |
+| `preset`   | Target runtime — `"node"`, `"bun"`, or `"workerd"` (Cloudflare Workers).      |
+| `watchDir` | Directory (or directories) watched for file changes in `rasengan-server dev`. |
+| `build`    | Production build output configuration — see [`BuildConfig`](#buildconfig).    |
+
+Every field the CLI accepts as a flag maps directly to one of these — see [CLI](/docs/server/api-reference/cli#flags) for the flag-to-field table.
+
+## BuildConfig
+
+```ts
+interface BuildConfig {
+  outDir?: string; // default "dist"
+  minify?: boolean; // default true
+  formats?: Array<'single-file' | 'directory'>; // default ['single-file', 'directory']
+}
+```
+
+| Field     | Description                                                                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `outDir`  | Output directory for the production bundle.                                                                                                         |
+| `minify`  | Whether to minify the bundled output.                                                                                                               |
+| `formats` | Which output shapes to produce — `"single-file"` (one `server.bundle.mjs`) and/or `"directory"` (one `.mjs` per source file, preserving structure). |
+
+## ConfigHolder
+
+```ts
+class ConfigHolder {
+  static set(config: RasenganServerConfig): void;
+  static reset(): void;
+  static get(
+    overrides?: Partial<RasenganServerConfig>
+  ): Promise<Readonly<RasenganServerConfig>>;
+}
+```
+
+Static, process-wide config cache used by `bootstrap()` and the CLI — most apps never call this directly.
+
+| Method            | Description                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `set(config)`     | Seed the cache directly (used by the CLI, which resolves config before spawning the app process). |
+| `reset()`         | Clear the cached config — useful in tests, so each test loads a fresh config.                     |
+| `get(overrides?)` | Resolve the config, then shallow-merge `overrides` on top. See resolution order below.            |
+
+`get()`'s resolution order, first match wins:
+
+1. An already-cached instance (set via a prior `get()` or `set()` call).
+2. The `RASENGAN_SERVER_CONFIG` environment variable, parsed as JSON.
+3. `dist/config.json`, if present (the production build output).
+4. `rasengan.server.ts`/`.js`, loaded from disk via the CLI's config loader.
+
+Once resolved, the config is frozen and cached process-wide — subsequent `get()` calls only re-apply `overrides`, they don't re-resolve from scratch.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/logger',
+    label: 'Logger',
+  }}
+  next={{
+    href: '/docs/server/api-reference/cli',
+    label: 'CLI',
+  }}
+/>

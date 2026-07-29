@@ -1,0 +1,60 @@
+---
+metadata:
+  title: What's Futon? | Getting Started | Rasengan.js
+  description: Discover Futon, the WinterCG-compatible HTTP engine that powers Rasengan Server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# Welcome to Futon
+
+`Futon` is the **WinterCG-compatible HTTP engine** at the foundation of the Rasengan backend stack. It gives you a router, a middleware pipeline, and request/response helpers built entirely on Web API primitives — no Node-specific types leak into your route handlers.
+
+## What is Futon?
+
+Futon is a **zero-dependency** library built on `Request`, `Response`, `Headers`, and `URL` — the same primitives every modern JavaScript runtime understands. That means the exact same route handler runs unchanged on Node, Bun, Deno, or Cloudflare Workers.
+
+You can use Futon directly as a lightweight standalone HTTP library, or through [`@rasenganjs/server`](/docs/server/getting-started/introduction), which builds controllers, dependency injection, and WebSockets on top of it.
+
+## Key Features
+
+| Feature                      | Description                                                                                             |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **`Radix-tree Router`**      | O(k) route matching regardless of how many routes you register.                                         |
+| **`Onion-model Middleware`** | Koa-style `(ctx, next)` composition — the same pattern used by Express and Koa.                         |
+| **`WinterCG Adapters`**      | Ship the same handler to Node, Bun, Deno, or Workers via `toWinterCgHandler()` or `toExpressHandler()`. |
+| **`File Uploads`**           | Multer-style `fileUpload()` middleware with pluggable storage engines.                                  |
+| **`Lifecycle Hooks`**        | Observe `beforeRequest`, `afterResponse`, and `onError` without adding middleware.                      |
+| **`Typed Context`**          | A single `ctx` object carries the request, params, query, and a chainable response builder.             |
+
+## A Minimal Example
+
+```ts title="server.ts" showLineNumbers
+import { Futon, json, logger, cors } from '@rasenganjs/futon';
+
+const app = new Futon();
+
+app.use(logger());
+app.use(cors());
+
+app.get('/api/health', async () => json({ status: 'ok' }));
+
+app.onError(async (error, ctx) => {
+  console.error(error);
+  return json({ error: error.message }, { status: 500 });
+});
+
+export default app;
+```
+
+Futon itself never opens a port — that's the job of a **runtime adapter** (see [Runtime Adapters](/docs/futon/adapters/runtime)). Futon only knows how to turn a `Request` into a `Response`.
+
+## How This Documentation Is Organized
+
+- **Getting Started** — install Futon and run your first handler.
+- **Core Concepts** — routing, context, middleware, file uploads, hooks, and adapters.
+- **API Reference** — the full exported surface of `@rasenganjs/futon`.
+
+If you're building a full backend application with controllers and dependency injection, you'll likely want [`@rasenganjs/server`](/docs/server/getting-started/introduction) instead, which uses Futon under the hood.

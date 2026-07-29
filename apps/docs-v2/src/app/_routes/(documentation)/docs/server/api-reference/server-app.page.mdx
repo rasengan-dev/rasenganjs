@@ -1,0 +1,113 @@
+---
+metadata:
+  title: ServerApp | API Reference | Rasengan Server | Rasengan.js
+  description: The ServerApp class API reference.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# ServerApp
+
+```ts
+import { ServerApp, bootstrap } from '@rasenganjs/server';
+```
+
+Core application class — orchestrates module registration, middleware layering, dependency injection, validation, and compilation into a runtime Futon. Normally configured through `bootstrap()`'s callback rather than constructed directly.
+
+## Modules & Plugins
+
+| Method                   | Signature                                        | Description                                              |
+| ------------------------ | ------------------------------------------------ | -------------------------------------------------------- |
+| `registerModule(mod)`    | `(ModuleConfig \| (() => ModuleConfig)) => void` | Register a module or module factory                      |
+| `registerPlugin(plugin)` | `(ModulePlugin) => void`                         | Claim a `ModuleConfig` extension key (e.g. `'gateways'`) |
+
+## Middleware
+
+| Method                 | Signature                | Description                            |
+| ---------------------- | ------------------------ | -------------------------------------- |
+| `use(middleware)`      | `(Middleware) => void`   | Register global middleware             |
+| `enableCors(options?)` | `(CORSOptions?) => void` | Enable CORS (Futon's `cors()` options) |
+
+## Error / 404 Handlers
+
+| Method              | Signature                                                     | Description                                   |
+| ------------------- | ------------------------------------------------------------- | --------------------------------------------- |
+| `onError(handler)`  | `((error: Error, ctx: Context) => Promise<Response>) => void` | Global error handler (default: 500 response)  |
+| `notFound(handler)` | `((ctx: Context) => Promise<Response>) => void`               | 404 handler (default: plain-text "Not Found") |
+
+## WebSockets
+
+| Method                      | Signature                             | Description                                          |
+| --------------------------- | ------------------------------------- | ---------------------------------------------------- |
+| `websocket(path, handlers)` | `(string, WebSocketHandlers) => void` | Register a low-level WebSocket route (RFC-0001)      |
+| `getWebSocketRegistry()`    | `() => WebSocketRegistry \| null`     | The built registry, `null` until `compile()` has run |
+
+## Validation
+
+```ts
+configureValidation(config: Partial<ValidationConfig>): void
+```
+
+Sets the schema adapter and/or default error handler. Defaults to `zodAdapter` + a 400 JSON error handler.
+
+## App Lifecycle
+
+| Method               | Signature                               | Description                                  |
+| -------------------- | --------------------------------------- | -------------------------------------------- |
+| `onInit(handler)`    | `(() => void \| Promise<void>) => void` | Runs once before the server accepts requests |
+| `onDestroy(handler)` | `(() => void \| Promise<void>) => void` | Runs during graceful shutdown                |
+
+## Compilation
+
+```ts
+compile(): Futon
+getBuildSummary(): BuildSummary | null
+close(): Promise<void>
+```
+
+`compile()` flattens the module tree, registers providers with module-scoped visibility, registers every controller's routes with the correct middleware nesting, and returns the resulting `Futon`. Called internally by `bootstrap()` — you don't normally call it yourself.
+
+```ts title="BuildSummary"
+interface BuildSummary {
+  modules: ModuleSummary[];
+  durationMs: number;
+}
+
+interface ModuleSummary {
+  name: string;
+  prefix?: string;
+  routes: Array<{ method: string; path: string }>;
+  providers: string[];
+  pluginGroups: Record<string, string[]>; // keyed by plugin extension key, e.g. "gateways"
+  middlewareCount: number;
+}
+```
+
+## bootstrap()
+
+```ts
+function bootstrap(
+  callback: (app: ServerApp) => void | Promise<void>,
+  overrides?: Partial<RasenganServerConfig>
+): Promise<ServerHandle>;
+
+interface ServerHandle {
+  close(): void;
+  app: ServerApp;
+}
+```
+
+The recommended entry point — creates a `ServerApp`, loads config, runs your callback, compiles, then selects and starts the matching runtime adapter. Returns a handle for programmatic shutdown.
+
+<Pagination
+  prev={{
+    href: '/docs/server/ecosystem/drizzle',
+    label: 'Database (Drizzle)',
+  }}
+  next={{
+    href: '/docs/server/api-reference/controller',
+    label: 'Controller',
+  }}
+/>

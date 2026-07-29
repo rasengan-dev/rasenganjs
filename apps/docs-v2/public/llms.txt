@@ -1,0 +1,368 @@
+# Rasengan.js
+
+> Rasengan.js is a full-stack ecosystem for React: a Vite-based meta-framework (SSR/SSG/SPA, file-based & config-based routing, MDX) paired with Futon, a WinterCG-compatible HTTP runtime, and Rasengan Server, a NestJS-inspired backend framework built on Futon. Ships with agent skills for AI coding assistants.
+
+## Rasengan — Getting Started
+
+- [What's Rasengan.js?](https://rasengan.dev/docs/getting-started/introduction): Overview of the framework and its features
+- [Installation](https://rasengan.dev/docs/getting-started/installation): Scaffold a project with `npx create-rasengan@latest`
+- [Project Structure](https://rasengan.dev/docs/getting-started/project-structure): Default layout of a Rasengan.js project
+- [Upgrading](https://rasengan.dev/docs/getting-started/upgrading): Upgrade to the latest (or a specific) version
+
+## Rasengan — Routing
+
+- [Base Concepts](https://rasengan.dev/docs/routing/base-concepts): How routing works in Rasengan.js
+- [Router Configuration](https://rasengan.dev/docs/routing/router-configuration): Config-based routing with `defineRouter()`
+- [Defining Routes](https://rasengan.dev/docs/routing/routes): Page components, layouts, and the `RouterComponent` class
+- [Defining Layouts](https://rasengan.dev/docs/routing/layouts): Layout components for shared UI around pages
+- [File-Based Routing](https://rasengan.dev/docs/routing/file-based-routing): Automatic routing via `src/app/_routes/`
+- [Dynamic Routes](https://rasengan.dev/docs/routing/dynamic-routes): Dynamic segments `[param]`, optional `[_param]`, route groups `(group)`
+- [Linking & Navigation](https://rasengan.dev/docs/routing/linking-and-navigation): Client-side navigation with `Link` and `NavLink`
+- [Active Links](https://rasengan.dev/docs/routing/active-link): Style the active link in a navigation bar
+- [Redirecting](https://rasengan.dev/docs/routing/redirecting): Define redirects in config or from loaders
+- [Error Handling](https://rasengan.dev/docs/routing/error-handling): Error boundaries and 404 handling
+
+## Rasengan — Rendering
+
+- [SSR](https://rasengan.dev/docs/rendering/ssr): Server-side rendering with streaming
+- [CSR](https://rasengan.dev/docs/rendering/csr): Client-side rendering (SPA mode, `ssr: false`)
+- [Prerendering](https://rasengan.dev/docs/rendering/prerendering): Static site generation (SSG) with `prerender: true`
+
+## Rasengan — Styling
+
+- [CSS Modules](https://rasengan.dev/docs/styling/css-modules): Component-scoped CSS
+- [Tailwind CSS](https://rasengan.dev/docs/styling/tailwindcss): Tailwind CSS integration
+- [Preprocessors](https://rasengan.dev/docs/styling/preprocessors): Sass, Less, and Stylus support
+
+## Rasengan — Optimizing
+
+- [Images](https://rasengan.dev/docs/optimizing/images): Image optimization with `@rasenganjs/image`
+- [Metadata](https://rasengan.dev/docs/optimizing/metadata): Title, description, Open Graph, and Twitter cards
+- [Static Assets](https://rasengan.dev/docs/optimizing/static-assets): Serving files from the `public/` directory
+- [React Compiler](https://rasengan.dev/docs/optimizing/react-compiler): Sage Mode — automatic memoization at build time
+
+## Rasengan — Configuring
+
+- [TypeScript](https://rasengan.dev/docs/configuring/typescript): TypeScript setup
+- [Environment Variables](https://rasengan.dev/docs/configuring/environment-variables): Managing env vars
+- [Module Aliases](https://rasengan.dev/docs/configuring/modules-aliases): Path aliases like `@/`
+
+## Rasengan — Deploying
+
+- [Vercel](https://rasengan.dev/docs/deploying/vercel): Deploy with the `@rasenganjs/vercel` adapter
+- [Node.js](https://rasengan.dev/docs/deploying/node): Self-host with `@rasenganjs/serve`
+
+## Rasengan — API Reference
+
+- [Link](https://rasengan.dev/docs/api-reference/components/link): Client-side navigation component
+- [NavLink](https://rasengan.dev/docs/api-reference/components/navlink): `Link` variant with active-state styling
+- [Outlet](https://rasengan.dev/docs/api-reference/components/outlet): Renders the matched child route
+- [Component](https://rasengan.dev/docs/api-reference/components/component): Root component that wires up the router
+- [Template](https://rasengan.dev/docs/api-reference/components/template): HTML document shell (Head, Body, Script)
+- [Layout Component](https://rasengan.dev/docs/api-reference/components/layout-component): Layout component API
+- [Page Component](https://rasengan.dev/docs/api-reference/components/page-component): Page component API
+- [Router Component](https://rasengan.dev/docs/api-reference/components/router-component): The `RouterComponent` class
+- [ScrollRestoration](https://rasengan.dev/docs/api-reference/components/scroll-restoration): Scroll position management per pathname
+- [defineConfig](https://rasengan.dev/docs/api-reference/functions/define-config): Framework configuration function
+- [defineRouter](https://rasengan.dev/docs/api-reference/functions/define-router): Config-based router definition
+- [defineRoutesGroup](https://rasengan.dev/docs/api-reference/functions/define-routes-group): Group routes under a shared path prefix
+- [defineStaticPaths](https://rasengan.dev/docs/api-reference/functions/define-static-paths): Generate SSG static paths for dynamic routes
+- [renderApp](https://rasengan.dev/docs/api-reference/functions/render-app): Client entry point for hydration
+- [Layout file convention](https://rasengan.dev/docs/api-reference/conventions/layout-component): `layout.tsx` naming
+- [Page file convention](https://rasengan.dev/docs/api-reference/conventions/page-component): `*.page.tsx` naming
+- [Router file convention](https://rasengan.dev/docs/api-reference/conventions/router-component): `app.router.ts` naming
+- [create-rasengan CLI](https://rasengan.dev/docs/api-reference/create-rasengan-cli): Project scaffolding tool
+- [rasengan CLI](https://rasengan.dev/docs/api-reference/rasengan-cli): `dev` and `build` commands
+- [rasengan.config.js](https://rasengan.dev/docs/api-reference/rasengan-config): Full config file reference
+
+## Futon — the HTTP runtime
+
+`@rasenganjs/futon` is the zero-dependency, WinterCG-compatible HTTP middleware/router library underneath `@rasenganjs/server` — usable standalone on Node, Bun, or Workerd.
+
+- [What's Futon?](https://rasengan.dev/docs/futon/getting-started/introduction): The WinterCG-compatible HTTP engine that powers Rasengan Server
+- [Installation](https://rasengan.dev/docs/futon/getting-started/installation): Install `@rasenganjs/futon` and a runtime adapter
+- [Quick Start](https://rasengan.dev/docs/futon/getting-started/quick-start): Build and run your first standalone Futon server
+- [Context Object](https://rasengan.dev/docs/futon/context/overview): The `ctx` object every middleware and handler receives
+- [Query Parameters](https://rasengan.dev/docs/futon/context/query-params): Read URL query params via `ctx.query`
+- [Error Handling](https://rasengan.dev/docs/futon/error-handling): `HttpError` classes, `onError`, and `notFound` handlers
+- [Hooks](https://rasengan.dev/docs/futon/hooks): Observe the request lifecycle without adding middleware
+- [Built-in Middleware](https://rasengan.dev/docs/futon/middleware/built-in): CORS, logging, compression, auth, body parsing
+- [Custom Middleware](https://rasengan.dev/docs/futon/middleware/custom): Write your own onion-model middleware
+- [Request Utilities](https://rasengan.dev/docs/futon/request-response/request): Parse URLs and request bodies
+- [Response Helpers](https://rasengan.dev/docs/futon/request-response/response): Response factories and the chainable `ResponseBuilder`
+- [Cookies](https://rasengan.dev/docs/futon/request-response/cookies): Read and write cookies
+- [Router](https://rasengan.dev/docs/futon/routing/router): Register routes, radix-tree dispatch
+- [Route Patterns](https://rasengan.dev/docs/futon/routing/route-patterns): Static, dynamic, optional, wildcard segments
+- [Route Groups](https://rasengan.dev/docs/futon/routing/route-groups): Scope a URL prefix and middleware with `router.group()`
+- [fileUpload() Middleware](https://rasengan.dev/docs/futon/file-uploads/overview): Multer-style multipart file upload handling
+- [Storage Engines](https://rasengan.dev/docs/futon/file-uploads/storage-engines): `MemoryStorage`, `DiskStorage`, and custom engines
+- [Lazy Request (opt-in)](https://rasengan.dev/docs/futon/performance/lazy-request): Defer `Request` construction on the Node hot path
+- [Express Adapter](https://rasengan.dev/docs/futon/adapters/express): Mount a Futon app inside an existing Express app
+- [Runtime Adapters](https://rasengan.dev/docs/futon/adapters/runtime): Node, Bun, and Workerd adapters via `@rasenganjs/runtime`
+- [WinterCG Adapter](https://rasengan.dev/docs/futon/adapters/wintercg): Deploy to any WinterCG-compatible runtime
+- [Futon (API)](https://rasengan.dev/docs/futon/api-reference/futon): The `Futon` app class reference
+- [Router (API)](https://rasengan.dev/docs/futon/api-reference/router): The `Router` class reference
+- [Context (API)](https://rasengan.dev/docs/futon/api-reference/context): `Context`, `createContext()`, and related types
+- [Request (API)](https://rasengan.dev/docs/futon/api-reference/request): Request-parsing utilities
+- [Response (API)](https://rasengan.dev/docs/futon/api-reference/response): `ResponseBuilder` and response factories
+- [Middleware (API)](https://rasengan.dev/docs/futon/api-reference/middleware): The `Middleware` type and built-in factories
+- [Hooks (API)](https://rasengan.dev/docs/futon/api-reference/hooks): `HookSystem`, `HookName`, `HookHandler`
+- [Errors (API)](https://rasengan.dev/docs/futon/api-reference/errors): The `HttpError` class hierarchy
+- [Upload (API)](https://rasengan.dev/docs/futon/api-reference/upload): `fileUpload()` and storage-engine types
+- [Adapters (API)](https://rasengan.dev/docs/futon/api-reference/adapters): `toExpressHandler()`, `toWinterCgHandler()`, `FetchHandler`
+
+## Rasengan Server — the backend framework
+
+`@rasenganjs/server` is a modular, controller-based backend framework built on `@rasenganjs/futon`, plus its ecosystem packages (`@rasenganjs/ws`, `@rasenganjs/queue`, `@rasenganjs/validators`, `@rasenganjs/drizzle`).
+
+- [What's Rasengan Server?](https://rasengan.dev/docs/server/getting-started/introduction): A NestJS-inspired backend framework built on Futon
+- [Installation](https://rasengan.dev/docs/server/getting-started/installation): Install `@rasenganjs/server` and scaffold a project
+- [Project Structure](https://rasengan.dev/docs/server/getting-started/project-structure): How a typical project is organized
+- [CLI](https://rasengan.dev/docs/server/getting-started/cli): `rasengan-server dev`, `build`, `start`
+- [Bootstrap & ServerApp](https://rasengan.dev/docs/server/core-concepts/bootstrap): `bootstrap()` and the `ServerApp` orchestrator
+- [Modules](https://rasengan.dev/docs/server/core-concepts/modules): Group controllers, providers, and middleware with `defineModule()`
+- [Controllers & Routing](https://rasengan.dev/docs/server/core-concepts/controllers): Declaring routes with `Controller` and the schema-aware `Router`
+- [Middleware](https://rasengan.dev/docs/server/core-concepts/middleware): Global, module, controller, and route-level layering
+- [Validation](https://rasengan.dev/docs/server/core-concepts/validation): Schema-based request validation with Zod
+- [WebSockets](https://rasengan.dev/docs/server/core-concepts/websockets): Low-level `app.websocket()` routes
+- [File Uploads](https://rasengan.dev/docs/server/core-concepts/file-uploads): Multipart file uploads in a controller
+- [Module Plugins](https://rasengan.dev/docs/server/core-concepts/module-plugins): Extension point for ecosystem packages to add `defineModule()` fields
+- [Config & Build](https://rasengan.dev/docs/server/core-concepts/config-and-build): `rasengan.server.ts` options and build output
+- [Providers & Tokens](https://rasengan.dev/docs/server/dependency-injection/providers): Registering and resolving DI providers
+- [Module Scoping](https://rasengan.dev/docs/server/dependency-injection/scoping): Visibility between modules — imports, exports, globals
+- [Lifecycle Hooks](https://rasengan.dev/docs/server/dependency-injection/lifecycle): Provider `onInit`/`onDestroy` and eager resolution
+- [Validation Adapters](https://rasengan.dev/docs/server/ecosystem/validation-adapters): `@rasenganjs/validators` and adapting other schema libraries
+- [WebSocket Gateways](https://rasengan.dev/docs/server/ecosystem/websocket-gateways): NestJS-style Gateway classes from `@rasenganjs/ws`
+- [Background Queues](https://rasengan.dev/docs/server/ecosystem/queues): Background job processing with `@rasenganjs/queue`
+- [Database (Drizzle)](https://rasengan.dev/docs/server/ecosystem/drizzle): Drizzle ORM via `DrizzleModule.forRoot()`
+- [ServerApp (API)](https://rasengan.dev/docs/server/api-reference/server-app): The `ServerApp` class reference
+- [Controller (API)](https://rasengan.dev/docs/server/api-reference/controller): The `Controller` abstract class and Router API
+- [Provider (API)](https://rasengan.dev/docs/server/api-reference/provider): The `Provider` abstract class
+- [Container (API)](https://rasengan.dev/docs/server/api-reference/container): The DI `Container`, `Provider`, `ProviderDefinition`
+- [defineConfig (API)](https://rasengan.dev/docs/server/api-reference/define-config): `RasenganServerConfig`, `BuildConfig`, `ConfigHolder`
+- [defineModule (API)](https://rasengan.dev/docs/server/api-reference/define-module): `defineModule()`, `ModuleConfig`, `ModulePlugin`
+- [Logger (API)](https://rasengan.dev/docs/server/api-reference/logger): `serverLogger()` and `serverLoggerMinimal()`
+- [Upload (API)](https://rasengan.dev/docs/server/api-reference/upload): File-upload types re-exported from Futon
+- [WebSocket (API)](https://rasengan.dev/docs/server/api-reference/websocket): `WebSocketRegistry` and runtime-agnostic types
+- [CLI (API)](https://rasengan.dev/docs/server/api-reference/cli): Command and flag reference
+
+## Packages
+
+- [Packages overview](https://rasengan.dev/packages): Every package that makes up the Rasengan.js ecosystem
+- [create-rasengan](https://rasengan.dev/packages/create-rasengan): CLI scaffolding tool (`npx create-rasengan`)
+- [@rasenganjs/kurama](https://rasengan.dev/packages/kurama): Zustand-inspired state management
+- [@rasenganjs/image](https://rasengan.dev/packages/image): Optimized image component with lazy loading
+- [@rasenganjs/theme](https://rasengan.dev/packages/theme): Light/dark/system theme management
+- [@rasenganjs/i18n](https://rasengan.dev/packages/i18n): Internationalization with locale-aware routing
+- [@rasenganjs/io](https://rasengan.dev/packages/io): Real-time client for WebSocket gateways
+- [@rasenganjs/kage-demo](https://rasengan.dev/packages/kage-demo): Interactive feature tours and onboarding flows
+- [@rasenganjs/mdx](https://rasengan.dev/packages/mdx): MDX plugin and components for Rasengan.js
+- [@rasenganjs/ws](https://rasengan.dev/packages/ws): WebSocket gateways with rooms and broadcasting
+- [@rasenganjs/queue](https://rasengan.dev/packages/queue): Background job queues with retries and dead-letter
+- [@rasenganjs/drizzle](https://rasengan.dev/packages/drizzle): Drizzle ORM integration for Rasengan Server
+- [@rasenganjs/serve](https://rasengan.dev/packages/serve): Production Express server for built apps
+- [@rasenganjs/vercel](https://rasengan.dev/packages/vercel): Vercel deployment adapter
+
+## Blog
+
+- [Blog index](https://rasengan.dev/blog): Release notes, tutorials, and community news
+- [@rasenganjs/i18n Stable & Introducing @rasenganjs/io](https://rasengan.dev/blog/rasengan-i18n-stable-and-io): Stable i18n release plus the new real-time IO package
+- [Rasengan v1.2.2](https://rasengan.dev/blog/rasengan-v1-2-2): Error overlay, LLM support files, and agent skills
+- [Rasengan v1.2.1](https://rasengan.dev/blog/rasengan-v1-2-1): Custom MDX components
+- [Rasengan v1.2.0](https://rasengan.dev/blog/rasengan-v1-2-0): Lazy route loading, React Compiler, and SSG
+- [Rasengan v1.1.3](https://rasengan.dev/blog/rasengan-v1-1-3): The `ScrollRestoration` component
+- [Rasengan v1.1.0](https://rasengan.dev/blog/rasengan-v1-1-0): File-based routing
+- [Rasengan v1 Stable](https://rasengan.dev/blog/rasengan-v1-stable): First stable release
+- [Rasengan 1.0.0 Beta](https://rasengan.dev/blog/rasengan-1-beta): First public beta
+
+## Site
+
+- [Showcase](https://rasengan.dev/showcase): Websites, apps, and templates built with Rasengan.js
+- [Agent Skills](https://rasengan.dev/skills): Installable skills that teach AI coding assistants Rasengan, Futon, and Rasengan Server
+
+## Agent Skills
+
+Rasengan.js ships specialized skills for AI coding assistants (Claude Code and other compatible agents), covering all three frameworks. Install with `npx skills add rasengan-dev/agent-skills --all`, or individually with `npx skills add rasengan-dev/agent-skills@<skill-name>`.
+
+- Repository: https://github.com/rasengan-dev/agent-skills
+- Frontend (`rasengan-*`): pages, routing, config, data-fetching, styling, project-setup, optimizing, deployment, ecosystem
+- Futon (`rasengan-futon-*`): core, routing, adapters
+- Rasengan Server (`rasengan-server-*`): core, validation, websockets, queues, uploads, drizzle
+
+## Quick Reference
+
+### AppConfig (Rasengan)
+```ts
+interface AppConfig {
+  ssr?: boolean;                                   // default: true
+  prerender?: boolean | { routes: string[] };      // SSG mode
+  sageMode?: { reactCompiler?: boolean | { compilationMode: 'annotation' } };
+  server?: { development?: { port?: number; open?: boolean } };
+  vite?: ViteConfig;                               // partial Vite overrides
+  redirects?: () => Promise<Redirect[]>;            // static redirect rules
+}
+```
+
+### RouterComponent properties
+| Property | Type | Description |
+|----------|------|-------------|
+| `layout` | `LayoutComponent \| RouteNode` | Layout component for the router |
+| `routers` | `RouterComponent[]` | Nested sub-routers |
+| `pages` | `PageComponent[] \| RouteNode[]` | Page components |
+| `loaderComponent` | `FunctionComponent` | Loading fallback |
+| `notFoundComponent` | `FunctionComponent` | 404 component |
+| `useParentLayout` | `boolean` | Inherit parent layout |
+
+### Metadata
+```ts
+type Metadata = {
+  title?: string;
+  description?: string;
+  openGraph?: { type?, title?, description?, url, image, width?, height? };
+  twitter?: { card: 'summary_large_image'|'summary', image, title, description?, creator?, site? };
+  links?: Array<{ rel, type?, sizes?, href }>;
+  metaTags?: Array<{ name?, property?, content }>;
+};
+```
+
+### File-based routing conventions
+| File pattern | Route segment |
+|-------------|---------------|
+| `layout.tsx` | Layout for the route group |
+| `*.page.tsx` / `*.page.mdx` | Page component |
+| `[param].page.tsx` | Dynamic segment `:param` |
+| `[_param].page.tsx` | Optional dynamic `:param?` |
+| `(group)/` | Route group (ignored in path) |
+| `_name/` | Optional static segment `name?` |
+
+### Required project files (Rasengan)
+- `rasengan.config.js` — Framework config using `defineConfig()`
+- `src/main.{jsx,tsx}` — Root App component (default export, receives `AppProps`)
+- `src/template.{jsx,tsx}` — HTML template (default export, receives `TemplateProps`)
+- `src/app/app.router.{js,ts}` — Router definition (default export, `RouterComponent`)
+- `src/index.{js,ts}` — Entry point calling `renderApp(App, AppRouter?)`
+- `src/app/_routes/` — File-based route definitions (optional)
+
+### Entry point pattern
+```ts
+import { renderApp } from 'rasengan/client';
+import App from './main';
+
+renderApp(App, AppRouter); // or renderApp(App) for config-based
+renderApp(App, AppRouter, { reactStrictMode: true }); // with strict mode
+```
+
+### Router definition (config-based)
+```ts
+import { RouterComponent, defineRouter } from 'rasengan';
+import Home from './home.page';
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({
+  pages: [Home],
+  layout: AppLayout,
+  notFoundComponent: NotFound,
+})(AppRouter);
+```
+
+### Router definition (file-based)
+```ts
+import { RouterComponent, defineRouter } from 'rasengan';
+import Router from 'virtual:rasengan/router';
+
+class AppRouter extends RouterComponent {}
+
+export default defineRouter({ imports: [Router] })(AppRouter);
+```
+
+### Page component
+```ts
+import { PageComponent } from 'rasengan';
+
+const Home: PageComponent = () => <main>Home</main>;
+Home.path = '/';
+Home.metadata = { title: 'Home', description: 'Home page' };
+export default Home;
+```
+
+### Layout component
+```ts
+import { Outlet, LayoutComponent } from 'rasengan';
+
+const AppLayout: LayoutComponent = () => <div><Outlet /></div>;
+AppLayout.path = '/';
+export default AppLayout;
+```
+
+### CLI commands
+```bash
+rasengan dev            # Start development server (port 5320)
+rasengan build          # Build for production
+rasengan-serve ./dist   # Serve production build
+
+rasengan-server dev     # Rasengan Server dev server
+rasengan-server build   # Build Rasengan Server for production
+rasengan-server start   # Start the production build
+```
+
+### Loader function (Rasengan)
+```ts
+import { LoaderFunction } from 'rasengan';
+
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const data = await fetchData(params.id);
+  return { props: { data }, meta: { title: 'Page Title' } };
+};
+```
+
+### Futon app (standalone)
+```ts
+import { Futon } from '@rasenganjs/futon';
+import { serve } from '@rasenganjs/runtime-node';
+
+const app = new Futon();
+
+app.get('/hello/:name', (ctx) => ctx.json({ message: `Hello ${ctx.params.name}` }));
+
+serve(app, { port: 3000 });
+```
+
+### Rasengan Server controller
+```ts
+import { Controller } from '@rasenganjs/server';
+
+export class UsersController extends Controller {
+  routes() {
+    this.router.get('/users', this.list);
+  }
+
+  list = (ctx) => ctx.json({ users: [] });
+}
+```
+
+### Build output structure
+```
+dist/
+  client/        # Client bundle + manifest.json
+    assets/      # JS, CSS, config.json
+    .vite/       # Vite manifest
+  server/        # SSR server bundle
+static/          # Pre-rendered HTML (SSG)
+```
+
+## Architecture
+
+Rasengan.js is built on three pillars:
+- **Vite** for fast development (HMR) and optimized builds
+- **React Router v7** for client/server routing with loaders and actions
+- **Express** for the dev and production SSR server
+
+Rendering modes:
+| Mode | Config | Description |
+|------|--------|--------------|
+| SSR | `ssr: true` (default) | Server renders HTML, client hydrates |
+| SPA | `ssr: false` | Client-side only rendering |
+| SSG | `prerender: true` | Pre-renders HTML at build time |
+
+Futon and Rasengan Server share the same runtime-agnostic design (Node, Bun, Workerd, or any WinterCG-compatible host) and can be used standalone, outside of a Rasengan.js frontend project.

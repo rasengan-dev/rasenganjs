@@ -1,0 +1,167 @@
+---
+metadata:
+  title: Response | API Reference | Futon | Rasengan.js
+  description: ResponseBuilder, every response factory function, and cookie helpers exported by Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Response
+
+```ts
+import { ResponseBuilder } from '@rasenganjs/futon';
+import {
+  json,
+  text,
+  html,
+  redirect,
+  status,
+  notFound,
+  streamResponse,
+  nodeStreamToResponse,
+  setCookie,
+  clearCookie,
+  serializeCookie,
+} from '@rasenganjs/futon';
+import type { CookieOptions } from '@rasenganjs/futon';
+```
+
+Every function here returns a standard Web API `Response`, so the pipeline stays platform-agnostic. See [Response Helpers](/docs/futon/request-response/response) for usage.
+
+## ResponseBuilder
+
+```ts
+class ResponseBuilder {
+  statusCode: number; // 200 by default
+
+  status(code: number): this;
+  header(name: string, value: string): this;
+  removeHeader(name: string): this;
+
+  json(data: unknown, init?: ResponseInit): Response;
+  send(text: string, init?: ResponseInit): Response;
+  html(text: string, init?: ResponseInit): Response;
+  redirect(url: string, status?: number): Response;
+  stream(stream: ReadableStream<Uint8Array>, init?: ResponseInit): Response;
+  nodeStream(
+    nodeStream: { pipe: (destination: WritableStream<Uint8Array>) => void },
+    init?: ResponseInit
+  ): Response;
+}
+```
+
+Available as `ctx.response` / `ctx.res`, created lazily on first access. `status()`, `header()`, and `removeHeader()` are chainable and mutate the builder in place; every other method finalizes and returns a `Response` (further calls to `status()`/`header()` after that are no-ops).
+
+```ts title="Chaining example" showLineNumbers
+app.get('/api', async (ctx) => {
+  return ctx.res
+    .status(201)
+    .header('X-Created', 'true')
+    .json({ created: true });
+});
+
+app.get('/old-page', async (ctx) => {
+  return ctx.res.redirect('/new-page', 301);
+});
+```
+
+| Method                          | Description                                                                       |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `status(code)`                  | Set the status code.                                                              |
+| `header(name, value)`           | Set a response header.                                                            |
+| `removeHeader(name)`            | Remove a previously set header.                                                   |
+| `json(data, init?)`             | Finalize as a JSON response.                                                      |
+| `send(text, init?)`             | Finalize as a plain-text response.                                                |
+| `html(text, init?)`             | Finalize as an HTML response (`Content-Type: text/html; charset=utf-8`).          |
+| `redirect(url, status?)`        | Finalize as a redirect (default `302`).                                           |
+| `stream(stream, init?)`         | Finalize as a streaming response (`Transfer-Encoding: chunked`).                  |
+| `nodeStream(nodeStream, init?)` | Finalize from a Node-style `.pipe()`-based stream (e.g. React's pipeable stream). |
+
+## Standalone Factories
+
+```ts
+function json(data: unknown, init?: ResponseInit): Response;
+function text(value: string, init?: ResponseInit): Response;
+function html(value: string, init?: ResponseInit): Response;
+function redirect(url: string, status?: number): Response;
+function status(code: number, body?: string): Response;
+function notFound(body?: string): Response;
+function streamResponse(
+  stream: ReadableStream<Uint8Array>,
+  init?: ResponseInit
+): Response;
+function nodeStreamToResponse(
+  nodeStream: { pipe: (destination: WritableStream<Uint8Array>) => void },
+  init?: ResponseInit
+): Response;
+```
+
+| Function                                  | Description                                                                                                           |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `json(data, init?)`                       | JSON response. Sets `Content-Type: application/json` unless `init.headers` already has one.                           |
+| `text(value, init?)`                      | Plain-text response.                                                                                                  |
+| `html(value, init?)`                      | HTML response with the correct `Content-Type`.                                                                        |
+| `redirect(url, status?)`                  | Redirect response (default `302`). Built manually (not `Response.redirect()`) so relative URLs work on every runtime. |
+| `status(code, body?)`                     | Status-only response with an optional body.                                                                           |
+| `notFound(body?)`                         | Shorthand for `status(404, body ?? "Not Found")`.                                                                     |
+| `streamResponse(stream, init?)`           | Streaming response from a `ReadableStream` — used for SSR (e.g. `renderToPipeableStream`).                            |
+| `nodeStreamToResponse(nodeStream, init?)` | Bridges a Node-style readable (`.pipe()`) into a `streamResponse()`.                                                  |
+
+These are the same primitives `ctx.res` is built on — reach for them when you don't have a `Context` (e.g. constructing a response ahead of time, or in code outside a handler).
+
+## Cookies
+
+```ts
+function setCookie(
+  response: Response,
+  name: string,
+  value: string,
+  options?: CookieOptions
+): Response;
+function clearCookie(
+  response: Response,
+  name: string,
+  options?: CookieOptions
+): Response;
+function serializeCookie(
+  name: string,
+  value: string,
+  options?: CookieOptions
+): string;
+```
+
+```ts title="CookieOptions"
+interface CookieOptions {
+  domain?: string;
+  path?: string; // default "/"
+  maxAge?: number; // seconds; omitted = session cookie
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: 'Strict' | 'Lax' | 'None';
+  expires?: Date;
+}
+```
+
+`setCookie()` returns a **new** `Response` with a `Set-Cookie` header appended (the original response's status, body, and headers are preserved). `clearCookie()` is `setCookie()` with `maxAge: 0`. `serializeCookie()` produces just the header value string, for cases where you're building headers manually.
+
+```ts title="setCookie() example" showLineNumbers
+const res = json({ ok: true });
+return setCookie(res, 'session', token, {
+  httpOnly: true,
+  secure: true,
+  maxAge: 86400,
+});
+```
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/request',
+    label: 'Request',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/middleware',
+    label: 'Middleware',
+  }}
+/>

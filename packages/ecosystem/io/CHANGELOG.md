@@ -1,4 +1,19 @@
-## Unreleased (2.0.0 additions)
+## Unreleased
+
+## 2.0.0-beta.1 (2026-07-24)
+
+### ⚠ BREAKING CHANGES
+
+- **io:** url must be a ws:// endpoint speaking the
+  @rasenganjs/ws envelope; one payload value per event (no variadic
+  emit, no acks); provider options are RasenganSocketOptions; useEvent
+  no longer takes a deps array; no HTTP long-polling fallback.
+  socket.io-client peer dependency removed.
+
+### Features
+
+- **io:** add emitWithAck, useEmitWithAck and heartbeat support 6289169
+- **io:** replace socket.io with Web Standard WebSocket f1dc038 (2.0.0 additions)
 
 ### `useEmitWithAck()` hook
 

@@ -1,0 +1,102 @@
+---
+metadata:
+  title: Router | Core Concepts | Futon | Rasengan.js
+  description: Register routes and dispatch requests with Futon's radix-tree Router.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Router
+
+The `Router` class registers handlers by HTTP method and pattern, then produces a single `Middleware` that dispatches incoming requests to the right handler. `Futon` owns one internal `Router` — the `app.get()` / `app.post()` shortcuts you've already seen just delegate to it.
+
+## Why a Radix Tree
+
+A naive router checks every registered route in order until one matches — O(n × k) for n routes and k path segments. Futon's `RasenganTreeRouter` instead walks **one tree node per URL segment**, so lookup time is O(k) regardless of how many routes you've registered.
+
+## HTTP Method Shortcuts
+
+```ts title="router.ts" showLineNumbers
+import { Router, json } from '@rasenganjs/futon';
+
+const router = new Router();
+
+router.get('/users', async () => json(await listUsers()));
+router.post('/users', async (ctx) => json(await createUser(ctx.body)));
+router.put('/users/:id', async (ctx) =>
+  json(await replaceUser(ctx.params.id, ctx.body))
+);
+router.patch('/users/:id', async (ctx) =>
+  json(await updateUser(ctx.params.id, ctx.body))
+);
+router.delete('/users/:id', async (ctx) => {
+  await deleteUser(ctx.params.id);
+  return json({ ok: true });
+});
+router.head('/users/:id', async (ctx) => new Response(null));
+router.options('/users/:id', async () => new Response(null, { status: 204 }));
+```
+
+Every shortcut has the same signature: `(pattern, handler)`, where `handler` is `(ctx: Context) => Promise<Response>`.
+
+## Route-level Middleware
+
+Middleware registered via `router.use()` only applies to routes defined **after** the call, on that router instance:
+
+```ts title="Route-level middleware" showLineNumbers
+router.use(requireAuth);
+
+// requireAuth runs before this handler:
+router.get('/profile', async (ctx) => json(ctx.get('user')));
+```
+
+Route-level middleware runs in the same onion model as app-level middleware — see [Custom Middleware](/docs/futon/middleware/custom).
+
+## Plugging the Router into Futon
+
+Call `.middleware()` once, and pass the result to `app.use()`:
+
+```ts title="Standalone Router" showLineNumbers
+import { Futon } from '@rasenganjs/futon';
+
+const app = new Futon();
+const router = new Router();
+router.get('/health', async () => json({ ok: true }));
+
+app.use(router.middleware());
+```
+
+<Note title="Snapshot semantics" type="info">
+  `.middleware()` snapshots the currently-registered routes. Routes added to
+  that `Router` **after** calling `.middleware()` are not picked up by that
+  snapshot — register all your routes before wiring the router into `app.use()`.
+</Note>
+
+In practice you'll rarely build a standalone `Router` this way — `app.get()`, `app.post()`, and `app.group()` already delegate to Futon's own internal router.
+
+## Automatic 405 Responses
+
+If a path matches a registered route for a _different_ method, the Router automatically responds with `405 Method Not Allowed` and an `Allow` header listing the methods that _do_ match — instead of falling through to your 404 handler.
+
+```
+GET /users/42       → 200
+DELETE /users/42     → 405 Method Not Allowed
+                       Allow: GET, PUT, PATCH
+```
+
+## Debugging
+
+`router.routesCount()` returns the total number of registered routes across every method — useful for sanity-checking route registration in tests or startup logs.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/getting-started/quick-start',
+    label: 'Quick Start',
+  }}
+  next={{
+    href: '/docs/futon/routing/route-patterns',
+    label: 'Route Patterns',
+  }}
+/>

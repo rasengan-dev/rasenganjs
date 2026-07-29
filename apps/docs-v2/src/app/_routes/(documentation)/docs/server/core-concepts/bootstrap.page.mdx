@@ -1,0 +1,93 @@
+---
+metadata:
+  title: Bootstrap & ServerApp | Core Concepts | Rasengan Server | Rasengan.js
+  description: bootstrap() and the ServerApp orchestrator.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Bootstrap & ServerApp
+
+`bootstrap()` is the recommended entry point for a Rasengan Server app. It creates a `ServerApp`, hands it to your callback for configuration, then compiles and serves it.
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+
+bootstrap((app) => {
+  app.registerModule(appModule);
+  app.enableCors();
+});
+```
+
+## What bootstrap() Does
+
+1. Creates a `ServerApp` instance.
+2. Loads configuration (`rasengan.server.ts`, merged with any CLI overrides).
+3. Invokes your callback, passing the `ServerApp` for configuration.
+4. Calls `app.compile()`, turning your modules/controllers into a runtime `Futon`.
+5. Selects the right runtime adapter (Node/Bun/Workerd) and starts serving.
+6. Registers `SIGTERM`/`SIGINT` handlers for graceful shutdown.
+
+```ts
+function bootstrap(
+  callback: (app: ServerApp) => void | Promise<void>,
+  overrides?: Partial<RasenganServerConfig>
+): Promise<ServerHandle>;
+```
+
+`bootstrap()` returns a `ServerHandle` (`{ close(), app }`) you can use to shut the server down programmatically — useful in tests.
+
+## ServerApp — the Orchestrator
+
+`ServerApp` is the class your `bootstrap()` callback configures. It owns module registration, global middleware, error/404 handlers, and compiles everything into a `Futon` instance.
+
+```ts title="Configuring ServerApp" showLineNumbers
+bootstrap((app) => {
+  app.registerModule(appModule);
+  app.enableCors({ origin: 'https://myapp.com' });
+  app.onError(async (error, ctx) => {
+    return ctx.res.status(500).json({ error: error.message });
+  });
+  app.notFound(async (ctx) => {
+    return ctx.res.status(404).json({ error: 'Not Found' });
+  });
+});
+```
+
+## Default Global Middleware
+
+Every `ServerApp` starts with two middleware pre-registered, in this order: a request `logger()` and a `bodyParser()` (storing the parsed body under `ctx.state.body`). Anything you add via `app.use()` runs after these.
+
+## Middleware Execution Order
+
+Rasengan Server layers middleware in a fixed order, regardless of where each layer is declared:
+
+1. **Global** — `app.use()`, `app.enableCors()`, plus the default logger/body parser
+2. **Module-level** — `ModuleConfig.middlewares`, scoped to that module's routes
+3. **Controller-level** — `Controller.middlewares`, scoped to that controller's routes
+4. **Route-level** — passed directly to `router.get(path, middleware, handler)`
+5. **Validation** — injected automatically for routes with schemas
+6. **Handler** — your route handler function
+
+See [Middleware](/docs/server/core-concepts/middleware) for a worked example of each layer.
+
+## Compiling and Serving
+
+`app.compile()` runs once, internally, as part of `bootstrap()` — you don't normally call it yourself. It flattens your module tree, registers every provider in a shared DI container, and registers every controller's routes with the correct middleware nesting. `bootstrap()` then hands the resulting `Futon` to whichever runtime adapter matches your `preset`.
+
+<Note title="Body parsing can't be reconfigured yet" type="warning">
+  `configureBodyParser()` exists in the class but is currently commented out in the source — the default `bodyParser({ key: 'body' })` is always active and isn't yet swappable for custom options (size limits, allowed types). Worth checking back on if you need that control today.
+</Note>
+
+<Pagination
+  prev={{
+    href: '/docs/server/getting-started/cli',
+    label: 'CLI',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/modules',
+    label: 'Modules',
+  }}
+/>

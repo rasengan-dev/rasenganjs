@@ -1,0 +1,129 @@
+---
+metadata:
+  title: Controllers & Routing | Core Concepts | Rasengan Server | Rasengan.js
+  description: Declaring routes with Controller and the schema-aware Router.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Controllers & Routing
+
+A `Controller` groups related routes as a class. Subclass it, implement `routes(router)`, and register it on a module.
+
+```ts title="user.controller.ts" showLineNumbers
+import { Controller, type RouteHandler, type Router } from '@rasenganjs/server';
+import { UserService } from './user.service';
+
+export class UserController extends Controller {
+  constructor(private userService: UserService) {
+    super();
+  }
+
+  routes(router: Router) {
+    router.get('/', this.findAll);
+    router.get('/:id', this.findOne);
+  }
+
+  findAll: RouteHandler = async (ctx) => {
+    return ctx.res.json(await this.userService.findAll());
+  };
+
+  findOne: RouteHandler = async (ctx) => {
+    const user = await this.userService.findById(ctx.params.id);
+    if (!user) return ctx.res.status(404).json({ error: 'User not found' });
+    return ctx.res.json(user);
+  };
+}
+```
+
+Route handlers are declared as class field arrow functions (`findAll = async (ctx) => ...`) rather than regular methods, so `this` stays bound when the router calls them.
+
+## The Router Overloads
+
+Each HTTP verb (`get`, `post`, `put`, `patch`, `delete` — no `head`/`options` at this layer) accepts three shapes:
+
+```ts title="Overload shapes"
+router.get(path, handler);
+router.get(path, middleware, handler);
+router.get(path, [middleware, middleware], handler);
+```
+
+```ts title="Route-level middleware" showLineNumbers
+routes(router: Router) {
+  router.get("/:id", requireAuth, this.findOne);
+  router.post("/", [requireAuth, rateLimited], this.create);
+}
+```
+
+## Controller-level Middleware
+
+```ts title="Applies to every route in this controller" showLineNumbers
+export class AdminController extends Controller {
+  middlewares = [requireAdmin];
+
+  routes(router: Router) {
+    router.get('/stats', this.stats); // requireAdmin runs first
+  }
+
+  stats: RouteHandler = async (ctx) => ctx.res.json(await getStats());
+}
+```
+
+## Schema Validation
+
+Pass a schema as the trailing argument to enable automatic request validation — the handler's `ctx.body`/`ctx.params`/`ctx.query` types narrow to the schema's inferred output:
+
+```ts title="Per-route schema" showLineNumbers
+import z from 'zod';
+
+export class UserController extends Controller {
+  routes(router: Router) {
+    router.post('/', this.create, { body: z.object({ name: z.string() }) });
+  }
+
+  create: RouteHandler<{ body: ReturnType<typeof z.object> }> = async (ctx) => {
+    return ctx.res.json(await this.userService.create(ctx.body)); // ctx.body is typed
+  };
+}
+```
+
+Or declare schemas once on the controller and reference them by method name — `RouteHandler<typeof this.schemas.x>` gets you the same type inference without repeating the schema on every route registration:
+
+```ts title="Controller-level schemas (canonical pattern)" showLineNumbers
+export class UserController extends Controller {
+  schemas = {
+    findOne: { params: z.object({ id: z.coerce.number() }) },
+    create: { body: z.object({ name: z.string() }) },
+  } as const;
+
+  routes(router: Router) {
+    router.get('/:id', this.findOne, this.schemas.findOne);
+    router.post('/', this.create, this.schemas.create);
+  }
+
+  findOne: RouteHandler<typeof this.schemas.findOne> = async (ctx) => {
+    return ctx.res.json(await this.userService.findById(ctx.params.id)); // id: number
+  };
+
+  create: RouteHandler<typeof this.schemas.create> = async (ctx) => {
+    return ctx.res.json(await this.userService.create(ctx.body));
+  };
+}
+```
+
+Passing the schema explicitly as the trailing argument (even when it's the same object as `this.schemas.create`) is what lets TypeScript's overloaded `router.post()` pick the schema-aware signature — the runtime would also resolve it by matching `this.create.name` against `schemas.create`, but only the explicit argument gets you type inference.
+
+See [Validation](/docs/server/core-concepts/validation) for the full validation config, error handling, and the `SchemaDefinition` shape.
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/modules',
+    label: 'Modules',
+  }}
+  next={{
+    href: '/docs/server/dependency-injection/providers',
+    label: 'Providers & Tokens',
+  }}
+/>

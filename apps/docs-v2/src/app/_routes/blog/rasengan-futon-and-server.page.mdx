@@ -1,0 +1,163 @@
+---
+metadata:
+  title: 'Introducing Futon and Rasengan Server'
+  description: Rasengan.js grows beyond the frontend — meet Futon, a WinterCG-compatible HTTP runtime, and Rasengan Server, a NestJS-inspired backend framework built on top of it.
+  openGraph:
+    title: 'Introducing Futon and Rasengan Server'
+    description: Rasengan.js grows beyond the frontend — meet Futon, a WinterCG-compatible HTTP runtime, and Rasengan Server, a NestJS-inspired backend framework built on top of it.
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-futon-and-server.png'
+  twitter:
+    title: 'Introducing Futon and Rasengan Server'
+    description: Rasengan.js grows beyond the frontend — meet Futon, a WinterCG-compatible HTTP runtime, and Rasengan Server, a NestJS-inspired backend framework built on top of it.
+    image: 'https://rasengan.dev/assets/blog/rasengan-futon-and-server.png'
+---
+
+<BlogDetailsHeader />
+
+Rasengan.js has always been a frontend meta-framework. Today that changes: we're expanding the ecosystem beyond the browser with two new frameworks in public beta —
+
+- [**Futon**](#introducing-futon) — a zero-dependency, WinterCG-compatible HTTP runtime
+- [**Rasengan Server**](#introducing-rasengan-server) — a Controller-based backend framework built on top of Futon
+
+Same conventions, same care about developer experience, now covering the full stack — frontend, HTTP runtime, and backend.
+
+<br />
+
+## Introducing Futon
+
+`@rasenganjs/futon` is the HTTP engine underneath Rasengan Server — and it works perfectly well on its own. If you've ever reached for Express or Hono to build a small API, Futon is built for that same job, with a Koa-style middleware model and a runtime-agnostic core that runs unmodified on **Node**, **Bun**, and **Cloudflare Workers** (or any WinterCG-compatible host).
+
+### What's inside
+
+- **Middleware onion model** — familiar `async (ctx, next) => {}` composition, with `compose()` for chaining
+- **A radix-tree router** — static, dynamic (`:id`), optional, and wildcard segments, with `router.group()` for scoped prefixes and shared middleware
+- **A per-request `Context`** — request/response helpers, cookies, and a typed `ctx.query`/`ctx.params`
+- **Built-in middleware** — CORS, logging, compression, basic/bearer auth, and body parsing, ready to import
+- **`fileUpload()`** — Multer-style multipart uploads, with `MemoryStorage`, `DiskStorage`, or a custom storage engine
+- **Hooks** — observe the request lifecycle without writing middleware
+- **Adapters** — `@rasenganjs/runtime` ships Node, Bun, and Workerd adapters, plus bridges to mount Futon inside an existing **Express** app or deploy it to any **WinterCG**-compatible platform
+
+### Quick start
+
+by using [create-rasengan CLI](/packages/create-rasengan) you can create a new Futon project with the following command:
+
+```bash title="Terminal"
+npx create-rasengan@beta --king futon
+```
+
+The generated project will contain the following code
+
+```ts title="src/index.ts" showLineNumbers
+import { Futon, json, logger, cors } from '@rasenganjs/futon';
+import { NodeDevAdapter } from '@rasenganjs/runtime/adapters/node';
+
+const app = new Futon();
+
+app.use(logger());
+app.use(cors());
+
+app.get('/', async () => json({ message: 'Welcome to your Futon app!' }));
+app.get('/health', async () => json({ status: 'ok' }));
+
+app.onError(async (error, ctx) => {
+  console.error(error);
+
+  return json({ error: error.message }, { status: 500 });
+});
+
+const port = Number(process.env.PORT ?? 3000);
+const host = process.env.HOST ?? '0.0.0.0';
+
+const runtime = new NodeDevAdapter({
+  port,
+  host
+});
+
+runtime.serve(app, {
+  onListening: () => console.log(`Futon app listening on http://${host}:${port}`),
+})
+```
+
+<AlertWithLink
+  status="info"
+  title="Read the full Futon documentation"
+  link="/docs/futon/getting-started/introduction"
+/>
+
+<br />
+
+## Introducing Rasengan Server
+
+`@rasenganjs/server` is where Futon becomes a full backend framework. If you know Nest.js, the shape will feel familiar — **controllers**, **modules**, and a **dependency injection container** — but built on Futon's runtime-agnostic core, so the same server code runs on Node, Bun, or Workerd.
+
+### What's inside
+
+- **Controllers & modules** — group routes with `Controller`, wire everything together with `defineModule()`
+- **Dependency injection** — providers, tokens, lifecycle hooks (`onInit`/`onDestroy`), and module-scoped visibility (`imports`/`exports`/`global`)
+- **Schema validation** — attach a Zod schema to a route or controller and get validated, typed input automatically, powered by `@rasenganjs/validators`
+- **WebSockets** — low-level `app.websocket()` routes, or NestJS-style **Gateways** with rooms and broadcasting via [`@rasenganjs/ws`](/packages/ws)
+- **Background queues** — [`@rasenganjs/queue`](/packages/queue) for jobs, retries with backoff, and recurring schedules — the `Controller` equivalent for async work
+- **Database** — first-party [Drizzle ORM](/packages/drizzle) integration through `DrizzleModule.forRoot()`
+- **Module plugins** — an extension point that lets ecosystem packages (`ws`, `queue`, `drizzle`) add their own fields to `defineModule()`
+
+### Quick start
+
+
+by using [create-rasengan CLI](/packages/create-rasengan) you can create a new Futon project with the following command:
+
+```bash title="Terminal"
+npx create-rasengan@beta --kind server
+```
+
+Then, create a `hello.controller.ts` file in the `src` directory:
+
+```ts title="src/hello.controller.ts" showLineNumbers
+import { Controller, type Router } from '@rasenganjs/server';
+
+export class HelloController extends Controller {
+  routes(router: Router): void {
+    router.get('/', async () => new Response('Welcome to your Rasengan Server app!'));
+    router.get('/health', async () => Response.json({ status: 'ok' }));
+  }
+}
+```
+
+```bash title="Terminal"
+npm run dev
+```
+
+<AlertWithLink
+  status="info"
+  title="Read the full Rasengan Server documentation"
+  link="/docs/server/getting-started/introduction"
+/>
+
+<br />
+
+## One ecosystem, every layer
+
+Futon and Rasengan Server join Rasengan as the three pillars of the ecosystem — you can see how they connect on the [homepage](/). Each one works standalone, but they share the same conventions on purpose: if you know one, you're not starting from zero on the others.
+
+We've also published [agent skills](/skills) for both frameworks — `rasengan-futon-*` and `rasengan-server-*` — so AI coding assistants get the same level of support for the backend as they already do for the frontend.
+
+```bash title="Terminal"
+npx skills add rasengan-dev/agent-skills --all
+```
+
+<br />
+
+## Beta, honestly
+
+Both `@rasenganjs/futon` and `@rasenganjs/server` are shipping as **public betas** today. The core APIs — controllers, modules, DI, the router, middleware — are stable enough to build on, but expect some rough edges and breaking changes before v1. We'd rather ship early and shape these frameworks with real feedback than polish in isolation.
+
+## What's next?
+
+- Stabilizing the APIs toward a `1.0.0` release for both packages
+- More adapters for `@rasenganjs/runtime` (Deno, additional edge runtimes)
+- Deeper integration between `@rasenganjs/queue`, `@rasenganjs/ws`, and Rasengan Server's DI container
+- More validation adapters beyond Zod in `@rasenganjs/validators`
+
+Try Futon or Rasengan Server on your next backend, and let us know what you think.
+
+[Explore the docs](/docs/getting-started/introduction) and happy building, Ninja! 🌀

@@ -1,0 +1,116 @@
+---
+metadata:
+  title: Context | API Reference | Futon | Rasengan.js
+  description: The Context object, createContext(), and every type behind Futon's per-request context.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Context
+
+```ts
+import { createContext } from '@rasenganjs/futon';
+import type {
+  Context,
+  RuntimeContext,
+  QueryParams,
+  ServerInfo,
+} from '@rasenganjs/futon';
+```
+
+See [Context Object](/docs/futon/context/overview) and [Query Parameters](/docs/futon/context/query-params) for usage and examples.
+
+## createContext()
+
+```ts
+function createContext(
+  request: Request,
+  params?: Record<string, string>,
+  runtime?: RuntimeContext
+): Context;
+```
+
+Factory that builds a fresh `Context` for a single request. Called internally by `Futon.fetch()` — you won't normally call this yourself outside of tests. `query` and `response` are both created lazily on first access and cached thereafter.
+
+## Context
+
+```ts
+interface Context<
+  Body = any,
+  Params = Record<string, string>,
+  Query = QueryParams,
+> {
+  request: Request;
+  req: Request; // alias for `request`
+  body: Body; // undefined until a body parser middleware sets it
+  params: Params; // path params extracted by the Router
+  query: Query & QueryParams; // lazily parsed, then cached
+  runtime: RuntimeContext;
+  response: ResponseBuilder; // lazily created, then cached
+  res: ResponseBuilder; // alias for `response`
+  state: Record<string, unknown>;
+  set<T = unknown>(key: string, value: T): void;
+  get<T = unknown>(key: string): T | undefined;
+}
+```
+
+| Member             | Description                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `request` / `req`  | The incoming Web API `Request`.                                                                                                                        |
+| `body`             | Parsed request body. `undefined` until a body-parsing middleware (e.g. [`bodyParser()`](/docs/futon/api-reference/middleware#bodyparseroptions)) runs. |
+| `params`           | URL path parameters captured by the [`Router`](/docs/futon/api-reference/router).                                                                      |
+| `query`            | Query parameters — both callable (`ctx.query('page')`) and indexable (`ctx.query.page`). See [`QueryParams`](#queryparams).                            |
+| `runtime`          | Platform/environment info — see [`RuntimeContext`](#runtimecontext).                                                                                   |
+| `response` / `res` | Chainable [`ResponseBuilder`](/docs/futon/api-reference/response#responsebuilder) for the fluent response API.                                         |
+| `state`            | Mutable bag for passing data between middleware and handlers (e.g. auth middleware sets `state.user`).                                                 |
+| `set(key, value)`  | Store a value on `state`.                                                                                                                              |
+| `get(key)`         | Read a value from `state`.                                                                                                                             |
+
+## RuntimeContext
+
+```ts
+interface RuntimeContext {
+  env?: Record<string, string>;
+  server?: ServerInfo;
+}
+```
+
+Carries platform-specific info so the same handler code runs unmodified on Node, Bun, Deno, and Cloudflare Workers. Accessible as `ctx.runtime` inside handlers/middleware.
+
+## ServerInfo
+
+```ts
+interface ServerInfo {
+  preset: 'node' | 'bun' | 'express' | 'workerd' | 'wintercg' | 'unknown';
+  mode: 'development' | 'production';
+  port: number;
+  host: string;
+  rootDir: string;
+}
+```
+
+Set by the runtime adapter before serving. Accessible via `ctx.runtime.server` inside the request lifecycle, or `app.serverInfo` outside of it (e.g. in `onInit`).
+
+## QueryParams
+
+```ts
+interface QueryParams {
+  (key: string): string | undefined;
+  [key: string]: string | undefined;
+}
+```
+
+A callable-and-indexable object — `ctx.query('page')` and `ctx.query.page` both work. Parsed lazily from the URL on first access.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/router',
+    label: 'Router',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/request',
+    label: 'Request',
+  }}
+/>

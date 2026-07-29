@@ -1,5 +1,23 @@
 ## Unreleased
 
+## 1.5.0-beta.4 (2026-07-24)
+
+### Bug Fixes
+
+- **create-rasengan:** remove '--filter-blob:none' option from git.clone() c159d2e
+
+## 1.5.0-beta.3 (2026-07-24)
+
+## 1.5.0-beta.2 (2026-07-24)
+
+## 1.5.0-beta.1 (2026-07-24)
+
+## 1.5.0-beta.0 (2026-07-24)
+
+### Features
+
+- **server:** add start command and runtime-specific entry generation ff8055e
+
 ## 1.4.2 (2026-04-17)
 
 ## 1.4.1 (2026-03-28)

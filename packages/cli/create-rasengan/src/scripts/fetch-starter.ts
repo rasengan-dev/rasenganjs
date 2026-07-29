@@ -89,7 +89,6 @@ export default async function fetchStarterTemplate(options: {
     createSpinner.start();
 
     try {
-      // Clone the starter repository
       await git.clone(githubTemplatesURL.starter, '.tmp', [
         '--no-checkout',
         '--depth',

@@ -6,6 +6,7 @@ packages:
   - packages/deploy/*
   - apps/playground/**
   - apps/docs/**
+  - apps/docs-v2/**
   - apps/examples/**
   - bench
 

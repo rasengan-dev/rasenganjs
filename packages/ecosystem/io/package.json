@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/io",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "Real-time communication for Rasengan.JS applications — the browser client for @rasenganjs/ws gateways, built on the Web Standard WebSocket class with zero runtime dependencies",
   "type": "module",
   "main": "dist/index.js",

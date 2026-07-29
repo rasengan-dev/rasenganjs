@@ -1,0 +1,88 @@
+---
+metadata:
+  title: Middleware | Core Concepts | Rasengan Server | Rasengan.js
+  description: Global, module, controller, and route-level middleware layering.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Middleware
+
+Rasengan Server uses [Futon's `Middleware`](/docs/futon/middleware/custom) type unchanged (`(ctx, next) => Promise<Response>`) but layers it at four levels, always applied in the same order.
+
+## The Four Layers
+
+```
+Global → Module → Controller → Route → Validation → Handler
+```
+
+```ts title="Global — every request" showLineNumbers
+bootstrap((app) => {
+  app.use(requestId());
+  app.enableCors({ origin: 'https://myapp.com' });
+});
+```
+
+Two middleware are pre-registered on every `ServerApp` before your own `app.use()` calls: a request logger and a body parser (storing the parsed body on `ctx.state.body`).
+
+```ts title="Module — scoped to that module's routes" showLineNumbers
+export default defineModule({
+  prefix: '/admin',
+  middlewares: [requireAdmin],
+  controllers: [AdminController],
+});
+```
+
+```ts title="Controller — scoped to that controller's routes" showLineNumbers
+export class AdminController extends Controller {
+  middlewares = [auditLog];
+  // ...
+}
+```
+
+```ts title="Route — scoped to a single route" showLineNumbers
+routes(router: Router) {
+  router.get("/danger-zone", rateLimited, this.dangerZone);
+}
+```
+
+## Why Order Matters
+
+Each layer wraps the next, onion-style — a global middleware's `next()` call eventually reaches the module middleware, then the controller middleware, then the route middleware, then (if the route has a schema) validation, and finally the handler. A global middleware can inspect or short-circuit _everything_ downstream; a route-level middleware only wraps that one handler.
+
+```ts title="A global middleware sees every response, even from routes it doesn't know about" showLineNumbers
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  const response = await next(); // runs module → controller → route → validation → handler
+  console.log(
+    `${ctx.request.method} ${ctx.request.url} — ${Date.now() - start}ms`
+  );
+  return response;
+});
+```
+
+## CORS
+
+`app.enableCors(options?)` is a thin wrapper over [Futon's `cors()`](/docs/futon/middleware/built-in) — calling it with no arguments enables CORS with Futon's defaults:
+
+```ts title="Enabling CORS" showLineNumbers
+app.enableCors(); // permissive defaults
+app.enableCors({ origin: 'https://myapp.com', credentials: true });
+```
+
+## Reusing Futon's Built-ins
+
+Anything exported from `@rasenganjs/futon` — `logger()`, `bearerToken()`, `basicAuth()`, `compress()`, `requestId()`, `bodyLimit()` — works unchanged with `app.use()` or as module/controller/route-level middleware, since Rasengan Server's `Middleware` type _is_ Futon's. See [Built-in Middleware](/docs/futon/middleware/built-in) for the full list.
+
+<Pagination
+  prev={{
+    href: '/docs/server/dependency-injection/lifecycle',
+    label: 'Lifecycle Hooks',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/validation',
+    label: 'Validation',
+  }}
+/>

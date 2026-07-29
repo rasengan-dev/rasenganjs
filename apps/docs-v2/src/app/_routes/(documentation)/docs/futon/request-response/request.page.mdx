@@ -1,0 +1,84 @@
+---
+metadata:
+  title: Request Utilities | Core Concepts | Futon | Rasengan.js
+  description: Parse URLs and request bodies with Futon's request helpers.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Request Utilities
+
+`ctx.request` (and its alias `ctx.req`) is a standard Web API `Request`. Futon ships a small set of standalone helper functions for the common things you'd otherwise write by hand — URL parsing and body parsing.
+
+## URL Helpers
+
+```ts title="URL helpers" showLineNumbers
+import { getPathname, getQueryParams, getQueryParam } from '@rasenganjs/futon';
+
+app.get('/debug', async (ctx) => {
+  const pathname = getPathname(ctx.request); // "/debug"
+  const allParams = getQueryParams(ctx.request); // { page: "2", ... }
+  const page = getQueryParam(ctx.request, 'page'); // "2" | null
+
+  return json({ pathname, allParams, page });
+});
+```
+
+<Note title="Prefer ctx.query for query params" type="info">
+  Inside a handler, `ctx.query` (see [Query
+  Parameters](/docs/futon/context/query-params)) is lazily parsed and cached —
+  prefer it over `getQueryParams()` unless you're working outside the request
+  lifecycle.
+</Note>
+
+## Body Parsing
+
+The Request body is a `ReadableStream` — it can only be read **once**. Futon's body parsers are plain async functions you call directly, or via the [`bodyParser()` middleware](/docs/futon/middleware/built-in) for automatic parsing.
+
+```ts title="Manual body parsing" showLineNumbers
+import {
+  parseJson,
+  parseUrlEncoded,
+  parseFormData,
+  parseText,
+  parseBody,
+} from '@rasenganjs/futon';
+
+app.post('/api/data', async (ctx) => {
+  const data = await parseJson(ctx.request);
+  return json({ received: data });
+});
+```
+
+| Function                   | Parses                              | Returns                  |
+| -------------------------- | ----------------------------------- | ------------------------ |
+| `parseJson(request)`       | `application/json`                  | Parsed JSON value        |
+| `parseUrlEncoded(request)` | `application/x-www-form-urlencoded` | `Record<string, string>` |
+| `parseFormData(request)`   | `multipart/form-data`               | Native `FormData`        |
+| `parseText(request)`       | Any                                 | Raw string               |
+| `parseBody(request)`       | Auto-detects via `Content-Type`     | One of the above         |
+
+`parseBody()` inspects the `Content-Type` header and dispatches to the right parser — this is exactly what the [`bodyParser()` middleware](/docs/futon/middleware/built-in) uses internally.
+
+<Note title="Parse once, early" type="warning">
+  Because the body stream can only be consumed once, call a parser exactly once
+  per request — ideally in a middleware near the top of your chain, before any
+  handler tries to read the body itself.
+</Note>
+
+## Multipart Form Data
+
+For file uploads specifically, reach for [`fileUpload()`](/docs/futon/file-uploads/overview) instead of calling `parseFormData()` yourself — it handles field/file separation, size limits, and storage engines.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/context/query-params',
+    label: 'Query Parameters',
+  }}
+  next={{
+    href: '/docs/futon/request-response/response',
+    label: 'Response Helpers',
+  }}
+/>

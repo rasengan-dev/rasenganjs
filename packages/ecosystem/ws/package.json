@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/ws",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "NestJS-inspired WebSocket Gateways for Rasengan Server — module-native registration, rooms, broadcasting, and pluggable storage (in-memory or Redis), built on RFC-0001's runtime-agnostic app.websocket().",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "pack": "pnpm pack --pack-destination ./release"
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
   },
   "peerDependencies": {
     "@rasenganjs/server": "workspace:*",

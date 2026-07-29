@@ -1,0 +1,97 @@
+---
+metadata:
+  title: Quick Start | Getting Started | Futon | Rasengan.js
+  description: Build and run your first standalone Futon server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# Quick Start
+
+This walks through the smallest complete Futon app — a handful of routes, some middleware, and a Node runtime adapter to actually serve requests.
+
+## 1. Build the App
+
+```ts title="app.ts" showLineNumbers
+import { Futon, json, logger, cors } from '@rasenganjs/futon';
+
+export const app = new Futon();
+
+app.use(logger());
+app.use(cors());
+
+app.get('/', async () => json({ message: 'Hello from Futon!' }));
+
+app.get('/users/:id', async (ctx) => {
+  const { id } = ctx.params;
+  return json({ id });
+});
+
+app.notFound(async () => json({ error: 'Not Found' }, { status: 404 }));
+
+app.onError(async (error, ctx) => {
+  console.error(error);
+  return json({ error: error.message }, { status: 500 });
+});
+```
+
+## 2. Serve It with the Node Adapter
+
+Futon doesn't bind a port itself — that's the runtime adapter's job. For Node:
+
+```ts title="index.ts" showLineNumbers
+import { NodeDevAdapter } from '@rasenganjs/runtime/adapters/node';
+import { app } from './app.js';
+
+const adapter = new NodeDevAdapter({ port: 3000 });
+await adapter.serve(app);
+```
+
+Run it with `tsx` or plain Node (with a build step):
+
+```bash title="Terminal"
+npx tsx index.ts
+# Server listening on http://localhost:3000
+```
+
+## 3. Try It Out
+
+```bash title="Terminal"
+curl http://localhost:3000/
+# {"message":"Hello from Futon!"}
+
+curl http://localhost:3000/users/42
+# {"id":"42"}
+```
+
+## What Just Happened
+
+1. `app.use(logger())` and `app.use(cors())` registered **global middleware**, run for every request in the order they were added.
+2. `app.get("/users/:id", ...)` registered a **route** — `:id` is a named path parameter, available on `ctx.params`.
+3. `app.notFound()` and `app.onError()` gave Futon fallback handlers for unmatched routes and uncaught exceptions.
+4. `NodeDevAdapter` took the `Futon` instance and turned it into an actual listening HTTP server.
+
+<Note title="No server required for testing" type="info">
+  You can skip the adapter entirely and call `app.fetch(request)` directly —
+  this is how Futon's own test suite exercises routes and middleware without
+  opening a real socket.
+</Note>
+
+## Next Steps
+
+- Learn how [routing](/docs/futon/routing/router) and [route patterns](/docs/futon/routing/route-patterns) work.
+- Explore the [built-in middleware](/docs/futon/middleware/built-in) (CORS, compression, auth, and more).
+- See the full list of [runtime adapters](/docs/futon/adapters/runtime) for Bun and Cloudflare Workers.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/getting-started/installation',
+    label: 'Installation',
+  }}
+  next={{
+    href: '/docs/futon/routing/router',
+    label: 'Router',
+  }}
+/>
