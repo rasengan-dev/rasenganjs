@@ -35,9 +35,9 @@ export default function Hero({
 
       <Link
         to="/blog/rasengan-futon-and-server"
-        className="group mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm font-medium text-primary transition-colors duration-200 ease-out hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 py-1.5 pl-1.5 pr-4 text-[10px] sm:text-xs font-medium text-primary transition-colors duration-200 ease-out hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+        <span className="rounded-full bg-primary px-2.5 py-1 text-[9px] sm:text-[10px] font-semibold text-primary-foreground">
           New
         </span>
         <span>Introducing Futon &amp; Rasengan Server</span>
