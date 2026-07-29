@@ -33,6 +33,20 @@ export default function Hero({
         <div className="absolute left-1/2 top-[-160px] h-[420px] w-[80%] -translate-x-1/2 rounded-full bg-linear-to-b from-primary via-primary/40 to-transparent opacity-20 blur-3xl dark:opacity-40" />
       </div>
 
+      <Link
+        to="/blog/rasengan-futon-and-server"
+        className="group mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm font-medium text-primary transition-colors duration-200 ease-out hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+          New
+        </span>
+        <span>Introducing Futon &amp; Rasengan Server</span>
+        <ArrowRight
+          size={14}
+          className="motion-safe:group-hover:translate-x-1 transition-transform duration-200 ease-out"
+        />
+      </Link>
+
       <h1 className="text-[clamp(2.5rem,5vw,4rem)] leading-[1.1] font-bold text-foreground max-w-[820px]">
         Beyond the Frontend.
         <br />

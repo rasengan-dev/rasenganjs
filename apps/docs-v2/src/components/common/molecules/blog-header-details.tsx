@@ -4,6 +4,7 @@ import { useBlogStore } from '@/store/blog';
 import { useLocation, useNavigate } from 'rasengan';
 import { ArrowLeft } from 'lucide-react';
 import BlogAuthorCard from './blog-author-card';
+import Image from '@rasenganjs/image';
 
 type Props = {
   children: React.ReactNode;
@@ -15,13 +16,14 @@ export default function BlogDetailsHeader({}: Props) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const { title, authors, postedAt } = useMemo(() => {
+  const { title, authors, postedAt, image } = useMemo(() => {
     const post = posts.find((blog) => pathname.includes(blog.link));
 
     return {
       title: post?.title,
       authors: post?.authors,
       postedAt: post?.postedAt,
+      image: post?.image,
     };
   }, [pathname]);
 
@@ -40,9 +42,7 @@ export default function BlogDetailsHeader({}: Props) {
         <span className="no-underline text-md">Back to Blog</span>
       </div>
 
-      <div className="flex flex-col-reverse items-start w-full gap-2 mt-8">
-        <h1 className="text-[2.5rem] font-semibold">{title}</h1>
-
+      <div className="flex flex-col items-start w-full gap-2 mt-8">
         <span
           className={twMerge(
             'text-sm font-light w-[160px] text-nowrap text-neutral'
@@ -50,6 +50,8 @@ export default function BlogDetailsHeader({}: Props) {
         >
           posted on {postedAt}
         </span>
+        <h1 className="text-[2.5rem] font-semibold">{title}</h1>
+        <Image src={image || ''} alt={title || ''} width="100%" height="auto" />
       </div>
 
       <div className={twMerge('border-b-[1px] mt-6 border-border')}>

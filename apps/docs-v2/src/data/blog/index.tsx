@@ -15,6 +15,18 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Introducing Futon and Rasengan Server',
+    description: `
+      Rasengan.js grows beyond the frontend — meet Futon, a WinterCG-compatible HTTP runtime, and Rasengan Server, a NestJS-inspired backend framework built on top of it.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'August 1, 2026',
+    link: '/blog/rasengan-futon-and-server',
+    image: '/assets/blog/rasengan-futon-and-server.png',
+    readingTime: '6 min',
+  },
+  {
+    id: randomId(),
     title: '@rasenganjs/i18n Stable & Introducing @rasenganjs/io',
     description: `
       We are excited to announce the stable release of @rasenganjs/i18n and introduce @rasenganjs/io, a new real-time communication package for Rasengan.js.
