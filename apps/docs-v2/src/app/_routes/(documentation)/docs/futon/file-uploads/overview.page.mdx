@@ -25,7 +25,7 @@ router.post('/avatar', upload.single('avatar'), async (ctx) => {
 });
 ```
 
-## The `Uploader` Methods
+## The Uploader Methods
 
 `fileUpload(options)` returns an `Uploader` with five methods, each producing a `Middleware`:
 
@@ -55,7 +55,7 @@ router.post(
 
 Non-file fields in the same multipart body become `ctx.body` — just like Multer's `req.body`.
 
-## `UploadOptions`
+## UploadOptions
 
 | Option            | Description                                                                                                    |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |

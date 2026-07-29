@@ -21,7 +21,7 @@ import { diskStorage } from '@rasenganjs/futon/upload/disk';
 
 See [fileUpload() Middleware](/docs/futon/file-uploads/overview) and [Storage Engines](/docs/futon/file-uploads/storage-engines) for usage and examples.
 
-## `fileUpload()`
+## fileUpload()
 
 ```ts
 function fileUpload(options?: UploadOptions): Uploader;
@@ -47,7 +47,7 @@ interface Uploader {
 
 Read these back with `ctx.get('file')` / `ctx.get('files')`. Text fields are always available on `ctx.body`, regardless of which method is used.
 
-## `UploadOptions`
+## UploadOptions
 
 ```ts
 interface UploadOptions {
@@ -70,7 +70,7 @@ interface FieldSpec {
 }
 ```
 
-## `FileInfo` and `UploadedFile`
+## FileInfo and UploadedFile
 
 ```ts
 interface FileInfo {
@@ -89,7 +89,7 @@ interface UploadedFile extends FileInfo {
 }
 ```
 
-## `StorageEngine`
+## StorageEngine
 
 ```ts
 interface StorageEngine {
@@ -102,7 +102,7 @@ interface StorageEngine {
 }
 ```
 
-### `MemoryStorage`
+### MemoryStorage
 
 ```ts
 class MemoryStorage implements StorageEngine
@@ -110,7 +110,7 @@ class MemoryStorage implements StorageEngine
 
 The default engine — buffers file contents as a `Uint8Array` on `file.buffer`. Works on every runtime, including workerd. `removeFile()` is a no-op.
 
-### `diskStorage()`
+### diskStorage()
 
 ```ts
 // import from '@rasenganjs/futon/upload/disk'
@@ -125,7 +125,7 @@ interface DiskStorageOptions {
 
 Writes files to the filesystem via `node:fs`. Lives behind the `/upload/disk` subpath so the main `@rasenganjs/futon` entry stays free of Node built-ins.
 
-## `UPLOAD_ERROR_CODES`
+## UPLOAD_ERROR_CODES
 
 ```ts
 const UPLOAD_ERROR_CODES = {

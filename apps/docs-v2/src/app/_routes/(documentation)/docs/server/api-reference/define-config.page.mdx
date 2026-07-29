@@ -20,7 +20,7 @@ import {
 
 See [Config & Build](/docs/server/core-concepts/config-and-build) for usage and how config interacts with CLI flags — this page is the flat type reference.
 
-## `defineConfig()`
+## defineConfig()
 
 ```ts
 function defineConfig(config: RasenganServerConfig): RasenganServerConfig;
@@ -37,7 +37,7 @@ export default defineConfig({
 });
 ```
 
-## `RasenganServerConfig`
+## RasenganServerConfig
 
 ```ts
 interface RasenganServerConfig {
@@ -61,7 +61,7 @@ interface RasenganServerConfig {
 
 Every field the CLI accepts as a flag maps directly to one of these — see [CLI](/docs/server/api-reference/cli#flags) for the flag-to-field table.
 
-## `BuildConfig`
+## BuildConfig
 
 ```ts
 interface BuildConfig {
@@ -77,7 +77,7 @@ interface BuildConfig {
 | `minify`  | Whether to minify the bundled output.                                                                                                               |
 | `formats` | Which output shapes to produce — `"single-file"` (one `server.bundle.mjs`) and/or `"directory"` (one `.mjs` per source file, preserving structure). |
 
-## `ConfigHolder`
+## ConfigHolder
 
 ```ts
 class ConfigHolder {

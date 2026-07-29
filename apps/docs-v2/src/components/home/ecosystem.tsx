@@ -103,7 +103,7 @@ export default function Ecosystem() {
         </p>
       </div>
 
-      <div className="mt-12 max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 rounded-xl border-t border-l border-dashed border-border overflow-hidden">
+      <div className="mt-12 max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 rounded-xld border-t border-l border-dashed border-border overflow-hidden">
         {packages.map((pkg) => (
           <Link
             key={pkg.name}

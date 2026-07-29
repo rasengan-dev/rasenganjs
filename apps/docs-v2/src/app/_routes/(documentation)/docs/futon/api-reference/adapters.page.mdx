@@ -16,7 +16,7 @@ import { toExpressHandler, toWinterCgHandler } from '@rasenganjs/futon';
 
 Both adapters convert a `Futon` instance's `fetch()` into the handler shape a specific host expects. See [Express Adapter](/docs/futon/adapters/express), [WinterCG Adapter](/docs/futon/adapters/wintercg), and [Runtime Adapters](/docs/futon/adapters/runtime) for usage and deployment notes.
 
-## `toExpressHandler()`
+## toExpressHandler()
 
 ```ts
 function toExpressHandler(
@@ -49,7 +49,7 @@ expressApp.use(toExpressHandler(app));
 expressApp.listen(3000);
 ```
 
-## `toWinterCgHandler()`
+## toWinterCgHandler()
 
 ```ts
 function toWinterCgHandler(
@@ -73,7 +73,7 @@ const app = new Futon();
 export default { fetch: toWinterCgHandler(app) };
 ```
 
-## `FetchHandler`
+## FetchHandler
 
 ```ts
 type FetchHandler = (request: Request, runtime?: any) => Promise<Response>;

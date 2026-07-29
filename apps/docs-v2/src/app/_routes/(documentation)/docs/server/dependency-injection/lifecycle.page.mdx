@@ -28,7 +28,7 @@ export class DatabaseService extends Provider {
 }
 ```
 
-## Why Extend `Provider` at All?
+## Why Extend Provider at All?
 
 A plain class works fine as a provider — extending `Provider` is purely opt-in for lifecycle hooks. `Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider` themselves, which is exactly why their `onInit()`/`onDestroy()` fire like any other provider's.
 

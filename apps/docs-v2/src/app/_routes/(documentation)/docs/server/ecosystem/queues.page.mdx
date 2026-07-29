@@ -126,7 +126,7 @@ await this.emailQueue.retryDead(dead[0].id); // resets attempt count to 1, back 
   be safely re-runnable.
 </Note>
 
-## `ProcessOptions`
+## ProcessOptions
 
 | Option        | Default | Description                                   |
 | ------------- | ------- | --------------------------------------------- |
@@ -151,7 +151,7 @@ const adapter = new RedisQueueAdapter({
 app.registerPlugin(createQueuePlugin({ adapter }));
 ```
 
-## `QueuePluginOptions`
+## QueuePluginOptions
 
 | Option          | Default              | Description                                                                                              |
 | --------------- | -------------------- | -------------------------------------------------------------------------------------------------------- |

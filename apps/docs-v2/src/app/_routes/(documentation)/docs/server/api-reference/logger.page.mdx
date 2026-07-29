@@ -16,7 +16,7 @@ import { serverLogger, serverLoggerMinimal } from '@rasenganjs/server';
 
 Two ready-made `log` callbacks for Futon's [`logger()`](/docs/futon/api-reference/middleware#loggeroptions--logentry) middleware. Both have the signature `(entry: LogEntry) => void` — pass one directly as `logger({ log })`.
 
-## `serverLogger()`
+## serverLogger()
 
 ```ts
 function serverLogger(entry: LogEntry): void;
@@ -35,7 +35,7 @@ app.use(logger({ log: serverLogger }));
 [2026-07-26T10:15:32.104Z] GET    /api/users 200 4ms 128B
 ```
 
-## `serverLoggerMinimal()`
+## serverLoggerMinimal()
 
 ```ts
 function serverLoggerMinimal(entry: LogEntry): void;
@@ -58,7 +58,7 @@ app.use(logger({ log: serverLoggerMinimal }));
 }
 ```
 
-## `LogEntry`
+## LogEntry
 
 Neither `serverLogger` nor `serverLoggerMinimal` re-export `LogEntry` by name — it's Futon's type, documented on the [Middleware reference](/docs/futon/api-reference/middleware#loggeroptions--logentry):
 

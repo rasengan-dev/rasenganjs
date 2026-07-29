@@ -74,7 +74,7 @@ readonly version: number   // bumped on every route/middleware registration
 routesCount(): number      // total registered routes across every method
 ```
 
-## `HTTPMethod`
+## HTTPMethod
 
 ```ts
 type HTTPMethod =
@@ -98,7 +98,7 @@ import type { TreeMatchResult } from '@rasenganjs/futon';
 
 These are the building blocks `Router` is implemented on top of. Most apps never touch them directly — they're exported for advanced cases like building a custom router or matching paths outside of a `Futon` instance.
 
-### `RasenganTreeRouter`
+### RasenganTreeRouter
 
 ```ts
 class RasenganTreeRouter<T = unknown> {
@@ -121,7 +121,7 @@ tree.match('/unknown');
 // → { handler: undefined, params: {} }
 ```
 
-### `TreeMatchResult`
+### TreeMatchResult
 
 ```ts
 interface TreeMatchResult<T = unknown> {
@@ -132,7 +132,7 @@ interface TreeMatchResult<T = unknown> {
 
 The return type of `RasenganTreeRouter.match()`.
 
-### `matchPath()`
+### matchPath()
 
 ```ts
 function matchPath(
@@ -153,7 +153,7 @@ matchPath('/users/:id', '/posts'); // → null
 
 See [Route Patterns](/docs/futon/routing/route-patterns) for the full pattern syntax reference.
 
-### `parseQueryString()`
+### parseQueryString()
 
 ```ts
 function parseQueryString(url: string): Record<string, string>;

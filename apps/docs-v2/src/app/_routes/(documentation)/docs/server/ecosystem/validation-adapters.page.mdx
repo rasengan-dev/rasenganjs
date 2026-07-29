@@ -33,7 +33,7 @@ const validate = createValidationMiddleware(schemas, { adapter: zodAdapter });
 app.post('/users', validate, handler);
 ```
 
-## `SchemaAdapter` — Bring Your Own Schema Library
+## SchemaAdapter — Bring Your Own Schema Library
 
 Validation is adapter-based by design — `zodAdapter` is the only one shipped today, but any schema library can plug in by implementing `SchemaAdapter`:
 
@@ -63,7 +63,7 @@ const myAdapter: SchemaAdapter = {
 app.configureValidation({ adapter: myAdapter });
 ```
 
-## `ValidationError`
+## ValidationError
 
 ```ts
 interface ValidationError {

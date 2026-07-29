@@ -45,7 +45,7 @@ Different WinterCG runtimes call the `fetch` handler with different argument sha
 
 `toWinterCgHandler()` inspects the arguments it receives and normalizes them into Futon's `RuntimeContext` (`{ env, server }`) regardless of which shape shows up — your route handlers never need to know which runtime they're running under.
 
-## `waitUntil` for Background Work
+## waitUntil for Background Work
 
 On runtimes that support it (Cloudflare Workers), the adapter exposes `ctx.waitUntil()` for background tasks that should keep running after the response is sent — triggered when your response includes an `X-Rasengan-Background` header. This is an edge-case escape hatch; most handlers won't need it.
 

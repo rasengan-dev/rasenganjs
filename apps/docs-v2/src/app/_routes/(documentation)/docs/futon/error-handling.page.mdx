@@ -55,7 +55,7 @@ app.onError(async (error, ctx) => {
 });
 ```
 
-## `app.onError()`
+## app.onError()
 
 Registers a global handler for any error that escapes the middleware chain — thrown from a handler, a middleware, or the router itself:
 
@@ -68,7 +68,7 @@ app.onError(async (error, ctx) => {
 
 Without an `onError` handler registered, Futon falls back to a plain-text `500 Internal Server Error` response containing the error's message.
 
-## `app.notFound()`
+## app.notFound()
 
 Registers a handler for requests that don't match any registered route:
 

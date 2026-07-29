@@ -28,7 +28,7 @@ Core WebSocket abstraction (RFC-0001) — runtime-agnostic types plus the regist
   RFC.
 </Note>
 
-## `WebSocketRegistry`
+## WebSocketRegistry
 
 ```ts
 class WebSocketRegistry {
@@ -46,7 +46,7 @@ class WebSocketRegistry {
 
 Built during `ServerApp.compile()` from every `app.websocket(path, handlers)` call, then handed to the runtime adapter (Node/Bun/...) so it can dispatch an incoming upgrade request by pathname. Retrieve the compiled registry with `app.getWebSocketRegistry()` — see [`ServerApp`](/docs/server/api-reference/server-app#websockets).
 
-## `WebSocketConnection`
+## WebSocketConnection
 
 ```ts
 interface WebSocketConnection {
@@ -59,7 +59,7 @@ interface WebSocketConnection {
 
 A single live connection, normalized across runtimes — Node's `ws` connections, Bun's `ServerWebSocket`, and workerd's `WebSocketPair` are each wrapped by their runtime adapter to satisfy this shape. `readyState` mirrors the standard WebSocket `CONNECTING`/`OPEN`/`CLOSING`/`CLOSED` values.
 
-## `WebSocketContext`
+## WebSocketContext
 
 ```ts
 interface WebSocketContext {
@@ -70,7 +70,7 @@ interface WebSocketContext {
 
 Passed to every handler in `WebSocketHandlers`. `request` is the original upgrade request — read headers, cookies, or query params from it during `open`.
 
-## `WebSocketHandlers`
+## WebSocketHandlers
 
 ```ts
 interface WebSocketHandlers {

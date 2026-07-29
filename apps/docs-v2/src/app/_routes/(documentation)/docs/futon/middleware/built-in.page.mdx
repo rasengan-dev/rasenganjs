@@ -12,7 +12,7 @@ toc: true
 
 Futon ships a small set of production-ready middleware, all exported from `@rasenganjs/futon`.
 
-## `cors()`
+## cors()
 
 Handles preflight `OPTIONS` requests and decorates responses with CORS headers.
 
@@ -37,7 +37,7 @@ app.use(
 | `maxAge`         | —                                          | Preflight cache duration (seconds)  |
 | `optionsStatus`  | `204`                                      | Status code for preflight responses |
 
-## `logger()`
+## logger()
 
 Logs method, path, status, duration, and response size for every request.
 
@@ -51,7 +51,7 @@ app.use(logger({ log: (entry) => pino.info(entry) })); // structured logging
 
 `log` receives a structured `LogEntry` (`{ method, pathname, search, status, duration, size }`) instead of a pre-formatted string, so you control the output format entirely.
 
-## `bodyParser()`
+## bodyParser()
 
 Eagerly parses the request body based on `Content-Type` and stores the result on `ctx.state` (default key `"body"`) and `ctx.body`.
 
@@ -74,7 +74,7 @@ app.post('/api/data', async (ctx) => {
 
 GET, HEAD, and DELETE requests are never parsed.
 
-## `basicAuth()` and `bearerToken()`
+## basicAuth() and bearerToken()
 
 Extract credentials from the `Authorization` header. Both accept an optional `verify` callback — without it, credentials are decoded/extracted but not validated, leaving that decision to your handler.
 
@@ -108,7 +108,7 @@ app.get('/me', async (ctx) => json({ user: ctx.get('token') }));
 
 With `verify` provided, a missing/invalid credential short-circuits with `401 Unauthorized` (plus the matching `WWW-Authenticate` header) before your route handler ever runs.
 
-## `compress()`
+## compress()
 
 Gzip/Brotli/deflate-compresses response bodies over a size threshold, based on `Accept-Encoding`.
 
@@ -120,7 +120,7 @@ app.use(compress()); // compresses bodies over 1 KB by default
 
 Uses the Web `CompressionStream` API — available in modern Node (22+), Bun, Deno, and browsers. Skips compression silently where unavailable.
 
-## `requestId()`
+## requestId()
 
 Assigns a unique ID to every request — reads `X-Request-Id` if the client sent one, otherwise generates a UUID.
 
@@ -135,7 +135,7 @@ app.use(async (ctx, next) => {
 });
 ```
 
-## `bodyLimit()`
+## bodyLimit()
 
 Enforces a maximum request body size, rejecting with `413 Payload Too Large` before the body is fully buffered:
 

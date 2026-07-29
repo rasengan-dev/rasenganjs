@@ -23,7 +23,7 @@ type Middleware = (
 
 See [Custom Middleware](/docs/futon/middleware/custom) for the onion-model execution semantics, and [`compose()`](#compose) below for how an array of middleware is chained into one.
 
-## `compose()`
+## compose()
 
 ```ts
 function compose(middlewares: Middleware[]): Middleware;
@@ -46,7 +46,7 @@ Chains an array of `Middleware` into a single `Middleware` using the Koa-style o
 
 Full usage and defaults for each are covered in [Built-in Middleware](/docs/futon/middleware/built-in).
 
-### `CORSOptions`
+### CORSOptions
 
 ```ts
 interface CORSOptions {
@@ -60,7 +60,7 @@ interface CORSOptions {
 }
 ```
 
-### `LoggerOptions` / `LogEntry`
+### LoggerOptions / LogEntry
 
 ```ts
 interface LoggerOptions {
@@ -79,7 +79,7 @@ interface LogEntry {
 }
 ```
 
-### `BodyParserOptions`
+### BodyParserOptions
 
 ```ts
 interface BodyParserOptions {
@@ -90,7 +90,7 @@ interface BodyParserOptions {
 }
 ```
 
-### `BasicAuthOptions`
+### BasicAuthOptions
 
 ```ts
 interface BasicAuthOptions {
@@ -100,7 +100,7 @@ interface BasicAuthOptions {
 }
 ```
 
-### `BearerTokenOptions`
+### BearerTokenOptions
 
 ```ts
 interface BearerTokenOptions {
@@ -109,7 +109,7 @@ interface BearerTokenOptions {
 }
 ```
 
-### `CompressOptions`
+### CompressOptions
 
 ```ts
 interface CompressOptions {
@@ -118,7 +118,7 @@ interface CompressOptions {
 }
 ```
 
-### `RequestIdOptions`
+### RequestIdOptions
 
 ```ts
 interface RequestIdOptions {
@@ -128,7 +128,7 @@ interface RequestIdOptions {
 }
 ```
 
-### `BodyLimitOptions`
+### BodyLimitOptions
 
 ```ts
 interface BodyLimitOptions {

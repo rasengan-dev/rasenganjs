@@ -24,7 +24,7 @@ export default defineModule({
 });
 ```
 
-## `ModuleConfig`
+## ModuleConfig
 
 ```ts
 interface ModuleConfig {
@@ -40,7 +40,7 @@ interface ModuleConfig {
 }
 ```
 
-## Composing Modules with `imports`
+## Composing Modules with imports
 
 A root module typically imports every feature module — the whole tree is flattened at compile time, depth-first, with each module appearing once even if imported from multiple places:
 
@@ -60,7 +60,7 @@ bootstrap((app) => {
 });
 ```
 
-## Provider Visibility — `exports` and `global`
+## Provider Visibility — exports and global
 
 Providers declared in `providers` are **private to their own module** by default — another module can't inject them just by importing. Two ways to share:
 

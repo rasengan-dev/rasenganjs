@@ -38,7 +38,7 @@ interface Context<
 }
 ```
 
-## `state` — Passing Data Between Middleware
+## state — Passing Data Between Middleware
 
 `ctx.state` (plus the `ctx.set()` / `ctx.get()` helpers) is the primary channel for middleware-to-middleware and middleware-to-handler communication:
 
@@ -54,7 +54,7 @@ app.get('/me', async (ctx) => {
 });
 ```
 
-## `runtime` — Environment and Server Info
+## runtime — Environment and Server Info
 
 `ctx.runtime.env` carries environment variables loaded by the adapter, and `ctx.runtime.server` exposes info about the running server:
 
@@ -68,7 +68,7 @@ app.get('/debug', async (ctx) => {
 });
 ```
 
-## `response` / `res` — the Chainable Builder
+## response / res — the Chainable Builder
 
 `ctx.res` is created lazily on first access — see [Response Helpers](/docs/futon/request-response/response) for the full fluent API (`.status().json()`, `.redirect()`, `.stream()`, etc.).
 

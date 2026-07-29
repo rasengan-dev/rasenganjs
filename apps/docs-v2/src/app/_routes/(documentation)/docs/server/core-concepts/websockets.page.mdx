@@ -31,7 +31,7 @@ bootstrap((app) => {
 });
 ```
 
-## `WebSocketHandlers`
+## WebSocketHandlers
 
 ```ts
 interface WebSocketHandlers {
@@ -67,7 +67,7 @@ interface WebSocketConnection {
 - **No DI/container access** in `WebSocketContext` — deliberately minimal, matching the RFC's current scope.
 - **No built-in rooms/broadcast** — that's exactly what [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways) adds on top, if you need it.
 
-## When to Reach for `@rasenganjs/ws` Instead
+## When to Reach for @rasenganjs/ws Instead
 
 Use `app.websocket()` directly for a single simple connection handler. Reach for [Gateways](/docs/server/ecosystem/websocket-gateways) once you need multiple named events over one connection, rooms, broadcasting, or DI-injected services inside your WebSocket handlers — the demo app registers both side by side specifically to contrast them (`/chat` raw vs. a Gateway-based `/rooms`).
 

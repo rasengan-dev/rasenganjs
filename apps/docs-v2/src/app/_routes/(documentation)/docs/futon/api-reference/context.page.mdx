@@ -22,7 +22,7 @@ import type {
 
 See [Context Object](/docs/futon/context/overview) and [Query Parameters](/docs/futon/context/query-params) for usage and examples.
 
-## `createContext()`
+## createContext()
 
 ```ts
 function createContext(
@@ -34,7 +34,7 @@ function createContext(
 
 Factory that builds a fresh `Context` for a single request. Called internally by `Futon.fetch()` — you won't normally call this yourself outside of tests. `query` and `response` are both created lazily on first access and cached thereafter.
 
-## `Context`
+## Context
 
 ```ts
 interface Context<
@@ -68,7 +68,7 @@ interface Context<
 | `set(key, value)`  | Store a value on `state`.                                                                                                                              |
 | `get(key)`         | Read a value from `state`.                                                                                                                             |
 
-## `RuntimeContext`
+## RuntimeContext
 
 ```ts
 interface RuntimeContext {
@@ -79,7 +79,7 @@ interface RuntimeContext {
 
 Carries platform-specific info so the same handler code runs unmodified on Node, Bun, Deno, and Cloudflare Workers. Accessible as `ctx.runtime` inside handlers/middleware.
 
-## `ServerInfo`
+## ServerInfo
 
 ```ts
 interface ServerInfo {
@@ -93,7 +93,7 @@ interface ServerInfo {
 
 Set by the runtime adapter before serving. Accessible via `ctx.runtime.server` inside the request lifecycle, or `app.serverInfo` outside of it (e.g. in `onInit`).
 
-## `QueryParams`
+## QueryParams
 
 ```ts
 interface QueryParams {

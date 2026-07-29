@@ -18,7 +18,7 @@ npx rasengan-server build
 npx rasengan-server start
 ```
 
-## `dev`
+## dev
 
 Starts a hot-reloading development server. Runs your entry file directly via `tsx` (no build step) and restarts the process whenever a watched file changes.
 
@@ -26,7 +26,7 @@ Starts a hot-reloading development server. Runs your entry file directly via `ts
 rasengan-server dev --port 4000
 ```
 
-## `build`
+## build
 
 Bundles your server for production using esbuild. Produces one or both output formats depending on `build.formats`:
 
@@ -37,7 +37,7 @@ Bundles your server for production using esbuild. Produces one or both output fo
 rasengan-server build --preset node
 ```
 
-## `start`
+## start
 
 Runs the production build produced by `rasengan-server build` — no compilation step, just executes the bundled output.
 

@@ -30,7 +30,7 @@ abstract class Controller {
 | `schemas`        | Per-method schema definitions, matched to handlers by function name                                       |
 | `routes(router)` | Register this controller's routes — called during compilation                                             |
 
-## `RouteHandler`
+## RouteHandler
 
 ```ts
 type RouteHandler<S extends SchemaDefinition = {}> = (
@@ -48,7 +48,7 @@ Generic over a `SchemaDefinition` so `ctx.body`/`ctx.params`/`ctx.query` narrow 
   `body`, `params`, `query`, `runtime`, `res`, `state`, `get`/`set`).
 </Note>
 
-## `Router`
+## Router
 
 ```ts
 import type { Router } from '@rasenganjs/server';

@@ -30,7 +30,7 @@ abstract class Provider {
 
 Both hooks are optional — a `Provider` subclass that implements neither behaves exactly like a plain class as far as the DI container is concerned.
 
-## Extending `Provider` Is Opt-in
+## Extending Provider Is Opt-in
 
 Any class is a valid DI provider (see [`ProviderLike`](/docs/server/api-reference/container#providerlike)) — extending `Provider` only matters if you need `onInit()`/`onDestroy()`. A plain `UserService` class with no lifecycle needs works fine as a provider without extending anything.
 

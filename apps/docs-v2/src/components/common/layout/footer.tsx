@@ -196,16 +196,18 @@ export default function Footer() {
             <div className="w-full mt-4 flex gap-2">
               <input
                 className={twMerge(
-                  'w-full text-sm rounded-md py-2 px-4 outline-none outline-0 border-[1px] border-border '
+                  'w-full text-sm rounded-md py-2 px-4 outline-none outline-0 border-[1px] border-border disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
                 placeholder="yourname@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled
               />
               <Button
-                className="bg-primary hover:bg-primary/80 text-primary-foreground text-sm rounded-md"
+                className="bg-primary hover:bg-primary/80 text-primary-foreground text-sm rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSubscribe}
-                disabled={!email}
+                // disabled={!email}
+                disabled
               >
                 {subscribing ? 'Subscribing...' : 'Subscribe'}
               </Button>

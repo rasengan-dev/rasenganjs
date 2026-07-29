@@ -40,7 +40,7 @@ export class UserController extends Controller {
 
 Route handlers are declared as class field arrow functions (`findAll = async (ctx) => ...`) rather than regular methods, so `this` stays bound when the router calls them.
 
-## The `Router` Overloads
+## The Router Overloads
 
 Each HTTP verb (`get`, `post`, `put`, `patch`, `delete` — no `head`/`options` at this layer) accepts three shapes:
 

@@ -21,7 +21,7 @@ bootstrap((app) => {
 });
 ```
 
-## What `bootstrap()` Does
+## What bootstrap() Does
 
 1. Creates a `ServerApp` instance.
 2. Loads configuration (`rasengan.server.ts`, merged with any CLI overrides).
@@ -39,7 +39,7 @@ function bootstrap(
 
 `bootstrap()` returns a `ServerHandle` (`{ close(), app }`) you can use to shut the server down programmatically — useful in tests.
 
-## `ServerApp` — the Orchestrator
+## ServerApp — the Orchestrator
 
 `ServerApp` is the class your `bootstrap()` callback configures. It owns module registration, global middleware, error/404 handlers, and compiles everything into a `Futon` instance.
 

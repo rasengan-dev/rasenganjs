@@ -41,7 +41,7 @@ app.get('/created', async () => status(201, 'Created'));
 | `status(code, body?)`    | `(number, string?) => Response`        | Status-only response                                    |
 | `notFound(body?)`        | `(string?) => Response`                | Shorthand for `status(404, ...)`                        |
 
-## The Chainable Builder (`ctx.res`)
+## The Chainable Builder (ctx.res)
 
 `ctx.res` (alias `ctx.response`) offers a fluent alternative — handy when you want to set headers or a status before choosing the body type:
 

@@ -16,7 +16,7 @@ import type { HookName, HookHandler } from '@rasenganjs/futon';
 
 `HookSystem` isn't imported directly — every `Futon` instance owns one at `app.hooks`. See [Hooks](/docs/futon/hooks) for the full lifecycle explanation and examples.
 
-## `HookSystem`
+## HookSystem
 
 ```ts
 class HookSystem {
@@ -43,7 +43,7 @@ app.hooks.on('beforeRequest', onRequest);
 app.hooks.off('beforeRequest', onRequest);
 ```
 
-## `HookName`
+## HookName
 
 ```ts
 type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
@@ -55,7 +55,7 @@ type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
 | `'afterResponse'` | After the `Response` is produced — both success and error paths. | `(ctx, response)` |
 | `'onError'`       | When an unhandled error escapes the middleware chain.            | `(error, ctx)`    |
 
-## `HookHandler`
+## HookHandler
 
 ```ts
 type HookHandler = (...args: unknown[]) => void | Promise<void>;

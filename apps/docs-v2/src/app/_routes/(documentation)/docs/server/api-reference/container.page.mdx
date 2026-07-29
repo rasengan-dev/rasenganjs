@@ -21,7 +21,7 @@ import {
 
 Lightweight dependency-injection container with module-scoped visibility. See [Providers & Tokens](/docs/server/dependency-injection/providers) and [Module Scoping](/docs/server/dependency-injection/scoping) for usage and semantics.
 
-## `Container`
+## Container
 
 ```ts
 class Container {
@@ -46,7 +46,7 @@ class Container {
 | `initAll()`                  | Call `onInit()` on every resolved `Provider` instance, in registration order                   |
 | `destroyAll()`               | Call `onDestroy()` on every resolved `Provider` instance, in **reverse** registration order    |
 
-## `ContainerView`
+## ContainerView
 
 ```ts
 interface ContainerView {
@@ -56,7 +56,7 @@ interface ContainerView {
 
 The resolution surface handed to controllers and `ModulePlugin.register()` during compile — a module-scoped view of the container. `Container` itself satisfies this interface (root scope sees everything).
 
-## `ProviderDefinition`
+## ProviderDefinition
 
 ```ts
 interface ProviderDefinition {
@@ -67,7 +67,7 @@ interface ProviderDefinition {
 }
 ```
 
-## `ProviderLike`
+## ProviderLike
 
 ```ts
 type ProviderLike = new (...args: any[]) => any;

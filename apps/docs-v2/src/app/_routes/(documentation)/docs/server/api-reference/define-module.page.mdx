@@ -20,7 +20,7 @@ function defineModule(config: ModuleConfig): ModuleConfig;
 
 Typed pass-through helper — returns the same object you pass in, with type-checking. See [Modules](/docs/server/core-concepts/modules) for usage.
 
-## `ModuleConfig`
+## ModuleConfig
 
 ```ts
 interface ModuleConfig {
@@ -48,7 +48,7 @@ interface ModuleConfig {
 | `global`         | Make this module's `exports` visible to every module, no import needed                                                                   |
 | `[extensionKey]` | Open extension point for ecosystem plugins (`gateways`, `queues`, ...) — see [Module Plugins](/docs/server/core-concepts/module-plugins) |
 
-## `ModulePlugin`
+## ModulePlugin
 
 ```ts
 import type { ModulePlugin } from '@rasenganjs/server';
