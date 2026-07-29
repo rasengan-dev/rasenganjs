@@ -167,7 +167,7 @@ const Page: PageComponent = () => {
             </code>
           </div>
 
-          <div className="rounded-xl border border-border/40 bg-background p-5 transition-colors duration-300 hover:border-primary/30">
+          {/* <div className="rounded-xl border border-border/40 bg-background p-5 transition-colors duration-300 hover:border-primary/30">
             <div className="mb-3 flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Brain size={18} />
@@ -182,7 +182,7 @@ const Page: PageComponent = () => {
             <code className="block rounded-md bg-muted/50 px-2.5 py-1.5 font-mono text-xs text-foreground/50">
               /AGENTS.md
             </code>
-          </div>
+          </div> */}
         </div>
 
         <Link
