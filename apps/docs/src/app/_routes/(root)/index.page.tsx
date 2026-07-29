@@ -271,10 +271,17 @@ const Page: PageComponent = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="flex justify-center lg:justify-start"
           >
-            <Link to="/blog/rasengan-v1-2-2">
-              <AnnonceBadge
-                text="Rasengan.js v1.2.2 is here 🚀"
-                className="mb-4 hover:border-primary/30 border border-transparent"
+            <Link
+              to="https://beta.rasengan.dev/blog/rasengan-futon-and-server"
+              className="group mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm font-medium text-primary transition-colors duration-200 ease-out hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+                New
+              </span>
+              <span>Introducing Futon &amp; Rasengan Server</span>
+              <ArrowRight
+                size={14}
+                className="motion-safe:group-hover:translate-x-1 transition-transform duration-200 ease-out"
               />
             </Link>
           </motion.div>
