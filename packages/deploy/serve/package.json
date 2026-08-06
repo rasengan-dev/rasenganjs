@@ -28,7 +28,6 @@
   "dependencies": {
     "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
-    "chalk": "^5.4.1",
     "get-port": "^7.1.0",
     "source-map-support": "^0.5.21"
   },

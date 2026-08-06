@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { bold, blue, boldBlue } from './ansi.js';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -201,21 +201,15 @@ async function run() {
         ?.address;
 
     if (!address) {
+      console.log(boldBlue(`Rasengan v${parsedPackageJson['version']}\n`));
       console.log(
-        `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}\n`)}`
-      );
-      console.log(
-        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}\n`)}`
+        `${bold('- Local:')}    ${blue(`http://localhost:${port}\n`)}`
       );
     } else {
+      console.log(boldBlue(`Rasengan v${parsedPackageJson['version']}\n`));
+      console.log(`${bold('- Local:')}    ${blue(`http://localhost:${port}`)}`);
       console.log(
-        `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}\n`)}`
-      );
-      console.log(
-        `${chalk.bold('- Local:')}    ${chalk.blue(`http://localhost:${port}`)}`
-      );
-      console.log(
-        `${chalk.bold('- Network:')}  ${chalk.blue(`http://${address}:${port}\n`)}`
+        `${bold('- Network:')}  ${blue(`http://${address}:${port}\n`)}`
       );
     }
   };

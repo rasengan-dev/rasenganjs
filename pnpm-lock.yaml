@@ -964,9 +964,6 @@ importers:
       '@rasenganjs/runtime':
         specifier: workspace:*
         version: link:../../platform/runtime
-      chalk:
-        specifier: ^5.4.1
-        version: 5.6.2
       get-port:
         specifier: ^7.1.0
         version: 7.2.0

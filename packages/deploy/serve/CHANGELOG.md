@@ -12,6 +12,7 @@
 ### Refactors
 
 - `config.json` is now read once at startup instead of on every request inside the fallback handler
+- drop the `chalk` dependency — the startup banner's bold/blue text now uses a small built-in ANSI helper (`ansi.ts`, `NO_COLOR`/non-TTY aware, same as `chalk`'s own default behavior)
 
 ### Bug Fixes
 
