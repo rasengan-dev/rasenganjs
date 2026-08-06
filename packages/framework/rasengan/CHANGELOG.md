@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **SPA-mode builds (`ssr: false`) were broken under Vite 8/Rolldown** — compiling `src/template.tsx` relied on `this.load({id})` inside an output-phase hook, which Rolldown returns `null` for when the module was never part of the actual bundle's input graph, so `dist/assets/template.js` silently never got written and the build failed at `closeBundle` with `Cannot find module '.../template.js'`. Now emitted as a real chunk via `this.emitFile({type: 'chunk', ...})` in `buildStart` (the supported way to add an out-of-band build entry), with `preserveSignature: 'strict'` so its `export default` isn't tree-shaken away, then written out and removed from the bundle in `generateBundle`
+- **SSG builds (`prerender: true`) crashed when the route tree had a layout with a dynamic path segment** (e.g. a `[_locale]/layout.tsx`), throwing `TypeError: route.module is not a function` — `getAllRoutesPath()` was calling `generatePaths()` resolution on any route with a `:param` segment, including layout routes, which (unlike page routes) never carry a `module`. Now only attempted for routes that actually have one; a dynamic layout's children still resolve their own segments (including the parent's) via their own `generatePaths()`
+
 ## 2.0.0-beta.0 (2026-08-06)
 
 ### Features
