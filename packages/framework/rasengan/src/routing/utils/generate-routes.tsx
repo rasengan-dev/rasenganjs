@@ -657,11 +657,18 @@ export async function getAllRoutesPath(
     // If route has a path and isn't only an index, add it
     else if (route.path) {
       if (route.path.includes(':')) {
-        const { paths: staticPaths, error: staticError } =
-          await getStaticRoutesPath(fullPath, route);
-        allPaths.push(...staticPaths);
+        // Only actual pages carry a `module` (layout routes with a dynamic
+        // segment, e.g. a `[_locale]/layout.tsx`, don't). A dynamic layout
+        // isn't itself a static path to resolve — its children resolve
+        // their own dynamic segments via their own `generatePaths()`,
+        // using this route's segment as part of their accumulated path.
+        if (typeof route.module === 'function') {
+          const { paths: staticPaths, error: staticError } =
+            await getStaticRoutesPath(fullPath, route);
+          allPaths.push(...staticPaths);
 
-        Array.from(staticError).forEach((err) => error.add(err));
+          Array.from(staticError).forEach((err) => error.add(err));
+        }
       } else {
         allPaths.push(fullPath);
       }

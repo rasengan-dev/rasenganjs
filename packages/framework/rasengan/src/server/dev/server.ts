@@ -1,6 +1,5 @@
 import { join } from 'node:path';
-import express from 'express';
-import type * as Express from 'express';
+import http from 'node:http';
 import type * as Vite from 'vite';
 import {
   createServerModuleRunner,
@@ -8,9 +7,17 @@ import {
 } from 'vite';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-
-// Middlewares
-import { loggerMiddleware } from '../../core/middlewares/index.js';
+import {
+  Futon,
+  logger as futonLogger,
+  html as htmlResponse,
+  notFound as notFoundResponse,
+  type Context,
+} from '@rasenganjs/futon';
+import {
+  incomingToRequest,
+  writeNodeResponse,
+} from '@rasenganjs/runtime/adapters/node';
 
 // Load utilities functions
 import {
@@ -18,6 +25,7 @@ import {
   isDataRequest,
   isDocumentRequest,
   logServerInfo,
+  stripDataSuffix,
 } from './utils.js';
 import {
   getDirname,
@@ -31,7 +39,7 @@ import {
   handleDocumentRequest,
   handleSpaModeRequest,
 } from './handlers.js';
-import { createStaticHandler } from 'react-router';
+import { createStaticHandler, matchRoutes } from 'react-router';
 import {
   generateRoutes,
   preloadMatches,
@@ -41,84 +49,67 @@ import { renderErrorPage } from '../../entries/server/error-template.js';
 type ServerError = Error & { code: string };
 
 /**
- * Handle the request for the development environment
- * @param req
- * @param res
+ * The SSR catch-all — registered as `app.fallback(...)`, so it
+ * receives every request that doesn't match a route Futon itself
+ * knows about (rasengan registers none, see RFC-0007 §3).
+ *
+ * Includes a cheap structural-404 guard: `matchRoutes` (the same
+ * matcher `createStaticHandler` uses internally) runs before any
+ * loader/render work, short-circuiting requests that don't
+ * correspond to any page pattern at all.
+ * @param ctx
  * @param viteDevServer
  * @param options
  */
-async function devRequestHandler(
-  req: Express.Request,
-  res: Express.Response,
+async function ssrHandler(
+  ctx: Context,
   viteDevServer: Vite.ViteDevServer,
   options: { rootPath: string; __dirname: string; config: AppConfig }
-) {
-  try {
-    // Get the module runner through ssr environment
-    const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+): Promise<Response> {
+  const request = ctx.request;
 
-    if (options.config.ssr) {
-      // Load app-router
-      const AppRouter: RouterComponent = await (
-        await runner.import(join(`${options.rootPath}/src/app/app.router`))
-      ).default;
+  // Get the module runner through ssr environment
+  const runner = createServerModuleRunner(viteDevServer.environments.ssr);
 
-      // Get static routes
-      const staticRoutes = generateRoutes(AppRouter);
+  if (options.config.ssr) {
+    // Load app-router
+    const AppRouter: RouterComponent = await (
+      await runner.import(join(`${options.rootPath}/src/app/app.router`))
+    ).default;
 
-      await preloadMatches(req.originalUrl, staticRoutes);
+    // Get static routes
+    const staticRoutes = generateRoutes(AppRouter);
 
-      // Create static handler
-      let handler = createStaticHandler(staticRoutes);
+    const pathname = stripDataSuffix(new URL(request.url).pathname);
 
-      // Get matches for the current URL
-      // const matches = matchRoutes(staticRoutes, req.originalUrl);
-
-      // Resolve all lazy() modules for matched routes
-      // const resolvedMatches = await Promise.all(
-      //   matches?.map(async (match) => {
-      //     if (match.route.lazy) {
-      //       const lazyFn = match.route.lazy as unknown as () => Promise<any>;
-      //       const resolved = await lazyFn();
-      //       Object.assign(match.route, resolved);
-      //     }
-      //     return match;
-      //   }) ?? []
-      // );
-
-      // console.log({
-      //   resolvedMatches: JSON.stringify(resolvedMatches),
-      //   url: req.originalUrl,
-      // });
-
-      if (isDataRequest(req)) {
-        // Handle data request
-        return await handleDataRequest(req, handler);
-      }
-
-      if (isDocumentRequest(req)) {
-        return await handleDocumentRequest(req, res, runner, {
-          ...options,
-          handler,
-        });
-      }
-    } else {
-      // handling spa mode here
-      return await handleSpaModeRequest(res, runner, options);
+    // Cheap structural 404 — no loader/render invoked for URLs that
+    // don't correspond to any page pattern at all.
+    if (!matchRoutes(staticRoutes, pathname)) {
+      return notFoundResponse('Not found');
     }
 
-    return res.status(404).send('Not found');
-  } catch (error) {
-    console.error(error);
+    await preloadMatches(pathname, staticRoutes);
 
-    if (res.headersSent) return;
+    // Create static handler
+    let handler = createStaticHandler(staticRoutes);
 
-    const html = renderErrorPage(error);
+    if (isDataRequest(request)) {
+      // Handle data request
+      return await handleDataRequest(request, handler);
+    }
 
-    res.status(500);
-    res.setHeader('Content-Type', 'text/html');
-    return res.send(html);
+    if (isDocumentRequest(request)) {
+      return await handleDocumentRequest(request, runner, {
+        ...options,
+        handler,
+      });
+    }
+  } else {
+    // handling spa mode here
+    return await handleSpaModeRequest(runner, options);
   }
+
+  return notFoundResponse('Not found');
 }
 
 /**
@@ -138,7 +129,7 @@ async function errorHandler(
 ) {
   const { port, base, enableSearchingPort, config } = options;
 
-  const multiplicationSymbol = '\u00D7';
+  const multiplicationSymbol = '×';
 
   // Handle PORT in use error
   if (err.code === 'EADDRINUSE') {
@@ -210,9 +201,6 @@ async function createDevNodeServer({
   // Get directory full path
   const __dirname = await getDirname(import.meta.url);
 
-  // Create http server
-  const app = express();
-
   // Initialize a vite dev server as middleware
   const viteDevServer = await createViteServer({
     server: {
@@ -227,34 +215,72 @@ async function createDevNodeServer({
     configFile: `${rootPath}/node_modules/rasengan/vite.config.ts`, // Path: [...]/node_modules/rasengan/vite.config.ts
   });
 
-  // Disable x-powered-by
-  app.disable('x-powered-by');
+  // Futon app — owns the SSR pipeline (middleware + fallback + error
+  // handling). Vite's own Connect-style dev middleware is handled
+  // one layer up (see the raw http.createServer below): it needs
+  // genuine Node req/res objects, which Futon's Web-API-only Context
+  // can't provide, so it isn't wrapped as a Futon middleware.
+  const app = new Futon();
 
-  // Apply middlewares
-  app.use(loggerMiddleware);
-  app.use(viteDevServer.middlewares);
+  // Populates ctx.runtime.server for every request — the same
+  // one-time call a RuntimeAdapter's serve() would make (see
+  // RFC-0007 §9). Not routed through NodeDevAdapter itself: its
+  // built-in HTTP listener has no hook for giving Vite's Connect
+  // middleware first crack at a request with genuine Node req/res.
+  app.configureServer({
+    preset: 'node',
+    mode: 'development',
+    port,
+    host: '0.0.0.0',
+    rootDir: rootPath,
+  });
 
-  // Create the request handler
-  app.use('*', async (req, res, next) => {
-    try {
-      // const url = req.url || req.originalUrl;
-      return devRequestHandler(req, res, viteDevServer, {
-        rootPath,
-        __dirname,
-        config,
-      });
-    } catch (error) {
-      if (typeof error === 'object' && error instanceof Error) {
-        viteDevServer.ssrFixStacktrace(error);
+  app.use(futonLogger());
+
+  app.fallback((ctx) =>
+    ssrHandler(ctx, viteDevServer, { rootPath, __dirname, config })
+  );
+
+  app.onError(async (error) => {
+    console.error(error);
+
+    viteDevServer.ssrFixStacktrace(error);
+
+    const html = renderErrorPage(error);
+
+    return htmlResponse(html, { status: 500 });
+  });
+
+  // Raw Node HTTP server: give Vite's Connect middleware first crack
+  // at every request with real req/res (asset transforms, source
+  // maps, static files, ...); only requests it doesn't handle
+  // (`next()` called with no response written) are converted to a
+  // Web Request and handed to Futon.
+  const server = http.createServer((req, res) => {
+    viteDevServer.middlewares(req, res, async (err?: unknown) => {
+      if (err) {
+        console.error(err);
+        if (!res.headersSent) res.writeHead(500);
+        res.end('Internal Server Error');
+        return;
       }
-      next(error);
 
-      // TODO: Find a way to handle the error here
-    }
+      try {
+        const request = await incomingToRequest(req);
+        const response = await app.fetch(request);
+        await writeNodeResponse(res, response);
+      } catch (error) {
+        // Last-resort safety net — app.fetch() already catches
+        // everything via app.onError() above.
+        console.error(error);
+        if (!res.headersSent) res.writeHead(500);
+        res.end('Internal Server Error');
+      }
+    });
   });
 
   // Start http server
-  const server = app.listen(port, () => {
+  server.listen(port, () => {
     setTimeout(() => {
       logServerInfo(
         port,

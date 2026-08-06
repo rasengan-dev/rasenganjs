@@ -8,6 +8,7 @@ import { NodeDevAdapter } from '../../../adapters/node/dev.js';
 function createMockApp() {
   return {
     configureServer: () => {},
+    configureAssets: () => {},
     loadEnv: () => {},
     init: () => Promise.resolve(),
     destroy: () => Promise.resolve(),

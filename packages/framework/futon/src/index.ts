@@ -7,6 +7,7 @@ export type {
   RuntimeContext,
   QueryParams,
   ServerInfo,
+  Assets,
 } from './context/types.js';
 export { createContext } from './context/index.js';
 
@@ -35,6 +36,8 @@ export type { RequestIdOptions } from './middlewares/request-id.js';
 
 export { compress } from './middlewares/compress.js';
 export type { CompressOptions } from './middlewares/compress.js';
+export { staticFiles } from './middlewares/static.js';
+export type { StaticOptions } from './middlewares/static.js';
 
 export { bodyLimit } from './middlewares/body-limit.js';
 export type { BodyLimitOptions } from './middlewares/body-limit.js';

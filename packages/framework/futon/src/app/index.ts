@@ -34,7 +34,12 @@
  * ```
  */
 
-import type { Context, RuntimeContext, ServerInfo } from '../context/types.js';
+import type {
+  Assets,
+  Context,
+  RuntimeContext,
+  ServerInfo,
+} from '../context/types.js';
 import type { EnvironmentMap } from '../env/index.js';
 import { createContext } from '../context/index.js';
 import { compose } from '../middlewares/compose.js';
@@ -63,6 +68,26 @@ export class Futon {
    */
   configureServer(info: ServerInfo): this {
     this.serverInfo = info;
+    return this;
+  }
+
+  /**
+   * Static-asset access — set by the adapter before serving, same
+   * moment as `configureServer()`. A static, process-lifetime object
+   * that never changes per request (see RFC-0007 §9), so built-ins
+   * like `staticFiles()` can read `ctx.runtime.assets` unconditionally
+   * with no null-check — every adapter (including Workerd's no-op
+   * stub) provides one.
+   */
+  assets?: Assets;
+
+  /**
+   * Configure asset access manually.
+   * Called automatically by the adapter's `serve()` method,
+   * alongside `configureServer()`.
+   */
+  configureAssets(assets: Assets): this {
+    this.assets = assets;
     return this;
   }
 
@@ -199,15 +224,44 @@ export class Futon {
   // ── Error / 404 handlers ───────────────────────────────────
 
   private notFoundHandler?: (ctx: Context) => Promise<Response>;
+  private fallbackHandler?: (ctx: Context) => Promise<Response>;
   private errorHandler?: (error: Error, ctx: Context) => Promise<Response>;
 
   /**
    * Register a custom 404 handler for unmatched routes.
    *
+   * Unlike `fallback()`, any `200` response returned by `handler`
+   * is coerced to `404` — this exists so a handler whose whole job
+   * is rendering "page not found" markup doesn't need to remember
+   * to set the status itself. If both `notFound()` and `fallback()`
+   * are registered, `fallback()` takes priority (see `fallback()`
+   * for why the two aren't interchangeable).
+   *
    * If not set, returns a plain-text "Not Found" response.
    */
   notFound(handler: (ctx: Context) => Promise<Response>): this {
     this.notFoundHandler = handler;
+    return this;
+  }
+
+  /**
+   * Register a catch-all handler for unmatched routes — invoked
+   * whenever no registered route matches, with no status coercion
+   * of any kind: whatever status `handler` returns (`200`, `404`,
+   * a redirect, ...) is sent as-is.
+   *
+   * This is the primitive to reach for when the catch-all is
+   * expected to serve real, successful (`200`) responses some of
+   * the time — e.g. an SSR framework dispatching every unmatched
+   * path to a page renderer. `notFound()` is unsuitable for that:
+   * it unconditionally forces `200` down to `404`, which is correct
+   * for its own narrow "render a not-found page" use case but would
+   * silently 404 every successful response routed through it here.
+   *
+   * Takes priority over `notFound()` when both are registered.
+   */
+  fallback(handler: (ctx: Context) => Promise<Response>): this {
+    this.fallbackHandler = handler;
     return this;
   }
 
@@ -321,6 +375,7 @@ export class Futon {
       ...runtime,
       env: { ...this.env, ...runtime.env },
       server: runtime.server ?? this.serverInfo,
+      assets: runtime.assets ?? this.assets,
     };
     const ctx = createContext(request, {}, mergedRuntime);
 
@@ -335,6 +390,9 @@ export class Futon {
     const chain = this.chain();
 
     const finalHandler: () => Promise<Response> = async () => {
+      if (this.fallbackHandler) {
+        return await this.fallbackHandler(ctx);
+      }
       if (this.notFoundHandler) {
         const res = await this.notFoundHandler(ctx);
         // Enforce 404 status if the user's handler didn't set it

@@ -1,5 +1,50 @@
 ## Unreleased
 
+## 2.0.0-beta.1 (2026-08-06)
+
+### Bug Fixes
+
+- SPA template chunk emission and SSG dynamic-layout crash under Vite 8/Rolldown ab308c6
+
+### Bug Fixes
+
+- **SPA-mode builds (`ssr: false`) were broken under Vite 8/Rolldown** — compiling `src/template.tsx` relied on `this.load({id})` inside an output-phase hook, which Rolldown returns `null` for when the module was never part of the actual bundle's input graph, so `dist/assets/template.js` silently never got written and the build failed at `closeBundle` with `Cannot find module '.../template.js'`. Now emitted as a real chunk via `this.emitFile({type: 'chunk', ...})` in `buildStart` (the supported way to add an out-of-band build entry), with `preserveSignature: 'strict'` so its `export default` isn't tree-shaken away, then written out and removed from the bundle in `generateBundle`
+- **SSG builds (`prerender: true`) crashed when the route tree had a layout with a dynamic path segment** (e.g. a `[_locale]/layout.tsx`), throwing `TypeError: route.module is not a function` — `getAllRoutesPath()` was calling `generatePaths()` resolution on any route with a `:param` segment, including layout routes, which (unlike page routes) never carry a `module`. Now only attempted for routes that actually have one; a dynamic layout's children still resolve their own segments (including the parent's) via their own `generatePaths()`
+
+## 2.0.0-beta.0 (2026-08-06)
+
+### Features
+
+- add Bun support to @rasenganjs/serve (RFC-0007 Phase 4a) 29358be
+- add production structural-404 route guard (RFC-0007 §3) 7993572
+- config surface + dependency bumps for beta.1 (RFC-0007 Phase 3) e887bfd
+- migrate rasengan rendering + dev server onto Futon (RFC-0007 Phase 0-2) c09f8bc
+
+### Bug Fixes
+
+- correctly route React Router .data requests, in dev and prod ee806a6
+
+### BREAKING CHANGES
+
+- `rasengan/server` no longer exports `express`/`compression` — the dev server and `createRequestHandler` now run on `@rasenganjs/futon` + `@rasenganjs/runtime` instead of Express (RFC-0007)
+- `createRequestHandler({ build })` now returns a WinterCG-style handler, `(ctx: Context) => Promise<Response>`, instead of `(req: Express.Request, res: Express.Response) => Promise<void>`
+- `peerDependencies.vite` hard-cut to `^8.0.0` (drops `^6.3.0`/`^7.0.0` support); `core/config/vite/defaults.ts` migrated from `build.rollupOptions` to `build.rolldownOptions`
+- `react-router` bumped to `^8.3.0`; `peerDependencies.react`/`react-dom` bumped to `^19.2.7` to match react-router 8.3.0's own requirement
+- `detectRuntime()` renamed to `detectDeploymentPlatform()` (frees the name for `@rasenganjs/runtime`'s own `detectRuntime`)
+
+### Features
+
+- SSR rendering moved from `renderToPipeableStream` (Node streams) to `renderToReadableStream` (Web Streams), returning a `Response` directly
+- add `AppConfig.runtime?: 'node' | 'bun' | 'workerd'` (default `'node'`), parameterizing `resolve.conditions` and Node-builtin externals for the `ssr`/`ssg` Vite environments, and now also persisted into the build's `config.json` (`OptimizedAppConfig.runtime`) so downstream tools like `@rasenganjs/serve` can pick the matching production adapter
+- `rasengan.config.js`'s reserved Vite keys (`environments`, `ssr`, `server`, `builder`, ...) are now stripped at runtime, not just excluded at the type level
+- add `createMatchRoutesGuard({ build })`, exported from `rasengan/server` — a futon middleware that returns a structural `404` for any request whose path doesn't match the app's route tree at all, before any loader/render runs (production counterpart to the dev server's existing equivalent check)
+
+### Bug Fixes
+
+- dev/prod request logging now correctly reports the response status (previously logged the URL before the response completed)
+- **production had no data-request handling at all** — an `Accept: application/json` or `.data`-suffixed request (React Router's client-side navigation convention) previously got back a full HTML document instead of the matched route's loader/action data; `createRequestHandler` now branches on `isDataRequest` the same way the dev server already did
+- the `.data` URL suffix itself was also broken in dev — it was never stripped before matching against the route tree, so a request like `/pricing.data` fell through to the catch-all/404 route instead of `/pricing`'s. Fixed everywhere a pathname is matched against the route tree (`handleDataRequest`, `createMatchRoutesGuard`, both `preloadMatches` call sites) via a new shared `stripDataSuffix()` helper
+
 ## 1.2.2 (2026-06-01)
 
 ### Features

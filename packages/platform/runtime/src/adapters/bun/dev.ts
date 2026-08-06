@@ -77,6 +77,7 @@ export class BunDevAdapter implements RuntimeAdapter {
       host: this.options.host,
       rootDir,
     });
+    app.configureAssets(this.assets);
 
     app.loadEnv(await loadBunEnvFiles(rootDir, 'development'));
 

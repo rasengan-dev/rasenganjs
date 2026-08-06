@@ -10,6 +10,7 @@ const describeIfBun = typeof Bun !== 'undefined' ? describe : describe.skip;
 function createMockApp() {
   return {
     configureServer: () => {},
+    configureAssets: () => {},
     loadEnv: () => {},
     init: () => Promise.resolve(),
     destroy: () => Promise.resolve(),

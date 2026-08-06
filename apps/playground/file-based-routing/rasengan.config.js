@@ -5,7 +5,9 @@ import mdx from '@rasenganjs/mdx/plugin';
 
 export default defineConfig(async () => {
   return {
-    // ssr: false,
+    ssr: false,
+    // runtime: 'bun',
+    prerender: true,
     vite: {
       plugins: [tailwindcss(), mdx(), rasengan({})],
     },

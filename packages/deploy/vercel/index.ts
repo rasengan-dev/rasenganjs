@@ -228,63 +228,91 @@ const runInstall = async () => {
 const generateServerlessHandler = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
-  // Default Vercel handler
+  // Default Vercel handler. Only ever written when config.ssr &&
+  // !config.prerender (see prepare() below) — SPA/SSG deploys are pure
+  // static hosting through .vercel/output/static and never invoke a
+  // function, so this template only needs to cover the SSR path.
+  //
+  // Runs on Futon + @rasenganjs/runtime instead of Express (RFC-0007,
+  // Phase 2c) — same shape as @rasenganjs/serve's production server,
+  // adapted to Vercel's Node.js serverless runtime: it doesn't bind its
+  // own port, it exports a plain (req, res) handler, which Vercel's
+  // Node launcher calls directly (the same calling convention an
+  // Express app satisfies, which is why the old app.all('*', ...)
+  // export used to work without any Vercel-specific glue).
   const serverlessHandler = `
-  import { createRequestHandler, resolveBuildOptions, express, compression } from 'rasengan/server';
   import path from 'node:path';
-
-  // Create an Express app
-  const app = express();
+  import {
+    createRequestHandler,
+    createMatchRoutesGuard,
+    resolveBuildOptions,
+  } from 'rasengan/server';
+  import { Futon, compress, staticFiles } from '@rasenganjs/futon';
+  import {
+    NodeProdAdapter,
+    incomingToRequest,
+    writeNodeResponse,
+  } from '@rasenganjs/runtime/adapters/node';
 
   // Resolve the build options (e.g., using the current working directory)
   const buildOptions = resolveBuildOptions({
     buildDirectory: process.cwd(),
   });
 
-  // Create the Rasengan request handler with the build options
-  const requestHandler = createRequestHandler({
-    build: buildOptions,
-  });
+  const app = new Futon();
 
-  app.disable('x-powered-by');
-  app.use(compression());
+  // NodeProdAdapter's filesystem-backed, traversal-protected Assets
+  // implementation, reused here without calling .serve() (which would
+  // bind a port Vercel's runtime doesn't want us to own).
+  const assetsAdapter = new NodeProdAdapter({ rootDir: process.cwd() });
+  app.configureAssets(assetsAdapter.assets);
+
+  app.use(compress());
+
+  // Mostly a safety net: Vercel's edge already serves everything under
+  // .vercel/output/static (the "filesystem" route) before falling
+  // through to this function for the catch-all route.
   app.use(
-    path.posix.join('/assets'),
-    express.static(
-      path.posix.join(
-        buildOptions.buildDirectory,
+    staticFiles({
+      root: path.posix.join(
         buildOptions.clientPathDirectory,
         buildOptions.assetPathDirectory
       ),
-      {
-        immutable: true,
-        maxAge: '1y',
-      }
-    )
+      prefix: '/assets',
+      immutable: true,
+      maxAge: 31536000,
+    })
   );
   app.use(
-    '/',
-    express.static(
-      path.posix.join(
-        buildOptions.buildDirectory,
-        buildOptions.clientPathDirectory
-      ),
-      { maxAge: '1h' }
-    )
+    staticFiles({
+      root: buildOptions.clientPathDirectory,
+      maxAge: 3600,
+    })
   );
-  app.use(express.static('public', { maxAge: '1h' }));
 
-  // Forward all requests to the Rasengan handler
-  app.all('*', async (req, res, next) => {
-    try {
-      await requestHandler(req, res);
-    } catch (err) {
-      next(err);
-    }
+  const requestHandler = createRequestHandler({ build: buildOptions });
+  const matchRoutesGuard = createMatchRoutesGuard({ build: buildOptions });
+
+  app.fallback((ctx) => matchRoutesGuard(ctx, () => requestHandler(ctx)));
+
+  app.onError((error) => {
+    console.error(error);
+    return new Response('Internal Server Error', { status: 500 });
   });
 
-  // Export the Express app wrapped as a serverless function
-  export default app;
+  const ready = app.init();
+
+  // Vercel's Node.js runtime calls the default export as (req, res) —
+  // the same calling convention an Express app satisfies, so this
+  // drops in without any Vercel-specific launcher glue.
+  export default async function handler(req, res) {
+    await ready;
+
+    const request = await incomingToRequest(req);
+    const response = await app.fetch(request);
+
+    await writeNodeResponse(res, response);
+  }
   `;
 
   // Write the handler to the .vercel/output/functions/index.js file

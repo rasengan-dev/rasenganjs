@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
-import { detectRuntime, resolveBuildOptions } from '../../server.js';
+import { detectDeploymentPlatform, resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
@@ -185,6 +185,11 @@ export function rasengan({
   let config: AppConfig;
   let viteConfig: ResolvedConfig;
 
+  // Reference id for the SPA-mode template chunk emitted in
+  // `buildStart` and picked up from `bundle` in `generateBundle` —
+  // see the comment there for why this replaced a `this.load()` call.
+  let templateChunkRef: string | undefined;
+
   const buildOptions = resolveBuildOptions({});
 
   return {
@@ -217,7 +222,20 @@ export function rasengan({
       viteConfig = resolvedConfig;
     },
 
-    async writeBundle(_) {
+    // Emits `src/template.(j|t)sx` as a real chunk entry so it goes through
+    // the full bundling graph (imports resolved, shared deps split into
+    // sibling chunks). We used to fetch it via `this.load({id})` in an
+    // output-phase hook, but under Rolldown that returns null for a module
+    // that was never part of the actual bundle's input graph — `emitFile`
+    // is the supported way to add an out-of-band entry.
+    async buildStart() {
+      templateChunkRef = undefined;
+
+      // Only needed for the client build in SPA mode — SSR/SSG modes
+      // compile template.tsx as part of their own server entry graph.
+      if (this.environment.name !== 'client') return;
+      if (config.ssr || config.prerender) return;
+
       const modulePaths = ['template.jsx', 'template.tsx'].map((file) => {
         return path.posix.join(process.cwd(), 'src', file);
       });
@@ -225,23 +243,44 @@ export function rasengan({
         return fs.existsSync(modulePath);
       });
 
-      const module = await this.load({ id: modulePath });
+      if (!modulePath) return;
 
-      // SPA mode only
-      if (!config.ssr) {
-        if (!config.prerender) {
-          // Generate the template.js file into the dist/assets
-          fs.writeFileSync(
-            path.posix.join(
-              process.cwd(),
-              buildOptions.buildDirectory,
-              buildOptions.assetPathDirectory,
-              'template.js'
-            ),
-            module.code,
-            'utf-8'
-          );
-        }
+      templateChunkRef = this.emitFile({
+        type: 'chunk',
+        id: modulePath,
+        // Nothing else in the real client bundle imports this chunk, so
+        // without this rolldown treats its top-level exports as unused and
+        // strips them — including `export default` — leaving an empty
+        // module. This forces it to keep its full export signature.
+        preserveSignature: 'strict',
+      });
+    },
+
+    generateBundle(_, bundle) {
+      if (!templateChunkRef) return;
+
+      const fileName = this.getFileName(templateChunkRef);
+      const chunk = bundle[fileName];
+
+      if (chunk && chunk.type === 'chunk') {
+        // generateBundle runs before rolldown writes the bundle to disk, so
+        // the output directory doesn't exist on the filesystem yet.
+        const outDir = path.posix.join(
+          process.cwd(),
+          buildOptions.buildDirectory,
+          buildOptions.assetPathDirectory
+        );
+        fs.mkdirSync(outDir, { recursive: true });
+
+        // Write it under the fixed name closeBundle expects, then drop it
+        // from the bundle so it isn't also emitted under its hashed name.
+        fs.writeFileSync(
+          path.posix.join(outDir, 'template.js'),
+          chunk.code,
+          'utf-8'
+        );
+
+        delete bundle[fileName];
       }
     },
 
@@ -252,6 +291,7 @@ export function rasengan({
         // Generate a config.json file into the dist/client/assets or dist/assets
         const minimizedConfig = {
           buildOptions,
+          runtime: config.runtime ?? 'node',
           ssr: config.ssr,
           prerender: !!config.prerender,
           redirects: await config.redirects(),
@@ -329,11 +369,11 @@ export function rasengan({
           });
         }
 
-        // Detect runtime environment
-        const runtime = detectRuntime();
-        console.log(`Detected runtime: ${runtime}`);
+        // Detect deployment platform (Vercel, Netlify, ...) — not the JS runtime
+        const platform = detectDeploymentPlatform();
+        console.log(`Detected deployment platform: ${platform}`);
 
-        if (runtime !== 'local' && runtime !== 'unknown') {
+        if (platform !== 'local' && platform !== 'unknown') {
           // Prepare the app for deployment
           await prepareToDeploy(adapter);
         }

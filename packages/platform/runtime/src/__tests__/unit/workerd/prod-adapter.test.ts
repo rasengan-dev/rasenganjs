@@ -11,6 +11,7 @@ const describeIfWorkerd = isWorkerd ? describe : describe.skip;
 function createMockApp() {
   return {
     configureServer: () => {},
+    configureAssets: () => {},
     loadEnv: () => {},
     init: () => Promise.resolve(),
     destroy: () => Promise.resolve(),
