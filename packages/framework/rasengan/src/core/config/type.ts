@@ -115,6 +115,8 @@ export type AppConfig = {
 export type OptimizedAppConfig = {
   prerender?: AppConfig['prerender'];
   ssr?: AppConfig['ssr'];
+  /** Target JS runtime — read by `@rasenganjs/serve` to pick the matching `@rasenganjs/runtime` adapter. */
+  runtime?: AppConfig['runtime'];
   redirects: Redirect[];
   buildOptions: BuildOptions;
 };

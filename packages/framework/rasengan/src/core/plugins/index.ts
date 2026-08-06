@@ -252,6 +252,7 @@ export function rasengan({
         // Generate a config.json file into the dist/client/assets or dist/assets
         const minimizedConfig = {
           buildOptions,
+          runtime: config.runtime ?? 'node',
           ssr: config.ssr,
           prerender: !!config.prerender,
           redirects: await config.redirects(),

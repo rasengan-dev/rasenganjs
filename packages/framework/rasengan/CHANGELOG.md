@@ -11,8 +11,9 @@
 ### Features
 
 - SSR rendering moved from `renderToPipeableStream` (Node streams) to `renderToReadableStream` (Web Streams), returning a `Response` directly
-- add `AppConfig.runtime?: 'node' | 'bun' | 'workerd'` (default `'node'`), parameterizing `resolve.conditions` and Node-builtin externals for the `ssr`/`ssg` Vite environments
+- add `AppConfig.runtime?: 'node' | 'bun' | 'workerd'` (default `'node'`), parameterizing `resolve.conditions` and Node-builtin externals for the `ssr`/`ssg` Vite environments, and now also persisted into the build's `config.json` (`OptimizedAppConfig.runtime`) so downstream tools like `@rasenganjs/serve` can pick the matching production adapter
 - `rasengan.config.js`'s reserved Vite keys (`environments`, `ssr`, `server`, `builder`, ...) are now stripped at runtime, not just excluded at the type level
+- add `createMatchRoutesGuard({ build })`, exported from `rasengan/server` — a futon middleware that returns a structural `404` for any request whose path doesn't match the app's route tree at all, before any loader/render runs (production counterpart to the dev server's existing equivalent check)
 
 ### Bug Fixes
 

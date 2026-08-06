@@ -20,7 +20,7 @@ import {
   redirect,
 } from '@rasenganjs/futon';
 import type { Context } from '@rasenganjs/futon';
-import { NodeProdAdapter } from '@rasenganjs/runtime/adapters/node';
+import type { RuntimeAdapter } from '@rasenganjs/runtime';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
@@ -75,6 +75,63 @@ function parsePortFromArgs(args: string[]) {
 }
 
 /**
+ * Locate and parse `config.json` (written by the `rasengan` build —
+ * `dist/client/assets/config.json` for SSR/prerendered builds,
+ * `dist/assets/config.json` for SPA builds).
+ * @param buildOptions
+ * @returns
+ */
+function readAppConfig(
+  buildOptions: ReturnType<typeof resolveBuildOptions>
+): OptimizedAppConfig {
+  const configPathSpa = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
+  );
+  const configPathSsr = path.posix.join(
+    buildOptions.buildDirectory,
+    buildOptions.clientPathDirectory,
+    buildOptions.assetPathDirectory,
+    'config.json'
+  );
+
+  const configPath = [configPathSpa, configPathSsr].find((p) =>
+    fs.existsSync(p)
+  );
+
+  if (!configPath) {
+    throw new Error(
+      'No config.json file found in dist/client/assets or dist/assets'
+    );
+  }
+
+  return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+}
+
+/**
+ * Instantiate the `@rasenganjs/runtime` production adapter matching
+ * `config.runtime` (`AppConfig.runtime`, see RFC-0007 §5) — dynamically
+ * imported so a Node-served app never pulls in Bun-specific module
+ * code (and vice versa).
+ * @param runtime
+ * @param options
+ * @returns
+ */
+async function createProdAdapter(
+  runtime: OptimizedAppConfig['runtime'],
+  options: { port: number; host?: string; rootDir: string }
+): Promise<RuntimeAdapter> {
+  if (runtime === 'bun') {
+    const { BunProdAdapter } = await import('@rasenganjs/runtime/adapters/bun');
+    return new BunProdAdapter(options);
+  }
+
+  const { NodeProdAdapter } = await import('@rasenganjs/runtime/adapters/node');
+  return new NodeProdAdapter(options);
+}
+
+/**
  * Serve a file straight off disk relative to `process.cwd()` — used
  * only for the `public/` mount, which (unlike every other static
  * mount here) is rooted at the CWD rather than the build output
@@ -120,6 +177,11 @@ async function run() {
   const buildOptions = resolveBuildOptions({
     buildDirectory: buildPath,
   });
+
+  // Read once at startup — reused per-request inside app.fallback(...)
+  // below instead of re-reading/re-parsing config.json on every request,
+  // and to pick the right runtime adapter before the server even starts.
+  const config = readAppConfig(buildOptions);
 
   let onListen = () => {
     // Getting the package.json file
@@ -204,35 +266,6 @@ async function run() {
   app.fallback(async (ctx) => {
     const request = ctx.request;
 
-    // Check if dist/client/assets/config.json exists or dist/assets/config.json exists
-    const configPathSpa = path.posix.join(
-      buildOptions.buildDirectory,
-      buildOptions.assetPathDirectory,
-      'config.json'
-    );
-    const configPathSsr = path.posix.join(
-      buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory,
-      buildOptions.assetPathDirectory,
-      'config.json'
-    );
-
-    const configPath = [configPathSpa, configPathSsr].find((path) =>
-      fs.existsSync(path)
-    );
-
-    if (!configPath) {
-      throw new Error(
-        'No config.json file found in dist/client/assets or dist/assets'
-      );
-    }
-
-    // Read the config.json file
-    const configData = fs.readFileSync(configPath, 'utf-8').toString();
-
-    // Parse the config.json file
-    const config: OptimizedAppConfig = JSON.parse(configData);
-
     // Handle custom redirections. Mirrors Express's `req.url` (path +
     // query, no origin) — `.includes()`, not an exact match, matching
     // the original behavior.
@@ -287,7 +320,7 @@ async function run() {
     return new Response('Internal Server Error', { status: 500 });
   });
 
-  const adapter = new NodeProdAdapter({
+  const adapter = await createProdAdapter(config.runtime, {
     port,
     host: process.env.HOST,
     rootDir: buildPath,
