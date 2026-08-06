@@ -6,7 +6,11 @@ import path from 'node:path';
 import url from 'node:url';
 import sourceMapSupport from 'source-map-support';
 import getPort from 'get-port';
-import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
+import {
+  createRequestHandler,
+  createMatchRoutesGuard,
+  resolveBuildOptions,
+} from 'rasengan/server';
 import { OptimizedAppConfig } from 'rasengan';
 import {
   Futon,
@@ -249,7 +253,15 @@ async function run() {
         build: buildOptions,
       });
 
-      return requestHandler(ctx);
+      // Cheap structural 404 — only meaningful in SSR mode, where the
+      // route tree is known server-side. SPA mode intentionally
+      // serves the same shell for every path below, letting the
+      // client router take over (see RFC-0007 §3).
+      const matchRoutesGuard = createMatchRoutesGuard({
+        build: buildOptions,
+      });
+
+      return matchRoutesGuard(ctx, () => requestHandler(ctx));
     } else {
       // Check if spa-fallback.html exists
       const isSpaFallbackExists = fs.existsSync(
