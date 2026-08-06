@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2.0.0-beta.1 (2026-08-06)
+
+### Bug Fixes
+
+- SPA template chunk emission and SSG dynamic-layout crash under Vite 8/Rolldown ab308c6
+
 ### Bug Fixes
 
 - **SPA-mode builds (`ssr: false`) were broken under Vite 8/Rolldown** — compiling `src/template.tsx` relied on `this.load({id})` inside an output-phase hook, which Rolldown returns `null` for when the module was never part of the actual bundle's input graph, so `dist/assets/template.js` silently never got written and the build failed at `closeBundle` with `Cannot find module '.../template.js'`. Now emitted as a real chunk via `this.emitFile({type: 'chunk', ...})` in `buildStart` (the supported way to add an out-of-band build entry), with `preserveSignature: 'strict'` so its `export default` isn't tree-shaken away, then written out and removed from the bundle in `generateBundle`
