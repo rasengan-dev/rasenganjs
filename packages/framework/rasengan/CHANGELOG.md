@@ -1,5 +1,18 @@
 ## Unreleased
 
+## 2.0.0-beta.0 (2026-08-06)
+
+### Features
+
+- add Bun support to @rasenganjs/serve (RFC-0007 Phase 4a) 29358be
+- add production structural-404 route guard (RFC-0007 §3) 7993572
+- config surface + dependency bumps for beta.1 (RFC-0007 Phase 3) e887bfd
+- migrate rasengan rendering + dev server onto Futon (RFC-0007 Phase 0-2) c09f8bc
+
+### Bug Fixes
+
+- correctly route React Router .data requests, in dev and prod ee806a6
+
 ### BREAKING CHANGES
 
 - `rasengan/server` no longer exports `express`/`compression` — the dev server and `createRequestHandler` now run on `@rasenganjs/futon` + `@rasenganjs/runtime` instead of Express (RFC-0007)
