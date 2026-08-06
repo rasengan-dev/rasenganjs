@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 1.0.0-beta.2 (2026-08-06)
+
+### Features
+
+- migrate rasengan rendering + dev server onto Futon (RFC-0007 Phase 0-2) c09f8bc
+- rewrite @rasenganjs/serve on Futon + NodeProdAdapter (RFC-0007 Phase 2b) 91d8949
+
 ### Features
 
 - add `app.fallback(handler)` — a catch-all for unmatched routes with no status coercion, for handlers (like an SSR dispatcher) that legitimately return `200` most of the time; `app.notFound()` keeps its existing behavior (coerces any `200` to `404`) for its own narrower use case (RFC-0007 §3)
