@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/runtime",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Unified runtime abstraction layer for Rasengan.JS — RuntimeAdapter interface, platform adapters (Node, Bun, Workerd), env utilities, and auto-detection",
   "type": "module",
   "main": "dist/index.js",

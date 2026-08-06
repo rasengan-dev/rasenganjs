@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 1.0.0-beta.3 (2026-08-06)
+
+### Features
+
+- migrate rasengan rendering + dev server onto Futon (RFC-0007 Phase 0-2) c09f8bc
+- rewrite @rasenganjs/serve on Futon + NodeProdAdapter (RFC-0007 Phase 2b) 91d8949
+
 ### Features
 
 - export `incomingToRequest` and `writeNodeResponse` from `@rasenganjs/runtime/adapters/node` — the Node request/response conversion helpers `startNodeServer` already used internally, now reusable by a caller that owns its own `http.createServer` (RFC-0007's rasengan dev server, which needs to give Vite's Connect-style dev middleware first crack at a request before converting to/from Web API types)
