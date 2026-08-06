@@ -55,6 +55,60 @@ export interface NodeServerHandle {
 }
 
 /**
+ * Write a Web API `Response` onto a raw Node `http.ServerResponse`.
+ *
+ * Shared by `startNodeServer` and any caller that owns its own
+ * `http.createServer` and only wants the Futon-facing half of the
+ * bridge (e.g. a dev server that hands unhandled requests to Vite's
+ * Connect middleware first, and only converts to/from Web API types
+ * for the requests Futon actually serves).
+ *
+ * Takes the fast path (single `res.end(raw)`) when the Response was
+ * tagged with a raw single-buffer body (RFC-0005, Phase 2); otherwise
+ * streams the body chunk-by-chunk, honoring backpressure via the
+ * `drain` event so a slow client never buffers an unbounded response
+ * in memory.
+ *
+ * @param res - The raw Node response to write onto.
+ * @param response - The Web API Response to send.
+ */
+export async function writeNodeResponse(
+  res: http.ServerResponse,
+  response: Response
+): Promise<void> {
+  res.statusCode = response.status;
+  // Copy headers directly. `set-cookie` is skipped in the joined
+  // view and set from getSetCookie() so multiple cookies are sent
+  // as separate header lines instead of one comma-joined value.
+  for (const [key, value] of response.headers) {
+    if (key === 'set-cookie') continue;
+    res.setHeader(key, value);
+  }
+  const setCookies = response.headers.getSetCookie();
+  if (setCookies.length > 0) res.setHeader('set-cookie', setCookies);
+
+  const raw = (response as { [RAW_BODY]?: string | Uint8Array })[RAW_BODY];
+  if (raw !== undefined) {
+    // Fast path: single-buffer body tagged at creation
+    res.end(raw);
+  } else if (response.body) {
+    // Streaming path: flush each chunk as it arrives (first chunk
+    // is never held back — SSE/TTFB safe), honoring backpressure.
+    // Cast: Node's ReadableStream is async-iterable at runtime,
+    // but the DOM lib types don't declare it.
+    const chunks = response.body as unknown as AsyncIterable<Uint8Array>;
+    for await (const chunk of chunks) {
+      if (!res.write(chunk)) {
+        await new Promise<void>((resolve) => res.once('drain', resolve));
+      }
+    }
+    res.end();
+  } else {
+    res.end();
+  }
+}
+
+/**
  * Start a Node HTTP server.
  *
  * `handler` receives a raw Web API Request and must return a
@@ -79,37 +133,7 @@ export function startNodeServer(
     try {
       const request = await incomingToRequest(req);
       const response = await handler(request);
-
-      res.statusCode = response.status;
-      // Copy headers directly. `set-cookie` is skipped in the joined
-      // view and set from getSetCookie() so multiple cookies are sent
-      // as separate header lines instead of one comma-joined value.
-      for (const [key, value] of response.headers) {
-        if (key === 'set-cookie') continue;
-        res.setHeader(key, value);
-      }
-      const setCookies = response.headers.getSetCookie();
-      if (setCookies.length > 0) res.setHeader('set-cookie', setCookies);
-
-      const raw = (response as { [RAW_BODY]?: string | Uint8Array })[RAW_BODY];
-      if (raw !== undefined) {
-        // Fast path: single-buffer body tagged at creation
-        res.end(raw);
-      } else if (response.body) {
-        // Streaming path: flush each chunk as it arrives (first chunk
-        // is never held back — SSE/TTFB safe), honoring backpressure.
-        // Cast: Node's ReadableStream is async-iterable at runtime,
-        // but the DOM lib types don't declare it.
-        const chunks = response.body as unknown as AsyncIterable<Uint8Array>;
-        for await (const chunk of chunks) {
-          if (!res.write(chunk)) {
-            await new Promise<void>((resolve) => res.once('drain', resolve));
-          }
-        }
-        res.end();
-      } else {
-        res.end();
-      }
+      await writeNodeResponse(res, response);
     } catch (error) {
       console.error('Server error:', error);
       if (res.headersSent) {

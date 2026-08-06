@@ -1,6 +1,6 @@
 import { FunctionComponent, JSX } from 'react';
 import type { AppProps } from '../../core/types.js';
-import { type Response } from 'express';
+import { html as htmlResponse } from '@rasenganjs/futon';
 import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
 import type {
   Metadata,
@@ -14,7 +14,6 @@ import { renderToStream, renderToString } from '../../server/node/rendering.js';
 
 export type RenderStreamFunction = (
   StaticRouterComponent: React.ReactNode,
-  res: Response,
   options: {
     metadata: {
       page: Metadata;
@@ -26,18 +25,26 @@ export type RenderStreamFunction = (
     responseHeaders?: Record<string, string>;
   },
   stream?: boolean
-) => Promise<void | string>;
+) => Promise<Response>;
 
 /**
- * Render the app to a stream
+ * Render the app to a Web API `Response`.
+ *
+ * `stream` picks the body strategy, not whether a `Response` comes
+ * back — both branches now return one uniformly: `stream: true`
+ * (live SSR) wraps a `renderToReadableStream` body via
+ * `renderToStream`; `stream: false` (static prerendering) wraps a
+ * fully-rendered HTML string via `renderToString`. Callers that need
+ * the HTML text (e.g. `preRenderApp`, writing to disk) read it back
+ * with `(await render(...)).text()`.
+ *
  * @param StaticRouterComponent
- * @param helmetContext
- * @param res
+ * @param options
+ * @param stream
  * @returns
  */
 export const render: RenderStreamFunction = async (
   StaticRouterComponent,
-  res,
   options,
   stream = true
 ) => {
@@ -77,7 +84,7 @@ export const render: RenderStreamFunction = async (
   }
 
   if (stream) {
-    await renderToStream(
+    return await renderToStream(
       <TemplateLayout
         StaticRouterComponent={StaticRouterComponent}
         metadata={metadata}
@@ -85,7 +92,6 @@ export const render: RenderStreamFunction = async (
         App={App}
         Template={Template}
       />,
-      res,
       {
         statusCode: options.statusCode,
         responseHeaders: options.responseHeaders,
@@ -102,6 +108,9 @@ export const render: RenderStreamFunction = async (
       />
     );
 
-    return html;
+    return htmlResponse(html, {
+      status: options.statusCode,
+      headers: options.responseHeaders,
+    });
   }
 };

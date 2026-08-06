@@ -26,8 +26,10 @@ export { NodeAssets } from './assets.js';
 
 export { NodeWatcher } from './watcher.js';
 
-export { startNodeServer } from './server.js';
+export { startNodeServer, writeNodeResponse } from './server.js';
 export type { NodeServerOptions, NodeServerHandle } from './server.js';
+
+export { incomingToRequest } from './request.js';
 
 export { loadNodeEnvFiles } from './env.js';
 

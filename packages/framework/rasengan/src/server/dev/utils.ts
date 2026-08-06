@@ -6,7 +6,6 @@ import os from 'node:os';
 import { ServerMode } from '../runtime/mode.js';
 import { StaticHandlerContext } from 'react-router';
 import { Metadata } from '../../routing/types.js';
-import type * as Express from 'express';
 import { Redirect } from '../../core/config/type.js';
 import readline from 'node:readline';
 
@@ -213,26 +212,28 @@ export function extractHeadersFromRRContext(context: StaticHandlerContext) {
 
 /**
  * Check if the request is a document request
- * @param request Express request object
+ * @param request Web API Request object
  */
-export function isDocumentRequest(request: Express.Request) {
+export function isDocumentRequest(request: Request) {
   // Check if the request accepts HTML in header
-  const accept = request.headers['accept'] || '';
+  const accept = request.headers.get('accept') || '';
   return accept.includes('text/html');
 }
 
-export function isDataRequest(request: Express.Request) {
+export function isDataRequest(request: Request) {
   // Check if the request accepts JSON (React Router's fetch requests)
-  const acceptsJson = request.headers['accept']?.includes('application/json');
+  const acceptsJson = request.headers
+    .get('accept')
+    ?.includes('application/json');
 
   // Check if the URL path follows the `.data` pattern
-  const isDataPath = request.url?.endsWith('.data');
+  const isDataPath = new URL(request.url).pathname.endsWith('.data');
 
   return acceptsJson || isDataPath;
 }
 
-export function isResourceRequest(request: Express.Request) {
-  const accept = request.headers['accept'] || '';
+export function isResourceRequest(request: Request) {
+  const accept = request.headers.get('accept') || '';
 
   // Check common resource-related MIME types in the Accept header
   if (
@@ -246,11 +247,11 @@ export function isResourceRequest(request: Express.Request) {
   }
 
   // Check if the URL includes common resource path segments
-  const url = request.originalUrl || '';
+  const pathname = new URL(request.url).pathname;
   if (
-    url.includes('/assets/') ||
-    url.includes('/static/') ||
-    url.includes('/public/')
+    pathname.includes('/assets/') ||
+    pathname.includes('/static/') ||
+    pathname.includes('/public/')
   ) {
     return true;
   }
@@ -274,17 +275,20 @@ export function isRedirectResponse(context: Response) {
 
 /**
  * Check if the request is a static redirect from the config file
- * @param req Express request object
+ * @param request Web API Request object
  * @param redirects Redirects from the config file
  */
 export async function isStaticRedirectFromConfig(
-  req: Express.Request,
+  request: Request,
   redirects: Redirect[]
 ) {
+  // Mirrors Express's `req.originalUrl` (path + query, no origin).
+  const url = new URL(request.url);
+  const originalUrl = url.pathname + url.search;
   let redirectFound = false;
 
   for (let redirect of redirects) {
-    if (redirect.source === req.originalUrl) {
+    if (redirect.source === originalUrl) {
       redirectFound = true;
       break;
     }

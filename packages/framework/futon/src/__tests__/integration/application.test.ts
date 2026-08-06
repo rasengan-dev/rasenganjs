@@ -67,6 +67,27 @@ describe('Futon (integration)', () => {
     expect(res.status).toBe(404);
   });
 
+  it('fallback() passes through a 200 response unmodified', async () => {
+    app.fallback(async () => json({ page: 'home' }, { status: 200 }));
+
+    const req = new Request('http://localhost/anything');
+    const res = await app.fetch(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ page: 'home' });
+  });
+
+  it('fallback() takes priority over notFound() when both are registered', async () => {
+    app.notFound(async () => text('from notFound'));
+    app.fallback(async () => json({ page: 'home' }, { status: 200 }));
+
+    const req = new Request('http://localhost/anything');
+    const res = await app.fetch(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ page: 'home' });
+  });
+
   it('catches errors and returns 500 by default', async () => {
     app.get('/crash', async () => {
       throw new Error('crash');

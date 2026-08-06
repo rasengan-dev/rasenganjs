@@ -199,15 +199,44 @@ export class Futon {
   // ── Error / 404 handlers ───────────────────────────────────
 
   private notFoundHandler?: (ctx: Context) => Promise<Response>;
+  private fallbackHandler?: (ctx: Context) => Promise<Response>;
   private errorHandler?: (error: Error, ctx: Context) => Promise<Response>;
 
   /**
    * Register a custom 404 handler for unmatched routes.
    *
+   * Unlike `fallback()`, any `200` response returned by `handler`
+   * is coerced to `404` — this exists so a handler whose whole job
+   * is rendering "page not found" markup doesn't need to remember
+   * to set the status itself. If both `notFound()` and `fallback()`
+   * are registered, `fallback()` takes priority (see `fallback()`
+   * for why the two aren't interchangeable).
+   *
    * If not set, returns a plain-text "Not Found" response.
    */
   notFound(handler: (ctx: Context) => Promise<Response>): this {
     this.notFoundHandler = handler;
+    return this;
+  }
+
+  /**
+   * Register a catch-all handler for unmatched routes — invoked
+   * whenever no registered route matches, with no status coercion
+   * of any kind: whatever status `handler` returns (`200`, `404`,
+   * a redirect, ...) is sent as-is.
+   *
+   * This is the primitive to reach for when the catch-all is
+   * expected to serve real, successful (`200`) responses some of
+   * the time — e.g. an SSR framework dispatching every unmatched
+   * path to a page renderer. `notFound()` is unsuitable for that:
+   * it unconditionally forces `200` down to `404`, which is correct
+   * for its own narrow "render a not-found page" use case but would
+   * silently 404 every successful response routed through it here.
+   *
+   * Takes priority over `notFound()` when both are registered.
+   */
+  fallback(handler: (ctx: Context) => Promise<Response>): this {
+    this.fallbackHandler = handler;
     return this;
   }
 
@@ -335,6 +364,9 @@ export class Futon {
     const chain = this.chain();
 
     const finalHandler: () => Promise<Response> = async () => {
+      if (this.fallbackHandler) {
+        return await this.fallbackHandler(ctx);
+      }
       if (this.notFoundHandler) {
         const res = await this.notFoundHandler(ctx);
         // Enforce 404 status if the user's handler didn't set it

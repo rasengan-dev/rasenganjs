@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/server';
-import { renderToPipeableStream } from 'react-dom/server';
-import type * as Express from 'express';
+import { renderToReadableStream } from 'react-dom/server.edge';
+import { streamResponse } from '@rasenganjs/futon';
 import { isServerMode, ServerMode } from '../runtime/mode.js';
 
 type StreamOptions = {
@@ -9,20 +9,31 @@ type StreamOptions = {
 };
 
 /**
- * Render a React component to a stream.
+ * Render a React component tree to a Web API `Response` whose body
+ * streams via `renderToReadableStream` (Web Streams). Replaces the
+ * previous Node-stream `renderToPipeableStream(...).pipe(res)` — the
+ * caller now receives a `Response` directly (futon's own request
+ * pipeline, no Express bridge involved).
+ *
+ * Cancellation mirrors the previous `ABORT_DELAY`/`abort()` pattern
+ * using `AbortController` instead: the same 10s ceiling aborts any
+ * render still in flight, and `onError` only logs (and aborts the
+ * rest of the tree) once the shell has already been sent — errors
+ * that happen before that point reject the returned promise instead
+ * (see `onShellError` parity below), so logging them here too would
+ * double-report them.
+ *
  * @param Component
- * @param res
  * @param options
  * @returns
  */
 export const renderToStream = async (
   Component: React.ReactNode,
-  res: Express.Response,
   options?: StreamOptions
-) => {
+): Promise<Response> => {
   const ABORT_DELAY = 10_000;
 
-  let bootstrap = [];
+  let bootstrap: string[] = [];
 
   if (
     isServerMode(process.env.NODE_ENV) &&
@@ -31,34 +42,29 @@ export const renderToStream = async (
     bootstrap.push('/src/index');
   }
 
-  return new Promise(async (resolve, reject) => {
-    let shellRendered = false;
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ABORT_DELAY);
 
-    const { pipe, abort } = renderToPipeableStream(Component, {
-      bootstrapModules: bootstrap,
-      onShellReady() {
-        shellRendered = true;
+  let shellRendered = false;
 
-        if (!res.headersSent && options?.responseHeaders) {
-          res.writeHead(options.statusCode ?? 200, options.responseHeaders);
-        }
+  // A rejection here is the `onShellError` equivalent — thrown before
+  // the shell is ready, so it propagates to the caller directly.
+  const stream = await renderToReadableStream(Component, {
+    bootstrapModules: bootstrap,
+    signal: controller.signal,
+    onError(error: unknown) {
+      if (shellRendered) {
+        console.error(error);
+        controller.abort();
+      }
+    },
+  });
 
-        resolve(res);
+  shellRendered = true;
 
-        pipe(res);
-      },
-      onShellError(error: unknown) {
-        reject(error);
-      },
-      onError(error: unknown) {
-        if (shellRendered) {
-          console.error(error);
-          abort();
-        }
-      },
-    });
-
-    setTimeout(abort, ABORT_DELAY);
+  return streamResponse(stream, {
+    status: options?.statusCode ?? 200,
+    headers: options?.responseHeaders,
   });
 };
 

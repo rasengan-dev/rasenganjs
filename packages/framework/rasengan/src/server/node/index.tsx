@@ -1,4 +1,4 @@
-import type * as Express from 'express';
+import type { Context } from '@rasenganjs/futon';
 import { ManifestManager } from '../build/manifest.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,9 +16,8 @@ import {
   createStaticRouter,
   StaticRouterProvider,
 } from 'react-router';
-import createRasenganRequest, {
+import {
   convertSecondsToMinutes,
-  createFakeRasenganRequest,
   filterRoutesForPrerender,
   logRenderedPagesGrouped,
 } from './utils.js';
@@ -56,6 +55,13 @@ interface PreRenderAppOptions {
 
 /**
  * This function is responsible for creating a request handler for the server.
+ *
+ * Returns a plain WinterCG-style handler — `(ctx) => Promise<Response>` —
+ * with its own top-level try/catch producing a sanitized 500 `Response`.
+ * That safety net is independent of whichever futon `app.onError` (if
+ * any) the caller happens to register above it, since this function
+ * may be called directly without being wrapped in a Futon app at all
+ * (e.g. from `@rasenganjs/serve`, or a bare script).
  * @param options
  * @returns
  */
@@ -71,10 +77,9 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
     )
   );
 
-  return async function requestHandler(
-    req: Express.Request,
-    res: Express.Response
-  ) {
+  return async function requestHandler(ctx: Context): Promise<Response> {
+    const request = ctx.request;
+
     try {
       // Get server entry
       const entry = await import(
@@ -130,23 +135,23 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       // Get static routes
       const staticRoutes = generateRoutes(AppRouter);
 
+      const pathname = new URL(request.url).pathname;
+
       // Preload matches
-      await preloadMatches(req.originalUrl, staticRoutes);
+      await preloadMatches(pathname, staticRoutes);
 
       // Create static handler
       let handler = createStaticHandler(staticRoutes);
 
-      // Create rasengan request for static routing
-      let request = createRasenganRequest(req, res);
       let context = await handler.query(request);
 
       const redirectFound = await isStaticRedirectFromConfig(
-        req,
+        request,
         config.redirects
       );
 
       if (isRedirectResponse(context as Response) || redirectFound) {
-        return await handleRedirectRequest(req, res, {
+        return await handleRedirectRequest(request, {
           context,
           redirects: config.redirects,
         });
@@ -171,8 +176,7 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
           <StaticRouterProvider router={router} context={context} />
         );
 
-        // If stream mode enabled, render the page as a plain text
-        return await render(Router, res, {
+        return await render(Router, {
           metadata,
           assets,
           buildOptions,
@@ -184,7 +188,7 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       return context;
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      return new Response('Internal Server Error', { status: 500 });
     }
   };
 }
@@ -309,20 +313,25 @@ export async function preRenderApp(options: PreRenderAppOptions) {
       // console.log(`🧩 Rendering ${pathname}`);
       createSpinner.text = `Rendering ${pathname}`;
 
-      // Simulate fake request & response
-      const { req: fakeReq, res: fakeRes } =
-        createFakeRasenganRequest(pathname);
+      // Prerendering never has a real HTTP connection to fake — build
+      // the Request directly instead of faking an Express req/res pair.
+      const normalizedPathname = pathname.startsWith('/')
+        ? pathname
+        : `/${pathname}`;
 
       // Preload data
       await preloadMatches(pathname, staticRoutes);
 
       // Create static handler
       const handler = createStaticHandler(staticRoutes);
-      const request = createRasenganRequest(fakeReq, fakeRes);
+      const request = new Request(
+        `http://localhost:5320${normalizedPathname}`,
+        { method: 'GET' }
+      );
       const context = await handler.query(request);
 
       const redirectFound = await isStaticRedirectFromConfig(
-        fakeReq,
+        request,
         config.redirects
       );
       if (redirectFound) {
@@ -341,9 +350,8 @@ export async function preRenderApp(options: PreRenderAppOptions) {
         );
 
         // Capture the HTML as string
-        const html = await render(
+        const response = await render(
           Router,
-          null,
           {
             metadata,
             assets,
@@ -351,6 +359,7 @@ export async function preRenderApp(options: PreRenderAppOptions) {
           },
           false
         );
+        const html = await response.text();
 
         let outputDir = '';
 
@@ -359,13 +368,13 @@ export async function preRenderApp(options: PreRenderAppOptions) {
           // Generate a 404.html
           outputDir = outDir;
           fs.mkdirSync(outputDir, { recursive: true });
-          fs.writeFileSync(path.join(outputDir, '404.html'), html as string);
+          fs.writeFileSync(path.join(outputDir, '404.html'), html);
 
           generatedFiles.push('static/404.html');
         } else {
           outputDir = path.join(outDir, route || 'index');
           fs.mkdirSync(outputDir, { recursive: true });
-          fs.writeFileSync(path.join(outputDir, 'index.html'), html as string);
+          fs.writeFileSync(path.join(outputDir, 'index.html'), html);
 
           const splittedOutputDir = outputDir.split('static/');
 
