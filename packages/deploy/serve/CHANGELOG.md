@@ -1,5 +1,13 @@
 ## Unreleased
 
+## 2.0.0-beta.0 (2026-08-06)
+
+### Features
+
+- add Bun support to @rasenganjs/serve (RFC-0007 Phase 4a) 29358be
+- add production structural-404 route guard (RFC-0007 §3) 7993572
+- rewrite @rasenganjs/serve on Futon + NodeProdAdapter (RFC-0007 Phase 2b) 91d8949
+
 ### BREAKING CHANGES
 
 - rewritten on `@rasenganjs/futon` + `@rasenganjs/runtime`'s `NodeProdAdapter`, dropping `express`/`compression`/`morgan` entirely (RFC-0007 Phase 2b) — the four `express.static(...)` mounts are now `staticFiles()` calls (same roots/prefixes), and `app.all('*', ...)` is now `app.fallback(...)`. No CLI/usage changes for consumers (`rasengan-serve <build-path>`), but anything relying on Express-specific request/response behavior at this layer (e.g. custom middleware patched onto the Express app) needs to move to futon middleware instead
