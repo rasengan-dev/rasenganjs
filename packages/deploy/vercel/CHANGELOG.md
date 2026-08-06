@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **the generated serverless function was broken since RFC-0007's Express removal** — `generateServerlessHandler()`'s template still built an Express app around `express`/`compression` imports from `rasengan/server`, both removed. Rewritten on Futon + `@rasenganjs/runtime`'s Node adapter: reuses `NodeProdAdapter`'s filesystem-backed `Assets` implementation without binding a port, and exports a plain `async (req, res) => {...}` — the same calling convention an Express app satisfies, so it drops into Vercel's Node.js launcher unchanged. Also picks up the `createMatchRoutesGuard` structural-404 guard (RFC-0007 §3), matching `@rasenganjs/serve`'s production SSR path
+
 ## 1.1.3 (2026-02-05)
 
 ## 1.1.2 (2026-02-05)
