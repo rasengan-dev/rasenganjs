@@ -13,6 +13,10 @@
 
 - `config.json` is now read once at startup instead of on every request inside the fallback handler
 
+### Bug Fixes
+
+- React Router client-side navigation requests (`Accept: application/json` or a `.data`-suffixed URL, e.g. `/pricing.data`) previously got back a full HTML document instead of the matched route's loader/action JSON — `rasengan-serve` consumes `createRequestHandler` from `rasengan/server`, which now correctly branches on these requests (fixed at the source, see `rasengan`'s own changelog)
+
 ## 1.2.1 (2026-02-05)
 
 ## 1.2.0 (2026-01-03)
