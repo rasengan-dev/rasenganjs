@@ -1,5 +1,11 @@
 ## Unreleased
 
+### Features
+
+- add `app.fallback(handler)` — a catch-all for unmatched routes with no status coercion, for handlers (like an SSR dispatcher) that legitimately return `200` most of the time; `app.notFound()` keeps its existing behavior (coerces any `200` to `404`) for its own narrower use case (RFC-0007 §3)
+- add `staticFiles(options)` middleware — serves static files through `ctx.runtime.assets` only, no `node:fs`, portable to every adapter including Workerd's no-op stub (RFC-0007 §9)
+- add `RuntimeContext.assets` and `Futon.configureAssets(assets)`, mirroring `configureServer()`/`loadEnv()` — populated by every `@rasenganjs/runtime` adapter at the same one-time setup moment
+
 ## 1.0.0-beta.1 (2026-07-24)
 
 ## 1.0.0-beta.0 (2026-06-25)

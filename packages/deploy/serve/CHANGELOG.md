@@ -1,5 +1,9 @@
 ## Unreleased
 
+### BREAKING CHANGES
+
+- rewritten on `@rasenganjs/futon` + `@rasenganjs/runtime`'s `NodeProdAdapter`, dropping `express`/`compression`/`morgan` entirely (RFC-0007 Phase 2b) — the four `express.static(...)` mounts are now `staticFiles()` calls (same roots/prefixes), and `app.all('*', ...)` is now `app.fallback(...)`. No CLI/usage changes for consumers (`rasengan-serve <build-path>`), but anything relying on Express-specific request/response behavior at this layer (e.g. custom middleware patched onto the Express app) needs to move to futon middleware instead
+
 ## 1.2.1 (2026-02-05)
 
 ## 1.2.0 (2026-01-03)

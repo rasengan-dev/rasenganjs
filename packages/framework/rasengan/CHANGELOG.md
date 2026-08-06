@@ -1,5 +1,23 @@
 ## Unreleased
 
+### BREAKING CHANGES
+
+- `rasengan/server` no longer exports `express`/`compression` — the dev server and `createRequestHandler` now run on `@rasenganjs/futon` + `@rasenganjs/runtime` instead of Express (RFC-0007)
+- `createRequestHandler({ build })` now returns a WinterCG-style handler, `(ctx: Context) => Promise<Response>`, instead of `(req: Express.Request, res: Express.Response) => Promise<void>`
+- `peerDependencies.vite` hard-cut to `^8.0.0` (drops `^6.3.0`/`^7.0.0` support); `core/config/vite/defaults.ts` migrated from `build.rollupOptions` to `build.rolldownOptions`
+- `react-router` bumped to `^8.3.0`; `peerDependencies.react`/`react-dom` bumped to `^19.2.7` to match react-router 8.3.0's own requirement
+- `detectRuntime()` renamed to `detectDeploymentPlatform()` (frees the name for `@rasenganjs/runtime`'s own `detectRuntime`)
+
+### Features
+
+- SSR rendering moved from `renderToPipeableStream` (Node streams) to `renderToReadableStream` (Web Streams), returning a `Response` directly
+- add `AppConfig.runtime?: 'node' | 'bun' | 'workerd'` (default `'node'`), parameterizing `resolve.conditions` and Node-builtin externals for the `ssr`/`ssg` Vite environments
+- `rasengan.config.js`'s reserved Vite keys (`environments`, `ssr`, `server`, `builder`, ...) are now stripped at runtime, not just excluded at the type level
+
+### Bug Fixes
+
+- dev/prod request logging now correctly reports the response status (previously logged the URL before the response completed)
+
 ## 1.2.2 (2026-06-01)
 
 ### Features

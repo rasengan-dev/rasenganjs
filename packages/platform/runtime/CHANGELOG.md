@@ -1,5 +1,14 @@
 ## Unreleased
 
+### Features
+
+- export `incomingToRequest` and `writeNodeResponse` from `@rasenganjs/runtime/adapters/node` — the Node request/response conversion helpers `startNodeServer` already used internally, now reusable by a caller that owns its own `http.createServer` (RFC-0007's rasengan dev server, which needs to give Vite's Connect-style dev middleware first crack at a request before converting to/from Web API types)
+- all five adapters (Node/Bun dev+prod, Workerd prod) now call `app.configureAssets(this.assets)` at the same setup moment they already call `app.configureServer(...)`, populating `@rasenganjs/futon`'s new `ctx.runtime.assets`
+
+### Refactors
+
+- extract `writeNodeResponse` out of `startNodeServer`'s inline body (pure extraction, no behavior change)
+
 ## 1.0.0-beta.2 (2026-07-24)
 
 ## 1.0.0-beta.1 (2026-07-24)
