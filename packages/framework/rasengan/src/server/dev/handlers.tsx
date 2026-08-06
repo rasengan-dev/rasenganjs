@@ -16,6 +16,7 @@ import {
   isRedirectResponse,
   extractMetaFromRRContext,
   extractHeadersFromRRContext,
+  stripDataSuffix,
 } from './utils.js';
 import { ModuleRunner } from 'vite/module-runner';
 import { renderToString } from '../node/rendering.js';
@@ -151,17 +152,20 @@ export async function handleDataRequest(
   request: Request,
   handler: StaticHandler
 ): Promise<Response> {
+  const url = new URL(request.url);
+  url.pathname = stripDataSuffix(url.pathname);
+
   // 1. we don't want to proxy the browser request directly to our router, so we
   // make a new one.
   let newRequest =
     request.method === 'POST'
-      ? new Request(request.url, {
+      ? new Request(url, {
           method: request.method,
           headers: request.headers,
           // @ts-expect-error this is valid, types are wrong
           body: new URLSearchParams(await request.formData()),
         })
-      : new Request(request.url, {
+      : new Request(url, {
           headers: request.headers,
         });
 

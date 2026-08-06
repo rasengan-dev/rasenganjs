@@ -24,10 +24,12 @@ import {
 import {
   extractHeadersFromRRContext,
   extractMetaFromRRContext,
+  isDataRequest,
   isRedirectResponse,
   isStaticRedirectFromConfig,
+  stripDataSuffix,
 } from '../dev/utils.js';
-import { handleRedirectRequest } from '../dev/handlers.js';
+import { handleDataRequest, handleRedirectRequest } from '../dev/handlers.js';
 import { OptimizedAppConfig } from '../../core/config/type.js';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
@@ -135,13 +137,22 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       // Get static routes
       const staticRoutes = generateRoutes(AppRouter);
 
-      const pathname = new URL(request.url).pathname;
+      const pathname = stripDataSuffix(new URL(request.url).pathname);
 
       // Preload matches
       await preloadMatches(pathname, staticRoutes);
 
       // Create static handler
       let handler = createStaticHandler(staticRoutes);
+
+      // React Router client-side navigations (`.data` URL suffix or
+      // `Accept: application/json`) want just the matched route's
+      // loader/action data, not a full document render — this branch
+      // was previously dev-only, leaving production returning a full
+      // HTML document for these requests instead.
+      if (isDataRequest(request)) {
+        return await handleDataRequest(request, handler);
+      }
 
       let context = await handler.query(request);
 
@@ -412,19 +423,3 @@ export async function preRenderApp(options: PreRenderAppOptions) {
     throw error;
   }
 }
-
-/**
- * This function is responsible for handling the document request.
- * @param req
- * @param res
- * @returns
- */
-export function handleDocumentRequest() {}
-
-/**
- * This function is responsible for handling the data request.
- * @param req
- * @param res
- * @returns
- */
-export function handleDataRequest() {}

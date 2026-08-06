@@ -5,6 +5,7 @@ import path from 'node:path';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { generateRoutes } from '../../routing/utils/index.js';
 import { BuildOptions } from '../build/index.js';
+import { stripDataSuffix } from '../dev/utils.js';
 
 interface MatchRoutesGuardOptions {
   build: BuildOptions;
@@ -49,7 +50,7 @@ export function createMatchRoutesGuard(
     ).default;
 
     const staticRoutes = generateRoutes(AppRouter);
-    const pathname = new URL(ctx.request.url).pathname;
+    const pathname = stripDataSuffix(new URL(ctx.request.url).pathname);
 
     if (!matchRoutes(staticRoutes, pathname)) {
       return notFound('Not found');

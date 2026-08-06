@@ -232,6 +232,23 @@ export function isDataRequest(request: Request) {
   return acceptsJson || isDataPath;
 }
 
+/**
+ * Strip React Router's `.data` pathname suffix, if present.
+ *
+ * The client router appends `.data` to the pathname for navigation
+ * data requests (e.g. `/pricing` -> `/pricing.data`) — no route
+ * pattern actually ends in `.data`, so every place that matches a
+ * pathname against the route tree (`matchRoutes`, `preloadMatches`,
+ * `handler.queryRoute`) needs to see the underlying page path
+ * instead, or the match silently fails.
+ * @param pathname
+ */
+export function stripDataSuffix(pathname: string): string {
+  return pathname.endsWith('.data')
+    ? pathname.slice(0, -'.data'.length)
+    : pathname;
+}
+
 export function isResourceRequest(request: Request) {
   const accept = request.headers.get('accept') || '';
 

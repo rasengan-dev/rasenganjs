@@ -25,6 +25,7 @@ import {
   isDataRequest,
   isDocumentRequest,
   logServerInfo,
+  stripDataSuffix,
 } from './utils.js';
 import {
   getDirname,
@@ -79,7 +80,7 @@ async function ssrHandler(
     // Get static routes
     const staticRoutes = generateRoutes(AppRouter);
 
-    const pathname = new URL(request.url).pathname;
+    const pathname = stripDataSuffix(new URL(request.url).pathname);
 
     // Cheap structural 404 — no loader/render invoked for URLs that
     // don't correspond to any page pattern at all.

@@ -18,6 +18,8 @@
 ### Bug Fixes
 
 - dev/prod request logging now correctly reports the response status (previously logged the URL before the response completed)
+- **production had no data-request handling at all** — an `Accept: application/json` or `.data`-suffixed request (React Router's client-side navigation convention) previously got back a full HTML document instead of the matched route's loader/action data; `createRequestHandler` now branches on `isDataRequest` the same way the dev server already did
+- the `.data` URL suffix itself was also broken in dev — it was never stripped before matching against the route tree, so a request like `/pricing.data` fell through to the catch-all/404 route instead of `/pricing`'s. Fixed everywhere a pathname is matched against the route tree (`handleDataRequest`, `createMatchRoutesGuard`, both `preloadMatches` call sites) via a new shared `stripDataSuffix()` helper
 
 ## 1.2.2 (2026-06-01)
 
