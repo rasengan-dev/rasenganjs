@@ -68,6 +68,16 @@ export type SageModeConfig = {
 
 export type AppConfig = {
   /**
+   * Target JS runtime for the production SSR build — parameterizes
+   * `resolve.conditions` and which Node builtins get externalized for
+   * the `ssr`/`ssg` Vite environments (RFC-0007 §5). Only `'node'` is
+   * verified working end-to-end today; `'bun'`/`'workerd'` are
+   * architecturally unblocked but unverified.
+   * @default 'node'
+   */
+  runtime?: 'node' | 'bun' | 'workerd';
+
+  /**
    * Enable ssr mode
    */
   ssr?: boolean;

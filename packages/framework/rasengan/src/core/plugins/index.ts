@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import fs from 'fs';
 import { loadModuleSSR } from '../config/utils/load-modules.js';
 import { AppConfig, AppConfigFunctionAsync } from '../config/type.js';
-import { detectRuntime, resolveBuildOptions } from '../../server.js';
+import { detectDeploymentPlatform, resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
@@ -329,11 +329,11 @@ export function rasengan({
           });
         }
 
-        // Detect runtime environment
-        const runtime = detectRuntime();
-        console.log(`Detected runtime: ${runtime}`);
+        // Detect deployment platform (Vercel, Netlify, ...) — not the JS runtime
+        const platform = detectDeploymentPlatform();
+        console.log(`Detected deployment platform: ${platform}`);
 
-        if (runtime !== 'local' && runtime !== 'unknown') {
+        if (platform !== 'local' && platform !== 'unknown') {
           // Prepare the app for deployment
           await prepareToDeploy(adapter);
         }

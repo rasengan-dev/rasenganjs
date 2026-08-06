@@ -16,9 +16,13 @@ export default function MetadataProvider({
     if (typeof window === 'undefined') return;
 
     (async () => {
-      const loadersData = routes.map(
-        (route) => route.loaderData ?? route.data // Normally the route.data is deprecated, we need to consider route.loaderData, but in some cases, route.loaderData is undefined and I don't know why, that's why we are using route.data instead
-      ) as Array<{
+      // `UIMatch.data` (the pre-v7 legacy alias for `loaderData`) is
+      // removed entirely in react-router 8 — no longer just
+      // deprecated, the property doesn't exist on the type or the
+      // runtime object. `loaderData` is `undefined` for routes with
+      // no loader (or one that errored), which the `.filter(Boolean)`
+      // below already handles.
+      const loadersData = routes.map((route) => route.loaderData) as Array<{
         meta: Metadata;
       }>;
 

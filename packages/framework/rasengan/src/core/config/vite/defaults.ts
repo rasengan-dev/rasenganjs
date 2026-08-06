@@ -1,7 +1,36 @@
 // core/config/defaults.ts
 import { join } from 'node:path';
+import { builtinModules } from 'node:module';
 import type { UserConfig } from 'vite';
 import type { AppConfig } from '../type.js';
+
+/**
+ * `node:`-prefixed and bare Node builtin specifiers (`fs`, `node:fs`,
+ * ...) — externalized for the `ssr`/`ssg` environments only when
+ * targeting `runtime: 'node'` (RFC-0007 §5). Bun/Workerd builds don't
+ * externalize these: Bun supports most of them natively but bundling
+ * is still the safer default there, and Workerd has no filesystem/
+ * process APIs to externalize *to* in the first place.
+ */
+const NODE_BUILTIN_EXTERNALS = builtinModules.flatMap((mod) => [
+  mod,
+  `node:${mod}`,
+]);
+
+/**
+ * `resolve.conditions` per target runtime — lets package `exports`
+ * maps that branch on condition (edge/worker-specific builds) resolve
+ * to the right entry point. `node` uses Vite's own default (no
+ * override needed).
+ */
+const RUNTIME_RESOLVE_CONDITIONS: Record<
+  NonNullable<AppConfig['runtime']>,
+  string[] | undefined
+> = {
+  node: undefined,
+  bun: ['bun'],
+  workerd: ['workerd', 'edge-light', 'worker'],
+};
 
 export const createDefaultViteConfig = (
   rootPath: string,
@@ -9,12 +38,24 @@ export const createDefaultViteConfig = (
   mode: string,
   config: AppConfig
 ): UserConfig => {
-  // Combine core externals with user-defined externals
-  const externals = [
-    ...(Array.isArray(config.vite?.build?.external)
-      ? config.vite.build.external
-      : []),
+  const runtime = config.runtime ?? 'node';
+
+  // User-provided externals — unchanged, shared by every environment
+  // (including client) via Vite's top-level `build` inheritance.
+  const userExternals = Array.isArray(config.vite?.build?.external)
+    ? config.vite.build.external
+    : [];
+
+  // Node builtins are only externalized for ssr/ssg — never at the
+  // top level, which client also inherits from, and a browser bundle
+  // must never mark `node:fs` external. Concatenated with user
+  // externals, not overriding them (RFC-0007 §5 Open Questions).
+  const ssrExternals = [
+    ...(runtime === 'node' ? NODE_BUILTIN_EXTERNALS : []),
+    ...userExternals,
   ];
+
+  const runtimeConditions = RUNTIME_RESOLVE_CONDITIONS[runtime];
 
   return {
     ...config.vite,
@@ -23,8 +64,8 @@ export const createDefaultViteConfig = (
 
     build: {
       sourcemap: mode === 'development',
-      rollupOptions: {
-        external: externals,
+      rolldownOptions: {
+        external: userExternals,
         input: './src/index',
         output: {
           manualChunks(id: string) {
@@ -47,7 +88,7 @@ export const createDefaultViteConfig = (
         build: {
           manifest: true,
           outDir: config.ssr || config.prerender ? 'dist/client' : 'dist',
-          rollupOptions: {
+          rolldownOptions: {
             input: './src/index',
           },
         },
@@ -57,9 +98,13 @@ export const createDefaultViteConfig = (
        * SSR Environment
        */
       ssr: {
+        resolve: runtimeConditions
+          ? { conditions: runtimeConditions }
+          : undefined,
         build: {
           outDir: 'dist/server',
-          rollupOptions: {
+          rolldownOptions: {
+            external: ssrExternals,
             input: {
               'entry.server': join(
                 __dirname,
@@ -78,9 +123,13 @@ export const createDefaultViteConfig = (
        * SSG Environment
        */
       ssg: {
+        resolve: runtimeConditions
+          ? { conditions: runtimeConditions }
+          : undefined,
         build: {
           outDir: 'dist/prerender',
-          rollupOptions: {
+          rolldownOptions: {
+            external: ssrExternals,
             input: {
               'entry.server': join(
                 __dirname,
