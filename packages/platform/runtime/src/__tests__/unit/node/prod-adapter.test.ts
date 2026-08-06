@@ -8,6 +8,7 @@ import { NodeProdAdapter } from '../../../adapters/node/prod.js';
 function createMockApp() {
   return {
     configureServer: () => {},
+    configureAssets: () => {},
     loadEnv: () => {},
     init: () => Promise.resolve(),
     destroy: () => Promise.resolve(),

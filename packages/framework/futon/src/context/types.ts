@@ -32,6 +32,37 @@ export interface RuntimeContext {
    * ```
    */
   server?: ServerInfo;
+
+  /**
+   * Static-asset access — populated by the adapter when the Futon
+   * instance is served, same as `server` above. Built-ins like
+   * `staticFiles()` read through this instead of touching the
+   * filesystem directly, which is how they stay usable on runtimes
+   * with no filesystem (Workerd's `assets` is a no-op stub there).
+   *
+   * Structurally matches `@rasenganjs/runtime`'s `Assets` interface
+   * without importing it — futon has zero dependencies and must not
+   * depend on `@rasenganjs/runtime` (the dependency runs the other
+   * way: runtime depends on futon).
+   */
+  assets?: Assets;
+}
+
+/**
+ * Static-asset access, implemented per-adapter (filesystem on
+ * Node/Bun, a no-op stub on Workerd). See `RuntimeContext.assets`.
+ */
+export interface Assets {
+  /** Read a file. Returns null if not found. */
+  get(path: string): Promise<Uint8Array | null>;
+  /** Read a file and decode as UTF-8 text. Returns null if not found. */
+  load(path: string): Promise<string | null>;
+  /** Write a file, creating parent directories if needed. */
+  write(path: string, data: Uint8Array): Promise<void>;
+  /** Delete a file or empty directory. No-op if missing. */
+  delete(path: string): Promise<void>;
+  /** List all entries under a prefix/directory. */
+  list(prefix: string): Promise<string[]>;
 }
 
 /**

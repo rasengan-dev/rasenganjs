@@ -89,6 +89,7 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
       host: '0.0.0.0',
       rootDir: process.cwd(),
     });
+    app.configureAssets(this.assets);
 
     await app.init();
 

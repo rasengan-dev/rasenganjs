@@ -4,13 +4,19 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
-import compression from 'compression';
-import express from 'express';
-import morgan from 'morgan';
 import sourceMapSupport from 'source-map-support';
 import getPort from 'get-port';
 import { createRequestHandler, resolveBuildOptions } from 'rasengan/server';
 import { OptimizedAppConfig } from 'rasengan';
+import {
+  Futon,
+  logger,
+  compress,
+  staticFiles,
+  redirect,
+} from '@rasenganjs/futon';
+import type { Context } from '@rasenganjs/futon';
+import { NodeProdAdapter } from '@rasenganjs/runtime/adapters/node';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
@@ -62,6 +68,34 @@ function parsePortFromArgs(args: string[]) {
   if (!portArg) return undefined;
   const port = args[args.indexOf(portArg) + 1];
   return parseNumber(port);
+}
+
+/**
+ * Serve a file straight off disk relative to `process.cwd()` — used
+ * only for the `public/` mount, which (unlike every other static
+ * mount here) is rooted at the CWD rather than the build output
+ * directory, so it can't share `NodeProdAdapter`'s build-scoped
+ * `ctx.runtime.assets`.
+ * @param prefix
+ */
+function publicFiles(prefix = '/') {
+  return async (ctx: Context, next: () => Promise<Response>) => {
+    const pathname = decodeURIComponent(new URL(ctx.request.url).pathname);
+    const relative = pathname.startsWith(prefix)
+      ? pathname.slice(prefix.length)
+      : pathname;
+
+    if (relative.split('/').includes('..')) return next();
+
+    const filePath = path.join(process.cwd(), 'public', relative);
+
+    try {
+      const data = await fs.promises.readFile(filePath);
+      return new Response(data as BodyInit, { status: 200 });
+    } catch {
+      return next();
+    }
+  };
 }
 
 async function run() {
@@ -120,64 +154,52 @@ async function run() {
     }
   };
 
-  let app = express();
-  app.disable('x-powered-by');
-  app.use(compression());
-  app.use(
-    morgan(
-      '[:date[web]]: :method :url :status :res[content-length] - :response-time ms'
-    )
-  );
+  const app = new Futon();
+
+  app.use(logger());
+  app.use(compress());
+
   // ssr assets
   app.use(
-    path.posix.join('/assets'),
-    express.static(
-      path.posix.join(
-        buildOptions.buildDirectory,
+    staticFiles({
+      root: path.posix.join(
         buildOptions.clientPathDirectory,
         buildOptions.assetPathDirectory
       ),
-      {
-        immutable: true,
-        maxAge: '1y',
-      }
-    )
+      prefix: '/assets',
+      immutable: true,
+      maxAge: 31536000,
+    })
   );
   // spa assets
   app.use(
-    path.posix.join('/assets'),
-    express.static(
-      path.posix.join(
-        buildOptions.buildDirectory,
-        buildOptions.assetPathDirectory
-      ),
-      {
-        immutable: true,
-        maxAge: '1y',
-      }
-    )
+    staticFiles({
+      root: buildOptions.assetPathDirectory,
+      prefix: '/assets',
+      immutable: true,
+      maxAge: 31536000,
+    })
   );
   // ssr client
   app.use(
-    '/',
-    express.static(
-      path.posix.join(
-        buildOptions.buildDirectory,
-        buildOptions.clientPathDirectory
-      ),
-      { maxAge: '1h' }
-    )
+    staticFiles({
+      root: buildOptions.clientPathDirectory,
+      maxAge: 3600,
+    })
   );
   // spa client
   app.use(
-    '/',
-    express.static(path.posix.join(buildOptions.buildDirectory), {
-      maxAge: '1h',
+    staticFiles({
+      root: '',
+      maxAge: 3600,
     })
   );
-  app.use(express.static('public', { maxAge: '1h' }));
+  // public/ — CWD-rooted, not build-output-rooted, see publicFiles().
+  app.use(publicFiles());
 
-  app.all('*', (req, res) => {
+  app.fallback(async (ctx) => {
+    const request = ctx.request;
+
     // Check if dist/client/assets/config.json exists or dist/assets/config.json exists
     const configPathSpa = path.posix.join(
       buildOptions.buildDirectory,
@@ -207,12 +229,18 @@ async function run() {
     // Parse the config.json file
     const config: OptimizedAppConfig = JSON.parse(configData);
 
-    // Handle custom redirections
-    for (const redirect of config.redirects) {
-      if ((req.url || req.originalUrl).includes(redirect.source)) {
-        return res
-          .status(redirect.permanent ? 301 : 302)
-          .redirect(redirect.destination);
+    // Handle custom redirections. Mirrors Express's `req.url` (path +
+    // query, no origin) — `.includes()`, not an exact match, matching
+    // the original behavior.
+    const requestUrl = new URL(request.url);
+    const requestPath = requestUrl.pathname + requestUrl.search;
+
+    for (const redirectEntry of config.redirects) {
+      if (requestPath.includes(redirectEntry.source)) {
+        return redirect(
+          redirectEntry.destination,
+          redirectEntry.permanent ? 301 : 302
+        );
       }
     }
 
@@ -221,28 +249,47 @@ async function run() {
         build: buildOptions,
       });
 
-      return requestHandler(req, res);
+      return requestHandler(ctx);
     } else {
       // Check if spa-fallback.html exists
       const isSpaFallbackExists = fs.existsSync(
         path.posix.join(buildOptions.buildDirectory, 'spa-fallback.html')
       );
 
-      return res.sendFile(
-        // buildDirectory can be either dist or static
-        path.posix.join(
-          buildOptions.buildDirectory,
-          isSpaFallbackExists ? 'spa-fallback.html' : 'index.html'
-        )
+      const fallbackFile = path.posix.join(
+        buildOptions.buildDirectory,
+        isSpaFallbackExists ? 'spa-fallback.html' : 'index.html'
       );
+
+      const html = await fs.promises.readFile(fallbackFile, 'utf-8');
+
+      return new Response(html, {
+        status: 200,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
     }
   });
 
-  let server = process.env.HOST
-    ? app.listen(port, process.env.HOST, onListen)
-    : app.listen(port, onListen);
+  app.onError(async (error) => {
+    console.error(error);
+    return new Response('Internal Server Error', { status: 500 });
+  });
+
+  const adapter = new NodeProdAdapter({
+    port,
+    host: process.env.HOST,
+    rootDir: buildPath,
+  });
+
+  await adapter.serve(app, { onListening: onListen });
 
   ['SIGTERM', 'SIGINT'].forEach((signal) => {
-    process.once(signal, () => server?.close(console.error));
+    process.once(signal, async () => {
+      try {
+        await adapter.close();
+      } catch (error) {
+        console.error(error);
+      }
+    });
   });
 }

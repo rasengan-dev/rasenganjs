@@ -112,6 +112,7 @@ export class NodeProdAdapter implements RuntimeAdapter {
       host: this.options.host ?? '0.0.0.0',
       rootDir,
     });
+    app.configureAssets(this.assets);
 
     app.loadEnv(await loadNodeEnvFiles(rootDir, 'production'));
 

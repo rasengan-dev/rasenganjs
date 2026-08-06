@@ -34,7 +34,12 @@
  * ```
  */
 
-import type { Context, RuntimeContext, ServerInfo } from '../context/types.js';
+import type {
+  Assets,
+  Context,
+  RuntimeContext,
+  ServerInfo,
+} from '../context/types.js';
 import type { EnvironmentMap } from '../env/index.js';
 import { createContext } from '../context/index.js';
 import { compose } from '../middlewares/compose.js';
@@ -63,6 +68,26 @@ export class Futon {
    */
   configureServer(info: ServerInfo): this {
     this.serverInfo = info;
+    return this;
+  }
+
+  /**
+   * Static-asset access — set by the adapter before serving, same
+   * moment as `configureServer()`. A static, process-lifetime object
+   * that never changes per request (see RFC-0007 §9), so built-ins
+   * like `staticFiles()` can read `ctx.runtime.assets` unconditionally
+   * with no null-check — every adapter (including Workerd's no-op
+   * stub) provides one.
+   */
+  assets?: Assets;
+
+  /**
+   * Configure asset access manually.
+   * Called automatically by the adapter's `serve()` method,
+   * alongside `configureServer()`.
+   */
+  configureAssets(assets: Assets): this {
+    this.assets = assets;
     return this;
   }
 
@@ -350,6 +375,7 @@ export class Futon {
       ...runtime,
       env: { ...this.env, ...runtime.env },
       server: runtime.server ?? this.serverInfo,
+      assets: runtime.assets ?? this.assets,
     };
     const ctx = createContext(request, {}, mergedRuntime);
 
