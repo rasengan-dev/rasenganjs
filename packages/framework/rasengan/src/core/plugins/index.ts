@@ -112,6 +112,37 @@ function flatRoutesPlugin(): Plugin {
   };
 }
 
+function flatApiRoutesPlugin(): Plugin {
+  const { id: virtualModuleId, resolvedId } = createVirtualModule('api-router');
+
+  return {
+    name: 'vite-plugin-rasengan-api-router',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedId) {
+        return `
+          import { flatApiRoutes } from 'rasengan/server';
+
+          const ApiRouter = flatApiRoutes(() => {
+            return import.meta.glob(
+              [
+                '/src/app/_api/**/middleware.{js,ts}',
+                '/src/app/_api/**/*.route.{js,ts}',
+              ],
+            );
+          });
+
+          export default ApiRouter;
+        `;
+      }
+    },
+  };
+}
+
 function buildOutputInformation(): Plugin {
   const { id: virtualModuleId, resolvedId } = createVirtualModule('build-info');
 
@@ -402,4 +433,5 @@ export const plugins: Plugin[] = [
   // fixCPathPlugin(),
   loadRasenganGlobal(),
   flatRoutesPlugin(),
+  flatApiRoutesPlugin(),
 ];

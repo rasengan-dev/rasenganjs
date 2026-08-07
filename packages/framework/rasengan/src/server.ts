@@ -2,8 +2,19 @@ import { createRequestHandler } from './server/node/index.js';
 import { createMatchRoutesGuard } from './server/node/match-routes-guard.js';
 import { resolveBuildOptions } from './server/build/index.js';
 import { detectDeploymentPlatform } from './server/runtime/detect-runtime.js';
+import { flatApiRoutes } from './routing/utils/flat-api-routes.js';
 
 export * from './server/build/manifest.js';
+
+// `flatApiRoutes` is server-only (RFC-0008) — exported here directly,
+// not through `routing/index.ts`'s client-facing barrel, so no _api
+// code path can end up in the client bundle.
+export { flatApiRoutes };
+export type {
+  ApiHandler,
+  ApiRouteModule,
+  ApiMiddlewareModule,
+} from './routing/utils/flat-api-routes.js';
 
 // `rasengan/server` re-exports the full `@rasenganjs/futon` API surface —
 // app code (including file-based `_api` route handlers) imports Futon's

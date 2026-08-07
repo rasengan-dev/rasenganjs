@@ -203,10 +203,22 @@ Checked at the same point the plugin already detects `_api/`'s existence for the
 
 # Migration Phases
 
-Not started — this RFC is a design document; implementation is future work, phased similarly to RFC-0007:
+Phased similarly to RFC-0007:
 
 **Phase 1 — Core file-based resolution**
-`flatApiRoutes()`, `flatApiRoutesPlugin()`, the auto-detected build-entry wiring in `core/config/vite/defaults.ts`, segment-convention reuse from `flat-routes.tsx`. No runtime wiring yet — just proves a `_api/` folder correctly becomes a `Router` instance at build time.
+
+**✅ Done (2026-08-07).** `flatApiRoutes()` (`routing/utils/flat-api-routes.ts`) — builds a two-pass tree (raw tree from file paths, then an async resolve pass awaiting every module) and mounts it onto a Futon `Router` via nested `.group()` calls, one per folder, so ancestor `middleware.ts` files compose naturally (`Router.group()`'s middleware stack already accumulates through nesting — no bespoke composition logic needed). `normalizeSegment()` exported from `flat-routes.tsx` and reused as-is for dynamic/optional/group segment conversion, keyed by _raw_ folder name in the tree (not the normalized URL segment) so two different route-group folders that both contribute an empty URL segment — e.g. `(admin)` and `(public)` — stay distinct nodes with independent middleware. Exports any of the 7 `HTTPMethod` names; anything else on a `.route.ts` file's exports warns and is ignored (mirrors the existing `_routes` "Page component is not exported by default" warning).
+
+`flatApiRoutesPlugin()` added to `core/plugins/index.ts` (`virtual:rasengan/api-router`, via the existing `createVirtualModule()` helper), registered unconditionally in the default `plugins[]` array — harmless when unused, since nothing resolves the virtual id unless something imports it. The build-entry wiring in `core/config/vite/defaults.ts` checks `existsSync(join(rootPath, 'src/app/_api'))` once and only adds `'api-router': 'virtual:rasengan/api-router'` to the `ssr`/`ssg` environments' `rolldownOptions.input` when true — confirmed zero-cost for apps without the folder (no `api-router.js` output at all).
+
+`flatApiRoutes` and its module types (`ApiHandler`, `ApiRouteModule`, `ApiMiddlewareModule`) exported from `rasengan/server` only — deliberately **not** threaded through `routing/index.ts`'s client-facing barrel the way `flatRoutes` is, so no `_api` code can end up in the client bundle.
+
+**Verified, not just "it compiles":**
+
+- Isolated smoke test (`flatApiRoutes()` fed a hand-built fake `import.meta.glob()` record, 9 checks): static route, `index.route.ts` binding to its folder's own path, middleware ordering (global → nested, both firing before the handler), dynamic segment → `ctx.params`, a route group folder correctly contributing no URL segment while still scoping its own middleware, `405` with the right `Allow` semantics for a matched path/unregistered method (free from Futon's `Router`, not reimplemented), a genuinely unmatched path falling through to `next()`, and the unrecognized-export warning firing for a non-HTTP-method name.
+- Real end-to-end build: a temporary `_api/health.route.ts` + `_api/users/[id].route.ts` in `apps/playground/file-based-routing` (`ssr: true`) produced `dist/server/api-router.js` (4.71 kB); imported it directly and dispatched real requests — `GET /health` → `200 {"status":"ok"}`, `GET /users/42` → `200 {"id":"42"}` (dynamic segment resolved through the full virtual-module → Rolldown-bundled-chunk path, not just the isolated unit test). Confirmed zero footprint in the client build (no `.route`/`api-router` chunks in `dist/client/assets`) and confirmed the build-entry is correctly _absent_ (`dist/server/` has no `api-router.js` at all) when `_api/` doesn't exist.
+
+No runtime wiring yet (Phase 2) — the built `api-router.js` isn't mounted into any live request path (dev server, `createRequestHandler`, `@rasenganjs/serve`, Vercel) yet; this phase only proves the file-based resolution and build-entry mechanics.
 
 **Phase 2 — Runtime wiring**
 `createApiRouterMiddleware()`, mounted in `server/dev/server.ts` first (fastest feedback loop), then `createRequestHandler`'s sibling call sites (`@rasenganjs/serve`, the Vercel handler). §6/§7 (scoped 404, JSON errors) land here since they're properties of this middleware, not the file-resolution layer.
