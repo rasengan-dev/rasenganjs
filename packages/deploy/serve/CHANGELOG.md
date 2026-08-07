@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2.0.0-beta.1 (2026-08-07)
+
+### Features
+
+- wire _api routes into dev, serve, and Vercel (RFC-0008 Phase 2) 1e08a46
+
 ### Features
 
 - support `_api/` file-based API routes (RFC-0008) — mounts `createApiRouterMiddleware` ahead of the SSR fallback, a no-op when the app has none
