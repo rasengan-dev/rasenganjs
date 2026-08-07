@@ -189,15 +189,19 @@ Same shape as the existing `ServerConfig`/`server?: ServerConfig` pattern in `co
 
 ## 9. Build-time guard for unreachable API routes
 
-If `_api/` exists but the build target has no server at request time — `ssr: false` **and** no serverless adapter configured (`rasengan({ adapter: ... })` unset or `Adapters.DEFAULT`) — the build fails with:
+**Corrected during Phase 3 implementation (2026-08-07) — the original text below this line was wrong** about a serverless adapter being able to rescue an `ssr: false`/`prerender: true` build. It can't: `builder.buildApp` (`core/config/vite/defaults.ts`) only builds the `ssr` environment (which is what produces `dist/server/api-router.js`) when `config.ssr && !config.prerender`, and `@rasenganjs/vercel`'s `prepare()` only generates a serverless function under that exact same condition too — never for SPA or SSG. No adapter changes the outcome, so the guard doesn't special-case one.
+
+If `_api/` exists but the build isn't `ssr: true` with `prerender` disabled, the build fails with:
 
 ```
 Error: src/app/_api/ was found, but this build has no server to run it on
-  (ssr: false and no serverless adapter configured). API routes require
-  either ssr: true, or a serverless deployment target like @rasenganjs/vercel.
+  (requires ssr: true with prerender disabled). API routes are built into
+  dist/server/api-router.js, which only exists when the ssr environment
+  itself is built — set ssr: true and remove/disable prerender, or remove
+  src/app/_api/ if you don't need API routes for this build.
 ```
 
-Checked at the same point the plugin already detects `_api/`'s existence for the build-entry wiring (§4) — one `fs.existsSync` check gates both. `prerender: true` alone (SSG) hits this same guard unless paired with a serverless adapter, since the SSG build-time server doesn't exist at request time either — only `ssr: true` or an adapter changes that.
+Checked at the same point the plugin already detects `_api/`'s existence for the build-entry wiring (§4) — one `fs.existsSync` check gates both. **Build-only** (`env.command === 'build'`, in the main `rasengan()` plugin's `config()` hook) — `rasengan dev` never has this restriction, since the dev server always has a live process and mounts `_api/` regardless of `ssr`/`prerender` (§4's `apiRouterDevMiddleware`).
 
 ---
 
@@ -241,7 +245,11 @@ Dev gets its own `apiRouterDevMiddleware()` (inlined in `server/dev/server.ts`, 
 
 **Phase 3 — Config surface + build guard**
 
-**Partially done.** `AppConfig.api?: ApiConfig` (`{ prefix?: string }`) landed as part of Phase 2 (needed to thread the prefix through in the first place) — see `core/config/type.ts`. `OptimizedAppConfig.api` is written into `config.json` only when `_api/` exists (`undefined`/omitted otherwise), reusing the same `existsSync` check `vite/defaults.ts` already does for the build-entry wiring. **Not done:** the `ssr:false`-without-a-serverless-adapter build failure (§9) — building with `_api/` present and no way to serve it currently just silently produces an unreachable `api-router.js` (SSR/SSG builds) or skips it entirely with no warning (pure SPA, since `hasApiRoutes` in `vite/defaults.ts` doesn't consider `ssr`/prerender/adapter at all, only the folder's existence) — still needs the explicit guard.
+**✅ Done (2026-08-07).** `AppConfig.api?: ApiConfig` (`{ prefix?: string }`) landed as part of Phase 2 (needed to thread the prefix through in the first place) — see `core/config/type.ts`. `OptimizedAppConfig.api` is written into `config.json` only when `_api/` exists (`undefined`/omitted otherwise), reusing the same `existsSync` check `vite/defaults.ts` already does for the build-entry wiring.
+
+The build guard itself (§9) required correcting the RFC's own original design first — see §9 above for what was wrong and why. Implemented in the main `rasengan()` plugin's `config()` hook (`core/plugins/index.ts`), right after loading `rasengan.config.js`: `env.command === 'build' && existsSync('src/app/_api') && !(config.ssr && !config.prerender)` throws with an explicit message. Runs at Vite config-resolution time — fails fast, before any bundling work starts.
+
+**Verified** all four cases against `apps/playground/file-based-routing`: `_api/` + `ssr:false, prerender:true` → build fails with the exact expected message; `_api/` + `ssr:true` (no prerender) → builds successfully; no `_api/` folder at all (any config) → unaffected, builds successfully (confirms zero cost for apps not using the feature); `_api/` + `ssr:false, prerender:true` under `rasengan dev` → starts normally, `/api/health` still responds `200` (confirms the guard is genuinely build-only, not a blanket restriction).
 
 **Phase 4 — Docs + playground example**
 A `_api/` folder in `apps/playground/file-based-routing` (or a new dedicated playground) exercising dynamic segments, nested middleware, and an intentionally-thrown `HttpError`, as the manual + automated validation harness.

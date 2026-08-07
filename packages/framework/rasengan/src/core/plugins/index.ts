@@ -243,7 +243,7 @@ export function rasengan({
   return {
     name: 'vite-plugin-rasengan',
 
-    async config() {
+    async config(_userConfig, env) {
       // load rasengan.config.js
       const configPath = resolve(process.cwd(), 'rasengan.config.js');
 
@@ -256,6 +256,29 @@ export function rasengan({
       ).default;
 
       config = await rasenganConfigHandler();
+
+      // RFC-0008 §9 — build-only: dev always has a live server, so
+      // _api/ works there regardless of ssr/prerender. In a build,
+      // dist/server/api-router.js (what createApiRouterMiddleware
+      // looks for) is only ever produced when the ssr environment
+      // itself gets built — exactly `config.ssr && !config.prerender`
+      // (see builder.buildApp below). No adapter changes this:
+      // @rasenganjs/vercel's prepare() only generates a serverless
+      // function under that same exact condition, never for SPA/SSG.
+      if (
+        env.command === 'build' &&
+        fs.existsSync(resolve(process.cwd(), 'src/app/_api')) &&
+        !(config.ssr && !config.prerender)
+      ) {
+        throw new Error(
+          `src/app/_api/ was found, but this build has no server to run it on ` +
+            `(requires ssr: true with prerender disabled). API routes are ` +
+            `built into dist/server/api-router.js, which only exists when the ` +
+            `ssr environment itself is built — set ssr: true and remove/disable ` +
+            `prerender, or remove src/app/_api/ if you don't need API routes ` +
+            `for this build.`
+        );
+      }
     },
 
     async load(id: string) {
