@@ -4,9 +4,9 @@ import { join } from 'node:path';
 import {
   loadModuleSSR,
   getDirname,
-} from './lib/esm/core/config/utils/load-modules.js';
-import { plugins } from './lib/esm/core/plugins/index.js';
-import { createDefaultViteConfig } from './lib/esm/core/config/vite/defaults.js';
+} from './dist/core/config/utils/load-modules.js';
+import { plugins } from './dist/core/plugins/index.js';
+import { createDefaultViteConfig } from './dist/core/config/vite/defaults.js';
 
 export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   const rootPath = process.cwd();

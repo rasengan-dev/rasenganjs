@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "outDir": "lib",
+    "outDir": "dist",
     "rootDir": "src",
     "module": "ESNext",
     "lib": ["ES2015", "ESNext", "dom", "dom.iterable", "esnext"],
@@ -18,5 +18,5 @@
     "jsx": "react-jsx"
   },
   "include": ["src", "types"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "dist", "src/__tests__"]
 }

@@ -9,6 +9,12 @@
 
 - **the built-in 404 catch-all route always responded with HTTP `200`**, not `404` — its loader returned a plain object instead of signaling a status, so `context.statusCode` from React Router's static handler never left its default. Fixed by returning `data({ props, meta }, { status: 404 })` (React Router's `data()` helper) instead
 - **`.data`/`Accept: application/json` requests to an unmatched path returned `500` instead of `404`** — `handler.queryRoute()` _throws_ the constructed `Response` for any loader result carrying its own status (not just errors — this is documented React Router behavior, not specific to the fix above), and `handleDataRequest` had no `try/catch` around it. Now catches and returns the thrown `Response` directly when it's a genuine `Response`, still rethrowing anything else
+- **`ManifestManager.generateMetaTags()` rendered `<script>`/`<link>` asset tags without a `key` prop**, triggering a React "Each child in a list should have a unique key prop" warning on every SSR render with more than one script/style asset
+
+### Refactors
+
+- **package build switched from `tsc -b` to `tsup`, output directory renamed from `lib/esm`/`lib/types` to `dist/`** — matches every other package in the monorepo. `tsup` (esbuild, `bundle: false`) replaces the two-project `tsc -b` build for JS emission and now also generates `.d.ts` declarations directly (previously a separate `tsc -b tsconfig.types.json` step), producing the same file-per-module layout the framework's own runtime code depends on (e.g. `dist/entries/server/entry.server.js`, resolved by `rasengan build`/`rasengan dev`). `tsconfig.esm.json`, `tsconfig.types.json` and the unused `tsconfig.cjs.json` are removed — nothing outside this package's own build script referenced them
+- **the dev server's startup banner now matches `@rasenganjs/server`'s and `@rasenganjs/serve`'s format** — same wording ("Rasengan v{version} running", "running" in green), the same `→ Local:`/`→ Network:`/`→ Runtime:` lines, and the same `c`/`ctrl+c` hint wording. Drops the previous spinner and "Starting server in {mode} mode..." message
 
 ## 2.0.0-beta.1 (2026-08-06)
 

@@ -4,6 +4,14 @@
 
 - support `_api/` file-based API routes (RFC-0008) — mounts `createApiRouterMiddleware` ahead of the SSR fallback, a no-op when the app has none
 
+### Bug Fixes
+
+- **`rasengan-serve` crashed with `ReferenceError: Bun is not defined` when `rasengan.config.js` sets `runtime: "bun"`** — the `rasengan-serve` bin script always launches under `#!/usr/bin/env node` (`pnpm serve` / `rasengan-serve ./dist` runs through the normal `node`-shebang shim), so `BunProdAdapter.serve()`'s call into `Bun.serve()` had no real Bun process to run in. `rasengan-serve` now detects this mismatch and automatically re-execs itself under `bun` (same arguments, forwarded exit code) before starting the server — the `bun <path>/bin.js ./dist` manual invocation documented in 2.0.0-beta.0 below is no longer necessary. If `bun` isn't installed, a clear error is printed instead of the bare `ReferenceError`
+
+### Refactors
+
+- the startup banner now matches `rasengan`'s and `@rasenganjs/server`'s format — same wording ("Rasengan v{version} running", "running" in green), `→`-prefixed `Local:`/`Network:`/`Runtime:` lines
+
 ## 2.0.0-beta.0 (2026-08-06)
 
 ### Features

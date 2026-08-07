@@ -114,7 +114,7 @@ export const createDefaultViteConfig = (
             input: {
               'entry.server': join(
                 __dirname,
-                './lib/esm/entries/server/entry.server.js'
+                './dist/entries/server/entry.server.js'
               ),
               'app.router': './src/app/app.router',
               main: './src/main',
@@ -142,7 +142,7 @@ export const createDefaultViteConfig = (
             input: {
               'entry.server': join(
                 __dirname,
-                './lib/esm/entries/server/entry.server.js'
+                './dist/entries/server/entry.server.js'
               ),
               'app.router': './src/app/app.router',
               main: './src/main',

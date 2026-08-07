@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import { bold, blue, boldBlue } from './ansi.js';
+import { bold, blue, boldBlue, green } from './ansi.js';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
+import { spawn } from 'node:child_process';
 import sourceMapSupport from 'source-map-support';
 import getPort from 'get-port';
 import {
@@ -160,6 +161,50 @@ function publicFiles(prefix = '/') {
   };
 }
 
+/**
+ * `BunProdAdapter.serve()` calls `Bun.serve()` deep inside
+ * `@rasenganjs/runtime`'s Bun adapter, which needs a real Bun process —
+ * but this CLI's own `bin.js` always launches under
+ * `#!/usr/bin/env node` (`rasengan-serve` is installed/invoked the same
+ * way everywhere), so `Bun` is never defined even when
+ * `rasengan.config.js` sets `runtime: "bun"`. Without this guard that
+ * surfaces as a bare `ReferenceError: Bun is not defined` from inside
+ * the adapter instead of a clear message — re-exec the same invocation
+ * under `bun` instead.
+ * @param runtime
+ */
+async function reexecUnderBunIfNeeded(
+  runtime: OptimizedAppConfig['runtime']
+): Promise<void> {
+  if (runtime !== 'bun') return;
+  if (typeof (globalThis as { Bun?: unknown }).Bun !== 'undefined') return;
+
+  const entryPoint = process.argv[1];
+  const args = process.argv.slice(2);
+
+  await new Promise<void>((_resolve, reject) => {
+    const child = spawn('bun', [entryPoint, ...args], { stdio: 'inherit' });
+
+    child.on('error', (error: NodeJS.ErrnoException) => {
+      if (error.code === 'ENOENT') {
+        console.error(
+          `\nrasengan.config.js sets ${bold('runtime: "bun"')}, but the ` +
+            `${bold('bun')} executable was not found on PATH.\n` +
+            `Install Bun from ${blue('https://bun.sh')}, or set a different ` +
+            `runtime (e.g. "node") in rasengan.config.js to serve with ` +
+            `Node.js instead.\n`
+        );
+        process.exit(1);
+      }
+      reject(error);
+    });
+
+    child.on('exit', (code) => {
+      process.exit(code ?? 0);
+    });
+  });
+}
+
 async function run() {
   let portArg = parsePortFromArgs(process.argv);
   let port =
@@ -184,6 +229,8 @@ async function run() {
   // and to pick the right runtime adapter before the server even starts.
   const config = readAppConfig(buildOptions);
 
+  await reexecUnderBunIfNeeded(config.runtime);
+
   let onListen = () => {
     // Getting the package.json file
     const packageJson = fs.readFileSync(
@@ -194,6 +241,8 @@ async function run() {
     // Parsing the package.json file
     const parsedPackageJson = JSON.parse(packageJson);
 
+    const arrow = green('→');
+
     let address =
       process.env.HOST ||
       Object.values(os.networkInterfaces())
@@ -201,18 +250,23 @@ async function run() {
         .find((ip) => String(ip?.family).includes('4') && !ip?.internal)
         ?.address;
 
-    if (!address) {
-      console.log(boldBlue(`Rasengan v${parsedPackageJson['version']}\n`));
+    const runtimeLabel = config.runtime === 'bun' ? 'Bun' : 'Node.js';
+
+    console.log('');
+    console.log(
+      `${boldBlue(`Rasengan v${parsedPackageJson['version']}`)} ${green('running')}`
+    );
+    console.log('');
+    console.log(
+      `${arrow} ${bold('Local:')}   ${blue(`http://localhost:${bold(String(port))}`)}`
+    );
+    if (address) {
       console.log(
-        `${bold('- Local:')}    ${blue(`http://localhost:${port}\n`)}`
-      );
-    } else {
-      console.log(boldBlue(`Rasengan v${parsedPackageJson['version']}\n`));
-      console.log(`${bold('- Local:')}    ${blue(`http://localhost:${port}`)}`);
-      console.log(
-        `${bold('- Network:')}  ${blue(`http://${address}:${port}\n`)}`
+        `${arrow} ${bold('Network:')} ${blue(`http://${address}:${bold(String(port))}`)}`
       );
     }
+    console.log(`${arrow} ${bold('Runtime:')} ${runtimeLabel}`);
+    console.log('');
   };
 
   const app = new Futon();

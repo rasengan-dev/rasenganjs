@@ -29,7 +29,7 @@ program
       process.exit(1);
     }
 
-    execa('node', ['node_modules/rasengan/lib/esm/server/dev/server'], {
+    execa('node', ['node_modules/rasengan/dist/server/dev/server'], {
       stdio: 'inherit',
       env: {
         ...process.env,
@@ -43,7 +43,7 @@ program
   .command('build')
   .description('Build the project')
   .action(async () => {
-    execa('node', ['node_modules/rasengan/lib/esm/scripts/build-command'], {
+    execa('node', ['node_modules/rasengan/dist/scripts/build-command'], {
       stdio: 'inherit',
     });
   });

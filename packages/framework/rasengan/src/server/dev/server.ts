@@ -36,7 +36,6 @@ import {
 } from '../../core/config/utils/load-modules.js';
 
 import { RouterComponent, type AppConfig } from '../../index.js';
-import { ServerMode } from '../runtime/mode.js';
 import {
   handleDataRequest,
   handleDocumentRequest,
@@ -343,11 +342,7 @@ async function createDevNodeServer({
   // Start http server
   server.listen(port, () => {
     setTimeout(() => {
-      logServerInfo(
-        port,
-        ServerMode.Development,
-        config.server?.development?.open
-      );
+      logServerInfo(port, config.server?.development?.open);
     }, 100);
   });
 
