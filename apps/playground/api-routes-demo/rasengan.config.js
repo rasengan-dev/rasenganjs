@@ -7,6 +7,7 @@ import { rasengan } from 'rasengan/plugin';
 export default defineConfig(async () => {
   return {
     ssr: true,
+    runtime: 'bun',
     vite: {
       plugins: [rasengan({})],
     },

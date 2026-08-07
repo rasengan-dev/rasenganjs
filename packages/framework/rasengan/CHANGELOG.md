@@ -1,5 +1,17 @@
 ## Unreleased
 
+## 2.0.0-beta.2 (2026-08-07)
+
+### Features
+
+- build-time guard for unreachable _api routes (RFC-0008 Phase 3) 09cf40e
+- file-based _api route resolution (RFC-0008 Phase 1) f8b4074
+- wire _api routes into dev, serve, and Vercel (RFC-0008 Phase 2) 1e08a46
+
+### Bug Fixes
+
+- catch-all route always returned HTTP 200, and .data 500s on unmatched paths 7db94ee
+
 ### Features
 
 - **file-based `_api/` API routes (RFC-0008)** — a `src/app/_api/` folder, same segment conventions as `_routes/` (`[param]`, `[_param]`, `(group)`, `_optional`), resolves to a `@rasenganjs/futon` `Router` instead of a page tree. `*.route.ts` files export `GET`/`POST`/`PUT`/`PATCH`/`DELETE`/`HEAD`/`OPTIONS` handlers with Futon's own `(ctx: Context) => Promise<Response>` signature; `middleware.ts` per folder scopes middleware to that folder and its descendants. No wrapper file needed — `_api/`'s existence alone is enough for the plugin to wire the build entry and mount the router. Self-contained under its prefix (`AppConfig.api.prefix`, default `/api`): an unmatched path or an uncaught handler error responds in JSON there, never falling through to the HTML/SSR catch-all. Wired into the dev server, `createRequestHandler` (via the new `createApiRouterMiddleware`, also consumed by `@rasenganjs/serve` and the `@rasenganjs/vercel`-generated handler), and exported from `rasengan/server` (`flatApiRoutes`, `createApiRouterMiddleware`) — never through the client-facing route barrel, so `_api` code can't reach the client bundle. Builds fail fast with an explicit error if `_api/` exists but the build has no way to serve it (`ssr: true` with `prerender` disabled is required — `dist/server/api-router.js` only exists when the `ssr` environment itself gets built); `rasengan dev` is never affected, since the dev server always has a live process
