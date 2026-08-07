@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Features
+
+- **file-based `_api/` API routes (RFC-0008)** — a `src/app/_api/` folder, same segment conventions as `_routes/` (`[param]`, `[_param]`, `(group)`, `_optional`), resolves to a `@rasenganjs/futon` `Router` instead of a page tree. `*.route.ts` files export `GET`/`POST`/`PUT`/`PATCH`/`DELETE`/`HEAD`/`OPTIONS` handlers with Futon's own `(ctx: Context) => Promise<Response>` signature; `middleware.ts` per folder scopes middleware to that folder and its descendants. No wrapper file needed — `_api/`'s existence alone is enough for the plugin to wire the build entry and mount the router. Self-contained under its prefix (`AppConfig.api.prefix`, default `/api`): an unmatched path or an uncaught handler error responds in JSON there, never falling through to the HTML/SSR catch-all. Wired into the dev server, `createRequestHandler` (via the new `createApiRouterMiddleware`, also consumed by `@rasenganjs/serve` and the `@rasenganjs/vercel`-generated handler), and exported from `rasengan/server` (`flatApiRoutes`, `createApiRouterMiddleware`) — never through the client-facing route barrel, so `_api` code can't reach the client bundle
+- **`rasengan/server` now re-exports the full `@rasenganjs/futon` API surface** (all middleware, `Router`, response helpers, error classes, types) — app code, including `_api` handlers, imports Futon primitives from `rasengan/server` instead of depending on `@rasenganjs/futon` directly. `toExpressHandler`/`toWinterCgHandler` stay excluded (RFC-0007 §2)
+
 ### Bug Fixes
 
 - **the built-in 404 catch-all route always responded with HTTP `200`**, not `404` — its loader returned a plain object instead of signaling a status, so `context.statusCode` from React Router's static handler never left its default. Fixed by returning `data({ props, meta }, { status: 404 })` (React Router's `data()` helper) instead

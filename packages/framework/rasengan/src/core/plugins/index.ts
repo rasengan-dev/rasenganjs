@@ -124,6 +124,23 @@ function flatApiRoutesPlugin(): Plugin {
     },
     async load(id: string) {
       if (id === resolvedId) {
+        // Self-contained read of the user's config, mirroring
+        // rasenganConfigPlugin() above — the prefix has to be baked
+        // into the router itself (routes are matched against the full
+        // incoming pathname), not stripped at dispatch time, so it
+        // needs to reach flatApiRoutes() here at router-build time.
+        const configPath = resolve(process.cwd(), 'rasengan.config.js');
+        let prefix = '/api';
+
+        if (fs.existsSync(configPath)) {
+          const rasenganConfigHandler: AppConfigFunctionAsync = await (
+            await loadModuleSSR(configPath)
+          ).default;
+          const rasenganConfig = await rasenganConfigHandler();
+
+          prefix = rasenganConfig.api?.prefix ?? '/api';
+        }
+
         return `
           import { flatApiRoutes } from 'rasengan/server';
 
@@ -134,7 +151,7 @@ function flatApiRoutesPlugin(): Plugin {
                 '/src/app/_api/**/*.route.{js,ts}',
               ],
             );
-          });
+          }, { prefix: ${JSON.stringify(prefix)} });
 
           export default ApiRouter;
         `;
@@ -325,6 +342,13 @@ export function rasengan({
           runtime: config.runtime ?? 'node',
           ssr: config.ssr,
           prerender: !!config.prerender,
+          // undefined (omitted) when the app has no _api/ folder — lets
+          // createApiRouterMiddleware()'s callers skip wiring it in
+          // entirely instead of relying on a default prefix that implies
+          // a router that doesn't exist (RFC-0008).
+          api: fs.existsSync(resolve(process.cwd(), 'src/app/_api'))
+            ? { prefix: config.api?.prefix ?? '/api' }
+            : undefined,
           redirects: await config.redirects(),
         };
 

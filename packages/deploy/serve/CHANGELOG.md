@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Features
+
+- support `_api/` file-based API routes (RFC-0008) — mounts `createApiRouterMiddleware` ahead of the SSR fallback, a no-op when the app has none
+
 ## 2.0.0-beta.0 (2026-08-06)
 
 ### Features

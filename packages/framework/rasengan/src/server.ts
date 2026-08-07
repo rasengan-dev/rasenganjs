@@ -1,5 +1,6 @@
 import { createRequestHandler } from './server/node/index.js';
 import { createMatchRoutesGuard } from './server/node/match-routes-guard.js';
+import { createApiRouterMiddleware } from './server/node/api-router-middleware.js';
 import { resolveBuildOptions } from './server/build/index.js';
 import { detectDeploymentPlatform } from './server/runtime/detect-runtime.js';
 import { flatApiRoutes } from './routing/utils/flat-api-routes.js';
@@ -111,6 +112,7 @@ export type {
 export {
   createRequestHandler,
   createMatchRoutesGuard,
+  createApiRouterMiddleware,
   resolveBuildOptions,
   detectDeploymentPlatform,
 };

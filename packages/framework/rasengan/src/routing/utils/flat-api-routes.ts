@@ -182,17 +182,32 @@ function mount(router: Router, node: ResolvedApiNode) {
   });
 }
 
+export interface FlatApiRoutesOptions {
+  /**
+   * Prefix baked directly into every registered pattern (e.g. a
+   * `health.route.ts` becomes `/api/health`, not `/health`) — routes
+   * are matched against the *full* incoming pathname (`ctx.request.url`),
+   * so the prefix has to live in the router itself, not be stripped at
+   * dispatch time.
+   * @default '/api'
+   */
+  prefix?: string;
+}
+
 /**
  * Turn a `_api/` folder (as an `import.meta.glob` result of
  * `middleware.{js,ts}` and `*.route.{js,ts}` files) into a Futon
  * `Router`, using the same segment conventions as `flatRoutes()`
  * (`[param]`, `[_param]`, `(group)`, `_optional`).
  * @param fn Function that returns a record of modules
+ * @param options
  * @returns A Futon Router with every discovered route/middleware registered
  */
 export async function flatApiRoutes(
-  fn: () => Record<string, () => Promise<ApiMiddlewareModule | ApiRouteModule>>
+  fn: () => Record<string, () => Promise<ApiMiddlewareModule | ApiRouteModule>>,
+  options: FlatApiRoutesOptions = {}
 ): Promise<Router> {
+  const { prefix = '/api' } = options;
   const modules = fn();
   const root = createNode('');
 
@@ -209,6 +224,10 @@ export async function flatApiRoutes(
   }
 
   const resolvedRoot = await resolveNode(root);
+  // Bake the mount prefix directly into the tree's root segment,
+  // rather than stripping it from the request at dispatch time.
+  resolvedRoot.urlSegment = prefix.replace(/^\/|\/$/g, '');
+
   const router = new Router();
 
   mount(router, resolvedRoot);

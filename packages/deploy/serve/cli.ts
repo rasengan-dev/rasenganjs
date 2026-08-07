@@ -9,6 +9,7 @@ import getPort from 'get-port';
 import {
   createRequestHandler,
   createMatchRoutesGuard,
+  createApiRouterMiddleware,
   resolveBuildOptions,
 } from 'rasengan/server';
 import { OptimizedAppConfig } from 'rasengan';
@@ -256,6 +257,15 @@ async function run() {
   );
   // public/ — CWD-rooted, not build-output-rooted, see publicFiles().
   app.use(publicFiles());
+
+  // _api/ routes (RFC-0008) — self-contained under their own prefix
+  // (JSON 404/errors), a no-op passthrough when the app has none.
+  app.use(
+    createApiRouterMiddleware({
+      build: buildOptions,
+      prefix: config.api?.prefix,
+    })
+  );
 
   app.fallback(async (ctx) => {
     const request = ctx.request;
