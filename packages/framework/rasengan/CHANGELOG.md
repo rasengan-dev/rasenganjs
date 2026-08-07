@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **the built-in 404 catch-all route always responded with HTTP `200`**, not `404` — its loader returned a plain object instead of signaling a status, so `context.statusCode` from React Router's static handler never left its default. Fixed by returning `data({ props, meta }, { status: 404 })` (React Router's `data()` helper) instead
+- **`.data`/`Accept: application/json` requests to an unmatched path returned `500` instead of `404`** — `handler.queryRoute()` _throws_ the constructed `Response` for any loader result carrying its own status (not just errors — this is documented React Router behavior, not specific to the fix above), and `handleDataRequest` had no `try/catch` around it. Now catches and returns the thrown `Response` directly when it's a genuine `Response`, still rethrowing anything else
+
 ## 2.0.0-beta.1 (2026-08-06)
 
 ### Bug Fixes

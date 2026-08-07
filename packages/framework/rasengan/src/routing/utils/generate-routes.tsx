@@ -1,4 +1,10 @@
-import { Outlet, matchRoutes, useLoaderData, useParams } from 'react-router';
+import {
+  Outlet,
+  data,
+  matchRoutes,
+  useLoaderData,
+  useParams,
+} from 'react-router';
 import {
   ErrorBoundary,
   NotFoundPageComponent,
@@ -413,10 +419,17 @@ export const generateRoutes = (
         path: '*',
         element: router.notFoundComponent ?? <NotFoundPageComponent />,
         loader: async () => {
-          return {
-            props: {},
-            meta: defaultMetadata,
-          };
+          // `data(...)` (not a plain return) so react-router elevates the
+          // 404 into `context.statusCode` — a plain object always leaves
+          // it at the default 200, even though the page itself renders
+          // the "not found" UI.
+          return data(
+            {
+              props: {},
+              meta: defaultMetadata,
+            },
+            { status: 404 }
+          );
         },
       });
     }

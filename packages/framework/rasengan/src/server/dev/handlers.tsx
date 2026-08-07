@@ -171,7 +171,24 @@ export async function handleDataRequest(
 
   // 2. get data from our router, queryRoute knows to call the action or loader
   // of the leaf route that matches
-  let data = await handler.queryRoute(newRequest);
+  let data: unknown;
+
+  try {
+    data = await handler.queryRoute(newRequest);
+  } catch (result) {
+    // React Router's queryRoute() throws (not returns) whenever the
+    // matched loader/action result carries its own Response — a raw
+    // `Response`/`redirect()`, or a `data(value, init)` with a non-default
+    // status/headers (e.g. the catch-all route's 404) — regardless of
+    // whether it's a success or an error. That thrown Response already
+    // has the right status/headers/body; anything else is a genuine
+    // error and should keep bubbling up to the caller's error handling.
+    if (result instanceof Response) {
+      return result;
+    }
+
+    throw result;
+  }
 
   // 3. send the response
   return new Response(JSON.stringify(data), {
