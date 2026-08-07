@@ -14,7 +14,7 @@ src/app/_api/
   health.route.ts         # GET /api/health
   users/
     middleware.ts         # requires an x-api-key header, applies to /api/users/*
-    data.ts               # in-memory store (not a route/middleware file, ignored by the glob)
+    db.ts                 # node:sqlite-backed store (not a route/middleware file, ignored by the glob)
     index.route.ts        # GET, POST /api/users
     [id].route.ts         # GET (throws NotFoundError for a missing id), DELETE /api/users/:id
 ```
@@ -53,12 +53,24 @@ pnpm run serve
 
 Same requests as above, against whatever port `rasengan-serve` prints.
 
-## `users/data.ts`'s in-memory store only persists across requests in production
+## Storage: `node:sqlite`
 
-`rasengan dev` re-creates a fresh Vite SSR module runner per request (same
-reason page routes don't keep in-memory state between requests either), so
-a `POST`/`DELETE` against `/api/users` in dev won't be visible on the next
-request — `users` resets to its two seed rows every time. In production
-(`pnpm run serve`), the module is loaded once and reused, so mutations
-persist for the life of the process, as you'd expect from a real (if
-still non-durable, in-memory) store.
+`users/db.ts` uses Node's built-in `node:sqlite` (stable since Node 22.5,
+no extra dependency — matches the `>=22.12.0` engine this monorepo already
+requires) against a `shinobi.sqlite` file written to the app root, seeded
+with Naruto/Sasuke on first run.
+
+This is a real file on disk, not an in-memory array, so mutations persist
+across requests in **both** `rasengan dev` and production — unlike an
+earlier version of this demo that kept a plain in-memory array and lost
+every write on the next request in dev (`rasengan dev` re-creates a fresh
+Vite SSR module runner per request, the same reason page routes can't hold
+in-memory state across dev requests either — see RFC-0008 Phase 4). A file
+on disk isn't affected by that: the module re-runs each request, but it's
+just re-opening the same database, not resetting its contents.
+
+`shinobi.sqlite` is gitignored — delete it to reset back to the seed data.
+
+Swapping in Postgres/MySQL/a hosted SQLite (Turso, D1, ...) instead is a
+`db.ts`-only change — nothing about `_api/`'s routing or middleware cares
+what's behind these functions.

@@ -16,6 +16,12 @@ dist-ssr
 .vite
 .rasengan
 
+# SQLite data (src/app/_api/users/db.ts)
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -32,3 +38,4 @@ dist-ssr
 
 # Local Vercel folder
 .vercel
+*.tsbuildinfo

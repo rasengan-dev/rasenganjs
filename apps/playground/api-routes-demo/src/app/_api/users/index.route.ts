@@ -1,10 +1,10 @@
 import { json } from 'rasengan/server';
 import type { Context } from 'rasengan/server';
-import { users } from './data.js';
+import { listUsers, createUser } from './db.js';
 
 // `index.route.ts` binds to its own folder's path: GET/POST /api/users
 export async function GET(_ctx: Context) {
-  return json(users);
+  return json(listUsers());
 }
 
 export async function POST(ctx: Context) {
@@ -17,8 +17,5 @@ export async function POST(ctx: Context) {
     );
   }
 
-  const user = { id: String(users.length + 1), name: body.name };
-  users.push(user);
-
-  return json(user, { status: 201 });
+  return json(createUser(body.name), { status: 201 });
 }
