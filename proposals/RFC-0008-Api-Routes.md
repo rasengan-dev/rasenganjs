@@ -1,6 +1,6 @@
 # RFC 0008 — File-based API Routes (`_api`)
 
-**Status:** Draft  
+**Status:** Implemented (Phases 1-4 done; docs-site content deferred to release time)  
 **Author:** Rasengan.js Core Team  
 **Date:** 2026-08-07
 
@@ -252,7 +252,16 @@ The build guard itself (§9) required correcting the RFC's own original design f
 **Verified** all four cases against `apps/playground/file-based-routing`: `_api/` + `ssr:false, prerender:true` → build fails with the exact expected message; `_api/` + `ssr:true` (no prerender) → builds successfully; no `_api/` folder at all (any config) → unaffected, builds successfully (confirms zero cost for apps not using the feature); `_api/` + `ssr:false, prerender:true` under `rasengan dev` → starts normally, `/api/health` still responds `200` (confirms the guard is genuinely build-only, not a blanket restriction).
 
 **Phase 4 — Docs + playground example**
-A `_api/` folder in `apps/playground/file-based-routing` (or a new dedicated playground) exercising dynamic segments, nested middleware, and an intentionally-thrown `HttpError`, as the manual + automated validation harness.
+
+**✅ Done (2026-08-07), playground half; docs-site content deferred.** New dedicated playground, `apps/playground/api-routes-demo` — not added to `file-based-routing`: that playground's own `rasengan.config.js` is actively used with `ssr: false`/`prerender: true` for unrelated testing, and Phase 3's build guard would have started failing its normal build the moment a permanent `_api/` folder existed there. A separate, `ssr: true`-fixed playground avoids that entirely.
+
+Exercises every piece of the design: root `middleware.ts` (request logging) composing with a nested `users/middleware.ts` (a demo `x-api-key` check) — confirms middleware genuinely accumulates through folder nesting, not just applies at one level; `index.route.ts` binding to its own folder's path (`GET`/`POST /api/users`); a dynamic segment (`[id].route.ts`, `GET`/`DELETE /api/users/:id`) reading `ctx.params.id`; an intentionally-thrown `NotFoundError` for a missing id, formatted as JSON by `createApiRouterMiddleware`. `README.md` documents both the routes and how to exercise each one via `curl`.
+
+**One real bug found and fixed while writing the example:** `DELETE /api/users/:id`'s handler originally did `json(null, { status: 204 })` — the Fetch spec forbids a body on a `204 No Content` response, and Node's `Response` constructor throws (`Invalid response status code 204`) rather than silently dropping it. This is a caller-responsibility issue in the example code, not a framework bug — fixed by using `new Response(null, { status: 204 })` directly for that one handler, bypassing `json()`'s serialization.
+
+**One notable, documented (not fixed) behavior difference between dev and prod:** the in-memory `users` store (`users/data.ts`) only persists mutations across requests in production. `rasengan dev` creates a fresh `createServerModuleRunner` per request (`apiRouterDevMiddleware`, same as `ssrHandler` already does for pages) — each request re-imports the whole module graph from scratch, resetting any in-memory state. This isn't new or `_api`-specific; it's the same reason page routes can't hold in-memory state across dev requests either. Documented in the playground's `README.md` so it doesn't read as a bug when someone tries it.
+
+**Docs-site content (a `docs.rasengan.dev` page under `apps/docs`) intentionally not written as part of this phase** — the feature is still `## Unreleased` in `rasengan`'s own `CHANGELOG.md`, hasn't shipped in a real version yet, and writing full docs-site content for an unshipped, unversioned feature is premature; better done alongside (or after) the release that actually ships it.
 
 ---
 
