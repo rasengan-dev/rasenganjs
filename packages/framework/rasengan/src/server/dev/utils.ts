@@ -115,23 +115,47 @@ export async function logServerInfo(port: number, open: boolean = false) {
     openBrowser(`http://localhost:${port}`);
   }
 
+  setupKeypress(() => logServerInfo(port));
+}
+
+/** Tracks whether the keypress listener has already been set up. */
+let listening = false;
+
+/**
+ * Set up an interactive keypress listener on `stdin`, once.
+ *
+ * - `c` (no modifiers) → clears the console and re-displays the banner.
+ * - `ctrl+c` → prints a shutdown message and exits.
+ *
+ * `logServerInfo` used to call `process.stdin.on('keypress', ...)` on
+ * every re-render (i.e. every time the user pressed `c`), stacking a new
+ * listener on top of the previous ones instead of reusing one — after
+ * enough `c` presses in a single session, Node would warn about a
+ * possible EventEmitter memory leak, and each keypress after the first
+ * would re-trigger every stacked handler. The `listening` guard below
+ * ensures the actual `stdin` listener is attached exactly once; later
+ * calls (one per `logServerInfo` re-render) are no-ops.
+ * @param log - Callback to re-display the server banner.
+ */
+function setupKeypress(log: () => void): void {
+  if (listening) return;
+  listening = true;
+
   readline.emitKeypressEvents(process.stdin);
 
-  // Listen on user keyboard input on the terminal
   process.stdin.on('keypress', (_: string, key: any) => {
-    // Check if the key pressed is 'c'
-    if (key) {
-      if (key.name === 'c' && key.ctrl) {
-        console.log(
-          `\n${chalk.green('ctrl+c')} ${chalk.gray('pressed — stopping server...')}\n`
-        );
-        process.exit(0);
-      } else if (key.name === 'c' && !key.ctrl && !key.meta && !key.shift) {
-        // Clear terminal
-        process.stdout.write('\x1Bc');
+    if (!key) return;
 
-        logServerInfo(port);
-      }
+    if (key.name === 'c' && key.ctrl) {
+      console.log(
+        `\n${chalk.green('ctrl+c')} ${chalk.gray('pressed — stopping server...')}\n`
+      );
+      process.exit(0);
+    } else if (key.name === 'c' && !key.ctrl && !key.meta && !key.shift) {
+      // Clear terminal
+      process.stdout.write('\x1Bc');
+
+      log();
     }
   });
 
@@ -140,9 +164,6 @@ export async function logServerInfo(port: number, open: boolean = false) {
     process.stdin.setRawMode(true);
   }
   process.stdin.resume();
-
-  // Set a higher limit for the number of listeners
-  process.stdin.setMaxListeners(100);
 }
 
 /**

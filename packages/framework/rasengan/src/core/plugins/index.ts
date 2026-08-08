@@ -7,7 +7,7 @@ import { detectDeploymentPlatform, resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
-import { preRenderApp } from '../../server/node/index.js';
+import { preRenderApp } from '../../server/node/pre-render.js';
 
 function loadRasenganGlobal(): Plugin {
   return {

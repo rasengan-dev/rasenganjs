@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **the dev server's startup banner stacked a new `stdin` `keypress` listener every time the console was cleared (pressing `c`)** — `logServerInfo()` called `process.stdin.on('keypress', ...)` again on every re-render instead of reusing one, requiring `setMaxListeners(100)` to suppress Node's own leak warning. The listener setup is now guarded so it's attached exactly once per process, same pattern as `@rasenganjs/server`'s `setupKeypress()`
+
 ## 2.0.0-beta.2 (2026-08-07)
 
 ### Features

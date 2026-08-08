@@ -71,7 +71,7 @@ export function createApiRouterMiddleware(
 
     try {
       const ApiRouter: Router = await (
-        await import(resolvePath(apiRouterPath))
+        await import(/* @vite-ignore */ resolvePath(apiRouterPath))
       ).default;
       const dispatch = ApiRouter.middleware();
 
