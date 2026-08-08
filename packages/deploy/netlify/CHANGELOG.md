@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.21 (2026-08-08)
+
+### Bug Fixes
+
+- netlify included_files paths must be relative to project root 243bd94
+
 ### Bug Fixes
 
 - **`Cannot find module '.../ssr-server/app.router.js'` at runtime on a real deployment** — `included_files` glob patterns (`'ssr-server/**'`, `'ssr-client/**'`, `'node_modules/**'`, `'package.json'`) were relative to the function's own directory, but Netlify's Build Output API resolves `included_files` relative to the _project root_ instead. The globs silently matched nothing, so `ssr-server`/`ssr-client` never made it into the deployed function (`node_modules` still worked, but only because Netlify's own Node function packaging always ships `node_modules` sitting next to the handler, independent of `included_files`). Fixed by prefixing every pattern with `functions.directory` (`.netlify/v1/functions/ssr-server/**`, etc.)
