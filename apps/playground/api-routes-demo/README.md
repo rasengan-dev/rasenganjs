@@ -14,7 +14,7 @@ src/app/_api/
   health.route.ts         # GET /api/health
   users/
     middleware.ts         # requires an x-api-key header, applies to /api/users/*
-    db.ts                 # node:sqlite-backed store (not a route/middleware file, ignored by the glob)
+    db.ts                 # @libsql/client-backed store (not a route/middleware file, ignored by the glob)
     index.route.ts        # GET, POST /api/users
     [id].route.ts         # GET (throws NotFoundError for a missing id), DELETE /api/users/:id
 ```
@@ -53,24 +53,34 @@ pnpm run serve
 
 Same requests as above, against whatever port `rasengan-serve` prints.
 
-## Storage: `node:sqlite`
+## Storage: `@libsql/client` (Turso-compatible)
 
-`users/db.ts` uses Node's built-in `node:sqlite` (stable since Node 22.5,
-no extra dependency — matches the `>=22.12.0` engine this monorepo already
-requires) against a `shinobi.sqlite` file written to the app root, seeded
-with Naruto/Sasuke on first run.
+`users/db.ts` uses [`@libsql/client`](https://github.com/tursodatabase/libsql-client-ts)
+against a local `shinobi.sqlite` file (via libsql's `file:` URL scheme) by
+default, seeded with Naruto/Sasuke on first run — same local dev experience
+as the SQLite file this demo started with (an earlier version used Node's
+built-in `node:sqlite` directly).
 
-This is a real file on disk, not an in-memory array, so mutations persist
-across requests in **both** `rasengan dev` and production — unlike an
-earlier version of this demo that kept a plain in-memory array and lost
-every write on the next request in dev (`rasengan dev` re-creates a fresh
-Vite SSR module runner per request, the same reason page routes can't hold
-in-memory state across dev requests either — see RFC-0008 Phase 4). A file
-on disk isn't affected by that: the module re-runs each request, but it's
-just re-opening the same database, not resetting its contents.
+That's fine for `rasengan dev` and for `@rasenganjs/serve` on a
+persistent host (a VM/container with a real, mounted filesystem), but
+**not** for Vercel/Netlify: serverless functions there have an ephemeral
+filesystem, so a locally-written file never survives between invocations
+in production. Set these two environment variables in production to point
+the same client at a real hosted [Turso](https://turso.tech) database
+instead — no code change needed beyond that, since `@libsql/client` speaks
+the same wire protocol for both:
 
-`shinobi.sqlite` is gitignored — delete it to reset back to the seed data.
+```bash
+TURSO_DATABASE_URL=libsql://<your-db>.turso.io
+TURSO_AUTH_TOKEN=<token>
+```
 
-Swapping in Postgres/MySQL/a hosted SQLite (Turso, D1, ...) instead is a
-`db.ts`-only change — nothing about `_api/`'s routing or middleware cares
-what's behind these functions.
+(`turso db create`, then `turso db show --url` / `turso db tokens create`
+to get these two values.)
+
+`shinobi.sqlite` is gitignored — delete it to reset back to the seed data
+locally.
+
+Swapping in Postgres/MySQL instead would be a `db.ts`-only change —
+nothing about `_api/`'s routing or middleware cares what's behind these
+functions.

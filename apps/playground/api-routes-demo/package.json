@@ -9,6 +9,7 @@
     "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
     "@rasenganjs/serve": "workspace:*",
     "rasengan": "workspace:*",
     "react": "^19.0.0",
