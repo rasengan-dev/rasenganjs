@@ -31,6 +31,7 @@ export const pkgPath: Record<string, string> = {
   'rasengan-queue': 'packages/ecosystem/queue',
   'rasengan-serve': 'packages/deploy/serve',
   'rasengan-vercel': 'packages/deploy/vercel',
+  'rasengan-netlify': 'packages/deploy/netlify',
   'rasengan-shuriken': 'packages/cli/shuriken',
   // Single package now (adapters/node|bun|workerd subpath exports) —
   // the old rasengan-runtime-{node,bun,workerd} slugs are retired, not

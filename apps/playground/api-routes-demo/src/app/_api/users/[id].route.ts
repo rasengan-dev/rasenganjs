@@ -4,7 +4,7 @@ import { getUser, deleteUser } from './db.js';
 
 // [id] -> :id, so ctx.params.id is available in every handler below
 export async function GET(ctx: Context) {
-  const user = getUser(ctx.params.id);
+  const user = await getUser(ctx.params.id);
 
   // Thrown HttpError subclasses are caught by createApiRouterMiddleware
   // and formatted as JSON with the matching status (RFC-0008 §7).
@@ -16,7 +16,7 @@ export async function GET(ctx: Context) {
 }
 
 export async function DELETE(ctx: Context) {
-  if (!deleteUser(ctx.params.id)) {
+  if (!(await deleteUser(ctx.params.id))) {
     throw new NotFoundError(`User ${ctx.params.id} not found`);
   }
 

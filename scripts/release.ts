@@ -75,6 +75,7 @@ release({
     'rasengan-queue',
     'rasengan-serve',
     'rasengan-vercel',
+    'rasengan-netlify',
     'rasengan-shuriken',
     'rasengan-runtime',
   ],

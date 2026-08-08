@@ -41,6 +41,7 @@ rasenganjs/
     deploy/
       rasengan-serve/      # Production Express server for built apps
       rasengan-vercel/     # Vercel deployment adapter
+      rasengan-netlify/    # Netlify deployment adapter
   apps/
     docs/                  # The rasengan.dev documentation site (itself a Rasengan app)
     playground/            # Example/test projects

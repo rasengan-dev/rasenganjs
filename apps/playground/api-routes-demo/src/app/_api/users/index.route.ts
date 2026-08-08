@@ -4,7 +4,7 @@ import { listUsers, createUser } from './db.js';
 
 // `index.route.ts` binds to its own folder's path: GET/POST /api/users
 export async function GET(_ctx: Context) {
-  return json(listUsers());
+  return json(await listUsers());
 }
 
 export async function POST(ctx: Context) {
@@ -17,5 +17,5 @@ export async function POST(ctx: Context) {
     );
   }
 
-  return json(createUser(body.name), { status: 201 });
+  return json(await createUser(body.name), { status: 201 });
 }
