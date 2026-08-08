@@ -288,11 +288,20 @@ const generateNetlifyConfigFile = async (config: OptimizedAppConfig) => {
         // @rasenganjs/runtime dependencies regardless of the host
         // project's package manager/hoisting — shipped as-is rather
         // than re-bundled.
+        //
+        // `included_files` globs are resolved relative to the *project
+        // root* (where this config.json's own base directory is), not
+        // relative to `functions.directory` — confirmed the hard way in
+        // production: bare `'ssr-server/**'` silently matched nothing,
+        // so the shipped function was missing dist/server entirely
+        // (`node_modules/**` still worked, but only because Netlify's
+        // own Node function packaging always ships node_modules sitting
+        // next to the handler regardless of included_files).
         included_files: [
-          'ssr-server/**',
-          'ssr-client/**',
-          'node_modules/**',
-          'package.json',
+          path.posix.join(opts.functionsDirectory, 'ssr-server/**'),
+          path.posix.join(opts.functionsDirectory, 'ssr-client/**'),
+          path.posix.join(opts.functionsDirectory, 'node_modules/**'),
+          path.posix.join(opts.functionsDirectory, 'package.json'),
         ],
       },
     }),
