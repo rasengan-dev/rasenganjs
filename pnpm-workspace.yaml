@@ -1,13 +1,21 @@
 packages:
-  - packages/**
-  - playground/**
-  - docs/**
-  - examples/**
+  - packages/framework/*
+  - packages/platform/*
+  - packages/ecosystem/*
+  - packages/cli/*
+  - packages/deploy/*
+  - apps/playground/**
+  - apps/docs/**
+  - apps/docs-v2/**
+  - apps/examples/**
+  - bench
 
 overrides:
-  '@vitejs/plugin-react': ^4.2.1
+  '@vitejs/plugin-react': ^6.0.0
   react: ^19.1.1
   react-dom: ^19.1.1
+  vitest: 4.1.9
+  '@vitest/coverage-v8': 4.1.9
   tmp@<=0.2.3: '>=0.2.4'
   glob@>=10.2.0 <10.5.0: '>=10.5.0'
   react-router@>=7.0.0 <=7.11.0: '>=7.12.0'
@@ -26,9 +34,17 @@ overrides:
   immutable@>=5.0.0 <5.1.5: '>=5.1.5'
   path-to-regexp@<0.1.13: '>=0.1.13'
   handlebars@>=4.0.0 <=4.7.8: '>=4.7.9'
-  brace-expansion@>=2.0.0 <2.0.3: '>=2.0.3'
   handlebars@>=4.0.0 <4.7.9: '>=4.7.9'
   picomatch@<2.3.2: '>=2.3.2'
   picomatch@>=4.0.0 <4.0.4: '>=4.0.4'
   yaml@>=2.0.0 <2.8.3: '>=2.8.3'
   handlebars@>=4.6.0 <=4.7.8: '>=4.7.9'
+  uuid@<11.1.1: '>=11.1.1'
+  esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
+  brace-expansion@>=2.0.0 <2.1.2: '>=2.1.2'
+  brace-expansion@>=3.0.0 <5.0.7: '>=5.0.7'
+  body-parser@<1.20.6: '>=1.20.6'
+  sharp@<0.35.0: '>=0.35.0'
+  find-my-way@<=9.6.0: '>=9.7.0'
+  tsup>esbuild: '>=0.28.1'
+  hyperid>uuid: '>=11.1.1'

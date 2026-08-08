@@ -1,0 +1,115 @@
+---
+metadata:
+  title: Modules | Core Concepts | Rasengan Server | Rasengan.js
+  description: Group controllers, providers, and middleware with defineModule().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Modules
+
+A module groups related controllers, providers, and middleware under an optional URL prefix. `defineModule()` is a typed pass-through helper — it returns the same object you pass in, just with type-checking.
+
+```ts title="user.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+
+export default defineModule({
+  prefix: '/users',
+  controllers: [UserController],
+  providers: [UserService],
+});
+```
+
+## ModuleConfig
+
+```ts
+interface ModuleConfig {
+  name?: string; // diagnostic only, used in DI error messages
+  prefix?: string; // URL prefix for this module's routes
+  middlewares?: Middleware[]; // module-level middleware
+  imports?: ModuleConfig[]; // sub-modules to flatten in
+  controllers?: (new (...args: any[]) => Controller)[]; // controllers to register
+  providers?: (ProviderLike | ProviderDefinition)[]; // DI providers, private by default
+  exports?: any[]; // providers[] tokens visible to importers
+  global?: boolean; // make exports visible to EVERY module
+  [extensionKey: string]: unknown; // open extension point (see Module Plugins)
+}
+```
+
+## Composing Modules with imports
+
+A root module typically imports every feature module — the whole tree is flattened at compile time, depth-first, with each module appearing once even if imported from multiple places:
+
+```ts title="app.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import userModule from './user.module';
+import chatRoomModule from './chat-room.module';
+
+export default defineModule({
+  imports: [userModule, chatRoomModule],
+});
+```
+
+```ts title="main.ts" showLineNumbers
+bootstrap((app) => {
+  app.registerModule(appModule); // only the root module is registered directly
+});
+```
+
+## Provider Visibility — exports and global
+
+Providers declared in `providers` are **private to their own module** by default — another module can't inject them just by importing. Two ways to share:
+
+```ts title="Exporting a provider to importers" showLineNumbers
+export default defineModule({
+  providers: [DatabaseService],
+  exports: [DatabaseService], // now visible to any module that imports this one
+});
+```
+
+```ts title="Making a provider globally visible" showLineNumbers
+export default defineModule({
+  providers: [ConfigService],
+  exports: [ConfigService],
+  global: true, // visible to EVERY module, no import needed
+});
+```
+
+A module's visible set (what its controllers/providers can resolve) is exactly: its own providers, its imports' exported tokens, and every `global: true` module's exported tokens.
+
+<Note title="Only your own providers can be exported" type="warning">
+  `exports` must reference tokens declared in that same module's `providers` —
+  exporting something you don't own throws at compile time. Import the module
+  that owns it instead of re-exporting.
+</Note>
+
+## Module-level Middleware
+
+```ts title="Scoping middleware to a module" showLineNumbers
+export default defineModule({
+  prefix: '/admin',
+  middlewares: [requireAdmin],
+  controllers: [AdminController],
+});
+```
+
+`requireAdmin` runs for every route under `/admin`, before any controller- or route-level middleware.
+
+## Route Prefix Composition
+
+`prefix` is applied on top of each controller's own route paths — a controller registering `router.get("/:id", ...)` inside a module with `prefix: "/users"` responds at `GET /users/:id`.
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/bootstrap',
+    label: 'Bootstrap & ServerApp',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/controllers',
+    label: 'Controllers & Routing',
+  }}
+/>

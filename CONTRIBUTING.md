@@ -19,7 +19,7 @@ First off, thank you for your interest in contributing to **RasenganJS**! We wel
 Our repository is organized as a pnpm workspace, and here’s an overview of the main folders:
 
 - **`packages/`**: This folder contains all our individual packages for the React framework. Each package is self-contained and has its own `package.json`.
-- **`playground/`**: This folder holds example projects that showcase how to use the packages. Use these examples to test new changes or explore the project in a real-world context.
+- **`apps/playground/`**: This folder holds example projects that showcase how to use the packages. Use these examples to test new changes or explore the project in a real-world context.
 - **Other files/folders**: At the root, you’ll also find configuration files like `pnpm-workspace.yaml`, a central `package.json`, and a `.github/` directory that may contain issue and pull request templates.
 
 ## Getting Started
@@ -42,7 +42,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
 
 3. **Familiarize Yourself with the Project**
    - Review the repository structure.
-   - Look at the existing code in both the `packages/` and `playground/` folders to understand how the project is organized.
+   - Look at the existing code in both the `packages/` and `apps/playground/` folders to understand how the project is organized.
 
 ## Branching and Workflow
 
@@ -91,7 +91,7 @@ Our repository is organized as a pnpm workspace, and here’s an overview of the
     ```
 
 - **Playground Testing**
-  - Test your changes in the `playground/` examples to ensure that your modifications work in real-world scenarios.
+  - Test your changes in the `apps/playground/` examples to ensure that your modifications work in real-world scenarios.
 
 ## Pull Request Process
 

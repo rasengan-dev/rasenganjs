@@ -1,0 +1,148 @@
+---
+metadata:
+  title: Middleware | API Reference | Futon | Rasengan.js
+  description: The Middleware type and every built-in middleware factory exported by Futon.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Middleware
+
+```ts
+import type { Middleware } from '@rasenganjs/futon';
+```
+
+```ts title="Middleware type"
+type Middleware = (
+  ctx: Context,
+  next: () => Promise<Response>
+) => Promise<Response>;
+```
+
+See [Custom Middleware](/docs/futon/middleware/custom) for the onion-model execution semantics, and [`compose()`](#compose) below for how an array of middleware is chained into one.
+
+## compose()
+
+```ts
+function compose(middlewares: Middleware[]): Middleware;
+```
+
+Chains an array of `Middleware` into a single `Middleware` using the Koa-style onion model. Calling `next()` more than once inside a single middleware throws `"next() called multiple times"`.
+
+## Built-in Middleware Factories
+
+| Export                  | Options type         | Description                        |
+| ----------------------- | -------------------- | ---------------------------------- |
+| `cors(options?)`        | `CORSOptions`        | CORS headers + preflight handling  |
+| `logger(options?)`      | `LoggerOptions`      | Per-request logging                |
+| `bodyParser(options?)`  | `BodyParserOptions`  | Content-Type-aware body parsing    |
+| `basicAuth(options?)`   | `BasicAuthOptions`   | HTTP Basic Auth                    |
+| `bearerToken(options?)` | `BearerTokenOptions` | Bearer token extraction/validation |
+| `compress(options?)`    | `CompressOptions`    | Response body compression          |
+| `requestId(options?)`   | `RequestIdOptions`   | Per-request unique ID              |
+| `bodyLimit(options)`    | `BodyLimitOptions`   | Streaming request size enforcement |
+
+Full usage and defaults for each are covered in [Built-in Middleware](/docs/futon/middleware/built-in).
+
+### CORSOptions
+
+```ts
+interface CORSOptions {
+  origin?: string | string[]; // default "*"
+  methods?: string; // default "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  allowedHeaders?: string; // default "Content-Type, Authorization"
+  exposedHeaders?: string;
+  credentials?: boolean;
+  maxAge?: number;
+  optionsStatus?: number; // default 204
+}
+```
+
+### LoggerOptions / LogEntry
+
+```ts
+interface LoggerOptions {
+  log?: (entry: LogEntry) => void;
+  skip?: string[];
+  methodPadding?: number; // default 6
+}
+
+interface LogEntry {
+  method: string;
+  pathname: string;
+  search: string;
+  status: number; // 0 if downstream threw
+  duration: number; // milliseconds
+  size: number | null;
+}
+```
+
+### BodyParserOptions
+
+```ts
+interface BodyParserOptions {
+  key?: string; // default "body"
+  maxSize?: number;
+  allowedTypes?: string[];
+  skipMultipart?: boolean;
+}
+```
+
+### BasicAuthOptions
+
+```ts
+interface BasicAuthOptions {
+  stateKey?: string; // default "auth"
+  realm?: string; // default "Protected"
+  verify?: (username: string, password: string) => boolean | Promise<boolean>;
+}
+```
+
+### BearerTokenOptions
+
+```ts
+interface BearerTokenOptions {
+  stateKey?: string; // default "token"
+  verify?: (token: string) => unknown | Promise<unknown>;
+}
+```
+
+### CompressOptions
+
+```ts
+interface CompressOptions {
+  threshold?: number; // default 1024 (bytes)
+  encodings?: string[]; // default ["br", "gzip", "deflate"]
+}
+```
+
+### RequestIdOptions
+
+```ts
+interface RequestIdOptions {
+  header?: string; // default "X-Request-Id"
+  stateKey?: string; // default "requestId"
+  generator?: () => string; // default crypto.randomUUID()
+}
+```
+
+### BodyLimitOptions
+
+```ts
+interface BodyLimitOptions {
+  maxSize: number; // bytes — required, no default
+}
+```
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/response',
+    label: 'Response',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/upload',
+    label: 'Upload',
+  }}
+/>

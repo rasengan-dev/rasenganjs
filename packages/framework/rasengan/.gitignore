@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+yarn.lock
+package-lock.json
+*.tgz
+.DS_Store

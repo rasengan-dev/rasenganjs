@@ -1,0 +1,81 @@
+---
+metadata:
+  title: File Uploads | Core Concepts | Rasengan Server | Rasengan.js
+  description: Handling multipart file uploads in a controller with fileUpload().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# File Uploads
+
+Rasengan Server re-exports Futon's [`fileUpload()`](/docs/futon/file-uploads/overview) middleware and `MemoryStorage` directly from its main entry — there's no separate upload API to learn.
+
+```ts title="upload.controller.ts" showLineNumbers
+import {
+  Controller,
+  type RouteHandler,
+  type Router,
+  fileUpload,
+} from '@rasenganjs/server';
+
+const upload = fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } });
+
+export class UploadController extends Controller {
+  routes(router: Router) {
+    router.post('/avatar', upload.single('avatar'), this.uploadAvatar);
+  }
+
+  uploadAvatar: RouteHandler = async (ctx) => {
+    const file = ctx.get('file');
+    return ctx.res.json({ size: file.size, name: file.originalname });
+  };
+}
+```
+
+Since `fileUpload()` returns a `Middleware`, `upload.single(...)`/`.array(...)`/`.fields(...)` slot straight into the route-level middleware position — the same overload that accepts `requireAuth` or any other middleware.
+
+## Combining with Validation
+
+Text fields alongside the uploaded file become `ctx.body` — you can validate them the same way as a regular JSON body:
+
+```ts title="Validating non-file fields" showLineNumbers
+import z from "zod";
+
+routes(router: Router) {
+  router.post(
+    "/avatar",
+    upload.single("avatar"),
+    this.uploadAvatar,
+    { body: z.object({ caption: z.string().optional() }) }
+  );
+}
+```
+
+## Disk Storage
+
+`DiskStorage`/`diskStorage()` is **not** re-exported from the main `@rasenganjs/server` entry (same reasoning as Futon — it imports `node:fs`, which must stay out of WinterCG bundles). Import it from the dedicated subpath:
+
+```ts title="Disk storage" showLineNumbers
+import { fileUpload } from '@rasenganjs/server';
+import { diskStorage } from '@rasenganjs/server/upload/disk';
+// or, equivalently: import { diskStorage } from "@rasenganjs/futon/upload/disk";
+
+const upload = fileUpload({
+  storage: diskStorage({ destination: 'uploads/' }),
+});
+```
+
+See [Storage Engines](/docs/futon/file-uploads/storage-engines) for the full `StorageEngine` interface, `DiskStorage` options, and how to write a custom engine (S3, R2, GCS, ...).
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/validation',
+    label: 'Validation',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/websockets',
+    label: 'WebSockets',
+  }}
+/>

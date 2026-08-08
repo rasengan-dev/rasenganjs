@@ -1,0 +1,22 @@
+{
+  "name": "rasengan-chat-demo-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan-server dev",
+    "start": "rasengan-server start",
+    "build": "rasengan-server build"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/queue": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/ws": "workspace:*",
+    "ioredis": "^5.11.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

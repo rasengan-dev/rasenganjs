@@ -1,0 +1,174 @@
+---
+metadata:
+  title: Background Queues | Server Ecosystem | Rasengan Server | Rasengan.js
+  description: Background job processing with @rasenganjs/queue — the Controller equivalent for async work.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  SERVER ECOSYSTEM
+</span>
+# Background Queues
+
+<Note title="Beta — Phase 4 still outstanding" type="warning">
+  `@rasenganjs/queue` is functional and tested, but its governing RFC (RFC-0004)
+  has a Phase 4 that hasn't landed yet. Expect rougher edges and possible API
+  changes before it's fully stable.
+</Note>
+
+`@rasenganjs/queue` adds background job queues — the `Controller` equivalent for async work, mirroring `@rasenganjs/ws`'s `Gateway` pattern exactly.
+
+```bash title="Terminal"
+npm install @rasenganjs/queue
+```
+
+## Registering the Plugin
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+import { createQueuePlugin } from '@rasenganjs/queue';
+import appModule from './app.module';
+
+bootstrap((app) => {
+  app.registerPlugin(createQueuePlugin()); // defaults to MemoryQueueAdapter
+  app.registerModule(appModule); // may declare queues: [EmailQueue]
+});
+```
+
+## Writing a Queue
+
+```ts title="email.queue.ts" showLineNumbers
+import { Queue, JobRouter, type JobHandler } from '@rasenganjs/queue';
+
+export class EmailQueue extends Queue {
+  name = 'emails';
+
+  constructor(private mailer: MailerService) {
+    super();
+  }
+
+  jobs(router: JobRouter) {
+    router.process('welcome', this.sendWelcome, {
+      attempts: 3,
+      backoff: 5_000,
+    });
+  }
+
+  sendWelcome: JobHandler<{ userId: string }> = async (job) => {
+    await this.mailer.sendWelcome(job.data.userId);
+    // resolve -> job completes; throw -> retried per backoff policy
+  };
+}
+```
+
+```ts title="queue.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { EmailQueue } from './email.queue';
+
+export default defineModule({
+  queues: [EmailQueue],
+  providers: [MailerService],
+});
+```
+
+Like `Gateway`, `Queue` extends `Provider` — constructor injection and lifecycle hooks work identically to any other provider.
+
+## Enqueuing Jobs
+
+Inject the queue anywhere it's exported and visible, and call `.add()`:
+
+```ts title="Enqueuing from an HTTP controller" showLineNumbers
+export class SignupController extends Controller {
+  constructor(private emailQueue: EmailQueue) {
+    super();
+  }
+
+  routes(router: Router) {
+    router.post('/signup', this.signup);
+  }
+
+  signup: RouteHandler = async (ctx) => {
+    const user = await createUser(ctx.body);
+    await this.emailQueue.add('welcome', { userId: user.id });
+    return ctx.res.json(user);
+  };
+}
+```
+
+## Delayed and Recurring Jobs
+
+```ts title="Delayed job" showLineNumbers
+await this.emailQueue.add('reminder', { userId }, { delay: 60_000 }); // fires in 1 minute
+```
+
+```ts title="Recurring job" showLineNumbers
+await this.reportQueue.add(
+  'dailyDigest',
+  {},
+  { repeat: { every: 86_400_000 } }
+); // every 24h
+```
+
+A `{ repeat }` registration is idempotent by `jobKey` (derived from the job name + data, or an explicit `repeat.key`) — calling `.add()` again with the same spec doesn't create a duplicate schedule. It also resolves with the recurring job's `jobKey` instead of a fresh id.
+
+## Retry Semantics
+
+At-least-once processing: resolving the handler completes the job, throwing retries with exponential backoff until `attempts` is exhausted, then the job moves to a **dead-letter** state.
+
+```ts title="Inspecting and retrying dead jobs" showLineNumbers
+const dead = await this.emailQueue.getDead();
+await this.emailQueue.retryDead(dead[0].id); // resets attempt count to 1, back to waiting
+```
+
+<Note title="Handlers must be idempotent" type="warning">
+  At-least-once delivery means a handler can run more than once for the same
+  logical job (e.g. after a stalled-reservation reclaim). Design job handlers to
+  be safely re-runnable.
+</Note>
+
+## ProcessOptions
+
+| Option        | Default | Description                                   |
+| ------------- | ------- | --------------------------------------------- |
+| `attempts`    | `1`     | Max attempts before dead-lettering            |
+| `backoff`     | `0`     | Base delay (ms) for exponential retry backoff |
+| `concurrency` | `1`     | Max jobs of this name processed concurrently  |
+
+## Scaling with Redis
+
+`MemoryQueueAdapter` (the default) is in-process and **loses jobs on restart** — dev only. `RedisQueueAdapter` persists across restarts and is safe across multiple processes sharing one queue:
+
+```ts title="Redis-backed queue" showLineNumbers
+import { createQueuePlugin, RedisQueueAdapter } from '@rasenganjs/queue';
+import Redis from 'ioredis';
+
+const client = new Redis();
+const adapter = new RedisQueueAdapter({
+  client,
+  blockingClient: client.duplicate(), // reserve()'s BLMOVE needs its own connection
+});
+
+app.registerPlugin(createQueuePlugin({ adapter }));
+```
+
+## QueuePluginOptions
+
+| Option          | Default              | Description                                                                                              |
+| --------------- | -------------------- | -------------------------------------------------------------------------------------------------------- |
+| `adapter`       | `MemoryQueueAdapter` | Job storage shared by every queue this plugin registers                                                  |
+| `worker`        | `true`               | Pass `false` for a produce-only process — `.add()` still works, nothing is ever reserved/processed there |
+| `stallTimeout`  | `30_000`ms           | How long a reserved job may go without completing before the sweeper reclaims it as stalled              |
+| `sweepInterval` | `5_000`ms            | How often the sweeper promotes due delayed/repeat jobs and reclaims stalled reservations                 |
+
+`worker: false` is a deployment-topology choice, not a code change — useful for splitting a producer-only web process from dedicated worker processes that actually run job handlers.
+
+<Pagination
+  prev={{
+    href: '/docs/server/ecosystem/websocket-gateways',
+    label: 'WebSocket Gateways',
+  }}
+  next={{
+    href: '/docs/server/ecosystem/validation-adapters',
+    label: 'Validation Adapters',
+  }}
+/>

@@ -1,0 +1,24 @@
+{
+  "name": "rasengan-server-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan-server dev",
+    "start": "rasengan-server start",
+    "build": "rasengan-server build",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/queue": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/validators": "workspace:*",
+    "@rasenganjs/ws": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

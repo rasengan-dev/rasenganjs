@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 
-const command = `pnpm -r --filter="./packages/*" run build`;
+const command = `pnpm -r --filter="./packages/**" run build`;
 
 try {
   console.log('Running build command...');

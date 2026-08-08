@@ -1,0 +1,148 @@
+{
+  "name": "rasengan",
+  "private": false,
+  "version": "2.0.0-beta.2",
+  "description": "The modern React Framework",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "rasengan": "bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "default": "./dist/index.js"
+    },
+    "./types/client": {
+      "types": "./types/client.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./dynamic": {
+      "types": "./dist/core/dynamic/index.d.ts",
+      "import": "./dist/core/dynamic/index.js",
+      "require": "./dist/core/dynamic/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "require": "./dist/server.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js",
+      "require": "./dist/plugin.js"
+    }
+  },
+  "author": {
+    "name": "dilane3",
+    "email": "komboudilane125@gmail.com",
+    "url": "https://dilane3.com",
+    "twitter": "https://twitter.com/dilanekombou",
+    "github": "https://github.com/dilane3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs.git",
+    "issues": "https://github.com/rasengan-dev/rasenganjs/issues",
+    "directory": "packages/framework/rasengan"
+  },
+  "homepage": "https://rasengan.dev",
+  "scripts": {
+    "build:compile": "tsup",
+    "build:clean": "rimraf ./dist",
+    "build:copy-assets": "mkdir -p dist/routing/error-overlay && cp src/routing/error-overlay/error-overlay.css dist/routing/error-overlay/",
+    "build": "pnpm run build:clean & pnpm run build:compile && pnpm run build:copy-assets",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta",
+    "pack": "pnpm pack --pack-destination ./release/"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "@vitejs/plugin-react": "^6.0.0",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "execa": "^8.0.1",
+    "inquirer": "^9.2.12",
+    "open": "^10.1.0",
+    "ora": "^7.0.1",
+    "react-router": "^8.3.0"
+  },
+  "peerDependencies": {
+    "@types/node": ">=20.0.0",
+    "less": "*",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "sass": "*",
+    "stylus": "*",
+    "vite": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    },
+    "sass": {
+      "optional": true
+    },
+    "stylus": {
+      "optional": true
+    },
+    "less": {
+      "optional": true
+    },
+    "@rasenganjs/mdx": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": ">=22.12.0",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "@vitest/coverage-v8": "4.1.9",
+    "cross-env": "^7.0.3",
+    "tsup": "^8.5.1",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.9"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "files": [
+    "dist/",
+    "types/",
+    "bin.js",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md",
+    "tsconfig.base.json",
+    "vite.config.ts"
+  ],
+  "keywords": [
+    "rasengan",
+    "frontend",
+    "framework",
+    "react framework",
+    "react",
+    "vite",
+    "ssr",
+    "ssg",
+    "spa"
+  ]
+}

@@ -1,0 +1,27 @@
+# TypeScript source — published output lives in dist/ (see package.json "exports")
+src
+*.ts
+*.tsx
+!*.d.ts
+
+# Build config
+tsconfig*.json
+
+# Local dev / CI artifacts
+node_modules
+release
+*.tgz
+*.log
+.turbo
+.nx
+.github
+
+# Lockfiles (irrelevant to consumers)
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Editor / OS cruft
+.DS_Store
+.vscode
+.idea

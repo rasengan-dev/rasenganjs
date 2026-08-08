@@ -1,0 +1,22 @@
+{
+  "name": "rasengan-server-workerd",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "rasengan-server build --preset workerd",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@rasenganjs/futon": "workspace:*",
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/validators": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,4 +1,5 @@
 node_modules
 build
 dist
-docs/**/*.mdx
+apps/docs/**/*.mdx
+apps/docs-v2/**/*.mdx

@@ -1,0 +1,56 @@
+---
+metadata:
+  title: CLI | API Reference | Rasengan Server | Rasengan.js
+  description: rasengan-server command and flag reference, plus defineConfig().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# CLI
+
+See [CLI](/docs/server/getting-started/cli) and [Config & Build](/docs/server/core-concepts/config-and-build) for usage and examples — this page is the flat reference.
+
+## Commands
+
+```bash
+rasengan-server dev [flags]
+rasengan-server build [flags]
+rasengan-server start [flags]
+```
+
+| Command | Description                                                                               |
+| ------- | ----------------------------------------------------------------------------------------- |
+| `dev`   | Hot-reloading development server (runs the entry file via `tsx`, restarts on file change) |
+| `build` | Bundles the server for production with esbuild                                            |
+| `start` | Runs the production build produced by `build`                                             |
+
+## Flags
+
+| Flag                 | Shorthand | Config field | Default       |
+| -------------------- | --------- | ------------ | ------------- |
+| `--port <number>`    | `-p`      | `port`       | `3000`        |
+| `--host <address>`   | —         | `host`       | `0.0.0.0`     |
+| `--entry <path>`     | `-e`      | `entry`      | `src/main.ts` |
+| `--preset <name>`    | —         | `preset`     | `node`        |
+| `--watch-dir <path>` | —         | `watchDir`   | `src/`        |
+
+See [`defineConfig`](/docs/server/api-reference/define-config) for `RasenganServerConfig`, `BuildConfig`, and `ConfigHolder` — the types and cache backing every field above.
+
+## logServerInfo()
+
+```ts
+import { logServerInfo } from '@rasenganjs/server';
+
+function logServerInfo(port: number, host?: string): void; // host default "0.0.0.0"
+```
+
+Prints the startup banner — server name/version, local and network URLs, detected runtime (Bun vs. Node.js), and keyboard shortcut hints (`c` to clear, `ctrl+c` to stop). Called internally by `bootstrap()` once the server starts listening; exported mainly for custom bootstrap flows that bypass `bootstrap()` and want the same banner.
+
+<Pagination
+  prev={{
+    href: '/docs/server/api-reference/define-config',
+    label: 'defineConfig',
+  }}
+/>

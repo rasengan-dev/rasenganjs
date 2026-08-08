@@ -1,0 +1,113 @@
+---
+metadata:
+  title: Storage Engines | Core Concepts | Futon | Rasengan.js
+  description: MemoryStorage, DiskStorage, and writing a custom storage engine for fileUpload().
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Storage Engines
+
+`fileUpload()` delegates the actual "what to do with the bytes" decision to a `StorageEngine` — a two-method interface mirroring Multer's `_handleFile`/`_removeFile` pair.
+
+```ts title="StorageEngine interface"
+interface StorageEngine {
+  handleFile(
+    ctx: Context,
+    file: File,
+    info: FileInfo
+  ): Promise<Partial<UploadedFile>>;
+  removeFile(file: UploadedFile): Promise<void>;
+}
+```
+
+`handleFile()` receives the Web `File` directly (not a pre-buffered `Buffer`) — engines get the raw stream so a future streaming multipart parser can replace the buffered `formData()` internals without breaking existing storage engines.
+
+## MemoryStorage (the default)
+
+Keeps file contents in memory as a `Uint8Array` on `file.buffer`. It's the default because it works unmodified on **every** runtime, including Cloudflare Workers/workerd, which have no filesystem.
+
+```ts title="Explicit MemoryStorage" showLineNumbers
+import { fileUpload, MemoryStorage } from '@rasenganjs/futon';
+
+const upload = fileUpload({ storage: new MemoryStorage() }); // same as omitting `storage`
+
+router.post('/avatar', upload.single('avatar'), async (ctx) => {
+  const file = ctx.get('file');
+  await s3.putObject({ Body: file.buffer, Key: file.originalname });
+  return json({ ok: true });
+});
+```
+
+`removeFile()` is a no-op for `MemoryStorage` — the buffer is garbage-collected with the request, there's nothing to clean up.
+
+## diskStorage()
+
+Writes files to the filesystem. It lives behind a **separate subpath export**, `@rasenganjs/futon/upload/disk`, on purpose — it's the only module in Futon that imports `node:fs`, and keeping it out of the main entry keeps WinterCG/workerd bundles clean of Node built-ins.
+
+```ts title="Disk storage" showLineNumbers
+import { fileUpload } from '@rasenganjs/futon';
+import { diskStorage } from '@rasenganjs/futon/upload/disk';
+
+const upload = fileUpload({
+  storage: diskStorage({
+    destination: 'uploads/',
+    filename: (ctx, info) => `${Date.now()}-${info.originalname}`,
+  }),
+});
+```
+
+| Option        | Description                                                                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `destination` | Directory to write into — a string, or `(ctx, info) => string \| Promise<string>` for per-file destinations. Created recursively if missing. |
+| `filename`    | `(ctx, info) => string \| Promise<string>`. Defaults to a random hex string plus the sanitized extension of `originalname`.                  |
+
+<Note title="originalname is user-controlled" type="warning">
+  `info.originalname` is the client-supplied file name — never use it directly
+  as part of a filesystem path. The default `filename` generator only keeps a
+  sanitized, alphanumeric extension and discards the rest, precisely to avoid
+  path traversal (`filename="../../evil"`) attacks.
+</Note>
+
+`DiskStorage` streams the file's bytes straight to disk (`Readable.fromWeb(file.stream())` piped to a write stream) rather than buffering it in memory first, and cleans up any partial file if the write fails midway.
+
+## Writing a Custom Storage Engine
+
+Because engines receive a Web `File`, porting a Multer storage engine (S3, R2, GCS, ...) to Futon is mostly mechanical:
+
+```ts title="A minimal S3 storage engine" showLineNumbers
+import type { StorageEngine, FileInfo, UploadedFile } from '@rasenganjs/futon';
+
+class S3Storage implements StorageEngine {
+  constructor(private bucket: string) {}
+
+  async handleFile(
+    ctx: unknown,
+    file: File,
+    info: FileInfo
+  ): Promise<Partial<UploadedFile>> {
+    const key = `${crypto.randomUUID()}-${info.originalname}`;
+    await s3.putObject({ Bucket: this.bucket, Key: key, Body: file.stream() });
+    return { url: `https://${this.bucket}.s3.amazonaws.com/${key}` };
+  }
+
+  async removeFile(file: UploadedFile): Promise<void> {
+    // Undo a successful handleFile — used for mid-batch rollback.
+  }
+}
+```
+
+Whatever extra fields your `handleFile()` returns are merged into the resulting `UploadedFile` — that's how the S3 example above attaches a `url` field that isn't part of the base type.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/file-uploads/overview',
+    label: 'fileUpload() Middleware',
+  }}
+  next={{
+    href: '/docs/futon/error-handling',
+    label: 'Error Handling',
+  }}
+/>

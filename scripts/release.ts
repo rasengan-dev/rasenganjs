@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { release } from '@vitejs/release-scripts';
 import colors from 'picocolors';
+import { pkgPath, getPkgDir } from './pkg-path.js';
 
 function getLastTag(pkgName: string, version: string): string | null {
   const pattern = pkgName === 'rasengan' ? 'v*' : `${pkgName}@*`;
@@ -38,7 +39,7 @@ async function generateAutoEntries(
     .commits({
       from: lastTag,
       to: 'HEAD',
-      path: `packages/${pkgName}`,
+      path: pkgPath[pkgName] || `packages/${pkgName}`,
     })
     .write()) {
     chunks.push(chunk);
@@ -57,19 +58,26 @@ async function generateAutoEntries(
 release({
   repo: 'rasenganjs',
   packages: [
+    'create-rasengan',
     'rasengan',
+    'rasengan-futon',
+    'rasengan-mdx',
+    'rasengan-server',
     'rasengan-image',
     'rasengan-i18n',
-    'rasengan-mdx',
-    'rasengan-serve',
     'rasengan-theme',
-    'rasengan-vercel',
-    'rasengan-netlify',
-    'rasengan-shuriken',
     'rasengan-kurama',
     'rasengan-kage-demo',
     'rasengan-io',
-    'create-rasengan',
+    'rasengan-ws',
+    'rasengan-validators',
+    'rasengan-drizzle',
+    'rasengan-queue',
+    'rasengan-serve',
+    'rasengan-vercel',
+    'rasengan-netlify',
+    'rasengan-shuriken',
+    'rasengan-runtime',
   ],
   toTag: (pkg, version) => {
     if (pkg === 'rasengan') {
@@ -78,8 +86,19 @@ release({
 
     return `${pkg}@${version}`;
   },
+  // Without this, release()'s own internal package-dir resolution
+  // defaults to `packages/${pkg}` (per @vitejs/release-scripts' own
+  // docs) — which doesn't exist for a single one of these slugs. Share
+  // the same map (scripts/pkg-path.ts) the changelog callbacks below
+  // already need, so there is exactly one place that maps a slug to its
+  // real directory — see that file for why forking this map is what
+  // broke scripts/publishCI.ts.
+  getPkgDir,
   logChangelog: async (pkgName: string) => {
-    const changelog = readFileSync(`packages/${pkgName}/CHANGELOG.md`, 'utf-8');
+    const changelog = readFileSync(
+      `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`,
+      'utf-8'
+    );
     if (!changelog.includes('## Unreleased')) {
       throw new Error("Can't find '## Unreleased' section in CHANGELOG.md");
     }
@@ -89,7 +108,7 @@ release({
     );
   },
   generateChangelog: async (pkgName: string, version: string) => {
-    const changelogPath = `packages/${pkgName}/CHANGELOG.md`;
+    const changelogPath = `${pkgPath[pkgName] || `packages/${pkgName}`}/CHANGELOG.md`;
     let changelog = readFileSync(changelogPath, 'utf-8');
 
     // Auto-generate entries from conventional commits since last tag

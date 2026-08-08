@@ -1,0 +1,66 @@
+{
+  "name": "@rasenganjs/runtime",
+  "version": "1.0.0-beta.3",
+  "description": "Unified runtime abstraction layer for Rasengan.JS — RuntimeAdapter interface, platform adapters (Node, Bun, Workerd), env utilities, and auto-detection",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node/index.d.ts",
+      "import": "./dist/adapters/node/index.js",
+      "require": "./dist/adapters/node/index.cjs"
+    },
+    "./adapters/bun": {
+      "types": "./dist/adapters/bun/index.d.ts",
+      "import": "./dist/adapters/bun/index.js",
+      "require": "./dist/adapters/bun/index.cjs"
+    },
+    "./adapters/workerd": {
+      "types": "./dist/adapters/workerd/index.d.ts",
+      "import": "./dist/adapters/workerd/index.js",
+      "require": "./dist/adapters/workerd/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs",
+    "directory": "packages/platform/runtime"
+  },
+  "scripts": {
+    "build:clean": "rimraf ./dist",
+    "build": "pnpm build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public",
+    "deploy:beta": "pnpm run deploy --tag beta"
+  },
+  "peerDependencies": {
+    "@rasenganjs/futon": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^4.1.9",
+    "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
+  },
+  "files": [
+    "dist/",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "dependencies": {
+    "ws": "^8.21.0"
+  }
+}

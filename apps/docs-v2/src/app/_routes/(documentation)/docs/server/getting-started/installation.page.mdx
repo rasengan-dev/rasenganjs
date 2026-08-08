@@ -1,0 +1,155 @@
+---
+metadata:
+  title: Installation | Getting Started | Rasengan Server | Rasengan.js
+  description: Install @rasenganjs/server and scaffold a project.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# Installation
+
+## Automatic Installation
+
+The fastest way to start a new Rasengan Server project is with the **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which scaffolds a working project for you. Server scaffolding shipped in a newer release than what `create-rasengan@latest` currently points to — use the `beta` dist-tag to get it.
+
+<StepItem
+  step="01"
+  title="Create a new project"
+  content={`
+    Run the following command to create a new project.
+  `}
+  className="mt-8"
+>
+  ```bash title="Terminal"
+  npx create-rasengan@beta --kind server
+  ```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Follow the prompts"
+  content={`
+    If you didn't pass --kind, you'll be asked which kind of project to create — select "server". You'll also be asked to name your project.
+  `}
+>
+  ```bash title="Terminal"
+  - What would you like to name your project?
+  - What kind of project would you like to create?
+  ```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Install dependencies"
+  content={`
+    create-rasengan copies the template files but doesn't install dependencies for you. Move into the new folder and install them.
+  `}
+>
+  ```bash title="Terminal"
+  cd my-app
+  npm install
+  ```
+</StepItem>
+
+<StepItem
+  step="04"
+  title="Run the application"
+  content={`
+    Run the following command to start the development server.
+  `}
+>
+  ```bash title="Terminal"
+  npm run dev
+  ```
+</StepItem>
+
+The scaffolded project includes a `rasengan.server.ts` config, a root `AppModule`, and a single `HelloController` — enough to see a request handled end to end before you add your own modules.
+
+<Note title="Building a full-stack app?" type="info">
+  `create-rasengan --kind monorepo` scaffolds a Rasengan frontend and a Rasengan
+  Server backend side by side in one workspace, if you need both.
+</Note>
+
+## Manual Installation
+
+<Note title="Warning" type="warning">
+  This method is not recommended for beginners. It is recommended to use the
+  automatic installation method above.
+</Note>
+
+<Tabs
+  tabs={[
+    { title: 'npm' },
+    { title: 'pnpm' },
+    { title: 'yarn' },
+    { title: 'bun' },
+  ]}
+  activeIndex={0}
+>
+  <Tabs.Item>```bash npm install @rasenganjs/server zod ```</Tabs.Item>
+  <Tabs.Item>```bash pnpm add @rasenganjs/server zod ```</Tabs.Item>
+  <Tabs.Item>```bash yarn add @rasenganjs/server zod ```</Tabs.Item>
+  <Tabs.Item>```bash bun add @rasenganjs/server zod ```</Tabs.Item>
+</Tabs>
+
+`@rasenganjs/server` depends on [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) and `@rasenganjs/runtime` directly — you don't need to install those yourself. `zod` is a peer dependency of `@rasenganjs/validators` (which `@rasenganjs/server` depends on) — the built-in validation adapter is Zod-based, so install it alongside.
+
+<Note title="Just need HTTP, not a full framework?" type="info">
+  If you don't need controllers, modules, or dependency injection,
+  [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) alone might be
+  a better fit — Rasengan Server is built on top of it.
+</Note>
+
+## Requirements
+
+- **Node.js 18+**, Bun, or a Cloudflare Workers (workerd) target.
+- An ESM project — the package ships as `"type": "module"`.
+
+## Configuration File
+
+Create a `rasengan.server.ts` at your project root:
+
+```ts title="rasengan.server.ts" showLineNumbers
+import { defineConfig } from '@rasenganjs/server';
+
+export default defineConfig({
+  entry: 'src/main.ts',
+  port: 3000,
+  preset: 'node',
+});
+```
+
+See [Config & Build](/docs/server/core-concepts/config-and-build) for every available option.
+
+## Minimal Entry Point
+
+```ts title="src/main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+
+bootstrap((app) => {
+  app.registerModule({
+    // See Modules and Controllers for a full example
+  });
+});
+```
+
+## Running It
+
+```bash title="Terminal"
+npx rasengan-server dev
+```
+
+See [CLI](/docs/server/getting-started/cli) for the full command reference (`dev`, `build`, `start`).
+
+<Pagination
+  prev={{
+    href: '/docs/server/getting-started/introduction',
+    label: 'Introduction',
+  }}
+  next={{
+    href: '/docs/server/getting-started/project-structure',
+    label: 'Project Structure',
+  }}
+/>

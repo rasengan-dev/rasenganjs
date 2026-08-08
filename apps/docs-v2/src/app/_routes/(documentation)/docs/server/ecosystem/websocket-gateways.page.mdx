@@ -1,0 +1,156 @@
+---
+metadata:
+  title: WebSocket Gateways | Server Ecosystem | Rasengan Server | Rasengan.js
+  description: NestJS-style Gateway classes with rooms and broadcasting, from @rasenganjs/ws.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  SERVER ECOSYSTEM
+</span>
+# WebSocket Gateways
+
+`@rasenganjs/ws` adds a NestJS-inspired `Gateway` class on top of [`app.websocket()`](/docs/server/core-concepts/websockets) — rooms, broadcasting, and a `{ event, data }` message envelope, resolved through the same DI container as your HTTP controllers.
+
+```bash title="Terminal"
+npm install @rasenganjs/ws
+```
+
+## Registering the Plugin
+
+`Gateway` is declared through the [module plugin system](/docs/server/core-concepts/module-plugins) — register the plugin once, before any module that declares gateways:
+
+```ts title="main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+import { createWsPlugin } from '@rasenganjs/ws';
+import appModule from './app.module';
+
+bootstrap((app) => {
+  app.registerPlugin(createWsPlugin());
+  app.registerModule(appModule); // may declare gateways: [ChatGateway]
+});
+```
+
+## Writing a Gateway
+
+```ts title="chat.gateway.ts" showLineNumbers
+import {
+  Gateway,
+  GatewayRouter,
+  type GatewayClient,
+  type GatewayMessageHandler,
+} from '@rasenganjs/ws';
+
+export class ChatGateway extends Gateway {
+  path = '/chat';
+
+  onConnect(client: GatewayClient) {
+    client.join('lobby');
+  }
+
+  onDisconnect(client: GatewayClient) {
+    console.log(`${client.id} disconnected`);
+  }
+
+  messages(router: GatewayRouter) {
+    router.on('sendMessage', this.handleSendMessage);
+  }
+
+  handleSendMessage: GatewayMessageHandler<{ text: string }> = (
+    client,
+    data
+  ) => {
+    client.to('lobby').emit('newMessage', { text: data.text, from: client.id });
+  };
+}
+```
+
+```ts title="chat.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { ChatGateway } from './chat.gateway';
+
+export default defineModule({
+  gateways: [ChatGateway],
+});
+```
+
+Because `Gateway extends Provider`, constructor injection and `onInit()`/`onDestroy()` work exactly like any other provider — inject a service, subscribe to something in `onInit()`, and it fires like any other module resolution.
+
+## GatewayClient
+
+| Member                                   | Description                                                          |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| `id`                                     | Per-connection id (not stable across reconnects)                     |
+| `request`                                | The original upgrade request — headers, cookies, query params        |
+| `data`                                   | Free-form per-connection state bag                                   |
+| `join(room)` / `leave(room)` / `rooms()` | Room membership                                                      |
+| `emit(event, data)`                      | Send to this client only                                             |
+| `to(room)`                               | Scope a broadcast to a room, **excluding** this client               |
+| `broadcast`                              | Scope a broadcast to everyone on this gateway **except** this client |
+| `disconnect(code?, reason?)`             | Close this client's connection                                       |
+
+## Broadcasting from Outside a Connection
+
+`Gateway.server` (set by the plugin after the gateway is resolved) lets you broadcast from an HTTP controller, a queue job, or anywhere else outside a live connection's context:
+
+```ts title="Broadcasting from an HTTP controller" showLineNumbers
+export class NotificationController extends Controller {
+  constructor(private chat: ChatGateway) {
+    super();
+  }
+
+  routes(router: Router) {
+    router.post('/announce', this.announce);
+  }
+
+  announce: RouteHandler = async (ctx) => {
+    await this.chat.server.emit('announcement', { text: ctx.body.text });
+    return ctx.res.json({ ok: true });
+  };
+}
+```
+
+## Wire Format
+
+Messages are JSON `{ event, data }` frames — this is **not** Socket.IO-wire-compatible, it's a minimal envelope this package defines itself (plain WebSocket has no built-in named-event concept). Binary frames bypass the envelope entirely — handle them via `Gateway.onBinaryMessage`.
+
+## Scaling Across Processes
+
+`createWsPlugin({ adapter })` accepts a `GatewayAdapter` — a pub/sub relay, not a room-membership registry (a client is always connected to exactly one process, so room membership itself never needs to be shared state):
+
+```ts title="Redis adapter for multi-process broadcasting" showLineNumbers
+import { createWsPlugin, RedisGatewayAdapter } from '@rasenganjs/ws';
+import Redis from 'ioredis';
+
+app.registerPlugin(
+  createWsPlugin({
+    adapter: new RedisGatewayAdapter({ client: new Redis() }),
+  })
+);
+```
+
+The default `MemoryGatewayAdapter` is single-process only — fine for development or a single instance, not for horizontally-scaled deployments.
+
+## Heartbeat
+
+Browsers can't send protocol-level pings, so the plugin runs its own app-level dead-connection detection, on by default:
+
+```ts title="Tuning or disabling heartbeat" showLineNumbers
+app.registerPlugin(
+  createWsPlugin({ heartbeat: { interval: 30_000, timeout: 15_000 } })
+);
+app.registerPlugin(createWsPlugin({ heartbeat: false })); // disable entirely
+```
+
+Any inbound frame counts as liveness — active clients are never pinged into disconnection.
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/config-and-build',
+    label: 'Config & Build',
+  }}
+  next={{
+    href: '/docs/server/ecosystem/queues',
+    label: 'Background Queues',
+  }}
+/>

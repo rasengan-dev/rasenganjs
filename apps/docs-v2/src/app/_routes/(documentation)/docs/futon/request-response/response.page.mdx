@@ -1,0 +1,97 @@
+---
+metadata:
+  title: Response Helpers | Core Concepts | Futon | Rasengan.js
+  description: Build HTTP responses with Futon's response factories and the chainable ResponseBuilder.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Response Helpers
+
+Every Futon handler must return a standard Web API `Response`. Futon provides two complementary ways to build one: standalone **factory functions**, and a **chainable builder** on `ctx.res`.
+
+## Factory Functions
+
+```ts title="Response factories" showLineNumbers
+import {
+  json,
+  text,
+  html,
+  redirect,
+  status,
+  notFound,
+} from '@rasenganjs/futon';
+
+app.get('/api', async () => json({ ok: true }));
+app.get('/plain', async () => text('Hello, world!'));
+app.get('/page', async () => html('<h1>Hello</h1>'));
+app.get('/old', async () => redirect('/new', 301));
+app.get('/nope', async () => notFound());
+app.get('/created', async () => status(201, 'Created'));
+```
+
+| Function                 | Signature                              | Notes                                                   |
+| ------------------------ | -------------------------------------- | ------------------------------------------------------- |
+| `json(data, init?)`      | `(unknown, ResponseInit?) => Response` | Sets `Content-Type: application/json` unless overridden |
+| `text(value, init?)`     | `(string, ResponseInit?) => Response`  | Plain text body                                         |
+| `html(value, init?)`     | `(string, ResponseInit?) => Response`  | Sets `Content-Type: text/html; charset=utf-8`           |
+| `redirect(url, status?)` | `(string, number?) => Response`        | Defaults to `302`                                       |
+| `status(code, body?)`    | `(number, string?) => Response`        | Status-only response                                    |
+| `notFound(body?)`        | `(string?) => Response`                | Shorthand for `status(404, ...)`                        |
+
+## The Chainable Builder (ctx.res)
+
+`ctx.res` (alias `ctx.response`) offers a fluent alternative — handy when you want to set headers or a status before choosing the body type:
+
+```ts title="Chainable builder" showLineNumbers
+app.get('/api', async (ctx) => {
+  return ctx.res
+    .status(201)
+    .header('X-Custom', 'value')
+    .json({ created: true });
+});
+
+app.get('/old-page', async (ctx) => {
+  return ctx.res.redirect('/new-page', 301);
+});
+
+app.get('/error', async (ctx) => {
+  return ctx.res.status(404).send('Not found');
+});
+```
+
+`ctx.res` is created lazily on first access, so handlers that never touch it pay no allocation cost. Once you call a terminal method (`.json()`, `.send()`, `.html()`, `.redirect()`, `.stream()`), the builder is frozen — further `.status()`/`.header()` calls are no-ops.
+
+## Streaming Responses
+
+For SSR or any long-running response body, `streamResponse()` and `ctx.res.stream()` wrap a Web `ReadableStream` into a `Response`:
+
+```ts title="Streaming a React SSR render" showLineNumbers
+import { renderToPipeableStream } from "react-dom/server";
+import { nodeStreamToResponse } from "@rasenganjs/futon";
+
+app.get("/", async () => {
+  return new Promise((resolve) => {
+    const stream = renderToPipeableStream(<App />, {
+      onShellReady() {
+        resolve(nodeStreamToResponse(stream));
+      },
+    });
+  });
+});
+```
+
+`nodeStreamToResponse()` bridges a Node.js-style readable (the shape React's pipeable stream exposes) into a Web `ReadableStream`-backed `Response`. Use `streamResponse()` directly if you already have a Web `ReadableStream`.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/request-response/request',
+    label: 'Request Utilities',
+  }}
+  next={{
+    href: '/docs/futon/request-response/cookies',
+    label: 'Cookies',
+  }}
+/>

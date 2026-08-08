@@ -1,0 +1,155 @@
+---
+metadata:
+  title: Upload | API Reference | Futon | Rasengan.js
+  description: fileUpload(), storage engines, and every type behind Futon's upload middleware.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  API REFERENCE
+</span>
+# Upload
+
+```ts
+import {
+  fileUpload,
+  MemoryStorage,
+  UPLOAD_ERROR_CODES,
+} from '@rasenganjs/futon';
+import { diskStorage } from '@rasenganjs/futon/upload/disk';
+```
+
+See [fileUpload() Middleware](/docs/futon/file-uploads/overview) and [Storage Engines](/docs/futon/file-uploads/storage-engines) for usage and examples.
+
+## fileUpload()
+
+```ts
+function fileUpload(options?: UploadOptions): Uploader;
+```
+
+```ts title="Uploader interface"
+interface Uploader {
+  single(field: string): Middleware;
+  array(field: string, maxCount?: number): Middleware;
+  fields(specs: FieldSpec[]): Middleware;
+  none(): Middleware;
+  any(): Middleware;
+}
+```
+
+| Method                     | Accepts                              | Result lands on                                   |
+| -------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `.single(field)`           | One file on `field`                  | `ctx.state.file: UploadedFile`                    |
+| `.array(field, maxCount?)` | Up to `maxCount` files on `field`    | `ctx.state.files: UploadedFile[]`                 |
+| `.fields(specs)`           | The declared fields                  | `ctx.state.files: Record<string, UploadedFile[]>` |
+| `.none()`                  | No files — text fields only          | `ctx.body` (parsed text fields)                   |
+| `.any()`                   | Every file, regardless of field name | `ctx.state.files: UploadedFile[]`                 |
+
+Read these back with `ctx.get('file')` / `ctx.get('files')`. Text fields are always available on `ctx.body`, regardless of which method is used.
+
+## UploadOptions
+
+```ts
+interface UploadOptions {
+  storage?: StorageEngine; // defaults to MemoryStorage
+  limits?: UploadLimits;
+  fileFilter?: FileFilter;
+}
+
+interface UploadLimits {
+  fileSize?: number; // max size of a single file, in bytes
+  files?: number; // max number of files in the whole request
+  fields?: number; // max number of non-file text fields
+}
+
+type FileFilter = (ctx: Context, info: FileInfo) => boolean | Promise<boolean>;
+
+interface FieldSpec {
+  name: string;
+  maxCount?: number; // default 1
+}
+```
+
+## FileInfo and UploadedFile
+
+```ts
+interface FileInfo {
+  fieldname: string; // multipart field name
+  originalname: string; // client-supplied name — never trust as a path
+  mimetype: string;
+  size: number;
+}
+
+interface UploadedFile extends FileInfo {
+  buffer?: Uint8Array; // present with MemoryStorage
+  path?: string; // present with DiskStorage
+  filename?: string; // present with DiskStorage
+  destination?: string; // present with DiskStorage
+  [key: string]: unknown; // custom engines may attach extra metadata
+}
+```
+
+## StorageEngine
+
+```ts
+interface StorageEngine {
+  handleFile(
+    ctx: Context,
+    file: File,
+    info: FileInfo
+  ): Promise<Partial<UploadedFile>>;
+  removeFile(file: UploadedFile): Promise<void>;
+}
+```
+
+### MemoryStorage
+
+```ts
+class MemoryStorage implements StorageEngine
+```
+
+The default engine — buffers file contents as a `Uint8Array` on `file.buffer`. Works on every runtime, including workerd. `removeFile()` is a no-op.
+
+### diskStorage()
+
+```ts
+// import from '@rasenganjs/futon/upload/disk'
+function diskStorage(options: DiskStorageOptions): StorageEngine;
+
+interface DiskStorageOptions {
+  destination:
+    string | ((ctx: Context, info: FileInfo) => string | Promise<string>);
+  filename?: (ctx: Context, info: FileInfo) => string | Promise<string>;
+}
+```
+
+Writes files to the filesystem via `node:fs`. Lives behind the `/upload/disk` subpath so the main `@rasenganjs/futon` entry stays free of Node built-ins.
+
+## UPLOAD_ERROR_CODES
+
+```ts
+const UPLOAD_ERROR_CODES = {
+  LIMIT_FILE_SIZE: 'LIMIT_FILE_SIZE',
+  LIMIT_FILE_COUNT: 'LIMIT_FILE_COUNT',
+  LIMIT_FIELD_COUNT: 'LIMIT_FIELD_COUNT',
+  LIMIT_UNEXPECTED_FILE: 'LIMIT_UNEXPECTED_FILE',
+  FILE_FILTER_REJECTED: 'FILE_FILTER_REJECTED',
+  MALFORMED_BODY: 'MALFORMED_BODY',
+} as const;
+
+type UploadErrorCode =
+  (typeof UPLOAD_ERROR_CODES)[keyof typeof UPLOAD_ERROR_CODES];
+```
+
+Every rejection responds with `{ error: { code: UploadErrorCode, message: string } }` and a matching HTTP status (`400` for most, `413` for `LIMIT_FILE_SIZE`).
+
+<Pagination
+  prev={{
+    href: '/docs/futon/api-reference/middleware',
+    label: 'Middleware',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/adapters',
+    label: 'Adapters',
+  }}
+/>

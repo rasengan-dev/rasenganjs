@@ -1,0 +1,114 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { mkdir, writeFile, unlink, rmdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { randomUUID } from 'node:crypto';
+import { NodeProdAdapter } from '../../../adapters/node/prod.js';
+
+function createMockApp() {
+  return {
+    configureServer: () => {},
+    configureAssets: () => {},
+    loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
+    fetch: () => Promise.resolve(new Response('ok')),
+  };
+}
+
+describe('NodeProdAdapter', () => {
+  let rootDir: string;
+
+  beforeEach(async () => {
+    rootDir = join(tmpdir(), `rasengan-prod-test-${randomUUID()}`);
+    await mkdir(rootDir, { recursive: true });
+  });
+
+  afterEach(async () => {
+    await rmdir(rootDir, { recursive: true }).catch(() => {});
+  });
+
+  it('starts and stops a server', async () => {
+    const adapter = new NodeProdAdapter({ port: 0, rootDir });
+    const app = createMockApp();
+
+    const started = new Promise<void>((resolve) => {
+      const origServe = adapter.serve.bind(adapter);
+      adapter.serve = (a: any, opts?: any) =>
+        origServe(a, { ...opts, onListening: () => resolve() });
+    });
+
+    const servePromise = adapter.serve(app);
+    await started;
+    await adapter.close();
+    await servePromise;
+  });
+
+  it('provides read-only assets', () => {
+    const adapter = new NodeProdAdapter({ rootDir });
+    expect(adapter.assets).toBeDefined();
+    expect(typeof adapter.assets.get).toBe('function');
+  });
+
+  it('assets.get reads files from rootDir', async () => {
+    await writeFile(join(rootDir, 'data.txt'), 'production content');
+    const adapter = new NodeProdAdapter({ rootDir });
+
+    const result = await adapter.assets.get('data.txt');
+    expect(result).toBeInstanceOf(Uint8Array);
+    expect(new TextDecoder().decode(result!)).toBe('production content');
+
+    await adapter.close();
+  });
+
+  it('assets.load reads files as text', async () => {
+    await writeFile(join(rootDir, 'hello.txt'), 'hello');
+    const adapter = new NodeProdAdapter({ rootDir });
+
+    const result = await adapter.assets.load('hello.txt');
+    expect(result).toBe('hello');
+
+    await adapter.close();
+  });
+
+  it('assets.write is a no-op (does not write)', async () => {
+    const adapter = new NodeProdAdapter({ rootDir });
+    await adapter.assets.write('new.txt', new TextEncoder().encode('data'));
+
+    // File should not exist
+    await expect(readFile(join(rootDir, 'new.txt'))).rejects.toThrow();
+
+    await adapter.close();
+  });
+
+  it('assets.delete is a no-op', async () => {
+    await writeFile(join(rootDir, 'keep.txt'), 'keep me');
+    const adapter = new NodeProdAdapter({ rootDir });
+
+    await adapter.assets.delete('keep.txt');
+
+    // File should still exist
+    const content = await readFile(join(rootDir, 'keep.txt'), 'utf-8');
+    expect(content).toBe('keep me');
+
+    await adapter.close();
+  });
+
+  it('assets.list returns files under prefix', async () => {
+    await writeFile(join(rootDir, 'a.txt'), 'a');
+    await mkdir(join(rootDir, 'sub'), { recursive: true });
+    await writeFile(join(rootDir, 'sub', 'b.txt'), 'b');
+
+    const adapter = new NodeProdAdapter({ rootDir });
+    const files = await adapter.assets.list('');
+    expect(files.sort()).toEqual(['a.txt', 'sub/b.txt']);
+
+    await adapter.close();
+  });
+
+  it('is idempotent on close', async () => {
+    const adapter = new NodeProdAdapter({ rootDir });
+    await adapter.close();
+    await adapter.close();
+  });
+});

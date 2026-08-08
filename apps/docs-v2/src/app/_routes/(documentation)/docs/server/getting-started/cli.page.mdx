@@ -1,0 +1,79 @@
+---
+metadata:
+  title: CLI | Getting Started | Rasengan Server | Rasengan.js
+  description: The rasengan-server dev, build, and start commands.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  GETTING STARTED
+</span>
+# CLI
+
+The `rasengan-server` binary (installed with the package) has three commands: `dev`, `build`, and `start`.
+
+```bash title="Terminal"
+npx rasengan-server dev
+npx rasengan-server build
+npx rasengan-server start
+```
+
+## dev
+
+Starts a hot-reloading development server. Runs your entry file directly via `tsx` (no build step) and restarts the process whenever a watched file changes.
+
+```bash title="Terminal"
+rasengan-server dev --port 4000
+```
+
+## build
+
+Bundles your server for production using esbuild. Produces one or both output formats depending on `build.formats`:
+
+- **`single-file`** — everything bundled into one `server.bundle.mjs`.
+- **`directory`** — one `.mjs` per source file, preserving your project's structure.
+
+```bash title="Terminal"
+rasengan-server build --preset node
+```
+
+## start
+
+Runs the production build produced by `rasengan-server build` — no compilation step, just executes the bundled output.
+
+```bash title="Terminal"
+rasengan-server start
+```
+
+## Flags
+
+Every command accepts the same override flags, applied on top of `rasengan.server.ts` and the built-in defaults:
+
+| Flag                 | Shorthand | Description                      | Default       |
+| -------------------- | --------- | -------------------------------- | ------------- |
+| `--port <number>`    | `-p`      | Port to listen on                | `3000`        |
+| `--host <address>`   | —         | Host to bind to                  | `0.0.0.0`     |
+| `--entry <path>`     | `-e`      | Entry file                       | `src/main.ts` |
+| `--preset <name>`    | —         | `node` \| `bun` \| `workerd`     | `node`        |
+| `--watch-dir <path>` | —         | Directory to watch in `dev` mode | `src/`        |
+
+## Configuration Resolution Order
+
+Lowest to highest priority — later sources override earlier ones:
+
+1. Built-in defaults (shown in the table above).
+2. `rasengan.server.js` or `rasengan.server.ts` in the project root.
+3. CLI flags.
+
+See [Config & Build](/docs/server/core-concepts/config-and-build) for the full `RasenganServerConfig` shape, including build output options.
+
+<Pagination
+  prev={{
+    href: '/docs/server/getting-started/project-structure',
+    label: 'Project Structure',
+  }}
+  next={{
+    href: '/docs/server/core-concepts/bootstrap',
+    label: 'Bootstrap & ServerApp',
+  }}
+/>

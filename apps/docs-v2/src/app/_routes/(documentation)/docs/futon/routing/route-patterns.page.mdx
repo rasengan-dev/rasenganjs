@@ -1,0 +1,84 @@
+---
+metadata:
+  title: Route Patterns | Core Concepts | Futon | Rasengan.js
+  description: Static, dynamic, optional, and wildcard segments in Futon route patterns.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Route Patterns
+
+Futon route patterns support five segment types. Every matched parameter value is automatically URL-decoded.
+
+| Syntax    | Name           | Matches                        | Example                                 |
+| --------- | -------------- | ------------------------------ | --------------------------------------- |
+| `/path`   | Static         | Exact segment                  | `/users`                                |
+| `:param`  | Required param | Exactly one segment            | `/users/:id` → `/users/42`              |
+| `:param?` | Optional param | Zero or one segment            | `/users/:id?` → `/users` or `/users/42` |
+| `:param*` | Named wildcard | One or more remaining segments | `/files/:path*` → `/files/a/b/c`        |
+| `*`       | Bare catch-all | Everything remaining           | `/static/*` → `/static/img/logo.png`    |
+
+## Required Parameters
+
+```ts title="Required parameters" showLineNumbers
+router.get('/users/:id', async (ctx) => {
+  const { id } = ctx.params; // string
+  return json({ id });
+});
+```
+
+A request to `/users` (no id) does **not** match this pattern — it falls through to your 404 handler.
+
+## Optional Parameters
+
+```ts title="Optional parameters" showLineNumbers
+router.get('/users/:id?', async (ctx) => {
+  const { id } = ctx.params; // string | undefined
+  if (!id) return json(await listUsers());
+  return json(await getUser(id));
+});
+```
+
+Both `/users` and `/users/42` match. `ctx.params.id` is `undefined` for the former.
+
+## Named Wildcards
+
+```ts title="Named wildcard" showLineNumbers
+router.get('/files/:path*', async (ctx) => {
+  const { path } = ctx.params; // e.g. "a/b/c"
+  return json({ path });
+});
+```
+
+`:path*` captures every remaining segment into a single string, joined by `/`.
+
+## Bare Catch-all
+
+```ts title="Bare catch-all" showLineNumbers
+router.get('/static/*', async (ctx) => {
+  // The captured remainder is available under the "_" param key
+  const remainder = ctx.params['_'];
+  return json({ remainder });
+});
+```
+
+Use the named wildcard (`:path*`) when you want a descriptive param name; use the bare `*` for a quick catch-all where the value doesn't need a name.
+
+## Matching Rules
+
+- Trailing slashes are normalised — `/users/` and `/users` match the same route (except the root `/`, which is preserved as-is).
+- Route matching happens against the pathname only; query strings are parsed separately via `ctx.query` (see [Context](/docs/futon/context/overview)).
+- Patterns are matched in the order the tree resolves them: static segments win over `:param`, which wins over `:param?`/`:param*`/`*` — so `/users/me` and `/users/:id` can coexist safely, with `/users/me` taking priority.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/routing/router',
+    label: 'Router',
+  }}
+  next={{
+    href: '/docs/futon/routing/route-groups',
+    label: 'Route Groups',
+  }}
+/>

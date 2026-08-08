@@ -1,0 +1,78 @@
+---
+metadata:
+  title: Lazy Request (opt-in) | Core Concepts | Futon | Rasengan.js
+  description: Defer Request construction on the Node GET/HEAD hot path for lower overhead.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Lazy Request
+
+On Node, constructing `new Request(url, { method, headers })` for every incoming connection has real cost — WHATWG URL parsing, header-list validation, and abort-signal wiring — paid even though most `GET`/`HEAD` handlers only ever read `method` and the pathname.
+
+The **lazy Request shim** defers that construction until something actually touches `headers`, `body`, `.clone()`, or any other property that needs the real object. It's the same technique used by `@hono/node-server`.
+
+## Enabling It
+
+The shim lives in `@rasenganjs/runtime`'s Node adapter and is **off by default** — enable it with an environment variable:
+
+```bash title="Terminal"
+RASENGAN_LAZY_REQUEST=1 node server.js
+```
+
+<Note title="Opt-in during a beta cycle" type="warning">
+  This is gated behind an env flag deliberately — it's expected to become the
+  default in a future release, but for now you should test your app with it
+  enabled before relying on it in production.
+</Note>
+
+## What Changes
+
+Only Node's `GET`/`HEAD` request construction path is affected. `method` and `url` are readable immediately without materializing a real `Request`; everything else (`headers`, `body`, `.clone()`, `.json()`, etc.) triggers materialization on first access — transparently, from the caller's point of view.
+
+```ts title="No code changes required" showLineNumbers
+app.get('/users/:id', async (ctx) => {
+  // Only touches method/params — never materializes a real Request
+  // when RASENGAN_LAZY_REQUEST=1
+  return json({ id: ctx.params.id });
+});
+
+app.get('/echo-headers', async (ctx) => {
+  // Reading `.headers` materializes the real Request here
+  return json(Object.fromEntries(ctx.request.headers));
+});
+```
+
+## Interop with Other Code
+
+`instanceof Request` still returns `true` for the shim — it's installed via `Object.setPrototypeOf` onto `Request.prototype`, not a Proxy. But the shim is **not** a real `Request` as far as Node's own `Request` constructor is concerned (`undici` reads internal slots directly, bypassing the shim's getters): `new Request(shim, init)` throws.
+
+This is an internal detail you shouldn't normally need to touch — `materializeRequest()` isn't part of the public API surface. It's reached through a well-known registry symbol instead, so middleware can materialize a possibly-lazy request without importing anything from `@rasenganjs/runtime` (which would create a dependency edge Futon deliberately avoids):
+
+```ts title="How Futon's own bodyLimit() middleware does it" showLineNumbers
+const MATERIALIZE = Symbol.for('rasenganjs.request.materialize');
+
+function materializeRequest(request: Request): Request {
+  const materializer = (request as any)[MATERIALIZE];
+  return materializer ? materializer.call(request) : request;
+}
+
+// Safe on both a lazy shim and an already-real Request:
+const realRequest = materializeRequest(ctx.request);
+const clone = new Request(realRequest, { headers: extraHeaders });
+```
+
+Futon's own [`bodyLimit()`](/docs/futon/middleware/built-in) middleware uses exactly this pattern before constructing a new `Request` with a size-checked body — reach for the same `Symbol.for('rasenganjs.request.materialize')` lookup if you're writing similarly low-level middleware that needs a guaranteed-real `Request`.
+
+<Pagination
+  prev={{
+    href: '/docs/futon/adapters/runtime',
+    label: 'Runtime Adapters',
+  }}
+  next={{
+    href: '/docs/futon/api-reference/futon',
+    label: 'Futon (API Reference)',
+  }}
+/>

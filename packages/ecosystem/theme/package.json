@@ -1,0 +1,42 @@
+{
+  "name": "@rasenganjs/theme",
+  "private": false,
+  "version": "1.1.0",
+  "description": "Library that handles themes for Rasengan.JS applications",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "author": {
+    "name": "dilane3",
+    "email": "komboudilane125@gmail.com",
+    "url": "https://dilane3.com",
+    "twitter": "https://twitter.com/dilanekombou",
+    "github": "https://github.com/dilane3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rasengan-dev/rasenganjs",
+    "directory": "packages/ecosystem/theme"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:clean": "rimraf ./dist",
+    "build": "pnpm run build:clean && tsup",
+    "pack": "pnpm pack --pack-destination ./release",
+    "deploy": "pnpm publish --access public"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "tsup": "^8.5.1"
+  }
+}

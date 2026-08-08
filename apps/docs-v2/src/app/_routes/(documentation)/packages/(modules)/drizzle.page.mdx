@@ -1,0 +1,135 @@
+---
+metadata:
+  title: Rasengan Drizzle Package - Modules | Packages | Rasengan.js
+  description: Documentation for the Rasengan Drizzle package — Drizzle ORM integration for Rasengan Server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  PACKAGES
+</span>
+# Rasengan Drizzle
+
+<Note title="Early / experimental integration" type="warning">
+  `@rasenganjs/drizzle` is new — its governing RFC is still in Draft status,
+  even though the package itself has working code and tests. Expect this
+  integration to evolve more than the other packages on this page.
+</Note>
+
+`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to [Rasengan Server](/docs/server/getting-started/introduction)'s dependency-injection container — `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject, the same way you'd inject any other service.
+
+<Note title="Requires @rasenganjs/server" type="info">
+  This package is not a standalone database client — it's an integration layer
+  for Rasengan Server's module/DI system. `DataSource` extends `Provider` and
+  `DrizzleModule.forRoot()` returns a `ModuleConfig`, both from
+  `@rasenganjs/server`.
+</Note>
+
+## Installation
+
+```bash title="Terminal"
+npm install @rasenganjs/drizzle drizzle-orm pg
+```
+
+## Usage
+
+### Connecting
+
+```ts title="app.module.ts" showLineNumbers
+import { defineModule } from '@rasenganjs/server';
+import { DrizzleModule } from '@rasenganjs/drizzle';
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+import * as schema from './schema';
+import userModule from './user.module';
+
+export default defineModule({
+  imports: [
+    DrizzleModule.forRoot({
+      adapter: nodePostgresAdapter(),
+      connection: { connectionString: process.env.DATABASE_URL! },
+      schema,
+    }),
+    userModule,
+  ],
+});
+```
+
+`DrizzleModule.forRoot()` connects **eagerly** at call time and is `global: true` by default, so `DataSource` is visible to every module without importing the Drizzle module explicitly each time. Call it exactly once per process — a second call throws.
+
+### Injecting `DataSource`
+
+```ts title="user.service.ts" showLineNumbers
+import { DataSource } from '@rasenganjs/drizzle';
+import { users } from './schema';
+import { eq } from 'drizzle-orm';
+
+export class UserService {
+  constructor(private dataSource: DataSource) {}
+
+  findById(id: number) {
+    return this.dataSource.db.select().from(users).where(eq(users.id, id));
+  }
+}
+```
+
+`dataSource.db` is your normal Drizzle client, typed against whatever `schema` you passed to `forRoot()`.
+
+### Driver Adapters
+
+Driver adapters are separate subpath exports, so the core package never pulls in a driver client you're not using. Only Postgres (`node-postgres`) ships today:
+
+```ts
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+```
+
+### Running Migrations
+
+`runMigrations()` uses a separate, short-lived connection — migration scripts run standalone, outside the DI container:
+
+```ts title="migrate.ts (run standalone, e.g. in CI)" showLineNumbers
+import { runMigrations } from '@rasenganjs/drizzle';
+import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
+import * as schema from './schema';
+
+await runMigrations(
+  nodePostgresAdapter(),
+  { connectionString: process.env.DATABASE_URL! },
+  schema,
+  './drizzle/migrations'
+);
+```
+
+## Full Documentation
+
+For the complete API — `DrizzleModuleOptions`, `DataSource`, and how this fits into Rasengan Server's module/DI system — see [Database (Drizzle)](/docs/server/ecosystem/drizzle) under the Server docs.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <a
+    href="https://github.com/rasengan-dev/rasenganjs/discussions"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    GitHub Discussions
+  </a>
+  – Ask questions and share ideas.
+- <a href="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">
+    X (Twitter)
+  </a>
+  – Stay updated with the latest news.
+- <a
+    href="https://www.linkedin.com/company/rasenganjs/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Linkedin
+  </a>
+  – Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).

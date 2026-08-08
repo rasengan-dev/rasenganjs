@@ -9,6 +9,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "tsx scripts/build.ts",
+    "test": "vitest run",
     "pack": "tsx scripts/pack.ts",
     "format": "prettier --write .",
     "prepare": "husky",
@@ -19,7 +20,7 @@
     "*.{js,jsx,ts,tsx,css,scss,md,mdx,json}": "prettier --write"
   },
   "resolutions": {
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^6.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -37,6 +38,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "tsup": "^8.5.1"
+    "@vitest/coverage-v8": "^4.1.9",
+    "tsup": "^8.5.1",
+    "vitest": "^4.1.9"
   }
 }

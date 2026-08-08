@@ -1,0 +1,15 @@
+{
+  "name": "rasengan-server-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/runtime-bun": "workspace:*",
+    "@rasenganjs/runtime-node": "workspace:*",
+    "@rasenganjs/runtime-workerd": "workspace:*",
+    "@rasenganjs/server": "workspace:*",
+    "@rasenganjs/validators": "workspace:*",
+    "zod": "^3.25.76"
+  }
+}
