@@ -25,14 +25,14 @@ abstract class Provider {
 
 | Member      | Signature                     | Description                                                                                      |
 | ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
-| `onInit`    | `() => void \| Promise<void>` | Called once all providers are resolved and routes are wired — before the server accepts requests |
+| `onInit`    | `() => void \| Promise<void>` | Called once all providers are resolved and routes are wired, before the server accepts requests |
 | `onDestroy` | `() => void \| Promise<void>` | Called on graceful shutdown (`SIGTERM`/`SIGINT`), in reverse registration order                  |
 
-Both hooks are optional — a `Provider` subclass that implements neither behaves exactly like a plain class as far as the DI container is concerned.
+Both hooks are optional. A `Provider` subclass that implements neither behaves exactly like a plain class as far as the DI container is concerned.
 
 ## Extending Provider Is Opt-in
 
-Any class is a valid DI provider (see [`ProviderLike`](/docs/server/api-reference/container#providerlike)) — extending `Provider` only matters if you need `onInit()`/`onDestroy()`. A plain `UserService` class with no lifecycle needs works fine as a provider without extending anything.
+Any class is a valid DI provider (see [`ProviderLike`](/docs/server/api-reference/container#providerlike)). Extending `Provider` only matters if you need `onInit()`/`onDestroy()`. A plain `UserService` class with no lifecycle needs works fine as a provider without extending anything.
 
 ```ts title="A provider with lifecycle hooks" showLineNumbers
 import { Provider } from '@rasenganjs/server';
@@ -59,7 +59,7 @@ export default defineModule({
 
 ## Who Else Extends It
 
-`Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider` — that's exactly why a gateway or queue's `onInit()`/`onDestroy()` fire like any other provider's, and why they can be exported from a module for another module to inject the same instance.
+`Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider`. That's exactly why a gateway or queue's `onInit()`/`onDestroy()` fire like any other provider's, and why they can be exported from a module for another module to inject the same instance.
 
 <Pagination
   prev={{

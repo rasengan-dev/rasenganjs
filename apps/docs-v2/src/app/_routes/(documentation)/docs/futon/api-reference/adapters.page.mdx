@@ -31,7 +31,7 @@ function toExpressHandler(
 
 Bridges the WinterCG pipeline to an Express `(req, res, next)` handler:
 
-1. Builds a Web API `Request` from the Express request (headers, method, and body — including piping the raw Node stream when no body-parsing Express middleware ran first).
+1. Builds a Web API `Request` from the Express request (headers, method, and body, including piping the raw Node stream when no body-parsing Express middleware ran first).
 2. Calls `app.fetch(request, runtime)`.
 3. Writes the resulting status, headers, and body back onto the Express response, streaming the body chunk-by-chunk.
 
@@ -62,7 +62,7 @@ function toWinterCgHandler(
 ) => Promise<Response>;
 ```
 
-Produces a `{ fetch }`-shaped handler compatible with every WinterCG runtime — Cloudflare Workers `(request, env, ctx)`, Deno / Bun `(request, info)`, and plain Service Workers `(request)`. It normalizes whichever argument shape the platform passes, merges the platform's `env` into `defaultRuntime.env`, and forwards `ctx.waitUntil` when the platform provides one and the response sets an `X-Rasengan-Background` header.
+Produces a `{ fetch }`-shaped handler compatible with every WinterCG runtime: Cloudflare Workers `(request, env, ctx)`, Deno / Bun `(request, info)`, and plain Service Workers `(request)`. It normalizes whichever argument shape the platform passes, merges the platform's `env` into `defaultRuntime.env`, and forwards `ctx.waitUntil` when the platform provides one and the response sets an `X-Rasengan-Background` header.
 
 ```ts title="Cloudflare Workers" showLineNumbers
 import { Futon, toWinterCgHandler } from '@rasenganjs/futon';
@@ -79,7 +79,7 @@ export default { fetch: toWinterCgHandler(app) };
 type FetchHandler = (request: Request, runtime?: any) => Promise<Response>;
 ```
 
-The fundamental request-handler shape every adapter ultimately produces or consumes — `Futon.fetch` itself conforms to this signature. Every middleware, route handler, and error handler exists to eventually produce a `Response` this way; adapters exist purely to translate a platform's native handler shape into (and the resulting `Response` out of) this one.
+The fundamental request-handler shape every adapter ultimately produces or consumes. `Futon.fetch` itself conforms to this signature. Every middleware, route handler, and error handler exists to eventually produce a `Response` this way; adapters exist purely to translate a platform's native handler shape into (and the resulting `Response` out of) this one.
 
 <Pagination
   prev={{

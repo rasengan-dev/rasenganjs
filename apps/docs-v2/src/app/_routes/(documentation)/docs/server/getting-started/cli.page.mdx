@@ -30,8 +30,8 @@ rasengan-server dev --port 4000
 
 Bundles your server for production using esbuild. Produces one or both output formats depending on `build.formats`:
 
-- **`single-file`** — everything bundled into one `server.bundle.mjs`.
-- **`directory`** — one `.mjs` per source file, preserving your project's structure.
+- **`single-file`**: everything bundled into one `server.bundle.mjs`.
+- **`directory`**: one `.mjs` per source file, preserving your project's structure.
 
 ```bash title="Terminal"
 rasengan-server build --preset node
@@ -39,7 +39,7 @@ rasengan-server build --preset node
 
 ## start
 
-Runs the production build produced by `rasengan-server build` — no compilation step, just executes the bundled output.
+Runs the production build produced by `rasengan-server build`, no compilation step, just executes the bundled output.
 
 ```bash title="Terminal"
 rasengan-server start
@@ -52,14 +52,14 @@ Every command accepts the same override flags, applied on top of `rasengan.serve
 | Flag                 | Shorthand | Description                      | Default       |
 | -------------------- | --------- | -------------------------------- | ------------- |
 | `--port <number>`    | `-p`      | Port to listen on                | `3000`        |
-| `--host <address>`   | —         | Host to bind to                  | `0.0.0.0`     |
+| `--host <address>`   | none      | Host to bind to                  | `0.0.0.0`     |
 | `--entry <path>`     | `-e`      | Entry file                       | `src/main.ts` |
-| `--preset <name>`    | —         | `node` \| `bun` \| `workerd`     | `node`        |
-| `--watch-dir <path>` | —         | Directory to watch in `dev` mode | `src/`        |
+| `--preset <name>`    | none      | `node` \| `bun` \| `workerd`     | `node`        |
+| `--watch-dir <path>` | none      | Directory to watch in `dev` mode | `src/`        |
 
 ## Configuration Resolution Order
 
-Lowest to highest priority — later sources override earlier ones:
+Lowest to highest priority, later sources override earlier ones:
 
 1. Built-in defaults (shown in the table above).
 2. `rasengan.server.js` or `rasengan.server.ts` in the project root.

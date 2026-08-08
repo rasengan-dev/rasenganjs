@@ -31,7 +31,7 @@ class Container {
   ): void;
   setScope(owner: ScopeOwner, visible: Set<any>): void;
   forModule(owner: ScopeOwner): ContainerView;
-  resolve<T>(token: new (...args: any[]) => T): T; // root scope — sees every registration
+  resolve<T>(token: new (...args: any[]) => T): T; // root scope, sees every registration
   initAll(): Promise<void>;
   destroyAll(): Promise<void>;
 }
@@ -40,7 +40,7 @@ class Container {
 | Method                       | Description                                                                                    |
 | ---------------------------- | ---------------------------------------------------------------------------------------------- |
 | `register(provider, owner?)` | Register a provider or `ProviderDefinition`. Omitted `owner` = root scope (visible everywhere) |
-| `setScope(owner, visible)`   | Set the visible-token set for a module — computed once by `compile()`                          |
+| `setScope(owner, visible)`   | Set the visible-token set for a module, computed once by `compile()`                          |
 | `forModule(owner)`           | A `ContainerView` bound to that module's scope                                                 |
 | `resolve(token)`             | Resolve in the root scope                                                                      |
 | `initAll()`                  | Call `onInit()` on every resolved `Provider` instance, in registration order                   |
@@ -54,7 +54,7 @@ interface ContainerView {
 }
 ```
 
-The resolution surface handed to controllers and `ModulePlugin.register()` during compile — a module-scoped view of the container. `Container` itself satisfies this interface (root scope sees everything).
+The resolution surface handed to controllers and `ModulePlugin.register()` during compile. A module-scoped view of the container. `Container` itself satisfies this interface (root scope sees everything).
 
 ## ProviderDefinition
 
@@ -73,7 +73,7 @@ interface ProviderDefinition {
 type ProviderLike = new (...args: any[]) => any;
 ```
 
-Any class is a valid provider — extending [`Provider`](/docs/server/api-reference/provider) is purely opt-in, for lifecycle hooks (`onInit`/`onDestroy`). See the dedicated [Provider](/docs/server/api-reference/provider) reference page for its full API.
+Any class is a valid provider. Extending [`Provider`](/docs/server/api-reference/provider) is purely opt-in, for lifecycle hooks (`onInit`/`onDestroy`). See the dedicated [Provider](/docs/server/api-reference/provider) reference page for its full API.
 
 <Pagination
   prev={{

@@ -30,19 +30,19 @@ export class DatabaseService extends Provider {
 
 ## Why Extend Provider at All?
 
-A plain class works fine as a provider — extending `Provider` is purely opt-in for lifecycle hooks. `Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider` themselves, which is exactly why their `onInit()`/`onDestroy()` fire like any other provider's.
+A plain class works fine as a provider. Extending `Provider` is purely opt-in for lifecycle hooks. `Gateway` ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) and `Queue` ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) both extend `Provider` themselves, which is exactly why their `onInit()`/`onDestroy()` fire like any other provider's.
 
 ## Every Provider Is Resolved Eagerly at Boot
 
-Unlike lazy-by-default DI containers, Rasengan Server constructs **every declared provider during `compile()`** — not just the ones something happens to inject. This means:
+Unlike lazy-by-default DI containers, Rasengan Server constructs **every declared provider during `compile()`** rather than just the ones something happens to inject. This means:
 
-- `onInit()` fires for providers nothing else injects (schedulers, background warmers) — you don't need a dummy injection just to trigger startup.
+- `onInit()` fires for providers nothing else injects (schedulers, background warmers), you don't need a dummy injection just to trigger startup.
 - A broken constructor or an unresolvable dependency fails at boot, not on the first request that happens to touch it.
 
 ## Hook Order
 
-- `onInit()` — called in registration order, once compilation finishes wiring routes and providers together.
-- `onDestroy()` — called in **reverse** registration order during graceful shutdown (`SIGTERM`/`SIGINT`, handled automatically by `bootstrap()`), so dependents clean up before their dependencies do.
+- `onInit()`: called in registration order, once compilation finishes wiring routes and providers together.
+- `onDestroy()`: called in **reverse** registration order during graceful shutdown (`SIGTERM`/`SIGINT`, handled automatically by `bootstrap()`), so dependents clean up before their dependencies do.
 
 ## Circular Dependency Detection
 
@@ -65,7 +65,7 @@ export class MetricsService extends Provider {
 }
 ```
 
-App-level hooks registered via `app.onInit()`/`app.onDestroy()` on `ServerApp` itself are separate from provider lifecycle hooks — they're forwarded straight to the underlying Futon instance and fire alongside, not instead of, provider hooks.
+App-level hooks registered via `app.onInit()`/`app.onDestroy()` on `ServerApp` itself are separate from provider lifecycle hooks. They're forwarded straight to the underlying Futon instance and fire alongside, not instead of, provider hooks.
 
 <Pagination
   prev={{

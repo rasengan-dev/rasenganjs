@@ -10,11 +10,11 @@ toc: true
 </span>
 # Validation Adapters
 
-`@rasenganjs/validators` is the package behind [Validation](/docs/server/core-concepts/validation) — Rasengan Server depends on it directly, so it's already installed as part of `@rasenganjs/server`.
+`@rasenganjs/validators` is the package behind [Validation](/docs/server/core-concepts/validation). Rasengan Server depends on it directly, so it's already installed as part of `@rasenganjs/server`.
 
 <Note title="Import path, not @rasenganjs/validation" type="warning">
   The installable package is `@rasenganjs/validators` (plural). You may see
-  `@rasenganjs/validation` (singular) in older comments or examples — that path
+  `@rasenganjs/validation` (singular) in older comments or examples. That path
   doesn't resolve to anything installable. Always `npm install
   @rasenganjs/validators` and `import ... from '@rasenganjs/validators'`.
 </Note>
@@ -33,9 +33,9 @@ const validate = createValidationMiddleware(schemas, { adapter: zodAdapter });
 app.post('/users', validate, handler);
 ```
 
-## SchemaAdapter — Bring Your Own Schema Library
+## SchemaAdapter: Bring Your Own Schema Library
 
-Validation is adapter-based by design — `zodAdapter` is the only one shipped today, but any schema library can plug in by implementing `SchemaAdapter`:
+Validation is adapter-based by design. `zodAdapter` is the only one shipped today, but any schema library can plug in by implementing `SchemaAdapter`:
 
 ```ts
 interface SchemaAdapter<TSchema = any, TOutput = any> {

@@ -18,7 +18,7 @@ import {
 } from '@rasenganjs/server';
 ```
 
-See [Config & Build](/docs/server/core-concepts/config-and-build) for usage and how config interacts with CLI flags — this page is the flat type reference.
+See [Config & Build](/docs/server/core-concepts/config-and-build) for usage and how config interacts with CLI flags. This page is the flat type reference.
 
 ## defineConfig()
 
@@ -26,7 +26,7 @@ See [Config & Build](/docs/server/core-concepts/config-and-build) for usage and 
 function defineConfig(config: RasenganServerConfig): RasenganServerConfig;
 ```
 
-Typed pass-through helper — returns the same object you pass in, with type-checking. Used in `rasengan.server.ts`:
+Typed pass-through helper, returns the same object you pass in, with type-checking. Used in `rasengan.server.ts`:
 
 ```ts title="rasengan.server.ts" showLineNumbers
 import { defineConfig } from '@rasenganjs/server';
@@ -55,11 +55,11 @@ interface RasenganServerConfig {
 | `entry`    | Path to the server entry file.                                                |
 | `port`     | Port the server listens on.                                                   |
 | `host`     | Host address to bind to.                                                      |
-| `preset`   | Target runtime — `"node"`, `"bun"`, or `"workerd"` (Cloudflare Workers).      |
+| `preset`   | Target runtime: `"node"`, `"bun"`, or `"workerd"` (Cloudflare Workers).      |
 | `watchDir` | Directory (or directories) watched for file changes in `rasengan-server dev`. |
-| `build`    | Production build output configuration — see [`BuildConfig`](#buildconfig).    |
+| `build`    | Production build output configuration, see [`BuildConfig`](#buildconfig).    |
 
-Every field the CLI accepts as a flag maps directly to one of these — see [CLI](/docs/server/api-reference/cli#flags) for the flag-to-field table.
+Every field the CLI accepts as a flag maps directly to one of these. See [CLI](/docs/server/api-reference/cli#flags) for the flag-to-field table.
 
 ## BuildConfig
 
@@ -75,7 +75,7 @@ interface BuildConfig {
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `outDir`  | Output directory for the production bundle.                                                                                                         |
 | `minify`  | Whether to minify the bundled output.                                                                                                               |
-| `formats` | Which output shapes to produce — `"single-file"` (one `server.bundle.mjs`) and/or `"directory"` (one `.mjs` per source file, preserving structure). |
+| `formats` | Which output shapes to produce: `"single-file"` (one `server.bundle.mjs`) and/or `"directory"` (one `.mjs` per source file, preserving structure). |
 
 ## ConfigHolder
 
@@ -89,12 +89,12 @@ class ConfigHolder {
 }
 ```
 
-Static, process-wide config cache used by `bootstrap()` and the CLI — most apps never call this directly.
+Static, process-wide config cache used by `bootstrap()` and the CLI. Most apps never call this directly.
 
 | Method            | Description                                                                                       |
 | ----------------- | ------------------------------------------------------------------------------------------------- |
 | `set(config)`     | Seed the cache directly (used by the CLI, which resolves config before spawning the app process). |
-| `reset()`         | Clear the cached config — useful in tests, so each test loads a fresh config.                     |
+| `reset()`         | Clear the cached config, useful in tests, so each test loads a fresh config.                     |
 | `get(overrides?)` | Resolve the config, then shallow-merge `overrides` on top. See resolution order below.            |
 
 `get()`'s resolution order, first match wins:
@@ -104,7 +104,7 @@ Static, process-wide config cache used by `bootstrap()` and the CLI — most app
 3. `dist/config.json`, if present (the production build output).
 4. `rasengan.server.ts`/`.js`, loaded from disk via the CLI's config loader.
 
-Once resolved, the config is frozen and cached process-wide — subsequent `get()` calls only re-apply `overrides`, they don't re-resolve from scratch.
+Once resolved, the config is frozen and cached process-wide. Subsequent `get()` calls only re-apply `overrides`, they don't re-resolve from scratch.
 
 <Pagination
   prev={{

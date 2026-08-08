@@ -10,7 +10,7 @@ toc: true
 </span>
 # Providers & Tokens
 
-Rasengan Server resolves constructor dependencies automatically, by **matching parameter names against registered provider class names** — no decorators, no manual token wiring for the common case.
+Rasengan Server resolves constructor dependencies automatically, by **matching parameter names against registered provider class names** (no decorators, no manual token wiring for the common case).
 
 ```ts title="Constructor injection" showLineNumbers
 export class UserController extends Controller {
@@ -36,14 +36,14 @@ A provider is either a plain class, or a `ProviderDefinition` object for more co
 
 ```ts title="ProviderDefinition"
 interface ProviderDefinition {
-  provide: any; // injection token — a class or a string
+  provide: any; // injection token: a class or a string
   useClass?: new (...args: any[]) => any; // class to instantiate (defaults to `provide`)
   useValue?: any; // static value, skips instantiation entirely
   deps?: any[]; // explicit constructor dependency tokens
 }
 ```
 
-```ts title="Value provider — a string token" showLineNumbers
+```ts title="Value provider: a string token" showLineNumbers
 export default defineModule({
   providers: [
     { provide: 'CONFIG', useValue: { apiUrl: 'https://api.example.com' } },
@@ -71,15 +71,15 @@ export class BillingService {
 }
 ```
 
-For string tokens, the constructor parameter name is matched against the token string itself (not a class name) — `constructor(config)` resolves `"CONFIG"` (case-insensitive).
+For string tokens, the constructor parameter name is matched against the token string itself (not a class name). `constructor(config)` resolves `"CONFIG"` (case-insensitive).
 
 ## Singletons by Default
 
-Every provider is a **singleton** — one instance per token, shared by every module that can see it. There's no scope-per-request or transient lifetime; if you need per-request state, put it on `ctx.state` instead (see [Futon's Context](/docs/futon/context/overview)).
+Every provider is a **singleton**, one instance per token, shared by every module that can see it. There's no scope-per-request or transient lifetime; if you need per-request state, put it on `ctx.state` instead (see [Futon's Context](/docs/futon/context/overview)).
 
 ## Auto-registration
 
-Resolving a class that was never explicitly listed in any `providers` array still works — the container auto-registers it as a private provider owned by whichever module triggered the resolution, then caches it as a singleton. This is how controllers themselves become resolvable without appearing in `providers`. Prefer explicit registration for anything you intend to export or inject elsewhere — auto-registered providers are always private to the resolving module.
+Resolving a class that was never explicitly listed in any `providers` array still works. The container auto-registers it as a private provider owned by whichever module triggered the resolution, then caches it as a singleton. This is how controllers themselves become resolvable without appearing in `providers`. Prefer explicit registration for anything you intend to export or inject elsewhere. Auto-registered providers are always private to the resolving module.
 
 ## Errors You'll Actually See
 
@@ -90,12 +90,12 @@ Providers visible here: UserController
 ```
 
 ```txt
-[rasengan-server] "config" is ambiguous in module "UserModule" — visible from
+[rasengan-server] "config" is ambiguous in module "UserModule", visible from
 multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
 with an explicit `deps: [...]` entry naming the exact class.
 ```
 
-The first happens when nothing matching is registered or visible; the second when two _different_ visible providers share a name — resolved by adding an explicit `deps` entry naming the exact one you want.
+The first happens when nothing matching is registered or visible; the second when two _different_ visible providers share a name, resolved by adding an explicit `deps` entry naming the exact one you want.
 
 <Pagination
   prev={{

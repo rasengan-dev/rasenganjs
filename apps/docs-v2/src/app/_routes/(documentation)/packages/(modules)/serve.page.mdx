@@ -75,7 +75,33 @@ or
 pnpm run serve -p 3000
 ```
 
-The `-p`/`--port` option lets you replace the default port `4320` for the production server. You can also set a `PORT` environment variable instead — `-p`/`--port` takes priority over it if both are set. If the resolved port is already in use, `@rasenganjs/serve` automatically falls back to the next free one.
+The `-p`/`--port` option lets you replace the default port `4320` for the production server. You can also set a `PORT` environment variable instead; `-p`/`--port` takes priority over it if both are set. If the resolved port is already in use, `@rasenganjs/serve` automatically falls back to the next free one.
+
+## Bun Support
+
+Introduced in `v2.0.0-beta`, `@rasenganjs/serve` can also run your app on <a href="https://bun.sh" target="_blank" rel="noopener noreferrer">Bun</a> instead of Node.js. Set `runtime: 'bun'` in your `rasengan.config.js`:
+
+```js title="rasengan.config.js" showLineNumbers {4}
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  runtime: 'bun',
+});
+```
+
+Then build and serve as usual, the exact same `rasengan-serve ./dist` command works for both runtimes:
+
+```bash title="Terminal"
+npm run build
+npm run serve
+```
+
+<Note type="info" title="Note: automatic runtime switch">
+  `rasengan-serve` always starts under Node.js, but when it detects
+  `runtime: 'bun'` in your build it automatically re-executes itself under
+  `bun` before starting the server. No need to run `bun rasengan-serve`
+  yourself. You do need <a href="https://bun.sh" target="_blank" rel="noopener noreferrer">Bun</a> installed on the machine (or container) running the command; if it isn't found on `PATH`, `rasengan-serve` prints a clear error instead of failing silently.
+</Note>
 
 ## Community
 

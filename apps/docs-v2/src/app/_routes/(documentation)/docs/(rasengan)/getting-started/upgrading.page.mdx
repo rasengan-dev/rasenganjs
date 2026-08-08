@@ -27,9 +27,80 @@ To update to the latest `beta` version of Rasengan.js, you just have to run the 
 pnpm add rasengan@beta
 ```
 
+## Upgrade to 2.0.0-beta
+
+<Note title="Currently in beta" type="warning">
+  `2.0.0` is not yet the stable release. Install it with `rasengan@beta`, not
+  `rasengan@latest` (see <Link to="#latest-beta-version">Latest Beta version</Link>{' '}
+  above), until it's promoted to stable.
+</Note>
+
+**Version `2.0.0-beta`** rewrites Rasengan.js's entire server layer on top of <Link to="/docs/futon/getting-started/introduction">Futon</Link>, a lightweight WinterCG-compatible HTTP engine, replacing Express everywhere: the dev server, production request handling, and every deployment adapter.
+
+### What changed
+
+- **Express is gone.** `rasengan/server` no longer exports `express`/`compression`. If you were adding custom Express middleware to your app's server, it needs to move to a Futon `Middleware` instead. See the <Link to="/docs/futon/middleware">Futon Middleware</Link> guide.
+- **New peer dependency versions required**: `vite@^8.0.0`, `react-router@^8.3.0`, `react`/`react-dom@^19.2.7`.
+- **New `runtime` config option** (`'node' | 'bun' | 'workerd'`) lets `@rasenganjs/serve` run your production build on <Link to="/packages/serve">Bun instead of Node.js</Link>. Defaults to `'node'`, so existing apps don't need to change anything.
+- **New file-based <Link to="/docs/routing/api-routes">API routes</Link>** (`src/app/_api/`), a way to build server-only HTTP endpoints without a full page, entirely optional and additive.
+- **`@rasenganjs/netlify` now works.** The adapter had been broken since before this rewrite; it's rebuilt on Futon along with `@rasenganjs/vercel`. See <Link to="/docs/deploying/netlify">Deploying to Netlify</Link>.
+
+### Upgrade steps
+
+<StepItem
+  step="01"
+  title="Update your dependencies"
+  content={`
+    Bump Rasengan.js and its peer dependencies to the versions this release requires.
+  `}
+  className="mt-8"
+>
+```bash title="Terminal"
+pnpm add rasengan@beta react@latest react-dom@latest vite@latest
+```
+</StepItem>
+
+<StepItem
+  step="02"
+  title="Remove any direct Express usage"
+  content={`
+    If your app doesn't customize the server at all (the vast majority of apps), you can skip this step entirely. If it does, replace any Express-specific middleware or request/response handling with Futon's equivalents.
+  `}
+  className="mt-8"
+>
+Before
+
+```ts title="custom server code" /express/
+import { express, compression } from 'rasengan/server';
+
+app.use(compression());
+app.use(express.static('public'));
+```
+
+After
+
+```ts title="custom server code" /staticFiles|compress/
+import { staticFiles, compress } from 'rasengan/server';
+
+app.use(compress());
+app.use(staticFiles({ root: 'public' }));
+```
+</StepItem>
+
+<StepItem
+  step="03"
+  title="Rebuild and test your deployment"
+  content={`
+    Run a fresh build and verify your app still deploys correctly, especially if you're on Netlify (previously broken) or use a custom deployment integration.
+  `}
+  className="mt-8"
+>
+  ```bash title="Terminal" pnpm run build ```
+</StepItem>
+
 ## Upgrade from 1.1.x to 1.2.x
 
-If you want to improve the performance of your application — especially as it grows in size — upgrading to **version `1.2.x`** is a great choice.
+If you want to improve the performance of your application, especially as it grows in size, upgrading to **version `1.2.x`** is a great choice.
 
 This version introduces several major features:
 
@@ -37,16 +108,16 @@ This version introduces several major features:
 
 Rasengan v1.2.2 introduces a **completely redesigned error handling experience** with a developer-friendly overlay that catches errors from every source:
 
-- **React rendering errors** — Caught by a class-based `ErrorBoundaryFallback` component wrapping your application tree
-- **Route loader errors** — Every route is automatically wrapped with an error boundary that feeds into the overlay
-- **Global unhandled errors and rejections** — `window.onerror` and `window.onunhandledrejection` are registered and captured
-- **Vite HMR errors** — Errors during hot module replacement are displayed in the overlay
-- **SSR errors** — Server-side rendering errors are serialized into `window.__RASENGAN_SSR_ERROR__` and forwarded to the client overlay after hydration
+- **React rendering errors:** Caught by a class-based `ErrorBoundaryFallback` component wrapping your application tree
+- **Route loader errors:** Every route is automatically wrapped with an error boundary that feeds into the overlay
+- **Global unhandled errors and rejections:** `window.onerror` and `window.onunhandledrejection` are registered and captured
+- **Vite HMR errors:** Errors during hot module replacement are displayed in the overlay
+- **SSR errors:** Server-side rendering errors are serialized into `window.__RASENGAN_SSR_ERROR__` and forwarded to the client overlay after hydration
 
 ### Lazy Loaded Routes (since v1.2.0)
 
 Routes are now loaded **on demand**, based on the page the user is visiting.
-This means your app only loads what it needs, when it needs it — which helps reduce initial load time and makes navigation feel faster.
+This means your app only loads what it needs, when it needs it, which helps reduce initial load time and makes navigation feel faster.
 
 Everything is handled automatically, there is no option to opt out this feature.
 

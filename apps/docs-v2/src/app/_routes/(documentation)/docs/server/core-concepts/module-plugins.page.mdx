@@ -10,7 +10,7 @@ toc: true
 </span>
 # Module Plugins
 
-`ModulePlugin` is the generic extension point that lets ecosystem packages — [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways), [`@rasenganjs/queue`](/docs/server/ecosystem/queues) — add their own field to `defineModule()` (`gateways`, `queues`) without `rasengan-server` core knowing what either concept is.
+`ModulePlugin` is the generic extension point that lets ecosystem packages ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways), [`@rasenganjs/queue`](/docs/server/ecosystem/queues)) add their own field to `defineModule()` (`gateways`, `queues`) without `rasengan-server` core knowing what either concept is.
 
 ```ts title="Registering plugins before the modules that use them" showLineNumbers
 bootstrap((app) => {
@@ -20,7 +20,7 @@ bootstrap((app) => {
 });
 ```
 
-Order between `registerPlugin()` and `registerModule()` calls doesn't matter — both just need to happen before `compile()` runs (which `bootstrap()` triggers internally).
+Order between `registerPlugin()` and `registerModule()` calls doesn't matter. Both just need to happen before `compile()` runs (which `bootstrap()` triggers internally).
 
 ## Why This Exists
 
@@ -33,7 +33,7 @@ plugin. If this is meant to be handled by an ecosystem package (e.g.
 `bootstrap()`.
 ```
 
-This is deliberate — a forgotten `registerPlugin()` call fails loudly instead of silently doing nothing.
+This is deliberate. A forgotten `registerPlugin()` call fails loudly instead of silently doing nothing.
 
 ## ModulePlugin Interface
 
@@ -52,8 +52,8 @@ interface ModulePlugin {
 }
 ```
 
-- **`register()`** — called once per flattened module that declares a non-`undefined` value at `key`, after providers are registered. Use `app`'s public methods (e.g. `app.websocket()`) to wire in whatever the key represents.
-- **`asProviders()`** _(optional)_ — extracts real DI-provider tokens hiding inside `value`. When present, `compile()` merges those tokens into the module's `providers` **before** registration, visibility computation, and eager resolution — so a plugin-declared class (a `Gateway`, a `Queue`) becomes a real, exportable, eagerly-resolved singleton exactly like a hand-declared provider.
+- **`register()`**: called once per flattened module that declares a non-`undefined` value at `key`, after providers are registered. Use `app`'s public methods (e.g. `app.websocket()`) to wire in whatever the key represents.
+- **`asProviders()`** _(optional)_: extracts real DI-provider tokens hiding inside `value`. When present, `compile()` merges those tokens into the module's `providers` **before** registration, visibility computation, and eager resolution, so a plugin-declared class (a `Gateway`, a `Queue`) becomes a real, exportable, eagerly-resolved singleton exactly like a hand-declared provider.
 
 ## Writing Your Own Plugin
 
@@ -86,7 +86,7 @@ bootstrap((app) => {
 });
 ```
 
-Only one plugin may claim a given key — registering a second plugin for the same `key` throws immediately.
+Only one plugin may claim a given key. Registering a second plugin for the same `key` throws immediately.
 
 <Pagination
   prev={{

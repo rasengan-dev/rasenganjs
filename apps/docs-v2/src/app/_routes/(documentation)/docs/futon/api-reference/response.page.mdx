@@ -106,10 +106,10 @@ function nodeStreamToResponse(
 | `redirect(url, status?)`                  | Redirect response (default `302`). Built manually (not `Response.redirect()`) so relative URLs work on every runtime. |
 | `status(code, body?)`                     | Status-only response with an optional body.                                                                           |
 | `notFound(body?)`                         | Shorthand for `status(404, body ?? "Not Found")`.                                                                     |
-| `streamResponse(stream, init?)`           | Streaming response from a `ReadableStream` — used for SSR (e.g. `renderToPipeableStream`).                            |
+| `streamResponse(stream, init?)`           | Streaming response from a `ReadableStream`, used for SSR (e.g. `renderToPipeableStream`).                            |
 | `nodeStreamToResponse(nodeStream, init?)` | Bridges a Node-style readable (`.pipe()`) into a `streamResponse()`.                                                  |
 
-These are the same primitives `ctx.res` is built on — reach for them when you don't have a `Context` (e.g. constructing a response ahead of time, or in code outside a handler).
+These are the same primitives `ctx.res` is built on. Reach for them when you don't have a `Context` (e.g. constructing a response ahead of time, or in code outside a handler).
 
 ## Cookies
 

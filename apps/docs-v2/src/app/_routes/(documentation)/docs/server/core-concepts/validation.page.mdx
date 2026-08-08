@@ -10,7 +10,7 @@ toc: true
 </span>
 # Validation
 
-Rasengan Server integrates [`@rasenganjs/validators`](/docs/server/ecosystem/validation-adapters) directly — attach a schema to a route and validation middleware is injected automatically, ahead of your handler.
+Rasengan Server integrates [`@rasenganjs/validators`](/docs/server/ecosystem/validation-adapters) directly. Attach a schema to a route and validation middleware is injected automatically, ahead of your handler.
 
 ```ts title="Per-route schema" showLineNumbers
 import z from "zod";
@@ -20,7 +20,7 @@ routes(router: Router) {
 }
 ```
 
-If validation fails, the handler never runs — the request short-circuits with a `400` JSON error response by default.
+If validation fails, the handler never runs. The request short-circuits with a `400` JSON error response by default.
 
 ## Global Configuration
 
@@ -36,7 +36,7 @@ bootstrap((app) => {
 });
 ```
 
-`ServerApp` defaults to `zodAdapter` and a `400` JSON error handler — you only need `configureValidation()` to change the adapter or customize the error response shape/status.
+`ServerApp` defaults to `zodAdapter` and a `400` JSON error handler. You only need `configureValidation()` to change the adapter or customize the error response shape/status.
 
 ## What Gets Validated
 
@@ -60,13 +60,13 @@ router.put('/users/:id', this.update, {
 });
 ```
 
-- **`params`** — validated data is merged into `ctx.params` in place.
-- **`query`** — validated data is available via `ctx.get('validatedQuery')` (not merged into `ctx.query` itself).
-- **`body`** — `ctx.body` is replaced with the validated/coerced data (and also stored under `ctx.get('parsedBody')`).
+- **`params`**: validated data is merged into `ctx.params` in place.
+- **`query`**: validated data is available via `ctx.get('validatedQuery')` (not merged into `ctx.query` itself).
+- **`body`**: `ctx.body` is replaced with the validated/coerced data (and also stored under `ctx.get('parsedBody')`).
 
 <Note title="Validated query is separate from ctx.query" type="warning">
   Unlike `params` and `body`, a validated `query` schema's output does **not**
-  overwrite `ctx.query` — read it via `ctx.get('validatedQuery')` instead. Easy
+  overwrite `ctx.query`. Read it via `ctx.get('validatedQuery')` instead. Easy
   to miss if you're used to `params`/`body`'s in-place behavior.
 </Note>
 
@@ -83,7 +83,7 @@ A schema's own `onError` takes priority over the global `configureValidation({ o
 
 ## Controller-level Schemas
 
-Declaring schemas once on the controller and referencing them by method name avoids repeating the schema at every `router.post(...)` call — see [Controllers & Routing](/docs/server/core-concepts/controllers#schema-validation) for the full pattern, including why the schema is still passed as a trailing argument for TypeScript inference even though the runtime also matches it by method name.
+Declaring schemas once on the controller and referencing them by method name avoids repeating the schema at every `router.post(...)` call. See [Controllers & Routing](/docs/server/core-concepts/controllers#schema-validation) for the full pattern, including why the schema is still passed as a trailing argument for TypeScript inference even though the runtime also matches it by method name.
 
 <Pagination
   prev={{

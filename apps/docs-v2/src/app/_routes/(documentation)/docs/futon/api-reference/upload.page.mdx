@@ -42,7 +42,7 @@ interface Uploader {
 | `.single(field)`           | One file on `field`                  | `ctx.state.file: UploadedFile`                    |
 | `.array(field, maxCount?)` | Up to `maxCount` files on `field`    | `ctx.state.files: UploadedFile[]`                 |
 | `.fields(specs)`           | The declared fields                  | `ctx.state.files: Record<string, UploadedFile[]>` |
-| `.none()`                  | No files — text fields only          | `ctx.body` (parsed text fields)                   |
+| `.none()`                  | No files, text fields only          | `ctx.body` (parsed text fields)                   |
 | `.any()`                   | Every file, regardless of field name | `ctx.state.files: UploadedFile[]`                 |
 
 Read these back with `ctx.get('file')` / `ctx.get('files')`. Text fields are always available on `ctx.body`, regardless of which method is used.
@@ -75,7 +75,7 @@ interface FieldSpec {
 ```ts
 interface FileInfo {
   fieldname: string; // multipart field name
-  originalname: string; // client-supplied name — never trust as a path
+  originalname: string; // client-supplied name, never trust as a path
   mimetype: string;
   size: number;
 }
@@ -108,7 +108,7 @@ interface StorageEngine {
 class MemoryStorage implements StorageEngine
 ```
 
-The default engine — buffers file contents as a `Uint8Array` on `file.buffer`. Works on every runtime, including workerd. `removeFile()` is a no-op.
+The default engine. Buffers file contents as a `Uint8Array` on `file.buffer`. Works on every runtime, including workerd. `removeFile()` is a no-op.
 
 ### diskStorage()
 

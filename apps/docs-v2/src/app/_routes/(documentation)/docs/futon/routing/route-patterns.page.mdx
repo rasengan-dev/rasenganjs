@@ -29,7 +29,7 @@ router.get('/users/:id', async (ctx) => {
 });
 ```
 
-A request to `/users` (no id) does **not** match this pattern — it falls through to your 404 handler.
+A request to `/users` (no id) does **not** match this pattern. It falls through to your 404 handler.
 
 ## Optional Parameters
 
@@ -68,9 +68,9 @@ Use the named wildcard (`:path*`) when you want a descriptive param name; use th
 
 ## Matching Rules
 
-- Trailing slashes are normalised — `/users/` and `/users` match the same route (except the root `/`, which is preserved as-is).
+- Trailing slashes are normalised: `/users/` and `/users` match the same route (except the root `/`, which is preserved as-is).
 - Route matching happens against the pathname only; query strings are parsed separately via `ctx.query` (see [Context](/docs/futon/context/overview)).
-- Patterns are matched in the order the tree resolves them: static segments win over `:param`, which wins over `:param?`/`:param*`/`*` — so `/users/me` and `/users/:id` can coexist safely, with `/users/me` taking priority.
+- Patterns are matched in the order the tree resolves them: static segments win over `:param`, which wins over `:param?`/`:param*`/`*`, so `/users/me` and `/users/:id` can coexist safely, with `/users/me` taking priority.
 
 <Pagination
   prev={{

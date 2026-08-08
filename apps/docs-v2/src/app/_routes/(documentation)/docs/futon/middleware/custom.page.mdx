@@ -10,7 +10,7 @@ toc: true
 </span>
 # Custom Middleware
 
-A `Middleware` is a function of `(ctx, next) => Promise<Response>`. It's the single abstraction every layer of Futon's pipeline is built from — global middleware, route-level middleware, and the router itself all share this same shape.
+A `Middleware` is a function of `(ctx, next) => Promise<Response>`. It's the single abstraction every layer of Futon's pipeline is built from: global middleware, route-level middleware, and the router itself all share this same shape.
 
 ## The Onion Model
 
@@ -27,7 +27,7 @@ const timing: Middleware = async (ctx, next) => {
   const start = Date.now();
   const response = await next();
   const ms = Date.now() - start;
-  console.log(`${ctx.request.method} ${ctx.request.url} — ${ms}ms`);
+  console.log(`${ctx.request.method} ${ctx.request.url} (${ms}ms)`);
   return response;
 };
 
@@ -36,7 +36,7 @@ app.use(timing);
 
 ## Short-circuiting
 
-A middleware can return a `Response` **without** calling `next()` — nothing downstream runs:
+A middleware can return a `Response` **without** calling `next()`, nothing downstream runs:
 
 ```ts title="Rejecting a request early" showLineNumbers
 const requireApiKey: Middleware = async (ctx, next) => {
@@ -49,19 +49,19 @@ const requireApiKey: Middleware = async (ctx, next) => {
 
 ## Path-scoped Middleware
 
-`app.use(path, middleware)` — passing a string as the first argument — scopes the middleware to requests whose path starts with that prefix:
+`app.use(path, middleware)`, passing a string as the first argument, scopes the middleware to requests whose path starts with that prefix:
 
 ```ts title="Path-scoped middleware" showLineNumbers
 app.use('/api', requireApiKey); // only runs for /api/*
 ```
 
-Internally this just wraps your middleware in a check against `getPathname(ctx.request.url).startsWith(path)` before calling it — everything else falls through to `next()` unchanged.
+Internally this just wraps your middleware in a check against `getPathname(ctx.request.url).startsWith(path)` before calling it. Everything else falls through to `next()` unchanged.
 
 ## Rules to Keep In Mind
 
-- **Call `next()` at most once.** Calling it twice throws `"next() called multiple times"` — `compose()` enforces this to catch bugs early.
-- **Always return the `Response`** that `next()` (or your short-circuit) produces — a middleware that forgets to `return` breaks the chain.
-- **Registration order is execution order** for the "downstream" half, and reverse order for the "upstream" half — the first middleware registered is the outermost layer of the onion.
+- **Call `next()` at most once.** Calling it twice throws `"next() called multiple times"`. `compose()` enforces this to catch bugs early.
+- **Always return the `Response`** that `next()` (or your short-circuit) produces. A middleware that forgets to `return` breaks the chain.
+- **Registration order is execution order** for the "downstream" half, and reverse order for the "upstream" half. The first middleware registered is the outermost layer of the onion.
 
 ## Composing Middleware Manually
 

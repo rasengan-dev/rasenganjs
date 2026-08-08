@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Rasengan Drizzle Package - Modules | Packages | Rasengan.js
-  description: Documentation for the Rasengan Drizzle package — Drizzle ORM integration for Rasengan Server.
+  description: Documentation for the Rasengan Drizzle package: Drizzle ORM integration for Rasengan Server.
 toc: true
 ---
 
@@ -11,15 +11,15 @@ toc: true
 # Rasengan Drizzle
 
 <Note title="Early / experimental integration" type="warning">
-  `@rasenganjs/drizzle` is new — its governing RFC is still in Draft status,
+  `@rasenganjs/drizzle` is new. Its governing RFC is still in Draft status,
   even though the package itself has working code and tests. Expect this
   integration to evolve more than the other packages on this page.
 </Note>
 
-`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to [Rasengan Server](/docs/server/getting-started/introduction)'s dependency-injection container — `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject, the same way you'd inject any other service.
+`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to [Rasengan Server](/docs/server/getting-started/introduction)'s dependency-injection container. `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject, the same way you'd inject any other service.
 
 <Note title="Requires @rasenganjs/server" type="info">
-  This package is not a standalone database client — it's an integration layer
+  This package is not a standalone database client. It's an integration layer
   for Rasengan Server's module/DI system. `DataSource` extends `Provider` and
   `DrizzleModule.forRoot()` returns a `ModuleConfig`, both from
   `@rasenganjs/server`.
@@ -54,7 +54,7 @@ export default defineModule({
 });
 ```
 
-`DrizzleModule.forRoot()` connects **eagerly** at call time and is `global: true` by default, so `DataSource` is visible to every module without importing the Drizzle module explicitly each time. Call it exactly once per process — a second call throws.
+`DrizzleModule.forRoot()` connects **eagerly** at call time and is `global: true` by default, so `DataSource` is visible to every module without importing the Drizzle module explicitly each time. Call it exactly once per process. A second call throws.
 
 ### Injecting `DataSource`
 
@@ -84,7 +84,7 @@ import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
 
 ### Running Migrations
 
-`runMigrations()` uses a separate, short-lived connection — migration scripts run standalone, outside the DI container:
+`runMigrations()` uses a separate, short-lived connection. Migration scripts run standalone, outside the DI container:
 
 ```ts title="migrate.ts (run standalone, e.g. in CI)" showLineNumbers
 import { runMigrations } from '@rasenganjs/drizzle';
@@ -101,7 +101,7 @@ await runMigrations(
 
 ## Full Documentation
 
-For the complete API — `DrizzleModuleOptions`, `DataSource`, and how this fits into Rasengan Server's module/DI system — see [Database (Drizzle)](/docs/server/ecosystem/drizzle) under the Server docs.
+For the complete API (`DrizzleModuleOptions`, `DataSource`, and how this fits into Rasengan Server's module/DI system), see [Database (Drizzle)](/docs/server/ecosystem/drizzle) under the Server docs.
 
 ## Community
 

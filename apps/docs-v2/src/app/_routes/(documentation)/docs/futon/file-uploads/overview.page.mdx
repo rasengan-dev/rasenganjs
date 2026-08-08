@@ -34,7 +34,7 @@ router.post('/avatar', upload.single('avatar'), async (ctx) => {
 | `.single(field)`           | One file on `field`                     | `ctx.state.file: UploadedFile`                    |
 | `.array(field, maxCount?)` | Up to `maxCount` files on `field`       | `ctx.state.files: UploadedFile[]`                 |
 | `.fields(specs)`           | The declared fields                     | `ctx.state.files: Record<string, UploadedFile[]>` |
-| `.none()`                  | Text fields only — any file is rejected | —                                                 |
+| `.none()`                  | Text fields only, any file is rejected  | None                                              |
 | `.any()`                   | Every file, regardless of field name    | `ctx.state.files: UploadedFile[]`                 |
 
 ```ts title="Multiple files on named fields" showLineNumbers
@@ -53,17 +53,17 @@ router.post(
 );
 ```
 
-Non-file fields in the same multipart body become `ctx.body` — just like Multer's `req.body`.
+Non-file fields in the same multipart body become `ctx.body`, just like Multer's `req.body`.
 
 ## UploadOptions
 
 | Option            | Description                                                                                                    |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |
-| `storage`         | Storage engine — defaults to `MemoryStorage` (see [Storage Engines](/docs/futon/file-uploads/storage-engines)) |
+| `storage`         | Storage engine, defaults to `MemoryStorage` (see [Storage Engines](/docs/futon/file-uploads/storage-engines)) |
 | `limits.fileSize` | Maximum size of a single file, in bytes                                                                        |
 | `limits.files`    | Maximum number of files in the whole request                                                                   |
 | `limits.fields`   | Maximum number of non-file text fields                                                                         |
-| `fileFilter`      | `(ctx, info) => boolean \| Promise<boolean>` — reject files before they reach storage                          |
+| `fileFilter`      | `(ctx, info) => boolean \| Promise<boolean>`, reject files before they reach storage                          |
 
 ```ts title="Rejecting non-image uploads" showLineNumbers
 const upload = fileUpload({
@@ -97,10 +97,10 @@ Every rejection returns JSON with an error `code` you can match on:
 
 ## Validation Order and Rollback
 
-Every part of the multipart body is validated **before anything is stored** — limits, unexpected fields, and `fileFilter` are all checked first. If a file fails to store partway through a multi-file batch, already-stored files are rolled back via the storage engine's `removeFile()`.
+Every part of the multipart body is validated **before anything is stored**, limits, unexpected fields, and `fileFilter` are all checked first. If a file fails to store partway through a multi-file batch, already-stored files are rolled back via the storage engine's `removeFile()`.
 
 <Note title="Plays well with bodyParser()" type="info">
-  If `bodyParser()` already ran and parsed the multipart body into `ctx.state.body` as a `FormData`, `fileUpload()` reuses it instead of re-reading the request — a `Request` body can only be consumed once. Pass `{ skipMultipart: true }` to `bodyParser()` if you'd rather it leave multipart bodies untouched for `fileUpload()` to parse.
+  If `bodyParser()` already ran and parsed the multipart body into `ctx.state.body` as a `FormData`, `fileUpload()` reuses it instead of re-reading the request. A `Request` body can only be consumed once. Pass `{ skipMultipart: true }` to `bodyParser()` if you'd rather it leave multipart bodies untouched for `fileUpload()` to parse.
 </Note>
 
 <Pagination

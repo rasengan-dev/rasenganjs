@@ -77,8 +77,8 @@ See [Error Handling](/docs/futon/error-handling).
 | -------------------- | --------------------------------------- | -------------------------------------------------------------- |
 | `onInit(handler)`    | `(() => void \| Promise<void>) => this` | Runs once before the server accepts requests                   |
 | `onDestroy(handler)` | `(() => void \| Promise<void>) => this` | Runs during graceful shutdown                                  |
-| `init()`             | `() => Promise<void>`                   | Fires all `onInit` handlers — called by the runtime adapter    |
-| `destroy()`          | `() => Promise<void>`                   | Fires all `onDestroy` handlers — called by the runtime adapter |
+| `init()`             | `() => Promise<void>`                   | Fires all `onInit` handlers, called by the runtime adapter    |
+| `destroy()`          | `() => Promise<void>`                   | Fires all `onDestroy` handlers, called by the runtime adapter |
 
 ## Server / Environment
 
@@ -96,7 +96,7 @@ See [Error Handling](/docs/futon/error-handling).
 fetch(request: Request, runtime?: RuntimeContext): Promise<Response>
 ```
 
-The WinterCG `fetch` handler signature — process a `Request` through the full middleware + router pipeline and return a `Response`. This is what every [runtime adapter](/docs/futon/adapters/runtime) calls under the hood, and what you can call directly in tests without a real server.
+The WinterCG `fetch` handler signature. Process a `Request` through the full middleware + router pipeline and return a `Response`. This is what every [runtime adapter](/docs/futon/adapters/runtime) calls under the hood, and what you can call directly in tests without a real server.
 
 <Pagination
   prev={{

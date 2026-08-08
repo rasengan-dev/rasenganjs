@@ -13,7 +13,7 @@ toc: true
 </span>
 # Rasengan IO
 
-The `@rasenganjs/io` package brings real-time communication to your Rasengan.js applications using **Socket.IO**. It provides a clean, typed React API for managing WebSocket connections, events, and connection state — with full TypeScript support.
+The `@rasenganjs/io` package brings real-time communication to your Rasengan.js applications using **Socket.IO**. It provides a clean, typed React API for managing WebSocket connections, events, and connection state, with full TypeScript support.
 
 ## Installation
 
@@ -25,11 +25,11 @@ npm install @rasenganjs/io socket.io-client
 
 ## Features
 
-- **Typed events** — Full type safety for server and client events
-- **Named connections** — Manage multiple socket connections with different names
-- **Connection lifecycle** — Auto-connect on mount, clean disconnect on unmount
-- **SSR-safe** — Gracefully handles server-side rendering environments
-- **Auto-cleanup** — Event listeners are automatically removed on unmount
+- **Typed events**: Full type safety for server and client events
+- **Named connections**: Manage multiple socket connections with different names
+- **Connection lifecycle**: Auto-connect on mount, clean disconnect on unmount
+- **SSR-safe**: Gracefully handles server-side rendering environments
+- **Auto-cleanup**: Event listeners are automatically removed on unmount
 
 ## Usage
 
@@ -156,10 +156,10 @@ The root component that manages the Socket.IO connection lifecycle.
 | Prop        | Type        | Default     | Description                                 |
 | ----------- | ----------- | ----------- | ------------------------------------------- |
 | name        | `string`    | `'default'` | Unique identifier for this connection       |
-| url         | `string`    | —           | WebSocket server URL                        |
+| url         | `string`    | required    | WebSocket server URL                        |
 | options     | `object`    | `{}`        | Socket.IO client options (transports, etc.) |
 | autoConnect | `boolean`   | `true`      | Automatically connect on mount              |
-| children    | `ReactNode` | —           | Child components                            |
+| children    | `ReactNode` | required    | Child components                            |
 
 ### useSocket
 

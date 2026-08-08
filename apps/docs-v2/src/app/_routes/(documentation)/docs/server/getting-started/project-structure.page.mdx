@@ -10,12 +10,12 @@ toc: true
 </span>
 # Project Structure
 
-Rasengan Server doesn't enforce a folder structure — modules, controllers, and providers are just classes and plain objects. In practice, a **feature-folder** convention (one file per concern, grouped by feature) tends to work best as an app grows:
+Rasengan Server doesn't enforce a folder structure. Modules, controllers, and providers are just classes and plain objects. In practice, a **feature-folder** convention (one file per concern, grouped by feature) tends to work best as an app grows:
 
 ```text title="A typical project layout"
 src/
   main.ts                  # bootstrap() entry point
-  app.module.ts             # root module — imports feature modules
+  app.module.ts             # root module: imports feature modules
   user.module.ts             # feature module
   user.controller.ts         # routes for this feature
   user.service.ts             # business logic, injected into the controller
@@ -30,19 +30,19 @@ rasengan.server.ts             # CLI + bootstrap() configuration
 
 ## Naming Convention
 
-Each file is suffixed by what it _is_, not what it does — `user.controller.ts`, `user.service.ts`, `user.module.ts` — so related files sort together and their role is obvious at a glance:
+Each file is suffixed by what it _is_, not what it does (`user.controller.ts`, `user.service.ts`, `user.module.ts`), so related files sort together and their role is obvious at a glance:
 
 | Suffix            | Role                                                                                                            |
 | ----------------- | --------------------------------------------------------------------------------------------------------------- |
-| `*.module.ts`     | A `defineModule()` config — groups controllers/providers/imports                                                |
-| `*.controller.ts` | A `Controller` subclass — HTTP routes                                                                           |
-| `*.service.ts`    | A plain class (or `Provider` subclass) — business logic, injected into controllers                              |
-| `*.gateway.ts`    | A `Gateway` subclass ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)) — WebSocket event handlers |
-| `*.queue.ts`      | A `Queue` subclass ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)) — background job handlers             |
+| `*.module.ts`     | A `defineModule()` config, groups controllers/providers/imports                                                |
+| `*.controller.ts` | A `Controller` subclass, HTTP routes                                                                           |
+| `*.service.ts`    | A plain class (or `Provider` subclass), business logic, injected into controllers                              |
+| `*.gateway.ts`    | A `Gateway` subclass ([`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)), WebSocket event handlers |
+| `*.queue.ts`      | A `Queue` subclass ([`@rasenganjs/queue`](/docs/server/ecosystem/queues)), background job handlers             |
 
 ## The Root Module
 
-`app.module.ts` is typically the one module registered directly in `main.ts` — every other feature module is imported into it:
+`app.module.ts` is typically the one module registered directly in `main.ts`. Every other feature module is imported into it:
 
 ```ts title="app.module.ts" showLineNumbers
 import { defineModule } from '@rasenganjs/server';
@@ -68,7 +68,7 @@ See [Modules](/docs/server/core-concepts/modules) for how `imports`/`exports`/`g
 
 ## Where Config Lives
 
-`rasengan.server.ts` (project root, alongside `package.json`) holds the entry path, port, host, and build options consumed by the CLI — see [Config & Build](/docs/server/core-concepts/config-and-build).
+`rasengan.server.ts` (project root, alongside `package.json`) holds the entry path, port, host, and build options consumed by the CLI. See [Config & Build](/docs/server/core-concepts/config-and-build).
 
 <Pagination
   prev={{

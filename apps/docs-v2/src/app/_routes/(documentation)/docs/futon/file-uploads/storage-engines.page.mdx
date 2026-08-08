@@ -10,7 +10,7 @@ toc: true
 </span>
 # Storage Engines
 
-`fileUpload()` delegates the actual "what to do with the bytes" decision to a `StorageEngine` — a two-method interface mirroring Multer's `_handleFile`/`_removeFile` pair.
+`fileUpload()` delegates the actual "what to do with the bytes" decision to a `StorageEngine`, a two-method interface mirroring Multer's `_handleFile`/`_removeFile` pair.
 
 ```ts title="StorageEngine interface"
 interface StorageEngine {
@@ -23,7 +23,7 @@ interface StorageEngine {
 }
 ```
 
-`handleFile()` receives the Web `File` directly (not a pre-buffered `Buffer`) — engines get the raw stream so a future streaming multipart parser can replace the buffered `formData()` internals without breaking existing storage engines.
+`handleFile()` receives the Web `File` directly (not a pre-buffered `Buffer`), engines get the raw stream so a future streaming multipart parser can replace the buffered `formData()` internals without breaking existing storage engines.
 
 ## MemoryStorage (the default)
 
@@ -41,11 +41,11 @@ router.post('/avatar', upload.single('avatar'), async (ctx) => {
 });
 ```
 
-`removeFile()` is a no-op for `MemoryStorage` — the buffer is garbage-collected with the request, there's nothing to clean up.
+`removeFile()` is a no-op for `MemoryStorage`. The buffer is garbage-collected with the request, there's nothing to clean up.
 
 ## diskStorage()
 
-Writes files to the filesystem. It lives behind a **separate subpath export**, `@rasenganjs/futon/upload/disk`, on purpose — it's the only module in Futon that imports `node:fs`, and keeping it out of the main entry keeps WinterCG/workerd bundles clean of Node built-ins.
+Writes files to the filesystem. It lives behind a **separate subpath export**, `@rasenganjs/futon/upload/disk`, on purpose. It's the only module in Futon that imports `node:fs`, and keeping it out of the main entry keeps WinterCG/workerd bundles clean of Node built-ins.
 
 ```ts title="Disk storage" showLineNumbers
 import { fileUpload } from '@rasenganjs/futon';
@@ -61,11 +61,11 @@ const upload = fileUpload({
 
 | Option        | Description                                                                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `destination` | Directory to write into — a string, or `(ctx, info) => string \| Promise<string>` for per-file destinations. Created recursively if missing. |
+| `destination` | Directory to write into, a string, or `(ctx, info) => string \| Promise<string>` for per-file destinations. Created recursively if missing. |
 | `filename`    | `(ctx, info) => string \| Promise<string>`. Defaults to a random hex string plus the sanitized extension of `originalname`.                  |
 
 <Note title="originalname is user-controlled" type="warning">
-  `info.originalname` is the client-supplied file name — never use it directly
+  `info.originalname` is the client-supplied file name, never use it directly
   as part of a filesystem path. The default `filename` generator only keeps a
   sanitized, alphanumeric extension and discards the rest, precisely to avoid
   path traversal (`filename="../../evil"`) attacks.
@@ -94,12 +94,12 @@ class S3Storage implements StorageEngine {
   }
 
   async removeFile(file: UploadedFile): Promise<void> {
-    // Undo a successful handleFile — used for mid-batch rollback.
+    // Undo a successful handleFile, used for mid-batch rollback.
   }
 }
 ```
 
-Whatever extra fields your `handleFile()` returns are merged into the resulting `UploadedFile` — that's how the S3 example above attaches a `url` field that isn't part of the base type.
+Whatever extra fields your `handleFile()` returns are merged into the resulting `UploadedFile`, that's how the S3 example above attaches a `url` field that isn't part of the base type.
 
 <Pagination
   prev={{

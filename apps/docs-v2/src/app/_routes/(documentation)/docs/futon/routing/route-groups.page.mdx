@@ -60,7 +60,7 @@ app.group('/api/v1', { middlewares: [authMiddleware] }, (api) => {
 <Note title="Groups only affect registration" type="info">
   A group's prefix and middleware only apply to routes registered **inside** its
   callback. Once the callback returns, the router's middleware stack is restored
-  to what it was before the group — sibling routes registered after the group
+  to what it was before the group. Sibling routes registered after the group
   are unaffected.
 </Note>
 
