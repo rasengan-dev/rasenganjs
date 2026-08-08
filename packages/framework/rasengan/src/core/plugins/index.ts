@@ -206,6 +206,7 @@ const fixCPathPlugin = (): Plugin => {
 
 export const Adapters = {
   VERCEL: 'vercel',
+  NETLIFY: 'netlify',
   DEFAULT: '',
 } as const;
 
@@ -464,16 +465,7 @@ export function rasengan({
 
 const prepareToDeploy = async (adapter: AdapterConfig): Promise<void> => {
   // Preparing app for deployment
-  switch (adapter.name) {
-    case Adapters.VERCEL: {
-      await adapter.prepare();
-
-      break;
-    }
-
-    default:
-      break;
-  }
+  await adapter.prepare();
 };
 
 export const plugins: Plugin[] = [

@@ -2,11 +2,11 @@ import { defineConfig } from 'rasengan';
 import { rasengan } from 'rasengan/plugin';
 import mdx from '@rasenganjs/mdx/plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { configure } from '@rasenganjs/vercel';
+import { configure } from '@rasenganjs/netlify';
 
 export default defineConfig({
-  ssr: false,
-  prerender: true,
+  // ssr: false,
+  // prerender: true,
   vite: {
     plugins: [
       mdx({

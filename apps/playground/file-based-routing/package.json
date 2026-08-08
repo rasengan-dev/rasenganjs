@@ -13,6 +13,7 @@
     "@rasenganjs/mdx": "workspace:*",
     "@rasenganjs/serve": "workspace:*",
     "@rasenganjs/vercel": "workspace:*",
+    "@rasenganjs/netlify": "workspace:*",
     "@tailwindcss/vite": "^4.*",
     "rasengan": "workspace:*",
     "react": "^19.0.0",
