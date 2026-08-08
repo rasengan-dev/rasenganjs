@@ -1,9 +1,7 @@
 import chalk from 'chalk';
-import ora from 'ora';
 import fs from 'fs/promises';
 import openBrowser from 'open';
 import os from 'node:os';
-import { ServerMode } from '../runtime/mode.js';
 import { StaticHandlerContext } from 'react-router';
 import { Metadata } from '../../routing/types.js';
 import { Redirect } from '../../core/config/type.js';
@@ -48,24 +46,11 @@ export default function getIPAddress() {
 /**
  * Log server info after the server is started
  * @param {number} port The port the server is running on
- * @param {boolean} isProduction Whether the server is running in production mode
  * @param {boolean} open Whether to open the browser automatically
  */
-export async function logServerInfo(
-  port: number,
-  mode: ServerMode,
-  open: boolean = false
-) {
+export async function logServerInfo(port: number, open: boolean = false) {
   // Constants
-  const arrowRight = '\u2192';
-
-  // Spinner
-  console.log('');
-  const spinner = ora({
-    text: `Starting server in ${mode} mode...`,
-    color: 'blue',
-    spinner: 'dots',
-  }).start();
+  const arrowRight = '→';
 
   // Getting the package.json file
   let packageJson: string = await fs.readFile(
@@ -76,13 +61,11 @@ export async function logServerInfo(
   // Parsing the package.json file
   const parsedPackageJson = JSON.parse(packageJson);
 
-  spinner.succeed(
-    `${chalk.bold.blue(
-      `Rasengan v${parsedPackageJson['version']}`
-    )} is running 🚀`
+  console.log('');
+  console.log(
+    `${chalk.bold.blue(`Rasengan v${parsedPackageJson['version']}`)} ${chalk.green('running')}`
   );
-
-  console.log('\n\n');
+  console.log('');
 
   process.stdout.write(
     `${chalk.bold.green(arrowRight)} ${chalk.bold('Local:')}   ${chalk.blue(
@@ -102,6 +85,12 @@ export async function logServerInfo(
     );
   }
 
+  process.stdout.write(
+    `${chalk.bold.green(arrowRight)} ${chalk.bold('Runtime:')} Node.js\n`
+  );
+
+  console.log('');
+
   // Display options
   process.stdout.write(
     `${chalk.bold.green(arrowRight)} ${chalk.gray('Use')} ${chalk.bold(
@@ -111,40 +100,62 @@ export async function logServerInfo(
   process.stdout.write(
     `${chalk.bold.green(arrowRight)} ${chalk.gray('Press')} ${chalk.bold(
       'c'
-    )} ${chalk.gray('to clear')}\n`
+    )} ${chalk.gray('to clear the console')}\n`
   );
   process.stdout.write(
     `${chalk.bold.green(arrowRight)} ${chalk.gray('Press')} ${chalk.bold(
-      'ctrl + c'
-    )} ${chalk.gray('to close the server')}\n`
+      'ctrl+c'
+    )} ${chalk.gray('to stop the server')}\n`
   );
 
-  console.log('\n');
+  console.log('');
 
   // Open the browser
   if (open) {
     openBrowser(`http://localhost:${port}`);
   }
 
+  setupKeypress(() => logServerInfo(port));
+}
+
+/** Tracks whether the keypress listener has already been set up. */
+let listening = false;
+
+/**
+ * Set up an interactive keypress listener on `stdin`, once.
+ *
+ * - `c` (no modifiers) → clears the console and re-displays the banner.
+ * - `ctrl+c` → prints a shutdown message and exits.
+ *
+ * `logServerInfo` used to call `process.stdin.on('keypress', ...)` on
+ * every re-render (i.e. every time the user pressed `c`), stacking a new
+ * listener on top of the previous ones instead of reusing one — after
+ * enough `c` presses in a single session, Node would warn about a
+ * possible EventEmitter memory leak, and each keypress after the first
+ * would re-trigger every stacked handler. The `listening` guard below
+ * ensures the actual `stdin` listener is attached exactly once; later
+ * calls (one per `logServerInfo` re-render) are no-ops.
+ * @param log - Callback to re-display the server banner.
+ */
+function setupKeypress(log: () => void): void {
+  if (listening) return;
+  listening = true;
+
   readline.emitKeypressEvents(process.stdin);
 
-  // Listen on user keyboard input on the terminal
   process.stdin.on('keypress', (_: string, key: any) => {
-    // Check if the key pressed is 'c'
-    if (key) {
-      if (key.name === 'c' && key.ctrl) {
-        console.log(
-          `${chalk.green('ctrl + c')} ${chalk.gray('pressed: ')} ${chalk.blue(
-            'Closing server... \n\n'
-          )}`
-        );
-        process.exit(0);
-      } else if (key.name === 'c' && !key.ctrl && !key.meta && !key.shift) {
-        // Clear terminal
-        process.stdout.write('\x1Bc');
+    if (!key) return;
 
-        logServerInfo(port, mode);
-      }
+    if (key.name === 'c' && key.ctrl) {
+      console.log(
+        `\n${chalk.green('ctrl+c')} ${chalk.gray('pressed — stopping server...')}\n`
+      );
+      process.exit(0);
+    } else if (key.name === 'c' && !key.ctrl && !key.meta && !key.shift) {
+      // Clear terminal
+      process.stdout.write('\x1Bc');
+
+      log();
     }
   });
 
@@ -153,9 +164,6 @@ export async function logServerInfo(
     process.stdin.setRawMode(true);
   }
   process.stdin.resume();
-
-  // Set a higher limit for the number of listeners
-  process.stdin.setMaxListeners(100);
 }
 
 /**

@@ -20,6 +20,14 @@ export interface ServerConfig {
   };
 }
 
+export interface ApiConfig {
+  /**
+   * Prefix under which all `_api/` routes are mounted (RFC-0008).
+   * @default '/api'
+   */
+  prefix?: string;
+}
+
 export interface ViteConfig extends Omit<
   Vite.UserConfig,
   | 'plugins'
@@ -102,6 +110,11 @@ export type AppConfig = {
   server?: ServerConfig;
 
   /**
+   * Configure `_api/` file-based API routes (RFC-0008)
+   */
+  api?: ApiConfig;
+
+  /**
    * Configure Vite
    */
   vite?: ViteConfig;
@@ -117,6 +130,8 @@ export type OptimizedAppConfig = {
   ssr?: AppConfig['ssr'];
   /** Target JS runtime — read by `@rasenganjs/serve` to pick the matching `@rasenganjs/runtime` adapter. */
   runtime?: AppConfig['runtime'];
+  /** `_api/` config (RFC-0008) — undefined when the app has no `_api/` folder. */
+  api?: ApiConfig;
   redirects: Redirect[];
   buildOptions: BuildOptions;
 };

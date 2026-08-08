@@ -1,5 +1,6 @@
 // core/config/defaults.ts
 import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 import { builtinModules } from 'node:module';
 import type { UserConfig } from 'vite';
 import type { AppConfig } from '../type.js';
@@ -57,6 +58,11 @@ export const createDefaultViteConfig = (
 
   const runtimeConditions = RUNTIME_RESOLVE_CONDITIONS[runtime];
 
+  // Auto-detected — no wrapper file needed (RFC-0008 §4). Only added to
+  // the ssr/ssg build entries when the folder actually exists, so apps
+  // not using the feature pay nothing for it.
+  const hasApiRoutes = existsSync(join(rootPath, 'src/app/_api'));
+
   return {
     ...config.vite,
 
@@ -108,11 +114,14 @@ export const createDefaultViteConfig = (
             input: {
               'entry.server': join(
                 __dirname,
-                './lib/esm/entries/server/entry.server.js'
+                './dist/entries/server/entry.server.js'
               ),
               'app.router': './src/app/app.router',
               main: './src/main',
               template: './src/template',
+              ...(hasApiRoutes
+                ? { 'api-router': 'virtual:rasengan/api-router' }
+                : {}),
             },
           },
           ssrEmitAssets: false,
@@ -133,11 +142,14 @@ export const createDefaultViteConfig = (
             input: {
               'entry.server': join(
                 __dirname,
-                './lib/esm/entries/server/entry.server.js'
+                './dist/entries/server/entry.server.js'
               ),
               'app.router': './src/app/app.router',
               main: './src/main',
               template: './src/template',
+              ...(hasApiRoutes
+                ? { 'api-router': 'virtual:rasengan/api-router' }
+                : {}),
             },
           },
           ssrEmitAssets: false,

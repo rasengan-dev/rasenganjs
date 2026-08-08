@@ -39,6 +39,7 @@ export function createMatchRoutesGuard(
   return async (ctx: Context, next) => {
     const AppRouter = await (
       await import(
+        /* @vite-ignore */
         resolvePath(
           path.posix.join(
             buildOptions.buildDirectory,

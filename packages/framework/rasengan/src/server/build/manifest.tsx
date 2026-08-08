@@ -129,11 +129,11 @@ export class ManifestManager {
 		const { scripts, styles } = this.resolveAssets(source);
 
 		const scriptTags = scripts.map((file) => (
-			<script type='module' src={`/${file}`}></script>
+			<script key={file} type='module' src={`/${file}`}></script>
 		));
 
 		const styleTags = styles.map((file) => (
-			<link rel='stylesheet' href={`/${file}`} />
+			<link key={file} rel='stylesheet' href={`/${file}`} />
 		));
 
 		return [...scriptTags, ...styleTags];

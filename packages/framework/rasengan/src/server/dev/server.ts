@@ -12,12 +12,15 @@ import {
   logger as futonLogger,
   html as htmlResponse,
   notFound as notFoundResponse,
+  json as jsonResponse,
   type Context,
+  type Router,
 } from '@rasenganjs/futon';
 import {
   incomingToRequest,
   writeNodeResponse,
 } from '@rasenganjs/runtime/adapters/node';
+import { isHttpErrorLike } from '../node/api-router-middleware.js';
 
 // Load utilities functions
 import {
@@ -33,7 +36,6 @@ import {
 } from '../../core/config/utils/load-modules.js';
 
 import { RouterComponent, type AppConfig } from '../../index.js';
-import { ServerMode } from '../runtime/mode.js';
 import {
   handleDataRequest,
   handleDocumentRequest,
@@ -110,6 +112,61 @@ async function ssrHandler(
   }
 
   return notFoundResponse('Not found');
+}
+
+/**
+ * Dispatches requests under `_api/`'s configured prefix (RFC-0008) to
+ * the live `virtual:rasengan/api-router` module — resolved fresh
+ * through Vite's SSR module runner, same as `ssrHandler` does for
+ * `app.router`, so `_api/` edits are picked up without a rebuild.
+ *
+ * Self-contained under the prefix: an unmatched path or an uncaught
+ * handler error responds in JSON here, never falling through to
+ * `ssrHandler`'s HTML error page.
+ * @param ctx
+ * @param next
+ * @param viteDevServer
+ * @param config
+ */
+async function apiRouterDevMiddleware(
+  ctx: Context,
+  next: () => Promise<Response>,
+  viteDevServer: Vite.ViteDevServer,
+  config: AppConfig
+): Promise<Response> {
+  const prefix = config.api?.prefix ?? '/api';
+  const pathname = new URL(ctx.request.url).pathname;
+
+  if (!pathname.startsWith(prefix)) {
+    return next();
+  }
+
+  const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+
+  try {
+    const ApiRouter: Router = await (
+      await runner.import('virtual:rasengan/api-router')
+    ).default;
+
+    const dispatch = ApiRouter.middleware();
+
+    return await dispatch(ctx, async () =>
+      jsonResponse(
+        { error: { message: 'Not Found', status: 404 } },
+        { status: 404 }
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    viteDevServer.ssrFixStacktrace(error as Error);
+
+    const status = isHttpErrorLike(error) ? error.status : 500;
+    const message = isHttpErrorLike(error)
+      ? error.message
+      : ((error as Error)?.message ?? 'Internal Server Error');
+
+    return jsonResponse({ error: { message, status } }, { status });
+  }
 }
 
 /**
@@ -236,6 +293,9 @@ async function createDevNodeServer({
   });
 
   app.use(futonLogger());
+  app.use((ctx, next) =>
+    apiRouterDevMiddleware(ctx, next, viteDevServer, config)
+  );
 
   app.fallback((ctx) =>
     ssrHandler(ctx, viteDevServer, { rootPath, __dirname, config })
@@ -282,11 +342,7 @@ async function createDevNodeServer({
   // Start http server
   server.listen(port, () => {
     setTimeout(() => {
-      logServerInfo(
-        port,
-        ServerMode.Development,
-        config.server?.development?.open
-      );
+      logServerInfo(port, config.server?.development?.open);
     }, 100);
   });
 

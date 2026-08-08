@@ -225,8 +225,9 @@ const runInstall = async () => {
   }
 };
 
-const generateServerlessHandler = async () => {
+const generateServerlessHandler = async (config: OptimizedAppConfig) => {
   const vercelBuildOptions = getVercelBuildOptions();
+  const apiPrefix = JSON.stringify(config.api?.prefix ?? '/api');
 
   // Default Vercel handler. Only ever written when config.ssr &&
   // !config.prerender (see prepare() below) — SPA/SSG deploys are pure
@@ -245,6 +246,7 @@ const generateServerlessHandler = async () => {
   import {
     createRequestHandler,
     createMatchRoutesGuard,
+    createApiRouterMiddleware,
     resolveBuildOptions,
   } from 'rasengan/server';
   import { Futon, compress, staticFiles } from '@rasenganjs/futon';
@@ -288,6 +290,12 @@ const generateServerlessHandler = async () => {
       root: buildOptions.clientPathDirectory,
       maxAge: 3600,
     })
+  );
+
+  // _api/ routes (RFC-0008) — self-contained under their own prefix
+  // (JSON 404/errors), a no-op passthrough when the app has none.
+  app.use(
+    createApiRouterMiddleware({ build: buildOptions, prefix: ${apiPrefix} })
   );
 
   const requestHandler = createRequestHandler({ build: buildOptions });
@@ -452,7 +460,7 @@ const prepare = async (options: AdapterOptions) => {
     await generateServerlessConfigFile();
 
     // Prepare the serverless handler
-    await generateServerlessHandler();
+    await generateServerlessHandler(config);
 
     // Generate the package.json
     await generatePackageJson();

@@ -26,7 +26,7 @@ export type Module = {
  * @param segment Segment to normalize
  * @returns Normalized segment
  */
-function normalizeSegment(segment: string) {
+export function normalizeSegment(segment: string) {
   // Handle index
   if (segment === 'index') return '.'; // eg. index => .
 

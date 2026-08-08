@@ -7,7 +7,7 @@ import process from 'process';
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 
 // Import and execute the CLI script
-import('./lib/esm/cli/index.js').catch((err) => {
+import('./dist/cli/index.js').catch((err) => {
   console.error('Failed to start the Rasengan CLI:', err);
   process.exit(1);
 });

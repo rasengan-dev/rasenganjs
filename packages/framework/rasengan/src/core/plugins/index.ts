@@ -7,7 +7,7 @@ import { detectDeploymentPlatform, resolveBuildOptions } from '../../server.js';
 import { renderIndexHTML } from '../../server/build/rendering.js';
 import { createVirtualModule } from '../../server/virtual/index.js';
 import { pathToFileURL } from 'url';
-import { preRenderApp } from '../../server/node/index.js';
+import { preRenderApp } from '../../server/node/pre-render.js';
 
 function loadRasenganGlobal(): Plugin {
   return {
@@ -112,6 +112,54 @@ function flatRoutesPlugin(): Plugin {
   };
 }
 
+function flatApiRoutesPlugin(): Plugin {
+  const { id: virtualModuleId, resolvedId } = createVirtualModule('api-router');
+
+  return {
+    name: 'vite-plugin-rasengan-api-router',
+    resolveId(id: string) {
+      if (id === virtualModuleId) {
+        return resolvedId;
+      }
+    },
+    async load(id: string) {
+      if (id === resolvedId) {
+        // Self-contained read of the user's config, mirroring
+        // rasenganConfigPlugin() above — the prefix has to be baked
+        // into the router itself (routes are matched against the full
+        // incoming pathname), not stripped at dispatch time, so it
+        // needs to reach flatApiRoutes() here at router-build time.
+        const configPath = resolve(process.cwd(), 'rasengan.config.js');
+        let prefix = '/api';
+
+        if (fs.existsSync(configPath)) {
+          const rasenganConfigHandler: AppConfigFunctionAsync = await (
+            await loadModuleSSR(configPath)
+          ).default;
+          const rasenganConfig = await rasenganConfigHandler();
+
+          prefix = rasenganConfig.api?.prefix ?? '/api';
+        }
+
+        return `
+          import { flatApiRoutes } from 'rasengan/server';
+
+          const ApiRouter = flatApiRoutes(() => {
+            return import.meta.glob(
+              [
+                '/src/app/_api/**/middleware.{js,ts}',
+                '/src/app/_api/**/*.route.{js,ts}',
+              ],
+            );
+          }, { prefix: ${JSON.stringify(prefix)} });
+
+          export default ApiRouter;
+        `;
+      }
+    },
+  };
+}
+
 function buildOutputInformation(): Plugin {
   const { id: virtualModuleId, resolvedId } = createVirtualModule('build-info');
 
@@ -195,7 +243,7 @@ export function rasengan({
   return {
     name: 'vite-plugin-rasengan',
 
-    async config() {
+    async config(_userConfig, env) {
       // load rasengan.config.js
       const configPath = resolve(process.cwd(), 'rasengan.config.js');
 
@@ -208,6 +256,29 @@ export function rasengan({
       ).default;
 
       config = await rasenganConfigHandler();
+
+      // RFC-0008 §9 — build-only: dev always has a live server, so
+      // _api/ works there regardless of ssr/prerender. In a build,
+      // dist/server/api-router.js (what createApiRouterMiddleware
+      // looks for) is only ever produced when the ssr environment
+      // itself gets built — exactly `config.ssr && !config.prerender`
+      // (see builder.buildApp below). No adapter changes this:
+      // @rasenganjs/vercel's prepare() only generates a serverless
+      // function under that same exact condition, never for SPA/SSG.
+      if (
+        env.command === 'build' &&
+        fs.existsSync(resolve(process.cwd(), 'src/app/_api')) &&
+        !(config.ssr && !config.prerender)
+      ) {
+        throw new Error(
+          `src/app/_api/ was found, but this build has no server to run it on ` +
+            `(requires ssr: true with prerender disabled). API routes are ` +
+            `built into dist/server/api-router.js, which only exists when the ` +
+            `ssr environment itself is built — set ssr: true and remove/disable ` +
+            `prerender, or remove src/app/_api/ if you don't need API routes ` +
+            `for this build.`
+        );
+      }
     },
 
     async load(id: string) {
@@ -294,6 +365,13 @@ export function rasengan({
           runtime: config.runtime ?? 'node',
           ssr: config.ssr,
           prerender: !!config.prerender,
+          // undefined (omitted) when the app has no _api/ folder — lets
+          // createApiRouterMiddleware()'s callers skip wiring it in
+          // entirely instead of relying on a default prefix that implies
+          // a router that doesn't exist (RFC-0008).
+          api: fs.existsSync(resolve(process.cwd(), 'src/app/_api'))
+            ? { prefix: config.api?.prefix ?? '/api' }
+            : undefined,
           redirects: await config.redirects(),
         };
 
@@ -402,4 +480,5 @@ export const plugins: Plugin[] = [
   // fixCPathPlugin(),
   loadRasenganGlobal(),
   flatRoutesPlugin(),
+  flatApiRoutesPlugin(),
 ];

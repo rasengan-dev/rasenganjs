@@ -2,25 +2,13 @@ import type { Context } from '@rasenganjs/futon';
 import { ManifestManager } from '../build/manifest.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import {
-  render,
-  RenderStreamFunction,
-} from '../../entries/server/entry.server.js';
-import {
-  generateRoutes,
-  getAllRoutesPath,
-  preloadMatches,
-} from '../../routing/utils/index.js';
+import { RenderStreamFunction } from '../../entries/server/entry.server.js';
+import { generateRoutes, preloadMatches } from '../../routing/utils/index.js';
 import {
   createStaticHandler,
   createStaticRouter,
   StaticRouterProvider,
 } from 'react-router';
-import {
-  convertSecondsToMinutes,
-  filterRoutesForPrerender,
-  logRenderedPagesGrouped,
-} from './utils.js';
 import {
   extractHeadersFromRRContext,
   extractMetaFromRRContext,
@@ -33,26 +21,9 @@ import { handleDataRequest, handleRedirectRequest } from '../dev/handlers.js';
 import { OptimizedAppConfig } from '../../core/config/type.js';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
-import ora from 'ora';
-import { loadModuleSSR } from '../../core/config/utils/load-modules.js';
-import chalk from 'chalk';
-
-// Spinner
-const spinner = (text: string) =>
-  ora({
-    text,
-    spinner: 'dots',
-    color: 'blue',
-  });
 
 interface CreateRequestHandlerOptions {
   build: BuildOptions;
-}
-
-interface PreRenderAppOptions {
-  build: BuildOptions;
-  outDir?: string;
-  routes?: string[];
 }
 
 /**
@@ -85,6 +56,7 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
     try {
       // Get server entry
       const entry = await import(
+        /* @vite-ignore */
         resolvePath(
           path.posix.join(
             buildOptions.buildDirectory,
@@ -96,6 +68,7 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       // Get AppRouter
       const AppRouter = await (
         await import(
+          /* @vite-ignore */
           resolvePath(
             path.posix.join(
               buildOptions.buildDirectory,
@@ -202,224 +175,4 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
       return new Response('Internal Server Error', { status: 500 });
     }
   };
-}
-
-/**
- * This function prerenders all Rasengan routes into static HTML files.
- * It replaces the need for a runtime server and allows deployment to a CDN.
- */
-export async function preRenderApp(options: PreRenderAppOptions) {
-  try {
-    const { build: buildOptions, outDir = 'static' } = options;
-
-    // Start timer
-    const start = Date.now();
-    const createSpinner = spinner('Starting static pre-rendering...');
-
-    // Ensure .rasengan directory exists
-    const logDir = '.rasengan';
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir, { recursive: true });
-    }
-
-    // Redirect console.log to a file
-    const logStream = fs.createWriteStream(`${logDir}/prerender.log`, {
-      flags: 'a',
-    });
-
-    const originalLog = console.log;
-    console.log = (...args: any[]) => {
-      logStream.write(args.join(' ') + '\n');
-    };
-
-    createSpinner.start();
-
-    // Locate the assets directory
-    const clientDir = path.posix.join(
-      buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory
-    );
-
-    if (!fs.existsSync(clientDir)) {
-      throw new Error(
-        'No "dist/client" directory found. Please make sure to run "rasengan build".'
-      );
-    }
-
-    // Prepare the static directory
-    fs.mkdirSync(outDir, { recursive: true });
-
-    // Read the content of dist/client
-    const items = fs.readdirSync(clientDir, { recursive: true });
-    const files: string[] = [];
-
-    items.forEach((item) => {
-      const fullPath = path.posix.join(path.resolve(clientDir), item as string);
-      const stat = fs.statSync(fullPath);
-
-      if (stat.isFile()) {
-        files.push(item);
-      } else {
-        // Create this folder
-        fs.mkdirSync(path.posix.join(path.resolve(outDir), item as string), {
-          recursive: true,
-        });
-      }
-    });
-
-    for (const file of files) {
-      const src = path.posix.join(clientDir, file as string);
-      const dest = path.posix.join(outDir, file as string);
-
-      fs.copyFileSync(src, dest);
-    }
-
-    // 1. Load build manifest
-    const manifest = new ManifestManager(
-      path.posix.join(
-        clientDir,
-        buildOptions.manifestPathDirectory,
-        'manifest.json'
-      )
-    );
-
-    // 2. Load app-router
-    const AppRouter = await (
-      await loadModuleSSR(
-        path.posix.join(
-          buildOptions.buildDirectory,
-          buildOptions.serverPathDirectory,
-          'app.router.js'
-        )
-      )
-    ).default;
-
-    // 3. Load App Config
-    const configPath = path.posix.join(
-      clientDir, // dist or dist/client
-      buildOptions.assetPathDirectory,
-      'config.json'
-    );
-    const configData = fs.readFileSync(configPath, 'utf-8').toString();
-    const config = JSON.parse(configData) as OptimizedAppConfig;
-
-    // 4. Generate static routes
-    const staticRoutes = generateRoutes(AppRouter);
-
-    // Extracting all routes available
-    const { paths: routes, error: staticError } =
-      await getAllRoutesPath(staticRoutes);
-
-    let routesToPrerender = routes;
-
-    if (options.routes.length > 0) {
-      routesToPrerender = filterRoutesForPrerender(options.routes, routes);
-    }
-
-    const generatedFiles: string[] = [];
-
-    // 5. Loop through routes and render them to HTML
-    for (const route of routesToPrerender) {
-      const pathname = route === '/' ? '/' : `${route}/`;
-      // console.log(`🧩 Rendering ${pathname}`);
-      createSpinner.text = `Rendering ${pathname}`;
-
-      // Prerendering never has a real HTTP connection to fake — build
-      // the Request directly instead of faking an Express req/res pair.
-      const normalizedPathname = pathname.startsWith('/')
-        ? pathname
-        : `/${pathname}`;
-
-      // Preload data
-      await preloadMatches(pathname, staticRoutes);
-
-      // Create static handler
-      const handler = createStaticHandler(staticRoutes);
-      const request = new Request(
-        `http://localhost:5320${normalizedPathname}`,
-        { method: 'GET' }
-      );
-      const context = await handler.query(request);
-
-      const redirectFound = await isStaticRedirectFromConfig(
-        request,
-        config.redirects
-      );
-      if (redirectFound) {
-        createSpinner.text = `Skipping redirect route: ${pathname}`;
-        continue;
-      }
-
-      if (!(context instanceof Response)) {
-        const metadata = extractMetaFromRRContext(context);
-        const source = context.loaderData.source;
-        const assets = manifest.generateMetaTags(source);
-        const router = createStaticRouter(handler.dataRoutes, context);
-
-        const Router = (
-          <StaticRouterProvider router={router} context={context} />
-        );
-
-        // Capture the HTML as string
-        const response = await render(
-          Router,
-          {
-            metadata,
-            assets,
-            buildOptions,
-          },
-          false
-        );
-        const html = await response.text();
-
-        let outputDir = '';
-
-        // Write to disk
-        if (route.includes('*')) {
-          // Generate a 404.html
-          outputDir = outDir;
-          fs.mkdirSync(outputDir, { recursive: true });
-          fs.writeFileSync(path.join(outputDir, '404.html'), html);
-
-          generatedFiles.push('static/404.html');
-        } else {
-          outputDir = path.join(outDir, route || 'index');
-          fs.mkdirSync(outputDir, { recursive: true });
-          fs.writeFileSync(path.join(outputDir, 'index.html'), html);
-
-          const splittedOutputDir = outputDir.split('static/');
-
-          generatedFiles.push(
-            `static/${splittedOutputDir[1] ? splittedOutputDir[1] + '/' : ''}index.html`
-          );
-        }
-      }
-    }
-
-    // End timer
-    const end = Date.now();
-    createSpinner.succeed(
-      `${chalk.green(`${generatedFiles.length} page(s) successfully rendered in ${convertSecondsToMinutes((end - start) / 1000)}`)}`
-    );
-    createSpinner.stop();
-
-    console.log = originalLog;
-
-    // Log SSG outputs
-    logRenderedPagesGrouped(generatedFiles);
-
-    if (staticError.size > 0) {
-      console.log(
-        `❌  Some error(s) found: \n${Array.from(staticError).join('\n')}`
-      );
-    }
-
-    return {
-      // Check if the index page is prerendered
-      isIndexPrerendered: routesToPrerender.some((route) => route === '/'),
-    };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
 }

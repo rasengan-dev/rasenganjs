@@ -1,5 +1,37 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **the dev server's startup banner stacked a new `stdin` `keypress` listener every time the console was cleared (pressing `c`)** — `logServerInfo()` called `process.stdin.on('keypress', ...)` again on every re-render instead of reusing one, requiring `setMaxListeners(100)` to suppress Node's own leak warning. The listener setup is now guarded so it's attached exactly once per process, same pattern as `@rasenganjs/server`'s `setupKeypress()`
+
+## 2.0.0-beta.2 (2026-08-07)
+
+### Features
+
+- build-time guard for unreachable _api routes (RFC-0008 Phase 3) 09cf40e
+- file-based _api route resolution (RFC-0008 Phase 1) f8b4074
+- wire _api routes into dev, serve, and Vercel (RFC-0008 Phase 2) 1e08a46
+
+### Bug Fixes
+
+- catch-all route always returned HTTP 200, and .data 500s on unmatched paths 7db94ee
+
+### Features
+
+- **file-based `_api/` API routes (RFC-0008)** — a `src/app/_api/` folder, same segment conventions as `_routes/` (`[param]`, `[_param]`, `(group)`, `_optional`), resolves to a `@rasenganjs/futon` `Router` instead of a page tree. `*.route.ts` files export `GET`/`POST`/`PUT`/`PATCH`/`DELETE`/`HEAD`/`OPTIONS` handlers with Futon's own `(ctx: Context) => Promise<Response>` signature; `middleware.ts` per folder scopes middleware to that folder and its descendants. No wrapper file needed — `_api/`'s existence alone is enough for the plugin to wire the build entry and mount the router. Self-contained under its prefix (`AppConfig.api.prefix`, default `/api`): an unmatched path or an uncaught handler error responds in JSON there, never falling through to the HTML/SSR catch-all. Wired into the dev server, `createRequestHandler` (via the new `createApiRouterMiddleware`, also consumed by `@rasenganjs/serve` and the `@rasenganjs/vercel`-generated handler), and exported from `rasengan/server` (`flatApiRoutes`, `createApiRouterMiddleware`) — never through the client-facing route barrel, so `_api` code can't reach the client bundle. Builds fail fast with an explicit error if `_api/` exists but the build has no way to serve it (`ssr: true` with `prerender` disabled is required — `dist/server/api-router.js` only exists when the `ssr` environment itself gets built); `rasengan dev` is never affected, since the dev server always has a live process
+- **`rasengan/server` now re-exports the full `@rasenganjs/futon` API surface** (all middleware, `Router`, response helpers, error classes, types) — app code, including `_api` handlers, imports Futon primitives from `rasengan/server` instead of depending on `@rasenganjs/futon` directly. `toExpressHandler`/`toWinterCgHandler` stay excluded (RFC-0007 §2)
+
+### Bug Fixes
+
+- **the built-in 404 catch-all route always responded with HTTP `200`**, not `404` — its loader returned a plain object instead of signaling a status, so `context.statusCode` from React Router's static handler never left its default. Fixed by returning `data({ props, meta }, { status: 404 })` (React Router's `data()` helper) instead
+- **`.data`/`Accept: application/json` requests to an unmatched path returned `500` instead of `404`** — `handler.queryRoute()` _throws_ the constructed `Response` for any loader result carrying its own status (not just errors — this is documented React Router behavior, not specific to the fix above), and `handleDataRequest` had no `try/catch` around it. Now catches and returns the thrown `Response` directly when it's a genuine `Response`, still rethrowing anything else
+- **`ManifestManager.generateMetaTags()` rendered `<script>`/`<link>` asset tags without a `key` prop**, triggering a React "Each child in a list should have a unique key prop" warning on every SSR render with more than one script/style asset
+
+### Refactors
+
+- **package build switched from `tsc -b` to `tsup`, output directory renamed from `lib/esm`/`lib/types` to `dist/`** — matches every other package in the monorepo. `tsup` (esbuild, `bundle: false`) replaces the two-project `tsc -b` build for JS emission and now also generates `.d.ts` declarations directly (previously a separate `tsc -b tsconfig.types.json` step), producing the same file-per-module layout the framework's own runtime code depends on (e.g. `dist/entries/server/entry.server.js`, resolved by `rasengan build`/`rasengan dev`). `tsconfig.esm.json`, `tsconfig.types.json` and the unused `tsconfig.cjs.json` are removed — nothing outside this package's own build script referenced them
+- **the dev server's startup banner now matches `@rasenganjs/server`'s and `@rasenganjs/serve`'s format** — same wording ("Rasengan v{version} running", "running" in green), the same `→ Local:`/`→ Network:`/`→ Runtime:` lines, and the same `c`/`ctrl+c` hint wording. Drops the previous spinner and "Starting server in {mode} mode..." message
+
 ## 2.0.0-beta.1 (2026-08-06)
 
 ### Bug Fixes

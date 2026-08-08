@@ -1,49 +1,49 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "The modern React Framework",
   "type": "module",
-  "main": "lib/esm/index.js",
+  "main": "dist/index.js",
   "bin": {
     "rasengan": "bin.js"
   },
   "exports": {
     ".": {
-      "types": "./lib/types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": {
-        "types": "./lib/types/index.d.ts",
-        "default": "./lib/esm/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "require": {
-        "types": "./lib/types/index.d.ts",
-        "default": "./lib/esm/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
-      "default": "./lib/esm/index.js"
+      "default": "./dist/index.js"
     },
     "./types/client": {
       "types": "./types/client.d.ts"
     },
     "./package.json": "./package.json",
     "./dynamic": {
-      "types": "./lib/types/core/dynamic/index.d.ts",
-      "import": "./lib/esm/core/dynamic/index.js",
-      "require": "./lib/esm/core/dynamic/index.js"
+      "types": "./dist/core/dynamic/index.d.ts",
+      "import": "./dist/core/dynamic/index.js",
+      "require": "./dist/core/dynamic/index.js"
     },
     "./server": {
-      "types": "./lib/types/server.d.ts",
-      "import": "./lib/esm/server.js",
-      "require": "./lib/esm/server.js"
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "require": "./dist/server.js"
     },
     "./client": {
-      "types": "./lib/types/client.d.ts",
-      "import": "./lib/esm/client.js",
-      "require": "./lib/esm/client.js"
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.js"
     },
     "./plugin": {
-      "types": "./lib/types/plugin.d.ts",
-      "import": "./lib/esm/plugin.js",
-      "require": "./lib/esm/plugin.js"
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js",
+      "require": "./dist/plugin.js"
     }
   },
   "author": {
@@ -61,10 +61,13 @@
   },
   "homepage": "https://rasengan.dev",
   "scripts": {
-    "build:compile": "tsc -b ./tsconfig.esm.json ./tsconfig.types.json",
-    "build:clean": "rimraf ./lib",
-    "build:copy-assets": "mkdir -p lib/esm/routing/error-overlay && cp src/routing/error-overlay/error-overlay.css lib/esm/routing/error-overlay/",
+    "build:compile": "tsup",
+    "build:clean": "rimraf ./dist",
+    "build:copy-assets": "mkdir -p dist/routing/error-overlay && cp src/routing/error-overlay/error-overlay.css dist/routing/error-overlay/",
     "build": "pnpm run build:clean & pnpm run build:compile && pnpm run build:copy-assets",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -111,22 +114,23 @@
     "@types/node": ">=22.12.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "@vitest/coverage-v8": "4.1.9",
     "cross-env": "^7.0.3",
-    "vite": "^8.2.1"
+    "tsup": "^8.5.1",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.9"
   },
   "license": "MIT",
   "engines": {
     "node": ">=22.12.0"
   },
   "files": [
-    "lib/",
+    "dist/",
     "types/",
     "bin.js",
     "CHANGELOG.md",
     "LICENSE.md",
     "README.md",
-    "tsconfig.esm.json",
-    "tsconfig.types.json",
     "tsconfig.base.json",
     "vite.config.ts"
   ],

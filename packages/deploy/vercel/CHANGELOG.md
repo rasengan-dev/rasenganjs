@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 2.0.0-beta.1 (2026-08-07)
+
+### Features
+
+- wire _api routes into dev, serve, and Vercel (RFC-0008 Phase 2) 1e08a46
+
+### Features
+
+- support `_api/` file-based API routes (RFC-0008) — the generated serverless handler mounts `createApiRouterMiddleware` with the app's configured prefix baked in at `prepare()`-time
+
 ## 2.0.0-beta.0 (2026-08-06)
 
 ### Bug Fixes
