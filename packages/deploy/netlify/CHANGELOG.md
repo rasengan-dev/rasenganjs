@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.20 (2026-08-08)
+
+### Bug Fixes
+
+- rewrite @rasenganjs/netlify on Futon (RFC-0007) 1fed83e
+
 ### Bug Fixes
 
 - **rewrote the adapter on Futon (RFC-0007) — it was never updated after the Express → Futon migration and would have crashed on the first real request.** The generated SSR handler hand-built a fake Express `req`/`res` and called `createRequestHandler(req, res)`, a signature `rasengan/server` dropped entirely (now `(ctx) => Promise<Response>`). Rewritten to mirror `@rasenganjs/vercel`'s pattern: Futon + `NodeProdAdapter` assets, `compress()`/`staticFiles()`, `_api/` routes via `createApiRouterMiddleware`, `createRequestHandler` + `createMatchRoutesGuard` in `app.fallback()`. Netlify Functions v2 call the default export directly with a Web API `Request` and expect a `Response` back, so unlike Vercel this needs no req/res shim — `app.fetch(request)` is enough
