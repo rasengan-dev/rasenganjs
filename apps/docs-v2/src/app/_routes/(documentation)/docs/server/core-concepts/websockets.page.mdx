@@ -1,7 +1,7 @@
 ---
 metadata:
   title: WebSockets | Core Concepts | Rasengan Server | Rasengan.js
-  description: Low-level app.websocket() routes — the foundation @rasenganjs/ws builds Gateways on top of.
+  description: Low-level app.websocket() routes: the foundation @rasenganjs/ws builds Gateways on top of.
 toc: true
 ---
 
@@ -10,7 +10,7 @@ toc: true
 </span>
 # WebSockets
 
-`app.websocket(path, handlers)` registers a low-level WebSocket route — the runtime-agnostic core abstraction from RFC-0001. It's the primitive [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)'s Gateway/room/broadcast layer builds on; nothing about it is bypassed by that convenience layer.
+`app.websocket(path, handlers)` registers a low-level WebSocket route, the runtime-agnostic core abstraction from RFC-0001. It's the primitive [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways)'s Gateway/room/broadcast layer builds on; nothing about it is bypassed by that convenience layer.
 
 ```ts title="A raw echo endpoint" showLineNumbers
 bootstrap((app) => {
@@ -49,7 +49,7 @@ interface WebSocketHandlers {
 }
 
 interface WebSocketContext {
-  request: Request; // the original upgrade request — headers, cookies, query params
+  request: Request; // the original upgrade request: headers, cookies, query params
   socket: WebSocketConnection;
 }
 
@@ -63,13 +63,13 @@ interface WebSocketConnection {
 
 ## Current Limitations
 
-- **Static paths only** — no `:param` dynamic segments yet (e.g. `/chat/:room` isn't supported at this layer).
-- **No DI/container access** in `WebSocketContext` — deliberately minimal, matching the RFC's current scope.
-- **No built-in rooms/broadcast** — that's exactly what [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways) adds on top, if you need it.
+- **Static paths only**: no `:param` dynamic segments yet (e.g. `/chat/:room` isn't supported at this layer).
+- **No DI/container access** in `WebSocketContext`, deliberately minimal, matching the RFC's current scope.
+- **No built-in rooms/broadcast**: that's exactly what [`@rasenganjs/ws`](/docs/server/ecosystem/websocket-gateways) adds on top, if you need it.
 
 ## When to Reach for @rasenganjs/ws Instead
 
-Use `app.websocket()` directly for a single simple connection handler. Reach for [Gateways](/docs/server/ecosystem/websocket-gateways) once you need multiple named events over one connection, rooms, broadcasting, or DI-injected services inside your WebSocket handlers — the demo app registers both side by side specifically to contrast them (`/chat` raw vs. a Gateway-based `/rooms`).
+Use `app.websocket()` directly for a single simple connection handler. Reach for [Gateways](/docs/server/ecosystem/websocket-gateways) once you need multiple named events over one connection, rooms, broadcasting, or DI-injected services inside your WebSocket handlers. The demo app registers both side by side specifically to contrast them (`/chat` raw vs. a Gateway-based `/rooms`).
 
 <Pagination
   prev={{

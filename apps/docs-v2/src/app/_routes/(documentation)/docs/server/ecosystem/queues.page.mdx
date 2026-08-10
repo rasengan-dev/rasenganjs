@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Background Queues | Server Ecosystem | Rasengan Server | Rasengan.js
-  description: Background job processing with @rasenganjs/queue — the Controller equivalent for async work.
+  description: Background job processing with @rasenganjs/queue: the Controller equivalent for async work.
 toc: true
 ---
 
@@ -10,13 +10,13 @@ toc: true
 </span>
 # Background Queues
 
-<Note title="Beta — Phase 4 still outstanding" type="warning">
+<Note title="Beta: Phase 4 still outstanding" type="warning">
   `@rasenganjs/queue` is functional and tested, but its governing RFC (RFC-0004)
   has a Phase 4 that hasn't landed yet. Expect rougher edges and possible API
   changes before it's fully stable.
 </Note>
 
-`@rasenganjs/queue` adds background job queues — the `Controller` equivalent for async work, mirroring `@rasenganjs/ws`'s `Gateway` pattern exactly.
+`@rasenganjs/queue` adds background job queues, the `Controller` equivalent for async work, mirroring `@rasenganjs/ws`'s `Gateway` pattern exactly.
 
 ```bash title="Terminal"
 npm install @rasenganjs/queue
@@ -71,7 +71,7 @@ export default defineModule({
 });
 ```
 
-Like `Gateway`, `Queue` extends `Provider` — constructor injection and lifecycle hooks work identically to any other provider.
+Like `Gateway`, `Queue` extends `Provider`. Constructor injection and lifecycle hooks work identically to any other provider.
 
 ## Enqueuing Jobs
 
@@ -109,7 +109,7 @@ await this.reportQueue.add(
 ); // every 24h
 ```
 
-A `{ repeat }` registration is idempotent by `jobKey` (derived from the job name + data, or an explicit `repeat.key`) — calling `.add()` again with the same spec doesn't create a duplicate schedule. It also resolves with the recurring job's `jobKey` instead of a fresh id.
+A `{ repeat }` registration is idempotent by `jobKey` (derived from the job name + data, or an explicit `repeat.key`), calling `.add()` again with the same spec doesn't create a duplicate schedule. It also resolves with the recurring job's `jobKey` instead of a fresh id.
 
 ## Retry Semantics
 
@@ -136,7 +136,7 @@ await this.emailQueue.retryDead(dead[0].id); // resets attempt count to 1, back 
 
 ## Scaling with Redis
 
-`MemoryQueueAdapter` (the default) is in-process and **loses jobs on restart** — dev only. `RedisQueueAdapter` persists across restarts and is safe across multiple processes sharing one queue:
+`MemoryQueueAdapter` (the default) is in-process and **loses jobs on restart**, dev only. `RedisQueueAdapter` persists across restarts and is safe across multiple processes sharing one queue:
 
 ```ts title="Redis-backed queue" showLineNumbers
 import { createQueuePlugin, RedisQueueAdapter } from '@rasenganjs/queue';
@@ -156,11 +156,11 @@ app.registerPlugin(createQueuePlugin({ adapter }));
 | Option          | Default              | Description                                                                                              |
 | --------------- | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `adapter`       | `MemoryQueueAdapter` | Job storage shared by every queue this plugin registers                                                  |
-| `worker`        | `true`               | Pass `false` for a produce-only process — `.add()` still works, nothing is ever reserved/processed there |
+| `worker`        | `true`               | Pass `false` for a produce-only process. `.add()` still works, nothing is ever reserved/processed there |
 | `stallTimeout`  | `30_000`ms           | How long a reserved job may go without completing before the sweeper reclaims it as stalled              |
 | `sweepInterval` | `5_000`ms            | How often the sweeper promotes due delayed/repeat jobs and reclaims stalled reservations                 |
 
-`worker: false` is a deployment-topology choice, not a code change — useful for splitting a producer-only web process from dedicated worker processes that actually run job handlers.
+`worker: false` is a deployment-topology choice, not a code change, useful for splitting a producer-only web process from dedicated worker processes that actually run job handlers.
 
 <Pagination
   prev={{

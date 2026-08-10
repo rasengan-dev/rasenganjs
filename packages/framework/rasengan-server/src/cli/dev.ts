@@ -79,9 +79,21 @@ function killProcessGroup(child: ChildProcess, signal: NodeJS.Signals): void {
  */
 export async function dev(config: RasenganServerConfig): Promise<void> {
   const entry = resolve(config.entry || 'src/main.ts');
-  const port = config.port ?? 3000;
-  const host = config.host ?? '0.0.0.0';
+  const port = config.port ?? process.env.PORT ?? 3000;
+  const host = config.host ?? process.env.HOST ?? '0.0.0.0';
   const isBun = config.preset === 'bun';
+
+  // Update config with environment variables
+  const updatedConfig = {
+    ...config,
+    port: Number(port),
+    host: host,
+  };
+
+  // RFC-0010: .env* is already loaded into process.env by cli.ts's
+  // main() before this function is even called (before rasengan.server.js
+  // is imported) — spawnChild()'s `env: { ...process.env, ... }` below
+  // just forwards what's already there.
 
   if (!existsSync(entry)) {
     console.error(
@@ -117,9 +129,7 @@ export async function dev(config: RasenganServerConfig): Promise<void> {
       detached: process.platform !== 'win32',
       env: {
         ...process.env,
-        RASENGAN_SERVER_PORT: String(port),
-        RASENGAN_SERVER_HOST: host,
-        RASENGAN_SERVER_CONFIG: JSON.stringify(config),
+        RASENGAN_SERVER_CONFIG: JSON.stringify(updatedConfig),
         NODE_ENV: 'development',
         // Tells the spawned server (utils/log-server-info.ts) that THIS
         // process already owns Ctrl+C — see RASENGAN_SERVER_DEV_MANAGED

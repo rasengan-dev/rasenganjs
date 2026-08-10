@@ -42,7 +42,7 @@ Route handlers are declared as class field arrow functions (`findAll = async (ct
 
 ## The Router Overloads
 
-Each HTTP verb (`get`, `post`, `put`, `patch`, `delete` — no `head`/`options` at this layer) accepts three shapes:
+Each HTTP verb (`get`, `post`, `put`, `patch`, `delete`, no `head`/`options` at this layer) accepts three shapes:
 
 ```ts title="Overload shapes"
 router.get(path, handler);
@@ -73,7 +73,7 @@ export class AdminController extends Controller {
 
 ## Schema Validation
 
-Pass a schema as the trailing argument to enable automatic request validation — the handler's `ctx.body`/`ctx.params`/`ctx.query` types narrow to the schema's inferred output:
+Pass a schema as the trailing argument to enable automatic request validation. The handler's `ctx.body`/`ctx.params`/`ctx.query` types narrow to the schema's inferred output:
 
 ```ts title="Per-route schema" showLineNumbers
 import z from 'zod';
@@ -89,7 +89,7 @@ export class UserController extends Controller {
 }
 ```
 
-Or declare schemas once on the controller and reference them by method name — `RouteHandler<typeof this.schemas.x>` gets you the same type inference without repeating the schema on every route registration:
+Or declare schemas once on the controller and reference them by method name. `RouteHandler<typeof this.schemas.x>` gets you the same type inference without repeating the schema on every route registration:
 
 ```ts title="Controller-level schemas (canonical pattern)" showLineNumbers
 export class UserController extends Controller {
@@ -113,7 +113,7 @@ export class UserController extends Controller {
 }
 ```
 
-Passing the schema explicitly as the trailing argument (even when it's the same object as `this.schemas.create`) is what lets TypeScript's overloaded `router.post()` pick the schema-aware signature — the runtime would also resolve it by matching `this.create.name` against `schemas.create`, but only the explicit argument gets you type inference.
+Passing the schema explicitly as the trailing argument (even when it's the same object as `this.schemas.create`) is what lets TypeScript's overloaded `router.post()` pick the schema-aware signature. The runtime would also resolve it by matching `this.create.name` against `schemas.create`, but only the explicit argument gets you type inference.
 
 See [Validation](/docs/server/core-concepts/validation) for the full validation config, error handling, and the `SchemaDefinition` shape.
 

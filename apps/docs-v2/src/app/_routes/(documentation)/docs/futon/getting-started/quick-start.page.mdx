@@ -10,7 +10,7 @@ toc: true
 </span>
 # Quick Start
 
-This walks through the smallest complete Futon app — a handful of routes, some middleware, and a Node runtime adapter to actually serve requests.
+This walks through the smallest complete Futon app: a handful of routes, some middleware, and a Node runtime adapter to actually serve requests.
 
 ## 1. Build the App
 
@@ -39,7 +39,7 @@ app.onError(async (error, ctx) => {
 
 ## 2. Serve It with the Node Adapter
 
-Futon doesn't bind a port itself — that's the runtime adapter's job. For Node:
+Futon doesn't bind a port itself. That's the runtime adapter's job. For Node:
 
 ```ts title="index.ts" showLineNumbers
 import { NodeDevAdapter } from '@rasenganjs/runtime/adapters/node';
@@ -69,12 +69,12 @@ curl http://localhost:3000/users/42
 ## What Just Happened
 
 1. `app.use(logger())` and `app.use(cors())` registered **global middleware**, run for every request in the order they were added.
-2. `app.get("/users/:id", ...)` registered a **route** — `:id` is a named path parameter, available on `ctx.params`.
+2. `app.get("/users/:id", ...)` registered a **route**. `:id` is a named path parameter, available on `ctx.params`.
 3. `app.notFound()` and `app.onError()` gave Futon fallback handlers for unmatched routes and uncaught exceptions.
 4. `NodeDevAdapter` took the `Futon` instance and turned it into an actual listening HTTP server.
 
 <Note title="No server required for testing" type="info">
-  You can skip the adapter entirely and call `app.fetch(request)` directly —
+  You can skip the adapter entirely and call `app.fetch(request)` directly,
   this is how Futon's own test suite exercises routes and middleware without
   opening a real socket.
 </Note>

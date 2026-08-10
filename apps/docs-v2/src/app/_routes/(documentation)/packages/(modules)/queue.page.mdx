@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Rasengan Queue Package - Modules | Packages | Rasengan.js
-  description: Documentation for the Rasengan Queue package — background job queues for Rasengan Server.
+  description: Documentation for the Rasengan Queue package: background job queues for Rasengan Server.
 toc: true
 ---
 
@@ -10,18 +10,18 @@ toc: true
 </span>
 # Rasengan Queue
 
-<Note title="Beta — Phase 4 still outstanding" type="warning">
+<Note title="Beta: Phase 4 still outstanding" type="warning">
   `@rasenganjs/queue` is functional and tested, but its governing RFC (RFC-0004)
   has a Phase 4 that hasn't landed yet. Expect rougher edges and possible API
   changes before it's fully stable.
 </Note>
 
-`@rasenganjs/queue` adds background job queues to [Rasengan Server](/docs/server/getting-started/introduction) — the `Controller` equivalent for async work, mirroring [`@rasenganjs/ws`](/packages/ws)'s `Gateway` pattern.
+`@rasenganjs/queue` adds background job queues to [Rasengan Server](/docs/server/getting-started/introduction). The `Controller` equivalent for async work, mirroring [`@rasenganjs/ws`](/packages/ws)'s `Gateway` pattern.
 
 <Note title="Requires @rasenganjs/server" type="info">
   `Queue` extends `Provider` from `@rasenganjs/server`, and queues are
   registered through that package's module plugin system. This isn't a
-  standalone job-queue library — it's a convenience layer that plugs into
+  standalone job-queue library. It's a convenience layer that plugs into
   Rasengan Server's DI container.
 </Note>
 
@@ -108,7 +108,7 @@ app.registerPlugin(
 
 ## Full Documentation
 
-For the complete API — retry semantics, dead-letter handling, `ProcessOptions`, and the sweeper — see [Background Queues](/docs/server/ecosystem/queues) under the Server docs.
+For the complete API (retry semantics, dead-letter handling, `ProcessOptions`, and the sweeper), see [Background Queues](/docs/server/ecosystem/queues) under the Server docs.
 
 ## Community
 

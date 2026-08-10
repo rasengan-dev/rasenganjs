@@ -1,0 +1,189 @@
+---
+metadata:
+  title: API Routes - Routing | Core Concepts | Rasengan.js
+  description: Build server-only HTTP endpoints in Rasengan.js with the file-based _api convention.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# API Routes
+
+<Note title="New in v2.0.0-beta">
+  File-based API routes require `ssr: true` with `prerender` disabled. See{' '}
+  <Link to="#build-requirement">Build Requirement</Link> below.
+</Note>
+
+Introduced in `v2.0.0-beta`, `_api` is a file-based convention for server-only HTTP endpoints: JSON APIs, webhooks, form actions that aren't a full page navigation. It mirrors `app/_routes/` exactly in its segment rules (`[param]`, `[_param]`, `(group)`, `_optional`), but instead of producing a React page tree, it resolves to a real HTTP router with no React/SSR machinery involved at all.
+
+All API route definitions live inside `app/_api/`.
+
+## Directory Structure Example
+
+```txt
+app/
+├── _api/
+│   ├── middleware.ts               # applies to every route under _api
+│   ├── health.route.ts             # → GET /api/health
+│   └── users/
+│       ├── middleware.ts           # applies to every route under /api/users
+│       ├── index.route.ts          # → GET, POST /api/users
+│       └── [id].route.ts           # → GET, DELETE /api/users/:id
+└── _routes/                        # page routes, unaffected
+```
+
+No wrapper file is required. Unlike `app/app.router.ts` for pages, `_api/`'s existence alone is enough for Rasengan.js to detect it and wire everything up.
+
+## Route Handlers
+
+Every file ending with `.route.ts` can export one function per HTTP method it handles: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`. Each handler receives a `Context` and must return a `Response`.
+
+```ts title="src/app/_api/users/[id].route.ts" showLineNumbers
+import { json, NotFoundError } from 'rasengan/server';
+import type { Context } from 'rasengan/server';
+
+export async function GET(ctx: Context) {
+  const user = await db.users.findById(ctx.params.id);
+
+  if (!user) {
+    throw new NotFoundError(`User ${ctx.params.id} not found`);
+  }
+
+  return json(user);
+}
+
+export async function DELETE(ctx: Context) {
+  await db.users.delete(ctx.params.id);
+  return new Response(null, { status: 204 });
+}
+```
+
+<Note type="info" title="Note: rasengan/server">
+  `json`, `NotFoundError`, `Context`, and every other Futon primitive used
+  across this page are imported from `rasengan/server`, never from
+  `@rasenganjs/futon` directly.
+</Note>
+
+`ctx.params` gives you access to dynamic segments (`[id]` maps to `ctx.params.id`), exactly like page routes. `index.route.ts` binds to its own folder's path: `src/app/_api/users/index.route.ts` serves `/api/users`.
+
+## Middleware
+
+A `middleware.ts` file in any `_api/` folder scopes middleware to that folder's routes and every folder nested beneath it, the `_api` equivalent of a page `layout.tsx`.
+
+```ts title="src/app/_api/users/middleware.ts" showLineNumbers
+import type { Middleware } from 'rasengan/server';
+
+const requireApiKey: Middleware = async (ctx, next) => {
+  if (ctx.request.headers.get('x-api-key') !== 'demo') {
+    return new Response('Missing or invalid x-api-key header', {
+      status: 401,
+    });
+  }
+
+  return next();
+};
+
+export default [requireApiKey];
+```
+
+Middleware composes through nesting. A request to `/api/users/42` runs the root `_api/middleware.ts` first, then `_api/users/middleware.ts`, then the matching route handler.
+
+## Dynamic Segments & Route Groups
+
+Same rules as <Link to="/docs/routing/file-based-routing">file-based page routing</Link>:
+
+| Convention        | Example                              | Matches            |
+| ------------------ | ------------------------------------- | ------------------- |
+| Dynamic segment    | `_api/users/[id].route.ts`            | `/api/users/:id`    |
+| Optional segment   | `_api/[_locale]/health.route.ts`      | `/api/health`, `/api/en/health` |
+| Route group        | `_api/(webhooks)/stripe.route.ts`     | `/api/stripe` (the `(webhooks)` folder is ignored in the URL) |
+
+## Error Handling
+
+Thrown errors are caught and formatted as JSON automatically, you don't need a `try`/`catch` in every handler.
+
+```ts
+throw new NotFoundError('User not found');
+// → 404 { "error": { "message": "User not found", "status": 404 } }
+
+throw new Error('boom');
+// → 500 { "error": { "message": "Internal Server Error", "status": 500 } } in production
+// → 500 { "error": { "message": "boom", "status": 500 } } outside production
+```
+
+`NotFoundError` and the rest of Futon's `HttpError` hierarchy report their own status/message directly. Anything else thrown defaults to `500`. In production the response message is generic (`"Internal Server Error"`) to avoid leaking internals; outside production you get the real error message for debugging.
+
+A path under your API prefix that doesn't match any route also responds in JSON:
+
+```json
+{ "error": { "message": "Not Found", "status": 404 } }
+```
+
+<Note type="info" title="Note: Never falls back to HTML">
+  Nothing under your configured prefix (`/api` by default) ever falls through
+  to the page router's HTML catch-all. An unmatched or errored API request
+  is always JSON, never an HTML document.
+</Note>
+
+## Changing the Prefix
+
+By default, `_api/` routes are mounted under `/api`. Configure a different prefix via `api.prefix` in `rasengan.config.js`, see the <Link to="/docs/api-reference/rasengan-config">rasengan.config.js reference</Link>.
+
+## Build Requirement
+
+File-based API routes need a live server to run on. If `src/app/_api/` exists, your build must have `ssr: true` with `prerender` disabled: that's the only build shape that produces the server bundle API routes are compiled into. Any other configuration fails the build with an explicit error, rather than silently shipping API routes that can never be reached.
+
+```js title="rasengan.config.js" showLineNumbers {4}
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  ssr: true, // required if src/app/_api/ exists
+  // prerender must stay disabled
+});
+```
+
+`rasengan dev` is never affected by this restriction. The dev server always has a live process, so `_api/` works regardless of `ssr`/`prerender` while developing.
+
+## Persisting Data on Serverless Targets
+
+<Note type="warning" title="Warning: ephemeral filesystem">
+  If you deploy to <Link to="/docs/deploying/vercel">Vercel</Link> or{' '}
+  <Link to="/docs/deploying/netlify">Netlify</Link>, don't write to a local
+  SQLite file from an API route and expect it to persist. Serverless
+  functions on both platforms have an ephemeral filesystem: nothing written
+  to disk survives between invocations in production.
+</Note>
+
+A local file works fine in two cases: `rasengan dev`, and a persistent host, meaning a plain <Link to="/docs/deploying/node">Node.js server</Link> (or Bun, see <Link to="/packages/serve">`@rasenganjs/serve`</Link>) running on a VM, container, or any platform where the process (and its filesystem) stays alive between requests.
+
+For Vercel/Netlify, reach for a database that lives outside the function itself. If you specifically want to keep using SQLite's dialect and mental model, <a href="https://turso.tech" target="_blank" rel="noopener noreferrer">Turso</a> (via <a href="https://github.com/tursodatabase/libsql-client-ts" target="_blank" rel="noopener noreferrer">`@libsql/client`</a>) is a natural fit: it speaks the same SQL, and its `file:` URL scheme means the exact same client code also works locally against a plain file, so you don't need two different data layers for dev and production.
+
+```ts title="src/app/_api/users/db.ts" showLineNumbers {5-8}
+import { createClient } from '@libsql/client';
+import path from 'node:path';
+
+const db = createClient({
+  url:
+    process.env.TURSO_DATABASE_URL ??
+    `file:${path.join(process.cwd(), 'app.sqlite')}`,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
+```
+
+Only production needs the two environment variables (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, from `turso db create` and `turso db tokens create`) set on Vercel/Netlify. Locally, with neither set, the client just falls back to a local file.
+
+## Deploying
+
+API routes work the same way on every deployment target Rasengan.js supports: <Link to="/docs/deploying/vercel">Vercel</Link>, <Link to="/docs/deploying/netlify">Netlify</Link>, and a plain <Link to="/docs/deploying/node">Node.js server</Link>.
+
+<Pagination
+  prev={{
+    href: '/docs/routing/file-based-routing',
+    label: 'File-Based Routing',
+  }}
+  next={{
+    href: '/docs/routing/linking-and-navigation',
+    label: 'Linking and Navigation',
+  }}
+/>

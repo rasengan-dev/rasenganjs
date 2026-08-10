@@ -10,7 +10,7 @@ toc: true
 </span>
 # Error Handling
 
-Futon gives you a small `HttpError` class hierarchy for representing HTTP-status-bearing errors, plus two hooks — `app.onError()` and `app.notFound()` — for turning uncaught exceptions and unmatched routes into responses.
+Futon gives you a small `HttpError` class hierarchy for representing HTTP-status-bearing errors, plus two hooks, `app.onError()` and `app.notFound()`, for turning uncaught exceptions and unmatched routes into responses.
 
 ## The Error Hierarchy
 
@@ -37,7 +37,7 @@ Every `HttpError` carries a numeric `.status` property.
 
 <Note title="HttpError isn't auto-mapped" type="warning">
   Futon does not automatically turn a thrown `HttpError` into a response with
-  the matching status code — your `onError` handler needs to check `error
+  the matching status code. Your `onError` handler needs to check `error
   instanceof HttpError` and use `error.status` yourself. Without an `onError`
   handler, every thrown error (including `HttpError`s) becomes a generic `500`
   response.
@@ -57,7 +57,7 @@ app.onError(async (error, ctx) => {
 
 ## app.onError()
 
-Registers a global handler for any error that escapes the middleware chain — thrown from a handler, a middleware, or the router itself:
+Registers a global handler for any error that escapes the middleware chain: thrown from a handler, a middleware, or the router itself:
 
 ```ts title="app.onError()" showLineNumbers
 app.onError(async (error, ctx) => {
@@ -81,7 +81,7 @@ app.notFound(async (ctx) => {
 });
 ```
 
-Futon enforces the `404` status on the response even if your handler forgets to set it — if your `notFoundHandler` returns a `200`, Futon rewrites it to `404` while preserving the body and headers. Without a custom handler, Futon returns a plain-text `"Not Found"` response.
+Futon enforces the `404` status on the response even if your handler forgets to set it. If your `notFoundHandler` returns a `200`, Futon rewrites it to `404` while preserving the body and headers. Without a custom handler, Futon returns a plain-text `"Not Found"` response.
 
 ## Order of Operations
 

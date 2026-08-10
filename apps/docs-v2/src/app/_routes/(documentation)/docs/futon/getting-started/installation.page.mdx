@@ -10,19 +10,19 @@ toc: true
 </span>
 # Installation
 
-Futon ships as a single zero-dependency package. You'll also want a runtime adapter from `@rasenganjs/runtime` to actually bind a port — Futon itself only turns a `Request` into a `Response`.
+Futon ships as a single zero-dependency package. You'll also want a runtime adapter from `@rasenganjs/runtime` to actually bind a port. Futon itself only turns a `Request` into a `Response`.
 
 
 ## Requirements
 
 - **Node.js 18+** (for the Web `Request`/`Response`/`Headers` globals), or Bun / Deno / Cloudflare Workers.
-- An ESM project — Futon is published as `"type": "module"`.
+- An ESM project, Futon is published as `"type": "module"`.
 
 ## Installation
 
 ### Automatic Installation
 
-The fastest way to start a new Futon project is with the **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which scaffolds a working project for you. Futon scaffolding shipped in a newer release than what `create-rasengan@latest` currently points to — use the `beta` dist-tag to get it.
+The fastest way to start a new Futon project is with the **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which scaffolds a working project for you. Futon scaffolding shipped in a newer release than what `create-rasengan@latest` currently points to. Use the `beta` dist-tag to get it.
 
 <StepItem
   step="01"
@@ -30,16 +30,43 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
   content={`Run the following command to create a new project.`}
   className="mt-8"
 >
-  ```bash title="Terminal" 
-  npx create-rasengan@beta --kind futon 
-  ```
+<Tabs
+  tabs={[
+    { title: 'npm' },
+    { title: 'pnpm' },
+    { title: 'yarn' },
+    { title: 'bun' },
+  ]}
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    npx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    pnpm dlx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    yarn create rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    bunx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+</Tabs>
 </StepItem>
 
 <StepItem
   step="02"
   title="Follow the prompts"
   content={`
-    If you didn't pass --kind, you'll be asked which kind of project to create — select "futon". You'll also be asked to name your project.
+    If you didn't pass --kind, you'll be asked which kind of project to create, select "futon". You'll also be asked to name your project.
   `}
 >
   ```bash title="Terminal" 
@@ -73,7 +100,7 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
   ```
 </StepItem>
 
-The scaffolded project is a minimal Futon app wired to `NodeDevAdapter` — a `/` route, a `/health` route, and an `onError` handler, ready to extend.
+The scaffolded project is a minimal Futon app wired to `NodeDevAdapter`: a `/` route, a `/health` route, and an `onError` handler, ready to extend.
 
 ### Manual Installation
 
@@ -116,7 +143,7 @@ The scaffolded project is a minimal Futon app wired to `NodeDevAdapter` — a `/
 <Note title="Already using @rasenganjs/server?" type="info">
   If you're building a full application with controllers and dependency
   injection, install
-  [`@rasenganjs/server`](/docs/server/getting-started/introduction) instead — it
+  [`@rasenganjs/server`](/docs/server/getting-started/introduction) instead. It
   depends on Futon and Runtime for you.
 </Note>
 
@@ -127,7 +154,7 @@ Futon's main entry (`@rasenganjs/futon`) exports everything except one thing:
 
 ```ts title="What lives where"
 import { fileUpload, MemoryStorage } from '@rasenganjs/futon';
-// diskStorage is NOT in the main entry —
+// diskStorage is NOT in the main entry.
 // it imports node:fs, which must stay out of WinterCG/workerd bundles.
 import { diskStorage } from '@rasenganjs/futon/upload/disk';
 ```
@@ -148,7 +175,7 @@ const response = await app.fetch(new Request('http://localhost/'));
 console.log(await response.json()); // { ok: true }
 ```
 
-This is exactly how Futon's own test suite works — no HTTP server required to exercise the pipeline.
+This is exactly how Futon's own test suite works. No HTTP server required to exercise the pipeline.
 
 <Pagination
   prev={{

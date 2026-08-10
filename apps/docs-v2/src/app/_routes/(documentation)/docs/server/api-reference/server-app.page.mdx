@@ -14,7 +14,7 @@ toc: true
 import { ServerApp, bootstrap } from '@rasenganjs/server';
 ```
 
-Core application class — orchestrates module registration, middleware layering, dependency injection, validation, and compilation into a runtime Futon. Normally configured through `bootstrap()`'s callback rather than constructed directly.
+Core application class. Orchestrates module registration, middleware layering, dependency injection, validation, and compilation into a runtime Futon. Normally configured through `bootstrap()`'s callback rather than constructed directly.
 
 ## Modules & Plugins
 
@@ -67,7 +67,7 @@ getBuildSummary(): BuildSummary | null
 close(): Promise<void>
 ```
 
-`compile()` flattens the module tree, registers providers with module-scoped visibility, registers every controller's routes with the correct middleware nesting, and returns the resulting `Futon`. Called internally by `bootstrap()` — you don't normally call it yourself.
+`compile()` flattens the module tree, registers providers with module-scoped visibility, registers every controller's routes with the correct middleware nesting, and returns the resulting `Futon`. Called internally by `bootstrap()`. You don't normally call it yourself.
 
 ```ts title="BuildSummary"
 interface BuildSummary {
@@ -99,7 +99,7 @@ interface ServerHandle {
 }
 ```
 
-The recommended entry point — creates a `ServerApp`, loads config, runs your callback, compiles, then selects and starts the matching runtime adapter. Returns a handle for programmatic shutdown.
+The recommended entry point. Creates a `ServerApp`, loads config, runs your callback, compiles, then selects and starts the matching runtime adapter. Returns a handle for programmatic shutdown.
 
 <Pagination
   prev={{

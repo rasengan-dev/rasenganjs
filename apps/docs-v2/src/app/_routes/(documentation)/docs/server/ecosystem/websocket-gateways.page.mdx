@@ -10,7 +10,7 @@ toc: true
 </span>
 # WebSocket Gateways
 
-`@rasenganjs/ws` adds a NestJS-inspired `Gateway` class on top of [`app.websocket()`](/docs/server/core-concepts/websockets) — rooms, broadcasting, and a `{ event, data }` message envelope, resolved through the same DI container as your HTTP controllers.
+`@rasenganjs/ws` adds a NestJS-inspired `Gateway` class on top of [`app.websocket()`](/docs/server/core-concepts/websockets): rooms, broadcasting, and a `{ event, data }` message envelope, resolved through the same DI container as your HTTP controllers.
 
 ```bash title="Terminal"
 npm install @rasenganjs/ws
@@ -18,7 +18,7 @@ npm install @rasenganjs/ws
 
 ## Registering the Plugin
 
-`Gateway` is declared through the [module plugin system](/docs/server/core-concepts/module-plugins) — register the plugin once, before any module that declares gateways:
+`Gateway` is declared through the [module plugin system](/docs/server/core-concepts/module-plugins). Register the plugin once, before any module that declares gateways:
 
 ```ts title="main.ts" showLineNumbers
 import { bootstrap } from '@rasenganjs/server';
@@ -74,14 +74,14 @@ export default defineModule({
 });
 ```
 
-Because `Gateway extends Provider`, constructor injection and `onInit()`/`onDestroy()` work exactly like any other provider — inject a service, subscribe to something in `onInit()`, and it fires like any other module resolution.
+Because `Gateway extends Provider`, constructor injection and `onInit()`/`onDestroy()` work exactly like any other provider. Inject a service, subscribe to something in `onInit()`, and it fires like any other module resolution.
 
 ## GatewayClient
 
 | Member                                   | Description                                                          |
 | ---------------------------------------- | -------------------------------------------------------------------- |
 | `id`                                     | Per-connection id (not stable across reconnects)                     |
-| `request`                                | The original upgrade request — headers, cookies, query params        |
+| `request`                                | The original upgrade request, headers, cookies, query params        |
 | `data`                                   | Free-form per-connection state bag                                   |
 | `join(room)` / `leave(room)` / `rooms()` | Room membership                                                      |
 | `emit(event, data)`                      | Send to this client only                                             |
@@ -112,11 +112,11 @@ export class NotificationController extends Controller {
 
 ## Wire Format
 
-Messages are JSON `{ event, data }` frames — this is **not** Socket.IO-wire-compatible, it's a minimal envelope this package defines itself (plain WebSocket has no built-in named-event concept). Binary frames bypass the envelope entirely — handle them via `Gateway.onBinaryMessage`.
+Messages are JSON `{ event, data }` frames. This is **not** Socket.IO-wire-compatible, it's a minimal envelope this package defines itself (plain WebSocket has no built-in named-event concept). Binary frames bypass the envelope entirely. Handle them via `Gateway.onBinaryMessage`.
 
 ## Scaling Across Processes
 
-`createWsPlugin({ adapter })` accepts a `GatewayAdapter` — a pub/sub relay, not a room-membership registry (a client is always connected to exactly one process, so room membership itself never needs to be shared state):
+`createWsPlugin({ adapter })` accepts a `GatewayAdapter`, a pub/sub relay, not a room-membership registry (a client is always connected to exactly one process, so room membership itself never needs to be shared state):
 
 ```ts title="Redis adapter for multi-process broadcasting" showLineNumbers
 import { createWsPlugin, RedisGatewayAdapter } from '@rasenganjs/ws';
@@ -129,7 +129,7 @@ app.registerPlugin(
 );
 ```
 
-The default `MemoryGatewayAdapter` is single-process only — fine for development or a single instance, not for horizontally-scaled deployments.
+The default `MemoryGatewayAdapter` is single-process only, fine for development or a single instance, not for horizontally-scaled deployments.
 
 ## Heartbeat
 
@@ -142,7 +142,7 @@ app.registerPlugin(
 app.registerPlugin(createWsPlugin({ heartbeat: false })); // disable entirely
 ```
 
-Any inbound frame counts as liveness — active clients are never pinged into disconnection.
+Any inbound frame counts as liveness. Active clients are never pinged into disconnection.
 
 <Pagination
   prev={{

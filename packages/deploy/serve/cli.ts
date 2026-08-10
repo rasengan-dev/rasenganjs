@@ -23,6 +23,7 @@ import {
 } from '@rasenganjs/futon';
 import type { Context } from '@rasenganjs/futon';
 import type { RuntimeAdapter } from '@rasenganjs/runtime';
+import { getLoadedEnvFiles } from '@rasenganjs/runtime/adapters/node';
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? 'production';
 
@@ -231,6 +232,11 @@ async function run() {
 
   await reexecUnderBunIfNeeded(config.runtime);
 
+  // RFC-0010: which .env* files actually exist next to the build output
+  // — display-only, matching the same `rootDir: buildPath` the prod
+  // adapter's own serve() (below) loads .env* from.
+  const envFiles = await getLoadedEnvFiles(buildPath, 'production');
+
   let onListen = () => {
     // Getting the package.json file
     const packageJson = fs.readFileSync(
@@ -266,6 +272,9 @@ async function run() {
       );
     }
     console.log(`${arrow} ${bold('Runtime:')} ${runtimeLabel}`);
+    if (envFiles.length > 0) {
+      console.log(`${arrow} ${bold('Env:')}     ${envFiles.join(', ')}`);
+    }
     console.log('');
   };
 

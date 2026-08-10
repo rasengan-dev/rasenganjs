@@ -17,7 +17,7 @@ Hooks let you observe (or lightly react to) the request lifecycle without adding
 | Hook            | Fires                                                           | Receives          |
 | --------------- | --------------------------------------------------------------- | ----------------- |
 | `beforeRequest` | Once per request, before the middleware chain runs              | `(ctx)`           |
-| `afterResponse` | After the `Response` is produced — both success and error paths | `(ctx, response)` |
+| `afterResponse` | After the `Response` is produced, both success and error paths | `(ctx, response)` |
 | `onError`       | When an unhandled error escapes the middleware chain            | `(error, ctx)`    |
 
 ```ts title="Registering hooks" showLineNumbers
@@ -34,11 +34,11 @@ app.hooks.on('onError', (error, ctx) => {
 
 Reach for a **hook** when you're purely observing (metrics, logging, error tracking) and don't need to touch the request/response. Reach for **middleware** when you need to short-circuit the chain, mutate the request/response, or run code _between_ specific other middleware.
 
-Hooks also can't produce a `Response` — they're fire-and-forget observers, not part of the response pipeline.
+Hooks also can't produce a `Response`. They're fire-and-forget observers, not part of the response pipeline.
 
 ## Error Isolation
 
-If a hook handler throws, Futon swallows the error and continues running the remaining handlers for that hook — a broken metrics call can't crash a request. Handle your own errors inside the hook if you need to know about failures.
+If a hook handler throws, Futon swallows the error and continues running the remaining handlers for that hook, a broken metrics call can't crash a request. Handle your own errors inside the hook if you need to know about failures.
 
 ```ts title="Multiple handlers, one hook" showLineNumbers
 app.hooks.on('afterResponse', (ctx, response) => {

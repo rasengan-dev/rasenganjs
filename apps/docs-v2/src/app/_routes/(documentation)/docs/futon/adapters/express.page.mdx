@@ -10,7 +10,7 @@ toc: true
 </span>
 # Express Adapter
 
-`toExpressHandler()` bridges Futon's Web-standard `fetch()` pipeline to an Express `(req, res, next)` handler — useful when you're incrementally adopting Futon inside an existing Express app.
+`toExpressHandler()` bridges Futon's Web-standard `fetch()` pipeline to an Express `(req, res, next)` handler, useful when you're incrementally adopting Futon inside an existing Express app.
 
 ## Usage
 
@@ -29,18 +29,18 @@ expressApp.listen(3000);
 ## What It Does
 
 1. Reads the Express `req` (method, URL, headers, body) and constructs a Web API `Request`.
-2. Calls `app.fetch(request, runtime)` — the exact same entry point every other adapter uses.
+2. Calls `app.fetch(request, runtime)`, the exact same entry point every other adapter uses.
 3. Writes the resulting `Response`'s status, headers, and body back onto the Express `res`.
 
-If Express's own body-parsing middleware already consumed `req.body`, the adapter re-serializes it as JSON before handing it to Futon — otherwise it streams the raw Node `IncomingMessage` through as a Web `ReadableStream`.
+If Express's own body-parsing middleware already consumed `req.body`, the adapter re-serializes it as JSON before handing it to Futon. Otherwise it streams the raw Node `IncomingMessage` through as a Web `ReadableStream`.
 
 ## Streaming Responses
 
-For SSR or any streamed response body, the adapter pipes the Web `Response` body directly to the Express response socket chunk-by-chunk rather than buffering the whole thing first — this is what makes [`streamResponse()`](/docs/futon/request-response/response) work transparently under Express too.
+For SSR or any streamed response body, the adapter pipes the Web `Response` body directly to the Express response socket chunk-by-chunk rather than buffering the whole thing first. This is what makes [`streamResponse()`](/docs/futon/request-response/response) work transparently under Express too.
 
 ## Error Handling
 
-Any error thrown while building the request or running `app.fetch()` is forwarded to Express's own `next(error)` — so your existing Express error-handling middleware still applies as a final safety net, in addition to Futon's own [`onError()`](/docs/futon/error-handling).
+Any error thrown while building the request or running `app.fetch()` is forwarded to Express's own `next(error)`, so your existing Express error-handling middleware still applies as a final safety net, in addition to Futon's own [`onError()`](/docs/futon/error-handling).
 
 <Pagination
   prev={{

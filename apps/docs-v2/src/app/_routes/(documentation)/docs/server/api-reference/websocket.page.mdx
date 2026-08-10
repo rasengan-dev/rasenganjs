@@ -19,10 +19,10 @@ import type {
 } from '@rasenganjs/server';
 ```
 
-Core WebSocket abstraction (RFC-0001) — runtime-agnostic types plus the registry `ServerApp.websocket()` populates during `compile()`. This is the low-level primitive; see [WebSockets](/docs/server/core-concepts/websockets) for `app.websocket()` usage and [WebSocket Gateways](/docs/server/ecosystem/websocket-gateways) for the higher-level `@rasenganjs/ws` `Gateway` abstraction built on top of it.
+Core WebSocket abstraction (RFC-0001), runtime-agnostic types plus the registry `ServerApp.websocket()` populates during `compile()`. This is the low-level primitive; see [WebSockets](/docs/server/core-concepts/websockets) for `app.websocket()` usage and [WebSocket Gateways](/docs/server/ecosystem/websocket-gateways) for the higher-level `@rasenganjs/ws` `Gateway` abstraction built on top of it.
 
 <Note title="Static paths only" type="info">
-  This first slice of `WebSocketRegistry` only supports static paths — no
+  This first slice of `WebSocketRegistry` only supports static paths, no
   `:param` segments yet. It's a plain `Map` lookup, kept deliberately separate
   from Futon's HTTP radix router so `@rasenganjs/futon` stays HTTP-only per the
   RFC.
@@ -44,7 +44,7 @@ class WebSocketRegistry {
 | `match(pathname)`          | Look up the handlers for a pathname, or `undefined` if no route matches.                      |
 | `isEmpty`                  | Whether any WebSocket routes have been registered.                                            |
 
-Built during `ServerApp.compile()` from every `app.websocket(path, handlers)` call, then handed to the runtime adapter (Node/Bun/...) so it can dispatch an incoming upgrade request by pathname. Retrieve the compiled registry with `app.getWebSocketRegistry()` — see [`ServerApp`](/docs/server/api-reference/server-app#websockets).
+Built during `ServerApp.compile()` from every `app.websocket(path, handlers)` call, then handed to the runtime adapter (Node/Bun/...) so it can dispatch an incoming upgrade request by pathname. Retrieve the compiled registry with `app.getWebSocketRegistry()`. See [`ServerApp`](/docs/server/api-reference/server-app#websockets).
 
 ## WebSocketConnection
 
@@ -57,7 +57,7 @@ interface WebSocketConnection {
 }
 ```
 
-A single live connection, normalized across runtimes — Node's `ws` connections, Bun's `ServerWebSocket`, and workerd's `WebSocketPair` are each wrapped by their runtime adapter to satisfy this shape. `readyState` mirrors the standard WebSocket `CONNECTING`/`OPEN`/`CLOSING`/`CLOSED` values.
+A single live connection, normalized across runtimes. Node's `ws` connections, Bun's `ServerWebSocket`, and workerd's `WebSocketPair` are each wrapped by their runtime adapter to satisfy this shape. `readyState` mirrors the standard WebSocket `CONNECTING`/`OPEN`/`CLOSING`/`CLOSED` values.
 
 ## WebSocketContext
 
@@ -68,7 +68,7 @@ interface WebSocketContext {
 }
 ```
 
-Passed to every handler in `WebSocketHandlers`. `request` is the original upgrade request — read headers, cookies, or query params from it during `open`.
+Passed to every handler in `WebSocketHandlers`. `request` is the original upgrade request. Read headers, cookies, or query params from it during `open`.
 
 ## WebSocketHandlers
 
@@ -113,7 +113,7 @@ app.websocket('/chat', {
   `WebSocketConnection`, `WebSocketContext`, and `WebSocketHandlers` are defined
   in `@rasenganjs/runtime` (the runtime adapters construct `WebSocketConnection`
   instances by wrapping their native APIs) and re-exported unchanged from
-  `@rasenganjs/server` — the same pattern used for `Context`, which is defined
+  `@rasenganjs/server`, the same pattern used for `Context`, which is defined
   in `@rasenganjs/futon`.
 </Note>
 

@@ -34,7 +34,7 @@ Base class. `message` defaults to a standard reason phrase for the given `status
 
 <Note title="Not auto-mapped to a response" type="warning">
   Futon does not automatically turn a thrown `HttpError` into a response with
-  the matching status — your `onError` handler needs to check `error instanceof
+  the matching status. Your `onError` handler needs to check `error instanceof
   HttpError` and read `error.status` itself.
 </Note>
 

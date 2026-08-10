@@ -43,7 +43,7 @@ app.get('/created', async () => status(201, 'Created'));
 
 ## The Chainable Builder (ctx.res)
 
-`ctx.res` (alias `ctx.response`) offers a fluent alternative — handy when you want to set headers or a status before choosing the body type:
+`ctx.res` (alias `ctx.response`) offers a fluent alternative, handy when you want to set headers or a status before choosing the body type:
 
 ```ts title="Chainable builder" showLineNumbers
 app.get('/api', async (ctx) => {
@@ -62,7 +62,7 @@ app.get('/error', async (ctx) => {
 });
 ```
 
-`ctx.res` is created lazily on first access, so handlers that never touch it pay no allocation cost. Once you call a terminal method (`.json()`, `.send()`, `.html()`, `.redirect()`, `.stream()`), the builder is frozen — further `.status()`/`.header()` calls are no-ops.
+`ctx.res` is created lazily on first access, so handlers that never touch it pay no allocation cost. Once you call a terminal method (`.json()`, `.send()`, `.html()`, `.redirect()`, `.stream()`), the builder is frozen. Further `.status()`/`.header()` calls are no-ops.
 
 ## Streaming Responses
 

@@ -14,7 +14,7 @@ toc: true
 import type { HookName, HookHandler } from '@rasenganjs/futon';
 ```
 
-`HookSystem` isn't imported directly — every `Futon` instance owns one at `app.hooks`. See [Hooks](/docs/futon/hooks) for the full lifecycle explanation and examples.
+`HookSystem` isn't imported directly. Every `Futon` instance owns one at `app.hooks`. See [Hooks](/docs/futon/hooks) for the full lifecycle explanation and examples.
 
 ## HookSystem
 
@@ -32,9 +32,9 @@ class HookSystem {
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `on(name, handler)`   | Register a handler. Handlers run in registration order and may be async.                                                                  |
 | `off(name, handler)`  | Remove a previously registered handler.                                                                                                   |
-| `has(name)`           | Whether any handler is registered for `name` — used internally to skip `emit()`'s overhead when unused.                                   |
+| `has(name)`           | Whether any handler is registered for `name`, used internally to skip `emit()`'s overhead when unused.                                   |
 | `emit(name, ...args)` | Fire all handlers for `name`, awaiting every async one. If a handler throws, the error is swallowed and the remaining handlers still run. |
-| `clear()`             | Remove every registered handler across all hook names — mainly useful for test teardown.                                                  |
+| `clear()`             | Remove every registered handler across all hook names, mainly useful for test teardown.                                                  |
 
 ```ts title="Registering and removing a hook" showLineNumbers
 const onRequest = (ctx) => console.log(ctx.request.method, ctx.request.url);
@@ -52,7 +52,7 @@ type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
 | Hook              | Fires                                                            | Handler receives  |
 | ----------------- | ---------------------------------------------------------------- | ----------------- |
 | `'beforeRequest'` | Once per request, before the middleware chain runs.              | `(ctx)`           |
-| `'afterResponse'` | After the `Response` is produced — both success and error paths. | `(ctx, response)` |
+| `'afterResponse'` | After the `Response` is produced, both success and error paths. | `(ctx, response)` |
 | `'onError'`       | When an unhandled error escapes the middleware chain.            | `(error, ctx)`    |
 
 ## HookHandler
@@ -61,7 +61,7 @@ type HookName = 'beforeRequest' | 'afterResponse' | 'onError';
 type HookHandler = (...args: unknown[]) => void | Promise<void>;
 ```
 
-The generic handler shape — its effective arguments depend on which `HookName` it's registered under (see the table above).
+The generic handler shape. Its effective arguments depend on which `HookName` it's registered under (see the table above).
 
 <Pagination
   prev={{

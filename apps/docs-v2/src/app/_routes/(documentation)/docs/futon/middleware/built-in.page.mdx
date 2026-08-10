@@ -29,12 +29,12 @@ app.use(
 
 | Option           | Default                                    | Description                         |
 | ---------------- | ------------------------------------------ | ----------------------------------- |
-| `origin`         | `"*"`                                      | Allowed origin(s) — string or array |
+| `origin`         | `"*"`                                      | Allowed origin(s), string or array |
 | `methods`        | `"GET, POST, PUT, PATCH, DELETE, OPTIONS"` | Allowed methods                     |
 | `allowedHeaders` | `"Content-Type, Authorization"`            | Allowed request headers             |
-| `exposedHeaders` | —                                          | Headers visible to the browser      |
+| `exposedHeaders` | none                                        | Headers visible to the browser      |
 | `credentials`    | `false`                                    | Allow cookies / auth headers        |
-| `maxAge`         | —                                          | Preflight cache duration (seconds)  |
+| `maxAge`         | none                                        | Preflight cache duration (seconds)  |
 | `optionsStatus`  | `204`                                      | Status code for preflight responses |
 
 ## logger()
@@ -76,7 +76,7 @@ GET, HEAD, and DELETE requests are never parsed.
 
 ## basicAuth() and bearerToken()
 
-Extract credentials from the `Authorization` header. Both accept an optional `verify` callback — without it, credentials are decoded/extracted but not validated, leaving that decision to your handler.
+Extract credentials from the `Authorization` header. Both accept an optional `verify` callback, without it, credentials are decoded/extracted but not validated, leaving that decision to your handler.
 
 ```ts title="basicAuth()" showLineNumbers
 import { basicAuth } from '@rasenganjs/futon';
@@ -118,11 +118,11 @@ import { compress } from '@rasenganjs/futon';
 app.use(compress()); // compresses bodies over 1 KB by default
 ```
 
-Uses the Web `CompressionStream` API — available in modern Node (22+), Bun, Deno, and browsers. Skips compression silently where unavailable.
+Uses the Web `CompressionStream` API, available in modern Node (22+), Bun, Deno, and browsers. Skips compression silently where unavailable.
 
 ## requestId()
 
-Assigns a unique ID to every request — reads `X-Request-Id` if the client sent one, otherwise generates a UUID.
+Assigns a unique ID to every request. Reads `X-Request-Id` if the client sent one, otherwise generates a UUID.
 
 ```ts title="requestId()" showLineNumbers
 import { requestId } from '@rasenganjs/futon';
@@ -145,7 +145,7 @@ import { bodyLimit } from '@rasenganjs/futon';
 app.use(bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5 MB
 ```
 
-It checks `Content-Length` first, then streams and counts bytes as a fallback — so a request lying about its size is still caught mid-stream.
+It checks `Content-Length` first, then streams and counts bytes as a fallback, so a request lying about its size is still caught mid-stream.
 
 <Pagination
   prev={{

@@ -32,7 +32,7 @@ function createContext(
 ): Context;
 ```
 
-Factory that builds a fresh `Context` for a single request. Called internally by `Futon.fetch()` — you won't normally call this yourself outside of tests. `query` and `response` are both created lazily on first access and cached thereafter.
+Factory that builds a fresh `Context` for a single request. Called internally by `Futon.fetch()`. You won't normally call this yourself outside of tests. `query` and `response` are both created lazily on first access and cached thereafter.
 
 ## Context
 
@@ -61,8 +61,8 @@ interface Context<
 | `request` / `req`  | The incoming Web API `Request`.                                                                                                                        |
 | `body`             | Parsed request body. `undefined` until a body-parsing middleware (e.g. [`bodyParser()`](/docs/futon/api-reference/middleware#bodyparseroptions)) runs. |
 | `params`           | URL path parameters captured by the [`Router`](/docs/futon/api-reference/router).                                                                      |
-| `query`            | Query parameters — both callable (`ctx.query('page')`) and indexable (`ctx.query.page`). See [`QueryParams`](#queryparams).                            |
-| `runtime`          | Platform/environment info — see [`RuntimeContext`](#runtimecontext).                                                                                   |
+| `query`            | Query parameters, both callable (`ctx.query('page')`) and indexable (`ctx.query.page`). See [`QueryParams`](#queryparams).                            |
+| `runtime`          | Platform/environment info, see [`RuntimeContext`](#runtimecontext).                                                                                   |
 | `response` / `res` | Chainable [`ResponseBuilder`](/docs/futon/api-reference/response#responsebuilder) for the fluent response API.                                         |
 | `state`            | Mutable bag for passing data between middleware and handlers (e.g. auth middleware sets `state.user`).                                                 |
 | `set(key, value)`  | Store a value on `state`.                                                                                                                              |
@@ -102,7 +102,7 @@ interface QueryParams {
 }
 ```
 
-A callable-and-indexable object — `ctx.query('page')` and `ctx.query.page` both work. Parsed lazily from the URL on first access.
+A callable-and-indexable object. `ctx.query('page')` and `ctx.query.page` both work. Parsed lazily from the URL on first access.
 
 <Pagination
   prev={{

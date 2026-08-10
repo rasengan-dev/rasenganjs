@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 2.0.0-beta.2 (2026-08-10)
+
+### Features
+
+- implement RFC-0010 automatic server-side env var loading 946b3c3
+
+### Features
+
+- the startup banner now shows an `Env:` line listing which `.env*` files were actually loaded from the build directory, right below `Runtime:` (RFC-0010)
+
 ## 2.0.0-beta.1 (2026-08-07)
 
 ### Features

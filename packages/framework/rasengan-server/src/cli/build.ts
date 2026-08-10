@@ -131,8 +131,12 @@ export async function build(config: RasenganServerConfig): Promise<void> {
  * the first boot. `stdio: 'inherit'` streams the colored summary
  * straight to this process's terminal.
  */
-function runDryRun(outDir: string, preset: string): Promise<number> {
+async function runDryRun(outDir: string, preset: string): Promise<number> {
   const entry = join(outDir, 'index.js');
+
+  // RFC-0010: .env* is already loaded into process.env by cli.ts's
+  // main() before build() (and this function) is ever called — the
+  // `env` object below just forwards what's already there.
   const env = { ...process.env, RASENGAN_SERVER_DRY_RUN: '1' };
 
   const child =

@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Logger | API Reference | Rasengan Server | Rasengan.js
-  description: serverLogger() and serverLoggerMinimal() — the two request-logging presets shipped with Rasengan Server.
+  description: serverLogger() and serverLoggerMinimal(): the two request-logging presets shipped with Rasengan Server.
 toc: true
 ---
 
@@ -14,7 +14,7 @@ toc: true
 import { serverLogger, serverLoggerMinimal } from '@rasenganjs/server';
 ```
 
-Two ready-made `log` callbacks for Futon's [`logger()`](/docs/futon/api-reference/middleware#loggeroptions--logentry) middleware. Both have the signature `(entry: LogEntry) => void` — pass one directly as `logger({ log })`.
+Two ready-made `log` callbacks for Futon's [`logger()`](/docs/futon/api-reference/middleware#loggeroptions--logentry) middleware. Both have the signature `(entry: LogEntry) => void`. Pass one directly as `logger({ log })`.
 
 ## serverLogger()
 
@@ -22,7 +22,7 @@ Two ready-made `log` callbacks for Futon's [`logger()`](/docs/futon/api-referenc
 function serverLogger(entry: LogEntry): void;
 ```
 
-Colorful, human-readable output for local development — ANSI-colored HTTP method and status (green 2xx, cyan 3xx, yellow 4xx, red 5xx/errors), padded method column, timestamp, path, duration, and response size.
+Colorful, human-readable output for local development, ANSI-colored HTTP method and status (green 2xx, cyan 3xx, yellow 4xx, red 5xx/errors), padded method column, timestamp, path, duration, and response size.
 
 ```ts title="app.use(logger({ log: serverLogger }))" showLineNumbers
 import { logger } from '@rasenganjs/futon';
@@ -41,7 +41,7 @@ app.use(logger({ log: serverLogger }));
 function serverLoggerMinimal(entry: LogEntry): void;
 ```
 
-Single-line JSON output, suited for production log ingestion (CloudWatch, Datadog, ELK, etc.) — no ANSI codes.
+Single-line JSON output, suited for production log ingestion (CloudWatch, Datadog, ELK, etc.), no ANSI codes.
 
 ```ts title="app.use(logger({ log: serverLoggerMinimal }))" showLineNumbers
 app.use(logger({ log: serverLoggerMinimal }));
@@ -60,7 +60,7 @@ app.use(logger({ log: serverLoggerMinimal }));
 
 ## LogEntry
 
-Neither `serverLogger` nor `serverLoggerMinimal` re-export `LogEntry` by name — it's Futon's type, documented on the [Middleware reference](/docs/futon/api-reference/middleware#loggeroptions--logentry):
+Neither `serverLogger` nor `serverLoggerMinimal` re-export `LogEntry` by name. It's Futon's type, documented on the [Middleware reference](/docs/futon/api-reference/middleware#loggeroptions--logentry):
 
 ```ts
 interface LogEntry {
@@ -73,7 +73,7 @@ interface LogEntry {
 }
 ```
 
-Write your own `log` callback against this shape if neither preset fits — both `serverLogger` and `serverLoggerMinimal` are just ordinary functions matching it.
+Write your own `log` callback against this shape if neither preset fits. Both `serverLogger` and `serverLoggerMinimal` are just ordinary functions matching it.
 
 <Pagination
   prev={{

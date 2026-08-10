@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Rasengan WS Package - Modules | Packages | Rasengan.js
-  description: Documentation for the Rasengan WS package — NestJS-style WebSocket Gateways for Rasengan Server.
+  description: Documentation for the Rasengan WS package: NestJS-style WebSocket Gateways for Rasengan Server.
 toc: true
 ---
 
@@ -10,12 +10,12 @@ toc: true
 </span>
 # Rasengan WS
 
-`@rasenganjs/ws` adds NestJS-inspired WebSocket **Gateways** to [Rasengan Server](/docs/server/getting-started/introduction) — rooms, broadcasting, and a `{ event, data }` message envelope, resolved through the same DI container as your HTTP controllers.
+`@rasenganjs/ws` adds NestJS-inspired WebSocket **Gateways** to [Rasengan Server](/docs/server/getting-started/introduction): rooms, broadcasting, and a `{ event, data }` message envelope, resolved through the same DI container as your HTTP controllers.
 
 <Note title="Requires @rasenganjs/server" type="info">
   `Gateway` extends `Provider` from `@rasenganjs/server`, and gateways are
   registered through that package's module plugin system. This isn't a
-  standalone WebSocket library — it's a convenience layer over Rasengan Server's
+  standalone WebSocket library. It's a convenience layer over Rasengan Server's
   `app.websocket()`.
 </Note>
 
@@ -83,12 +83,12 @@ app.registerPlugin(
 ```
 
 <Note title="Not Socket.IO-wire-compatible" type="warning">
-  Messages use a minimal `{ event, data }` JSON envelope this package defines itself — plain WebSocket has no built-in concept of a named event. It isn't compatible with the Socket.IO wire protocol.
+  Messages use a minimal `{ event, data }` JSON envelope this package defines itself. Plain WebSocket has no built-in concept of a named event. It isn't compatible with the Socket.IO wire protocol.
 </Note>
 
 ## Full Documentation
 
-For the complete API — `GatewayClient`, `GatewayServer`, heartbeat configuration, and broadcasting from outside a connection's context — see [WebSocket Gateways](/docs/server/ecosystem/websocket-gateways) under the Server docs.
+For the complete API (`GatewayClient`, `GatewayServer`, heartbeat configuration, and broadcasting from outside a connection's context), see [WebSocket Gateways](/docs/server/ecosystem/websocket-gateways) under the Server docs.
 
 ## Community
 

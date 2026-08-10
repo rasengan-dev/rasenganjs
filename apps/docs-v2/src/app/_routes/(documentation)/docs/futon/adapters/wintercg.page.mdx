@@ -10,7 +10,7 @@ toc: true
 </span>
 # WinterCG Adapter
 
-`toWinterCgHandler()` turns a `Futon` instance into the `{ fetch }` default-export shape used by every WinterCG-compatible runtime — Cloudflare Workers, Deno, Bun, and Service Workers all expect this exact signature.
+`toWinterCgHandler()` turns a `Futon` instance into the `{ fetch }` default-export shape used by every WinterCG-compatible runtime: Cloudflare Workers, Deno, Bun, and Service Workers all expect this exact signature.
 
 ## Usage
 
@@ -43,18 +43,18 @@ Different WinterCG runtimes call the `fetch` handler with different argument sha
 | Bun                | `(request, server)`   |
 | Service Workers    | `(request)` only      |
 
-`toWinterCgHandler()` inspects the arguments it receives and normalizes them into Futon's `RuntimeContext` (`{ env, server }`) regardless of which shape shows up — your route handlers never need to know which runtime they're running under.
+`toWinterCgHandler()` inspects the arguments it receives and normalizes them into Futon's `RuntimeContext` (`{ env, server }`) regardless of which shape shows up. Your route handlers never need to know which runtime they're running under.
 
 ## waitUntil for Background Work
 
-On runtimes that support it (Cloudflare Workers), the adapter exposes `ctx.waitUntil()` for background tasks that should keep running after the response is sent — triggered when your response includes an `X-Rasengan-Background` header. This is an edge-case escape hatch; most handlers won't need it.
+On runtimes that support it (Cloudflare Workers), the adapter exposes `ctx.waitUntil()` for background tasks that should keep running after the response is sent, triggered when your response includes an `X-Rasengan-Background` header. This is an edge-case escape hatch; most handlers won't need it.
 
 ## Choosing an Adapter
 
 - Deploying to a **serverless edge runtime** (Workers, Deno Deploy)? Use `toWinterCgHandler()`.
-- Running inside **Bun's own server** (`Bun.serve`)? Same handler works — Bun implements the WinterCG `fetch` contract natively.
+- Running inside **Bun's own server** (`Bun.serve`)? Same handler works. Bun implements the WinterCG `fetch` contract natively.
 - Embedding Futon inside an **existing Express app**? Use [`toExpressHandler()`](/docs/futon/adapters/express) instead.
-- Running a **standalone Node process** (dev or prod)? Use the [runtime adapters](/docs/futon/adapters/runtime) from `@rasenganjs/runtime` — they bind an actual `http.Server` for you.
+- Running a **standalone Node process** (dev or prod)? Use the [runtime adapters](/docs/futon/adapters/runtime) from `@rasenganjs/runtime`. They bind an actual `http.Server` for you.
 
 <Pagination
   prev={{

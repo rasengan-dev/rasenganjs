@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 2.0.0-beta.4 (2026-08-10)
+
+### Features
+
+- implement RFC-0010 automatic server-side env var loading 946b3c3
+
+### Bug Fixes
+
+- **`rasengan dev`'s `_api/` routes (and `rasengan.config.js` itself) never had `.env*` files loaded at all** (RFC-0010) — the dev server builds its own `http.createServer` outside `@rasenganjs/runtime`'s adapters and never called any env loader. `.env*` is now loaded into `process.env` at the very top of the dev server's startup, before `rasengan.config.js` is imported and before Vite's dev server (and therefore any lazily-imported `_routes`/`_api` module) is created. `rasengan build` loads it the same way, before spawning `vite build`, so `rasengan.config.js` and any `generatePaths()`/`loader()` run during prerendering see it too. Depends on `@rasenganjs/runtime`'s updated `loadNodeEnvFiles`
+
+### Features
+
+- the dev server's startup banner now shows an `Env:` line listing which `.env*` files were actually loaded, right below `Runtime:`
+
 ## 2.0.0-beta.3 (2026-08-08)
 
 ### Bug Fixes

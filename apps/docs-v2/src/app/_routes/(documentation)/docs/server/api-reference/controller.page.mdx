@@ -26,9 +26,9 @@ abstract class Controller {
 
 | Member           | Description                                                                                               |
 | ---------------- | --------------------------------------------------------------------------------------------------------- |
-| `middlewares`    | Runs before every route in this controller — after module-level middleware, before route-level middleware |
+| `middlewares`    | Runs before every route in this controller, after module-level middleware, before route-level middleware |
 | `schemas`        | Per-method schema definitions, matched to handlers by function name                                       |
-| `routes(router)` | Register this controller's routes — called during compilation                                             |
+| `routes(router)` | Register this controller's routes, called during compilation                                             |
 
 ## RouteHandler
 
@@ -56,7 +56,7 @@ import type { Router } from '@rasenganjs/server';
 
 Wraps the Futon router with a middleware-friendly API and automatic schema validation. Passed to `Controller.routes()`.
 
-```ts title="Method overloads (get/post/put/patch/delete — no head/options)"
+```ts title="Method overloads (get/post/put/patch/delete, no head/options)"
 router.get(path: string, handler: RouteHandler): void;
 router.get(path: string, middleware: Middleware, handler: RouteHandler): void;
 router.get(path: string, middlewares: Middleware[], handler: RouteHandler): void;
@@ -78,7 +78,7 @@ class UsersController extends Controller {
   };
 
   routes(router: Router) {
-    router.post('/users', this.create); // resolves schemas.create by name — no 3rd arg needed
+    router.post('/users', this.create); // resolves schemas.create by name, no 3rd arg needed
   }
 
   create: RouteHandler = async (ctx) => {
@@ -87,7 +87,7 @@ class UsersController extends Controller {
 }
 ```
 
-Name-based resolution requires the handler to have a `.name` — arrow function class fields keep the property name (`this.create.name === 'create'`), but a bound method or reassigned reference may not. Pass the schema explicitly as the trailing argument in that case — doing so is also what triggers TypeScript's schema-aware overload for `ctx.body`/`ctx.params`/`ctx.query` type inference.
+Name-based resolution requires the handler to have a `.name`. Arrow function class fields keep the property name (`this.create.name === 'create'`), but a bound method or reassigned reference may not. Pass the schema explicitly as the trailing argument in that case. Doing so is also what triggers TypeScript's schema-aware overload for `ctx.body`/`ctx.params`/`ctx.query` type inference.
 
 <Pagination
   prev={{

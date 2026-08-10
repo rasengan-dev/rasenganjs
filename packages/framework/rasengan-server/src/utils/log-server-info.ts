@@ -54,8 +54,13 @@ let listening = false;
  *
  * @param port - The port the server is listening on.
  * @param host - The host address the server is bound to (default `"0.0.0.0"`).
+ * @param envFiles - The `.env*` files that were loaded (RFC-0010).
  */
-export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
+export function logServerInfo(
+  port: number,
+  host: string = '0.0.0.0',
+  envFiles: string[] = []
+): void {
   const arrow = green('\u2192');
   const version = getVersion();
   const isBun =
@@ -82,6 +87,10 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
 
   console.log(`${arrow} ${bold('Runtime:')} ${isBun ? 'Bun' : 'Node.js'}`);
 
+  if (envFiles.length > 0) {
+    console.log(`${arrow} ${bold('Env:')}     ${gray(envFiles.join(', '))}`);
+  }
+
   console.log('');
   // The "press c to clear" shortcut needs this process's own raw-mode
   // stdin takeover, which is skipped under `rasengan-server dev` (see
@@ -98,7 +107,7 @@ export function logServerInfo(port: number, host: string = '0.0.0.0'): void {
 
   if (!listening) {
     listening = true;
-    setupKeypress(() => logServerInfo(port, host));
+    setupKeypress(() => logServerInfo(port, host, envFiles));
   }
 }
 

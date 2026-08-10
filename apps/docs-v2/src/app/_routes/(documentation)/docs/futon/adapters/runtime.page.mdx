@@ -10,7 +10,7 @@ toc: true
 </span>
 # Runtime Adapters
 
-Futon itself never opens a port — `app.fetch(request)` just turns a `Request` into a `Response`. **`@rasenganjs/runtime`** is the companion package that actually binds an HTTP server, for each supported platform.
+Futon itself never opens a port. `app.fetch(request)` just turns a `Request` into a `Response`. **`@rasenganjs/runtime`** is the companion package that actually binds an HTTP server, for each supported platform.
 
 ```txt title="What each package owns"
 @rasenganjs/futon    → the request pipeline (router, middleware, ctx)
@@ -47,7 +47,7 @@ await adapter.serve(app);
 
 ## Cloudflare Workers (workerd)
 
-Workers don't have a long-running dev server process in the same sense — deployment goes through `@rasenganjs/runtime/adapters/workerd`'s production adapter, paired with [`toWinterCgHandler()`](/docs/futon/adapters/wintercg) for the actual `fetch` export.
+Workers don't have a long-running dev server process in the same sense. Deployment goes through `@rasenganjs/runtime/adapters/workerd`'s production adapter, paired with [`toWinterCgHandler()`](/docs/futon/adapters/wintercg) for the actual `fetch` export.
 
 ## Choosing the Right Adapter
 
@@ -63,7 +63,7 @@ Workers don't have a long-running dev server process in the same sense — deplo
   If you're using
   [`@rasenganjs/server`](/docs/server/getting-started/introduction), the
   `preset` field in `rasengan.server.ts` (`'node' | 'bun' | 'workerd'`) selects
-  the right runtime adapter automatically — this page is most relevant if you're
+  the right runtime adapter automatically. This page is most relevant if you're
   using Futon standalone.
 </Note>
 

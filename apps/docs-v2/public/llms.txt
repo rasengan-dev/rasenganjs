@@ -50,7 +50,7 @@
 ## Rasengan — Deploying
 
 - [Vercel](https://rasengan.dev/docs/deploying/vercel): Deploy with the `@rasenganjs/vercel` adapter
-- [Node.js](https://rasengan.dev/docs/deploying/node): Self-host with `@rasenganjs/serve`
+- [VPS](https://rasengan.dev/docs/deploying/vps): Self-host with `@rasenganjs/serve`
 
 ## Rasengan — API Reference
 

@@ -159,13 +159,24 @@ const generateVercelConfigFile = async (config: OptimizedAppConfig) => {
 const generateServerlessConfigFile = async () => {
   const vercelBuildOptions = getVercelBuildOptions();
 
-  // Default Vercel configuration
+  // Default Vercel configuration.
+  //
+  // shouldAddHelpers MUST stay false: when true, Vercel's Node.js
+  // runtime pre-parses req.body/req.query/req.cookies before invoking
+  // our handler, which fully drains the request stream. Our own
+  // handler builds its Request via incomingToRequest() (see
+  // generateServerlessHandler below), which streams the body straight
+  // off `req` for any method that has one — if Vercel already drained
+  // it, that stream never emits `data`/`end` and the Lambda hangs until
+  // maxDuration, surfacing as FUNCTION_INVOCATION_TIMEOUT on every
+  // request with a body (POST/PUT/PATCH/...), while GET/HEAD keep
+  // working since they never touch the body.
   const serverlessConfig = {
     runtime: 'nodejs22.x',
     handler: 'index.js',
     maxDuration: 10,
     launcherType: 'Nodejs',
-    shouldAddHelpers: true,
+    shouldAddHelpers: false,
     shouldAddSourcemapSupport: true,
   };
 

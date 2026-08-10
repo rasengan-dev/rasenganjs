@@ -57,4 +57,35 @@ describe('loadBunEnvFiles', () => {
 
     expect(result.PORT).toBe('5000');
   });
+
+  describe('process.env side effect (RFC-0010)', () => {
+    const keys: string[] = [];
+
+    afterEach(() => {
+      for (const key of keys) delete process.env[key];
+      keys.length = 0;
+    });
+
+    itIfBun('assigns loaded values into process.env', async () => {
+      const key = `RASENGAN_TEST_${randomUUID().replace(/-/g, '')}`;
+      keys.push(key);
+
+      await writeFile(join(rootDir, '.env'), `${key}=from-file\n`);
+      await loadBunEnvFiles(rootDir, 'development');
+
+      expect(process.env[key]).toBe('from-file');
+    });
+
+    itIfBun('never overrides a value already set in process.env', async () => {
+      const key = `RASENGAN_TEST_${randomUUID().replace(/-/g, '')}`;
+      keys.push(key);
+      process.env[key] = 'from-real-env';
+
+      await writeFile(join(rootDir, '.env'), `${key}=from-file\n`);
+      const result = await loadBunEnvFiles(rootDir, 'development');
+
+      expect(result[key]).toBe('from-file');
+      expect(process.env[key]).toBe('from-real-env');
+    });
+  });
 });

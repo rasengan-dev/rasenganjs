@@ -122,9 +122,9 @@ export const packagesNavigation: NavigationItem[] = [
           {
             id: randomId(),
             name: 'Netlify',
-            link: '#',
+            link: '/packages/netlify',
             level: 3,
-            isComingSoon: true,
+            isNew: true,
           },
         ],
       },

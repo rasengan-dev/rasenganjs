@@ -38,7 +38,7 @@ interface Context<
 }
 ```
 
-## state — Passing Data Between Middleware
+## state: Passing Data Between Middleware
 
 `ctx.state` (plus the `ctx.set()` / `ctx.get()` helpers) is the primary channel for middleware-to-middleware and middleware-to-handler communication:
 
@@ -54,7 +54,7 @@ app.get('/me', async (ctx) => {
 });
 ```
 
-## runtime — Environment and Server Info
+## runtime: Environment and Server Info
 
 `ctx.runtime.env` carries environment variables loaded by the adapter, and `ctx.runtime.server` exposes info about the running server:
 
@@ -68,9 +68,9 @@ app.get('/debug', async (ctx) => {
 });
 ```
 
-## response / res — the Chainable Builder
+## response / res: the Chainable Builder
 
-`ctx.res` is created lazily on first access — see [Response Helpers](/docs/futon/request-response/response) for the full fluent API (`.status().json()`, `.redirect()`, `.stream()`, etc.).
+`ctx.res` is created lazily on first access. See [Response Helpers](/docs/futon/request-response/response) for the full fluent API (`.status().json()`, `.redirect()`, `.stream()`, etc.).
 
 ```ts title="Chainable response" showLineNumbers
 app.get('/api', async (ctx) => {
@@ -80,7 +80,7 @@ app.get('/api', async (ctx) => {
 
 ## Typed Context
 
-`Context` accepts three type parameters — `Body`, `Params`, and `Query` — so `ctx.body`, `ctx.params`, and `ctx.query` can be narrowed by a validation layer (this is what [`@rasenganjs/server`](/docs/server/getting-started/introduction)'s schema-typed routes do). Used directly with Futon, these default to `any` / `Record<string, string>` / `QueryParams`.
+`Context` accepts three type parameters (`Body`, `Params`, and `Query`) so `ctx.body`, `ctx.params`, and `ctx.query` can be narrowed by a validation layer (this is what [`@rasenganjs/server`](/docs/server/getting-started/introduction)'s schema-typed routes do). Used directly with Futon, these default to `any` / `Record<string, string>` / `QueryParams`.
 
 <Pagination
   prev={{

@@ -85,6 +85,36 @@ export default defineConfig({
 });
 ```
 
+### runtime
+
+Introduced in `v2.0.0-beta`, the `runtime` option targets the JS runtime your production SSR build runs on: `'node'` (default), `'bun'`, or `'workerd'` (Cloudflare Workers, not fully supported yet). It only affects the production `ssr`/`ssg` build; `rasengan dev` always runs on Node.
+
+```js title="rasengan.config.js" showLineNumbers {4}
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  runtime: 'bun',
+});
+```
+
+`runtime: 'bun'` is what lets <Link to="/packages/serve">`@rasenganjs/serve`</Link> pick `BunProdAdapter` instead of the default Node adapter in production. See <Link to="/docs/deploying/node">Deploying to a Node.js Server</Link> for the full picture, since the same `rasengan-serve` command handles both.
+
+### api.prefix
+
+Introduced in `v2.0.0-beta` alongside <Link to="/docs/routing/api-routes">file-based API routes</Link>, `api.prefix` changes the URL prefix `_api/` routes are mounted under. Defaults to `/api`.
+
+```js title="rasengan.config.js" showLineNumbers {4-6}
+import { defineConfig } from 'rasengan';
+
+export default defineConfig({
+  api: {
+    prefix: '/v1',
+  },
+});
+```
+
+With this set, a route defined at `src/app/_api/users/index.route.ts` is served at `/v1/users` instead of `/api/users`.
+
 ### sageMode
 
 Introduced in `v1.2.0`, the `sageMode` option lets you configure from now the `react compiler` mode.

@@ -10,7 +10,7 @@ toc: true
 </span>
 # Cookies
 
-Futon has no cookie jar on `ctx` — cookies are read from the request's `Cookie` header and written to a response's `Set-Cookie` header via standalone helper functions.
+Futon has no cookie jar on `ctx`. Cookies are read from the request's `Cookie` header and written to a response's `Set-Cookie` header via standalone helper functions.
 
 ## Reading Cookies
 
@@ -30,7 +30,7 @@ app.get('/me', async (ctx) => {
 
 ## Writing Cookies
 
-`setCookie()` and `clearCookie()` take a `Response` and return a **new** `Response` with the `Set-Cookie` header appended — they don't mutate the original:
+`setCookie()` and `clearCookie()` take a `Response` and return a **new** `Response` with the `Set-Cookie` header appended. They don't mutate the original:
 
 ```ts title="Setting a cookie" showLineNumbers
 import { json, setCookie, clearCookie } from '@rasenganjs/futon';
@@ -52,7 +52,7 @@ app.post('/logout', async () => {
 });
 ```
 
-`clearCookie()` is `setCookie()` with `maxAge: 0` — it's a convenience wrapper, not a separate mechanism.
+`clearCookie()` is `setCookie()` with `maxAge: 0`. It's a convenience wrapper, not a separate mechanism.
 
 ## CookieOptions
 
@@ -68,7 +68,7 @@ app.post('/logout', async () => {
 
 ## Multiple Cookies on One Response
 
-Chain `setCookie()` calls — each call returns a fresh `Response` you can pass into the next:
+Chain `setCookie()` calls. Each call returns a fresh `Response` you can pass into the next:
 
 ```ts title="Setting multiple cookies" showLineNumbers
 let response = json({ ok: true });

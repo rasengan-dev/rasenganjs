@@ -18,7 +18,7 @@ import { defineModule, type ModuleConfig } from '@rasenganjs/server';
 function defineModule(config: ModuleConfig): ModuleConfig;
 ```
 
-Typed pass-through helper — returns the same object you pass in, with type-checking. See [Modules](/docs/server/core-concepts/modules) for usage.
+Typed pass-through helper, returns the same object you pass in, with type-checking. See [Modules](/docs/server/core-concepts/modules) for usage.
 
 ## ModuleConfig
 
@@ -38,15 +38,15 @@ interface ModuleConfig {
 
 | Field            | Description                                                                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`           | Diagnostic only — used in DI error messages                                                                                              |
+| `name`           | Diagnostic only, used in DI error messages                                                                                              |
 | `prefix`         | URL prefix applied to all of this module's routes                                                                                        |
 | `middlewares`    | Module-level middleware, applied after global, before controller/route-level                                                             |
 | `imports`        | Sub-modules to flatten into the route tree                                                                                               |
 | `controllers`    | Controller classes registered within this module                                                                                         |
-| `providers`      | DI providers — private to this module unless listed in `exports`                                                                         |
+| `providers`      | DI providers, private to this module unless listed in `exports`                                                                         |
 | `exports`        | Tokens from `providers` that importing modules may resolve                                                                               |
 | `global`         | Make this module's `exports` visible to every module, no import needed                                                                   |
-| `[extensionKey]` | Open extension point for ecosystem plugins (`gateways`, `queues`, ...) — see [Module Plugins](/docs/server/core-concepts/module-plugins) |
+| `[extensionKey]` | Open extension point for ecosystem plugins (`gateways`, `queues`, ...), see [Module Plugins](/docs/server/core-concepts/module-plugins) |
 
 ## ModulePlugin
 

@@ -88,6 +88,13 @@ export const documentationNavigation: NavigationItem[] = [
           },
           {
             id: randomId(),
+            name: 'API Routes',
+            link: '/docs/routing/api-routes',
+            level: 3,
+            isNew: true,
+          },
+          {
+            id: randomId(),
             name: 'Linking & Navigation',
             link: '/docs/routing/linking-and-navigation',
             level: 3,
@@ -240,8 +247,15 @@ export const documentationNavigation: NavigationItem[] = [
           },
           {
             id: randomId(),
-            name: 'Node Server',
-            link: '/docs/deploying/node',
+            name: 'Netlify',
+            link: '/docs/deploying/netlify',
+            level: 3,
+            isNew: true,
+          },
+          {
+            id: randomId(),
+            name: 'VPS',
+            link: '/docs/deploying/vps',
             level: 3,
           },
         ],

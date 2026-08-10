@@ -37,9 +37,9 @@ function bootstrap(
 ): Promise<ServerHandle>;
 ```
 
-`bootstrap()` returns a `ServerHandle` (`{ close(), app }`) you can use to shut the server down programmatically — useful in tests.
+`bootstrap()` returns a `ServerHandle` (`{ close(), app }`) you can use to shut the server down programmatically, useful in tests.
 
-## ServerApp — the Orchestrator
+## ServerApp: the Orchestrator
 
 `ServerApp` is the class your `bootstrap()` callback configures. It owns module registration, global middleware, error/404 handlers, and compiles everything into a `Futon` instance.
 
@@ -64,21 +64,21 @@ Every `ServerApp` starts with two middleware pre-registered, in this order: a re
 
 Rasengan Server layers middleware in a fixed order, regardless of where each layer is declared:
 
-1. **Global** — `app.use()`, `app.enableCors()`, plus the default logger/body parser
-2. **Module-level** — `ModuleConfig.middlewares`, scoped to that module's routes
-3. **Controller-level** — `Controller.middlewares`, scoped to that controller's routes
-4. **Route-level** — passed directly to `router.get(path, middleware, handler)`
-5. **Validation** — injected automatically for routes with schemas
-6. **Handler** — your route handler function
+1. **Global**: `app.use()`, `app.enableCors()`, plus the default logger/body parser
+2. **Module-level**: `ModuleConfig.middlewares`, scoped to that module's routes
+3. **Controller-level**: `Controller.middlewares`, scoped to that controller's routes
+4. **Route-level**: passed directly to `router.get(path, middleware, handler)`
+5. **Validation**: injected automatically for routes with schemas
+6. **Handler**: your route handler function
 
 See [Middleware](/docs/server/core-concepts/middleware) for a worked example of each layer.
 
 ## Compiling and Serving
 
-`app.compile()` runs once, internally, as part of `bootstrap()` — you don't normally call it yourself. It flattens your module tree, registers every provider in a shared DI container, and registers every controller's routes with the correct middleware nesting. `bootstrap()` then hands the resulting `Futon` to whichever runtime adapter matches your `preset`.
+`app.compile()` runs once, internally, as part of `bootstrap()`. You don't normally call it yourself. It flattens your module tree, registers every provider in a shared DI container, and registers every controller's routes with the correct middleware nesting. `bootstrap()` then hands the resulting `Futon` to whichever runtime adapter matches your `preset`.
 
 <Note title="Body parsing can't be reconfigured yet" type="warning">
-  `configureBodyParser()` exists in the class but is currently commented out in the source — the default `bodyParser({ key: 'body' })` is always active and isn't yet swappable for custom options (size limits, allowed types). Worth checking back on if you need that control today.
+  `configureBodyParser()` exists in the class but is currently commented out in the source. The default `bodyParser({ key: 'body' })` is always active and isn't yet swappable for custom options (size limits, allowed types). Worth checking back on if you need that control today.
 </Note>
 
 <Pagination

@@ -12,7 +12,7 @@ toc: true
 
 ## Automatic Installation
 
-The fastest way to start a new Rasengan Server project is with the **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which scaffolds a working project for you. Server scaffolding shipped in a newer release than what `create-rasengan@latest` currently points to — use the `beta` dist-tag to get it.
+The fastest way to start a new Rasengan Server project is with the **[create-rasengan CLI](/docs/api-reference/create-rasengan-cli)**, which scaffolds a working project for you. Server scaffolding shipped in a newer release than what `create-rasengan@latest` currently points to. Use the `beta` dist-tag to get it.
 
 <StepItem
   step="01"
@@ -31,7 +31,7 @@ The fastest way to start a new Rasengan Server project is with the **[create-ras
   step="02"
   title="Follow the prompts"
   content={`
-    If you didn't pass --kind, you'll be asked which kind of project to create — select "server". You'll also be asked to name your project.
+    If you didn't pass --kind, you'll be asked which kind of project to create, select "server". You'll also be asked to name your project.
   `}
 >
   ```bash title="Terminal"
@@ -65,7 +65,7 @@ The fastest way to start a new Rasengan Server project is with the **[create-ras
   ```
 </StepItem>
 
-The scaffolded project includes a `rasengan.server.ts` config, a root `AppModule`, and a single `HelloController` — enough to see a request handled end to end before you add your own modules.
+The scaffolded project includes a `rasengan.server.ts` config, a root `AppModule`, and a single `HelloController`, enough to see a request handled end to end before you add your own modules.
 
 <Note title="Building a full-stack app?" type="info">
   `create-rasengan --kind monorepo` scaffolds a Rasengan frontend and a Rasengan
@@ -94,18 +94,18 @@ The scaffolded project includes a `rasengan.server.ts` config, a root `AppModule
   <Tabs.Item>```bash bun add @rasenganjs/server zod ```</Tabs.Item>
 </Tabs>
 
-`@rasenganjs/server` depends on [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) and `@rasenganjs/runtime` directly — you don't need to install those yourself. `zod` is a peer dependency of `@rasenganjs/validators` (which `@rasenganjs/server` depends on) — the built-in validation adapter is Zod-based, so install it alongside.
+`@rasenganjs/server` depends on [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) and `@rasenganjs/runtime` directly. You don't need to install those yourself. `zod` is a peer dependency of `@rasenganjs/validators` (which `@rasenganjs/server` depends on). The built-in validation adapter is Zod-based, so install it alongside.
 
 <Note title="Just need HTTP, not a full framework?" type="info">
   If you don't need controllers, modules, or dependency injection,
   [`@rasenganjs/futon`](/docs/futon/getting-started/introduction) alone might be
-  a better fit — Rasengan Server is built on top of it.
+  a better fit. Rasengan Server is built on top of it.
 </Note>
 
 ## Requirements
 
 - **Node.js 18+**, Bun, or a Cloudflare Workers (workerd) target.
-- An ESM project — the package ships as `"type": "module"`.
+- An ESM project, the package ships as `"type": "module"`.
 
 ## Configuration File
 

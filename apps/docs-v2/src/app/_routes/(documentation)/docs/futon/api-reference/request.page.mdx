@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Request | API Reference | Futon | Rasengan.js
-  description: Every request-parsing utility exported by Futon — URL helpers, body parsers, and cookie readers.
+  description: Every request-parsing utility exported by Futon: URL helpers, body parsers, and cookie readers.
 toc: true
 ---
 
@@ -25,7 +25,7 @@ import {
 } from '@rasenganjs/futon';
 ```
 
-Standalone functions over the Web API `Request` — every one of them takes a `Request` and returns a plain value, so they work equally well inside a handler, a middleware, or a test. See [Request Utilities](/docs/futon/request-response/request) and [Cookies](/docs/futon/request-response/cookies) for usage.
+Standalone functions over the Web API `Request`. Every one of them takes a `Request` and returns a plain value, so they work equally well inside a handler, a middleware, or a test. See [Request Utilities](/docs/futon/request-response/request) and [Cookies](/docs/futon/request-response/cookies) for usage.
 
 ## URL Helpers
 
@@ -42,7 +42,7 @@ function getQueryParam(request: Request, key: string): string | null;
 | `getQueryParam(request, key)` | A single query parameter, or `null` if absent. |
 
 <Note title="ctx.query vs. these helpers" type="info">
-  Inside a handler, prefer `ctx.query` — it's lazily parsed and cached per
+  Inside a handler, prefer `ctx.query`. It's lazily parsed and cached per
   request. Reach for `getQueryParams()` / `getQueryParam()` when you only have a
   raw `Request` and no `Context` (e.g. inside a custom adapter or a test).
 </Note>
@@ -63,7 +63,7 @@ function parseBody<T = unknown>(
 | -------------------------- | ---------------------------------------------------------------- |
 | `parseJson(request)`       | `application/json` bodies. Throws `SyntaxError` on invalid JSON. |
 | `parseUrlEncoded(request)` | `application/x-www-form-urlencoded` bodies.                      |
-| `parseFormData(request)`   | `multipart/form-data` bodies — returns the native `FormData`.    |
+| `parseFormData(request)`   | `multipart/form-data` bodies, returns the native `FormData`.    |
 | `parseText(request)`       | Any body as plain text.                                          |
 | `parseBody(request)`       | Auto-detects `Content-Type` and delegates to one of the above.   |
 
@@ -71,7 +71,7 @@ function parseBody<T = unknown>(
 
 <Note title="A Request body can only be read once" type="warning">
   These parsers consume the underlying `ReadableStream`. Call exactly one of
-  them per request, and do it early in the middleware chain — a second call will
+  them per request, and do it early in the middleware chain. A second call will
   throw or return an empty result.
 </Note>
 

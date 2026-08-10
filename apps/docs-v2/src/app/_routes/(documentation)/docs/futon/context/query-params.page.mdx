@@ -10,7 +10,7 @@ toc: true
 </span>
 # Query Parameters
 
-`ctx.query` gives you access to the request's URL query string. It's both **callable** and **indexable** — pick whichever reads better at the call site.
+`ctx.query` gives you access to the request's URL query string. It's both **callable** and **indexable**. Pick whichever reads better at the call site.
 
 ## Reading Query Params
 
@@ -23,7 +23,7 @@ app.get('/search', async (ctx) => {
 });
 ```
 
-A request to `/search?page=2&limit=20` produces `page: "2"`, `limit: "20"`. All values are plain strings — parse numbers/booleans yourself if needed.
+A request to `/search?page=2&limit=20` produces `page: "2"`, `limit: "20"`. All values are plain strings. Parse numbers/booleans yourself if needed.
 
 ## Iterating All Params
 
@@ -38,11 +38,11 @@ app.get('/debug', async (ctx) => {
 
 ## Lazy Parsing
 
-`ctx.query` is parsed from the request URL **on first access** and cached for the rest of the request. If a handler never reads `ctx.query`, the query string is never parsed at all — a small but deliberate performance detail.
+`ctx.query` is parsed from the request URL **on first access** and cached for the rest of the request. If a handler never reads `ctx.query`, the query string is never parsed at all, a small but deliberate performance detail.
 
 ## Missing Params
 
-Accessing a param that wasn't provided returns `undefined` — there's no throwing:
+Accessing a param that wasn't provided returns `undefined`. There's no throwing:
 
 ```ts title="Missing params are undefined" showLineNumbers
 app.get('/items', async (ctx) => {

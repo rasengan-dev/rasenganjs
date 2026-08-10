@@ -11,13 +11,13 @@ toc: true
 # Database (Drizzle)
 
 <Note title="Early / experimental integration" type="warning">
-  `@rasenganjs/drizzle` is the most experimental of the ecosystem packages — its
+  `@rasenganjs/drizzle` is the most experimental of the ecosystem packages. Its
   governing RFC (RFC-0006) is still in Draft status, even though the package
   itself has working code and tests. Expect this integration to change more than
   `@rasenganjs/ws` or `@rasenganjs/queue`.
 </Note>
 
-`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to Rasengan Server's DI container — `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject.
+`@rasenganjs/drizzle` connects [Drizzle ORM](https://orm.drizzle.team) to Rasengan Server's DI container. `DrizzleModule.forRoot()` registers a `DataSource` provider that any module can inject.
 
 ```bash title="Terminal"
 npm install @rasenganjs/drizzle drizzle-orm pg
@@ -44,10 +44,10 @@ export default defineModule({
 });
 ```
 
-`DrizzleModule.forRoot()` connects **eagerly** at call time — not lazily on first `.db` access — and is `global: true` by default, so `DataSource` is visible everywhere without importing the Drizzle module explicitly in every feature module.
+`DrizzleModule.forRoot()` connects **eagerly** at call time (not lazily on first `.db` access) and is `global: true` by default, so `DataSource` is visible everywhere without importing the Drizzle module explicitly in every feature module.
 
 <Note title="Call forRoot() exactly once per process" type="warning">
-  A second `DrizzleModule.forRoot()` call throws — `DataSource` holds one
+  A second `DrizzleModule.forRoot()` call throws. `DataSource` holds one
   connection via shared module state, and a second call would silently redirect
   every existing `DataSource` instance to a different connection.
 </Note>
@@ -68,7 +68,7 @@ export class UserService {
 }
 ```
 
-`dataSource.db` is your normal Drizzle client — typed against whatever `schema` you passed to `forRoot()`.
+`dataSource.db` is your normal Drizzle client, typed against whatever `schema` you passed to `forRoot()`.
 
 ## Driver Adapters
 
@@ -80,7 +80,7 @@ import { nodePostgresAdapter } from '@rasenganjs/drizzle/drivers/node-postgres';
 
 ## Running Migrations
 
-`runMigrations()` uses a **separate, short-lived connection** from the module's — migration scripts run standalone, outside the DI container, and close their connection when done rather than reusing the long-lived one `DrizzleModule` holds:
+`runMigrations()` uses a **separate, short-lived connection** from the module's. Migration scripts run standalone, outside the DI container, and close their connection when done rather than reusing the long-lived one `DrizzleModule` holds:
 
 ```ts title="migrate.ts (run standalone, e.g. in CI)" showLineNumbers
 import { runMigrations } from '@rasenganjs/drizzle';

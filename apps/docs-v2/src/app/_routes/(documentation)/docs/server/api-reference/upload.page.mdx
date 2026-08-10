@@ -19,7 +19,7 @@ import {
 import { diskStorage } from '@rasenganjs/server/upload/disk';
 ```
 
-Rasengan Server re-exports Futon's entire file-upload API unchanged, so controllers can use `fileUpload()` without an extra dependency on `@rasenganjs/futon`. See [File Uploads](/docs/server/core-concepts/file-uploads) for controller-level usage, and the [Futon Upload reference](/docs/futon/api-reference/upload) for the full behavioral details — this page lists the re-exported surface.
+Rasengan Server re-exports Futon's entire file-upload API unchanged, so controllers can use `fileUpload()` without an extra dependency on `@rasenganjs/futon`. See [File Uploads](/docs/server/core-concepts/file-uploads) for controller-level usage, and the [Futon Upload reference](/docs/futon/api-reference/upload) for the full behavioral details. This page lists the re-exported surface.
 
 ## fileUpload()
 
@@ -48,7 +48,7 @@ class UploadsController extends Controller {
 }
 ```
 
-`.single(field)` stores the result on `ctx.state.file` (read via `ctx.get('file')`); `.array()`/`.fields()`/`.any()` store theirs on `ctx.state.files` instead — see [`Uploader`](#fileupload) above for which shape each method produces.
+`.single(field)` stores the result on `ctx.state.file` (read via `ctx.get('file')`); `.array()`/`.fields()`/`.any()` store theirs on `ctx.state.files` instead. See [`Uploader`](#fileupload) above for which shape each method produces.
 
 ## UploadOptions and Related Types
 
@@ -107,7 +107,7 @@ interface StorageEngine {
 
 ### MemoryStorage
 
-The default engine, works on every runtime including workerd — buffers file contents on `file.buffer`.
+The default engine, works on every runtime including workerd. Buffers file contents on `file.buffer`.
 
 ### diskStorage()
 
@@ -122,7 +122,7 @@ interface DiskStorageOptions {
 }
 ```
 
-Writes to the filesystem via `node:fs`. Behind the `/upload/disk` subpath so the main `@rasenganjs/server` entry stays free of Node built-ins — identical rationale to Futon's own `/upload/disk` split.
+Writes to the filesystem via `node:fs`. Behind the `/upload/disk` subpath so the main `@rasenganjs/server` entry stays free of Node built-ins, identical rationale to Futon's own `/upload/disk` split.
 
 ## UPLOAD_ERROR_CODES
 

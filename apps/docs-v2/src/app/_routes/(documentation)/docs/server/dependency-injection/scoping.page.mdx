@@ -1,7 +1,7 @@
 ---
 metadata:
   title: Module Scoping | Dependency Injection | Rasengan Server | Rasengan.js
-  description: How visibility works between modules — imports, exports, and global providers.
+  description: How visibility works between modules: imports, exports, and global providers.
 toc: true
 ---
 
@@ -10,7 +10,7 @@ toc: true
 </span>
 # Module Scoping
 
-Rasengan Server's DI container uses **one registry and one instance per token** — singletons are shared by every module that can see them. Scoping is a **visibility filter** on top of that single registry, never a second cache. A provider's own constructor dependencies always resolve in the scope of the module that _owns_ the provider — not the module that triggered its construction — so a shared singleton behaves identically no matter who resolves it first.
+Rasengan Server's DI container uses **one registry and one instance per token**, singletons are shared by every module that can see them. Scoping is a **visibility filter** on top of that single registry, never a second cache. A provider's own constructor dependencies always resolve in the scope of the module that _owns_ the provider, not the module that triggered its construction, so a shared singleton behaves identically no matter who resolves it first.
 
 ## What a Module Can See
 
@@ -35,7 +35,7 @@ export default defineModule({
 });
 ```
 
-```ts title="Global — visible everywhere, no import needed" showLineNumbers
+```ts title="Global: visible everywhere, no import needed" showLineNumbers
 // config.module.ts
 export default defineModule({
   providers: [ConfigService],
@@ -46,11 +46,11 @@ export default defineModule({
 
 ## Directed Errors, Not Silent Failures
 
-Trying to inject something outside your module's visible set doesn't silently return `undefined` — it throws with an actionable message pointing at exactly what's missing:
+Trying to inject something outside your module's visible set doesn't silently return `undefined`. It throws with an actionable message pointing at exactly what's missing:
 
 ```txt
 [rasengan-server] module "UserModule" cannot resolve "DatabaseService".
-DatabaseService exists in module "DatabaseModule" but is not visible here —
+DatabaseService exists in module "DatabaseModule" but is not visible here.
 add it to that module's `exports` and add that module to this module's
 `imports` (or mark the owning module `global: true`).
 ```
@@ -61,18 +61,18 @@ Registering the same class as a provider in two different modules is always a mi
 
 ```txt
 [rasengan-server] DatabaseService is already registered by module "DatabaseModule".
-A provider can only belong to one module — add it to that module's `exports`
+A provider can only belong to one module. Add it to that module's `exports`
 and import it from here instead of declaring it twice.
 ```
 
-Share a provider by exporting it from its owning module and importing that module elsewhere — never by declaring the same class in two `providers` arrays.
+Share a provider by exporting it from its owning module and importing that module elsewhere, never by declaring the same class in two `providers` arrays.
 
 ## Name Collisions Across Imports
 
-If two _different_ visible modules each export a same-named provider, resolving by constructor parameter name is ambiguous — the container refuses to guess:
+If two _different_ visible modules each export a same-named provider, resolving by constructor parameter name is ambiguous. The container refuses to guess:
 
 ```txt
-[rasengan-server] "logger" is ambiguous in module "UserModule" — visible from
+[rasengan-server] "logger" is ambiguous in module "UserModule", visible from
 multiple modules (module "AuthModule", module "BillingModule"). Disambiguate
 with an explicit `deps: [...]` entry naming the exact class.
 ```

@@ -54,20 +54,20 @@ Configuration merges from three sources, later ones winning:
 
 1. Built-in defaults (the table above).
 2. `rasengan.server.js` or `rasengan.server.ts` at the project root.
-3. CLI flag overrides (`--port`, `--host`, `--entry`, `--preset`, `--watch-dir`) — see [CLI](/docs/server/getting-started/cli).
+3. CLI flag overrides (`--port`, `--host`, `--entry`, `--preset`, `--watch-dir`), see [CLI](/docs/server/getting-started/cli).
 
 ## Build Output Formats
 
 `rasengan-server build` bundles your server with esbuild:
 
-- **`single-file`** — everything bundled into one `server.bundle.mjs`. Simplest to deploy — copy one file.
-- **`directory`** — one `.mjs` per source file, preserving your project's structure. Useful when you want to inspect or patch individual output files.
+- **`single-file`**: everything bundled into one `server.bundle.mjs`. Simplest to deploy, copy one file.
+- **`directory`**: one `.mjs` per source file, preserving your project's structure. Useful when you want to inspect or patch individual output files.
 
 Both formats can be produced in the same build by listing both in `formats`.
 
 ## Programmatic Overrides
 
-`bootstrap()` accepts an optional second argument — a partial config that merges on top of everything else, useful for tests or embedding:
+`bootstrap()` accepts an optional second argument, a partial config that merges on top of everything else, useful for tests or embedding:
 
 ```ts title="Overriding config programmatically" showLineNumbers
 bootstrap(
