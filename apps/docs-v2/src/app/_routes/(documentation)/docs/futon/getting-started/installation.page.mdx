@@ -30,9 +30,36 @@ The fastest way to start a new Futon project is with the **[create-rasengan CLI]
   content={`Run the following command to create a new project.`}
   className="mt-8"
 >
-  ```bash title="Terminal" 
-  npx create-rasengan@beta --kind futon 
-  ```
+<Tabs
+  tabs={[
+    { title: 'npm' },
+    { title: 'pnpm' },
+    { title: 'yarn' },
+    { title: 'bun' },
+  ]}
+  activeIndex={0}
+>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    npx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    pnpm dlx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    yarn create rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+  <Tabs.Item>
+    ```bash title="Terminal"
+    bunx create-rasengan@beta --kind futon 
+    ```
+  </Tabs.Item>
+</Tabs>
 </StepItem>
 
 <StepItem

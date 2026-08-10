@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2.0.0-beta.2 (2026-08-10)
+
+### Bug Fixes
+
+- disable Vercel's req.body pre-parsing to stop POST timeouts 5bb360a
+
 ### Bug Fixes
 
 - disable Vercel's req.body pre-parsing to stop POST timeouts

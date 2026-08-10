@@ -78,13 +78,13 @@ const upload = fileUpload({
 Because engines receive a Web `File`, porting a Multer storage engine (S3, R2, GCS, ...) to Futon is mostly mechanical:
 
 ```ts title="A minimal S3 storage engine" showLineNumbers
-import type { StorageEngine, FileInfo, UploadedFile } from '@rasenganjs/futon';
+import type { StorageEngine, FileInfo, UploadedFile, Context } from '@rasenganjs/futon';
 
 class S3Storage implements StorageEngine {
   constructor(private bucket: string) {}
 
   async handleFile(
-    ctx: unknown,
+    ctx: Context,
     file: File,
     info: FileInfo
   ): Promise<Partial<UploadedFile>> {
