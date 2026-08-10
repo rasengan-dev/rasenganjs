@@ -1,5 +1,11 @@
 ## Unreleased
 
+### Bug Fixes
+
+- disable Vercel's req.body pre-parsing to stop POST timeouts
+
+- **`shouldAddHelpers: true` made Vercel drain the request stream to populate `req.body` before invoking the handler** — `incomingToRequest()` then streamed the already-empty `req` to build the Request's body, hanging until `maxDuration` on any request with a body (surfacing as `FUNCTION_INVOCATION_TIMEOUT`). GET/HEAD were unaffected since they never touch the body. Fixed by setting `shouldAddHelpers: false` in the generated `.vc-config.json`
+
 ## 2.0.0-beta.1 (2026-08-07)
 
 ### Features
