@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.4 (2026-08-10)
+
+### Features
+
+- implement RFC-0010 automatic server-side env var loading 946b3c3
+
 ### Features
 
 - `loadNodeEnvFiles`/`loadBunEnvFiles` now also assign every loaded key into `process.env`/`Bun.env`, skipping any key already set there (RFC-0010) — previously they only fed `Futon.loadEnv()`'s own `app.env` bag, so the standard `process.env.X` idiom (app code and third-party libraries alike) never saw a loaded `.env*` value regardless of when loading ran
