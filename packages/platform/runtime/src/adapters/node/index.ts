@@ -31,7 +31,7 @@ export type { NodeServerOptions, NodeServerHandle } from './server.js';
 
 export { incomingToRequest } from './request.js';
 
-export { loadNodeEnvFiles } from './env.js';
+export { loadNodeEnvFiles, getLoadedEnvFiles } from './env.js';
 
 // ── WebSocket (RFC-0001) ────────────────────────────────────────
 export { createNodeUpgradeHandler } from './websocket.js';

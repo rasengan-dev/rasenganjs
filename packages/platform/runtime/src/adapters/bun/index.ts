@@ -29,4 +29,4 @@ export { BunWatcher } from './watcher.js';
 export { startBunServer } from './server.js';
 export type { BunServerOptions, BunServerHandle } from './server.js';
 
-export { loadBunEnvFiles } from './env.js';
+export { loadBunEnvFiles, getLoadedEnvFiles } from './env.js';

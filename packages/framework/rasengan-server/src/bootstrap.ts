@@ -1,4 +1,5 @@
 import type { RuntimeAdapter, ServeOptions } from '@rasenganjs/runtime';
+import { detectRuntime } from '@rasenganjs/runtime';
 import { ServerApp, type ServerHandle } from './server/app.js';
 import { selectAdapter } from './adapter/index.js';
 import { logServerInfo } from './utils/log-server-info.js';
@@ -67,9 +68,31 @@ export async function bootstrap(
   // until their own upgrade-handling phase lands.
   const websocketRegistry = serverApp.getWebSocketRegistry();
 
+  // RFC-0010: which .env* files actually exist, for the startup banner
+  // below — display-only, doesn't re-load or re-apply anything (the
+  // adapter's own serve() already did that). Dynamically imported, and
+  // skipped only when ACTUALLY running on workerd right now (no
+  // filesystem there at all) — deliberately checked via detectRuntime(),
+  // not `config.preset`: `preset` is the eventual production *build*
+  // target and stays 'workerd' even while `rasengan-server dev`/`start`
+  // run on a real, local Node/Bun process (selectAdapter() above already
+  // makes this same distinction — it only consults `preset` when
+  // `config.production` is set). Gating on `config.preset` here instead
+  // would silently hide the whole banner line for every workerd-targeted
+  // project during local dev, even though the files are being loaded
+  // correctly the entire time.
+  let envFiles: string[] = [];
+  if (detectRuntime() !== 'workerd') {
+    const { getLoadedEnvFiles } =
+      await import('@rasenganjs/runtime/adapters/node');
+    const mode =
+      process.env.NODE_ENV === 'production' ? 'production' : 'development';
+    envFiles = await getLoadedEnvFiles(process.cwd(), mode);
+  }
+
   const serveOptions: ServeOptions = {
     onListening: (info) => {
-      logServerInfo(info.port, info.host);
+      logServerInfo(info.port, info.host, envFiles);
     },
     websocket:
       websocketRegistry && !websocketRegistry.isEmpty

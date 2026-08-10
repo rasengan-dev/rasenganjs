@@ -16,6 +16,16 @@ export async function start(config: RasenganServerConfig): Promise<void> {
   const outDir = resolve(config.build?.outDir || 'dist');
   const entry = join(outDir, 'index.js');
 
+  const port = config.port ?? process.env.PORT ?? 3000;
+  const host = config.host ?? process.env.HOST ?? '0.0.0.0';
+
+  // Update config with environment variables
+  const updatedConfig = {
+    ...config,
+    port: Number(port),
+    host: host,
+  };
+
   if (!existsSync(entry)) {
     console.error(
       `\n  [rasengan-server] No built output found at ${entry}\n` +
@@ -25,6 +35,10 @@ export async function start(config: RasenganServerConfig): Promise<void> {
   }
 
   const preset = config.preset ?? 'node';
+
+  // RFC-0010: .env* is already loaded into process.env by cli.ts's
+  // main() before this function is even called — the `env` object built
+  // from `process.env` further down just forwards what's already there.
 
   if (preset === 'workerd') {
     console.error(
@@ -38,9 +52,7 @@ export async function start(config: RasenganServerConfig): Promise<void> {
   const env = {
     ...process.env,
     NODE_ENV: 'production',
-    RASENGAN_SERVER_PORT: String(config.port ?? 3000),
-    RASENGAN_SERVER_HOST: config.host ?? '0.0.0.0',
-    RASENGAN_SERVER_CONFIG: JSON.stringify(config),
+    RASENGAN_SERVER_CONFIG: JSON.stringify(updatedConfig),
     // Tells the spawned server (utils/log-server-info.ts) that THIS
     // process already owns Ctrl+C — see RASENGAN_SERVER_DEV_MANAGED
     // doc comment there for why the server must not also grab it.

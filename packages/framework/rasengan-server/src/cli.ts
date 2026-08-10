@@ -20,6 +20,19 @@ import { loadConfig, parseArgs } from './cli/config.js';
  */
 async function main() {
   const command = process.argv[2];
+
+  // RFC-0010: load .env* into process.env before loadConfig() below —
+  // loadConfig() dynamically imports the user's rasengan.server.js/.ts,
+  // which is user code and may itself read process.env (e.g.
+  // `port: Number(process.env.PORT) || 3000`). Loading here, before that
+  // import, is the earliest point in the whole CLI process, so both the
+  // config file AND everything downstream (dev()/start()/build(), and
+  // the child process they spawn, which inherits process.env) see it.
+  const { loadNodeEnvFiles } =
+    await import('@rasenganjs/runtime/adapters/node');
+  const mode = command === 'dev' ? 'development' : 'production';
+  await loadNodeEnvFiles(process.cwd(), mode);
+
   const rawArgs = process.argv.slice(3);
   const overrides = parseArgs(rawArgs);
   const config = await loadConfig(overrides);

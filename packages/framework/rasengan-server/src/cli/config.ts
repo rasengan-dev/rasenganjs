@@ -8,14 +8,13 @@ import type { RasenganServerConfig } from '../config/index.js';
  */
 const DEFAULT_CONFIG: RasenganServerConfig = {
   entry: 'src/main.ts',
-  port: 3000,
-  host: '0.0.0.0',
   watchDir: 'src/',
   build: {
     outDir: 'dist',
     minify: true,
-    formats: ['single-file', 'directory'],
+    formats: ['directory'],
   },
+  preset: 'node',
 };
 
 /**

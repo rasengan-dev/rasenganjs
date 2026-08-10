@@ -13,6 +13,8 @@ function Registry() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
 
+  console.log({ env: import.meta.env });
+
   useEffect(() => {
     api
       .listUsers()

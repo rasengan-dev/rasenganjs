@@ -59,7 +59,11 @@ describe('ConfigHolder', () => {
   describe('fallback to loadConfig', () => {
     it('returns defaults when no instance or env var is set', async () => {
       const result = await ConfigHolder.get();
-      expect(result.port).toBe(3000);
+      // port/host are no longer hardcoded in DEFAULT_CONFIG (RFC-0010) —
+      // the CLI's dev()/start() resolve `config.port ?? process.env.PORT
+      // ?? 3000` themselves, so loadConfig()'s own defaults leave port
+      // unset rather than always winning that fallback chain.
+      expect(result.port).toBeUndefined();
       expect(result.entry).toBe('src/main.ts');
     });
 
@@ -76,7 +80,8 @@ describe('ConfigHolder', () => {
       ConfigHolder.reset();
 
       const result = await ConfigHolder.get();
-      expect(result.port).toBe(3000);
+      // See the "returns defaults" test above for why this is unset now.
+      expect(result.port).toBeUndefined();
     });
   });
 

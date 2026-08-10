@@ -47,8 +47,13 @@ export default function getIPAddress() {
  * Log server info after the server is started
  * @param {number} port The port the server is running on
  * @param {boolean} open Whether to open the browser automatically
+ * @param {string[]} envFiles The `.env*` files that were loaded (RFC-0010)
  */
-export async function logServerInfo(port: number, open: boolean = false) {
+export async function logServerInfo(
+  port: number,
+  open: boolean = false,
+  envFiles: string[] = []
+) {
   // Constants
   const arrowRight = '→';
 
@@ -89,6 +94,12 @@ export async function logServerInfo(port: number, open: boolean = false) {
     `${chalk.bold.green(arrowRight)} ${chalk.bold('Runtime:')} Node.js\n`
   );
 
+  if (envFiles.length > 0) {
+    process.stdout.write(
+      `${chalk.bold.green(arrowRight)} ${chalk.bold('Env:')}     ${chalk.gray(envFiles.join(', '))}\n`
+    );
+  }
+
   console.log('');
 
   // Display options
@@ -115,7 +126,7 @@ export async function logServerInfo(port: number, open: boolean = false) {
     openBrowser(`http://localhost:${port}`);
   }
 
-  setupKeypress(() => logServerInfo(port));
+  setupKeypress(() => logServerInfo(port, undefined, envFiles));
 }
 
 /** Tracks whether the keypress listener has already been set up. */

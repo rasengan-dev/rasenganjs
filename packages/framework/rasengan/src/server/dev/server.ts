@@ -19,6 +19,8 @@ import {
 import {
   incomingToRequest,
   writeNodeResponse,
+  loadNodeEnvFiles,
+  getLoadedEnvFiles,
 } from '@rasenganjs/runtime/adapters/node';
 import { isHttpErrorLike } from '../node/api-router-middleware.js';
 
@@ -255,6 +257,11 @@ async function createDevNodeServer({
   // Get app path
   const rootPath = process.cwd();
 
+  // RFC-0010: which .env* files actually exist, for the startup
+  // banner below — display-only, doesn't re-load or re-apply anything
+  // (already done once at the top of launchDevNodeServer()).
+  const envFiles = await getLoadedEnvFiles(rootPath, 'development');
+
   // Get directory full path
   const __dirname = await getDirname(import.meta.url);
 
@@ -342,7 +349,7 @@ async function createDevNodeServer({
   // Start http server
   server.listen(port, () => {
     setTimeout(() => {
-      logServerInfo(port, config.server?.development?.open);
+      logServerInfo(port, config.server?.development?.open, envFiles);
     }, 100);
   });
 
@@ -360,6 +367,14 @@ async function createDevNodeServer({
 // Launch server
 (async function launchDevNodeServer() {
   const rootPath = process.cwd();
+
+  // RFC-0010: load .env* into process.env before importing anything
+  // user-authored — rasengan.config.js (loaded right below) and every
+  // _routes/_api module (loaded lazily per-request by Vite's SSR
+  // module runner, see ssrHandler/apiRouterDevMiddleware above) can
+  // then read process.env.X like any other Node app, with no manual
+  // dotenv usage required.
+  await loadNodeEnvFiles(rootPath, 'development');
 
   // Format config path
   const configPath = join(`${rootPath}/rasengan.config.js`);
