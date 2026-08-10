@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.4 (2026-08-10)
+
+### Features
+
+- implement RFC-0010 automatic server-side env var loading 946b3c3
+
 ### Bug Fixes
 
 - **`.env*` files were effectively never usable via the standard `process.env.X` idiom, and `rasengan-server.js`/`.ts` itself couldn't read them at all** (RFC-0010) — env loading previously only fed `Futon`'s own `app.env` bag, never `process.env`, and ran too late anyway (inside `dev()`/`start()`/`build()`, after `rasengan.server.js`/`.ts` had already been imported by `loadConfig()`). Loading now happens at the very top of `cli.ts`'s `main()`, before the config file is even imported, so both the config file and the spawned app see `process.env` correctly. Depends on `@rasenganjs/runtime`'s updated `loadNodeEnvFiles`/`loadBunEnvFiles`
