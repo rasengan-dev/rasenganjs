@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Features
+
+- the startup banner now shows an `Env:` line listing which `.env*` files were actually loaded from the build directory, right below `Runtime:` (RFC-0010)
+
 ## 2.0.0-beta.1 (2026-08-07)
 
 ### Features

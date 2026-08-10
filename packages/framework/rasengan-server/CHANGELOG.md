@@ -1,5 +1,18 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **`.env*` files were effectively never usable via the standard `process.env.X` idiom, and `rasengan-server.js`/`.ts` itself couldn't read them at all** (RFC-0010) — env loading previously only fed `Futon`'s own `app.env` bag, never `process.env`, and ran too late anyway (inside `dev()`/`start()`/`build()`, after `rasengan.server.js`/`.ts` had already been imported by `loadConfig()`). Loading now happens at the very top of `cli.ts`'s `main()`, before the config file is even imported, so both the config file and the spawned app see `process.env` correctly. Depends on `@rasenganjs/runtime`'s updated `loadNodeEnvFiles`/`loadBunEnvFiles`
+
+### Features
+
+- the startup banner (`dev`/`start`) now shows an `Env:` line listing which `.env*` files were actually loaded, right below `Runtime:` — checked against the real runtime in use, not the configured `preset`, so a project targeting `workerd` for production still shows it correctly during local `dev`/`start` (which always run on real Node/Bun)
+- `dev()`/`start()` resolve `config.port ?? process.env.PORT ?? 3000` (and the `HOST` equivalent) — a `PORT`/`HOST` env var can now configure the server, matching the convention most Node hosting platforms expect. `DEFAULT_CONFIG` no longer hardcodes `port`/`host` so this fallback actually has a chance to apply
+
+### Chores
+
+- `DEFAULT_CONFIG`'s default build `formats` is now `['directory']` instead of `['single-file', 'directory']`, and `preset` now defaults explicitly to `'node'`
+
 ## 1.0.0-beta.3 (2026-07-24)
 
 ## 1.0.0-beta.2 (2026-07-24)

@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Features
+
+- `loadNodeEnvFiles`/`loadBunEnvFiles` now also assign every loaded key into `process.env`/`Bun.env`, skipping any key already set there (RFC-0010) — previously they only fed `Futon.loadEnv()`'s own `app.env` bag, so the standard `process.env.X` idiom (app code and third-party libraries alike) never saw a loaded `.env*` value regardless of when loading ran
+- new `getLoadedEnvFiles(rootDir, mode)` export on both Node and Bun adapters — a display-only existence check (not a second parse) listing which of the standard `.env*` files actually exist, in load-priority order, for callers that want to show what was loaded (RFC-0010)
+
 ## 1.0.0-beta.3 (2026-08-06)
 
 ### Features
