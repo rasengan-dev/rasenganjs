@@ -81,6 +81,40 @@ app.get('/debug', async (ctx) => {
 });
 ```
 
+## Environment Variables
+
+Futon itself is zero-dependency and never touches the filesystem. Reading `.env*` files is the Node/Bun adapters' job, not Futon's. `NodeDevAdapter`, `NodeProdAdapter`, `BunDevAdapter`, and `BunProdAdapter` all call `loadNodeEnvFiles`/`loadBunEnvFiles` before `.serve()` returns:
+
+```ts title="What each adapter does before serving" showLineNumbers
+import { loadNodeEnvFiles } from '@rasenganjs/runtime/adapters/node';
+
+const vars = await loadNodeEnvFiles(rootDir, 'development'); // or 'production'
+app.loadEnv(vars);
+```
+
+This does two things:
+
+- Assigns every loaded key into `process.env`, skipping any key already set there. A real environment variable (shell, CI, a platform secret) always wins over a `.env*` file's value.
+- Feeds the same values into `app.env` / `ctx.runtime.env`, the portable access path that works the same way across every runtime Futon supports.
+
+```ts title="Reading env inside a handler" showLineNumbers
+app.get('/debug', async (ctx) => {
+  return json({
+    fromProcessEnv: process.env.DATABASE_URL, // Node/Bun only
+    fromRuntimeContext: ctx.runtime.env?.DATABASE_URL, // works everywhere, including workerd bindings
+  });
+});
+```
+
+Four filenames are checked, in this order, later files overriding earlier ones for the same key: `.env` → `.env.local` → `.env.{mode}` → `.env.{mode}.local`.
+
+<Note title="Workerd never reads .env* files" type="warning">
+  `WorkerdProdAdapter` never calls `loadEnv`. Cloudflare Workers has no
+  filesystem at runtime. Environment variables there come from `wrangler.toml`
+  bindings instead, passed through the platform's own `env` argument, a
+  fundamentally different mechanism from `.env*` files.
+</Note>
+
 <Pagination
   prev={{
     href: '/docs/futon/adapters/wintercg',

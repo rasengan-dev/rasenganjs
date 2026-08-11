@@ -120,6 +120,13 @@ export const serverNavigation: NavigationItem[] = [
         link: '/docs/server/core-concepts/config-and-build',
         level: 2,
       },
+      {
+        id: randomId(),
+        name: 'Environment Variables',
+        link: '/docs/server/core-concepts/environment-variables',
+        level: 2,
+        isNew: true,
+      },
     ],
   },
   {

@@ -10,35 +10,92 @@ toc: true
 </span>
 # Environment Variables
 
-Rasengan.js comes with built-in support for environment variables, which allows you to do the following:
+Rasengan.js reads `.env*` files automatically. There are two separate mechanisms, depending on where the variable needs to be visible:
 
-- Use `.env` to load environment variables
-- Bundle environment variables for the browser by prefixing with `RASENGAN_`
+- **Client-side**: variables prefixed with `RASENGAN_` are bundled into the browser JavaScript and exposed via `import.meta.env`.
+- **Server-side**: every variable (no prefix required) is loaded into `process.env`, available in SSR code, loaders, and `_api/` route handlers.
 
-## Load Environment Variables
+<Note title="Never prefix a secret with RASENGAN_" type="warning">
+  Anything matching the `RASENGAN_` prefix ships to the browser as plain text
+  in the client bundle. Database URLs, API secrets, and anything else
+  server-only should be named without that prefix, so they only ever reach
+  `process.env` on the server.
+</Note>
 
-Rasengan.js has built-in support for loading environment variables from `.env` into `import.meta.env`.
+## Client-Side: import.meta.env
 
-```txt title=".env" showLineNumbers copy
+Variables prefixed with `RASENGAN_` are inlined into the client bundle at build time.
+
+```txt title=".env" showLineNumbers
 RASENGAN_API_URL=https://api.example.com
-RASENGAN_API_KEY=abc123
-RASENGAN_PORT=3000
+RASENGAN_APP_NAME=My App
 ```
-
-## Access to Environment Variables
-
-Using environment variables in your application is easy. You can access them like follow:
 
 ```js title="src/app/home.page.js" showLineNumbers
 import.meta.env.RASENGAN_API_URL; // 'https://api.example.com'
-import.meta.env.RASENGAN_API_KEY; // 'abc123'
-import.meta.env.RASENGAN_PORT; // '3000'
+import.meta.env.RASENGAN_APP_NAME; // 'My App'
 ```
 
-{/* <AlertBox type="info">
-Only variables that start with `RASENGAN_` will be available in the browser.
+This is a build-time replacement (Vite's own mechanism): only `RASENGAN_`-prefixed keys are ever considered, and only inside code that actually runs in the browser.
 
-</AlertBox> */}
+## Server-Side: process.env
+
+Every other variable, in any `.env*` file, is loaded into `process.env` automatically, with no prefix restriction and no manual `dotenv` setup needed. This covers SSR rendering, `loader`/`generatePaths` functions, and [`_api/` route handlers](/docs/routing/api-routes):
+
+```txt title=".env" showLineNumbers
+DATABASE_URL=postgres://user:pass@localhost:5432/app
+STRIPE_SECRET_KEY=sk_live_...
+```
+
+```ts title="src/app/_api/orders.route.ts" showLineNumbers
+import { json } from 'rasengan/server';
+
+export async function GET() {
+  const dbUrl = process.env.DATABASE_URL; // available, no import needed
+  // ...
+  return json({ ok: true });
+}
+```
+
+### File Precedence
+
+Four filenames are checked, in this order, later files overriding earlier ones for the same key:
+
+| Order | File                   | Typical use                                              |
+| ----- | ---------------------- | --------------------------------------------------------- |
+| 1     | `.env`                 | Defaults shared across the team, usually committed        |
+| 2     | `.env.local`            | Personal overrides, git-ignored                           |
+| 3     | `.env.{mode}`           | Mode-specific values (`.env.development`, `.env.production`) |
+| 4     | `.env.{mode}.local`     | Personal, mode-specific overrides, git-ignored             |
+
+`{mode}` is `development` for `rasengan dev` and `production` for `rasengan build`.
+
+<Note title="A real environment variable always wins" type="info">
+  If a variable is already set in the real process environment (your shell,
+  CI, or a platform-injected secret on Vercel/Netlify), the value from a
+  `.env*` file never overrides it. Files only fill in what isn't already
+  set.
+</Note>
+
+### Where Loading Happens
+
+Loading runs at the earliest possible point, before your own code (including `rasengan.config.js`) is ever imported:
+
+- **`rasengan dev`**: loaded before `rasengan.config.js` and before Vite's dev server starts, so `_api/` routes, page loaders, and the config file itself all see it.
+- **`rasengan build`**: loaded before the build (and prerendering) starts, so `generatePaths()`/`loader()` functions called during static generation see it too.
+
+The dev server's startup banner confirms which files were actually found, right below `Runtime:`:
+
+```txt
+Rasengan v2.0.0-beta.4 running
+
+→ Local:   http://localhost:5320
+→ Network: http://192.168.4.144:5320
+→ Runtime: Node.js
+→ Env:     .env, .env.local
+```
+
+No line appears if no `.env*` file exists in the project.
 
 <Pagination
   prev={{

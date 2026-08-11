@@ -1,0 +1,23 @@
+{
+  "index_name": "rasenganjs",
+  "start_urls": ["https://rasengan.dev/docs", "https://rasengan.dev/packages"],
+  "sitemap_urls": ["https://rasengan.dev/sitemap.xml"],
+  "sitemap_alternate_links": true,
+  "selectors": {
+    "lvl0": {
+      "selector": "main span.font-mono-regular",
+      "global": true,
+      "default_value": "Documentation"
+    },
+    "lvl1": "main h1",
+    "lvl2": "main h2",
+    "lvl3": "main h3",
+    "lvl4": "main h4",
+    "text": "main p, main li, main td"
+  },
+  "strip_chars": " .,;:#",
+  "custom_settings": {
+    "separatorsToIndex": "_",
+    "attributesForFaceting": ["type", "lang"]
+  }
+}

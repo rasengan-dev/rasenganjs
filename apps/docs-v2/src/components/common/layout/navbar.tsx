@@ -1,11 +1,9 @@
 import { Link } from 'rasengan';
 import ThemeButton from '../atoms/buttons/theme-button';
 import { ArrowUpRight, ChevronDown, Coffee } from 'lucide-react';
-import { useNavigationStore } from '@/store/navigation';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
 import AppLogo from '../atoms/logo';
-import { useBannerStore } from '@/store/banner';
 import { Button } from '@/components/ui/button';
 import { NavigationData } from '@/data/docs';
 import {
@@ -14,7 +12,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useTheme } from '@rasenganjs/theme';
-import { cn } from '@/lib/utils';
+import Search from '@/components/ui/search';
+
+const env = import.meta.env;
 
 type Props = {
   className?: ComponentProps<'header'>['className'];
@@ -22,8 +22,15 @@ type Props = {
 
 export default function Navbar({ className }: Props) {
   const { isDark } = useTheme();
-  const { toggle } = useNavigationStore();
-  const { show: showBanner } = useBannerStore();
+
+  const algoliaAppId = env.RASENGAN_ALGOLIA_APP_ID;
+  const algoliaApiKey = env.RASENGAN_ALGOLIA_API_KEY;
+  const algoliaIndexName = env.RASENGAN_ALGOLIA_INDEX_NAME;
+  // The Algolia search-only API key is meant to be public (see
+  // .env.example), nothing here is a real secret.
+  const isSearchConfigured = Boolean(
+    algoliaAppId && algoliaApiKey && algoliaIndexName
+  );
 
   return (
     <header
@@ -116,29 +123,34 @@ export default function Navbar({ className }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* <div className="px-4">
-        <Search
-          applicationId="06YAZFOHSQ"
-          apiKey="94b6afdc316917b6e6cdf2763fa561df"
-          indexName="algolia_podcast_sample_dataset"
-          attributes={{
-            primaryText: "title",
-            secondaryText: "description",
-            tertiaryText: "itunesAuthor",
-            url: "url",
-            image: "imageUrl",
-          }}
-          buttonProps={{
-            style: {
-              height: 32
-            },
-            className: "hover:shadow-sm hover:translate-0"
-          }}
-        />
-      </div> */}
+        {isSearchConfigured && (
+          <div className="px-2 dark:[&_button]:bg-background">
+            <Search
+              applicationId={algoliaAppId}
+              apiKey={algoliaApiKey}
+              indexName={algoliaIndexName}
+              attributes={{
+                // Real schema of this Algolia Crawler-populated index
+                // (verified against a live query): there is no flat
+                // title/description/imageUrl, only a nested hierarchy of
+                // heading levels, e.g.:
+                //   hierarchy: { lvl0: "Documentation", lvl1: "Environment
+                //   Variables", lvl2: "Load Environment Variables" }
+                // lvl1 is the page title, lvl2 the specific section when
+                // the hit is a section-level record (null otherwise, in
+                // which case HitsList already skips the secondary line).
+                primaryText: 'hierarchy.lvl1',
+                secondaryText: 'hierarchy.lvl2',
+                url: 'url',
+              }}
+            />
+          </div>
+        )}
 
         {/* vertical separator */}
-        {/* <div className='h-4 w-[1px] bg-border dark:bg-input'></div> */}
+        {isSearchConfigured && (
+          <div className="h-4 w-[1px] bg-border dark:bg-input"></div>
+        )}
 
         <Link to="https://github.com/rasengan-dev/rasenganjs" target="_blank">
           <div className="flex items-center gap-2 text-foreground px-4">

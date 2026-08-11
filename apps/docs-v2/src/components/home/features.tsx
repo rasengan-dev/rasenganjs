@@ -21,7 +21,7 @@ const features: Feature[] = [
     icon: <Layers size={20} />,
     name: 'SSR & SSG',
     description:
-      'Render on the server, pre-render at build time, or both — pick per route.',
+      'Render on the server, pre-render at build time, or both, pick per route.',
     href: '/docs/rendering/ssr',
     pillar: 'Rasengan',
   },
@@ -29,7 +29,7 @@ const features: Feature[] = [
     icon: <FolderTree size={20} />,
     name: 'File-based Routing',
     description:
-      'Pages inferred straight from your folder structure — no route config to maintain.',
+      'Pages inferred straight from your folder structure, no route config to maintain.',
     href: '/docs/routing/file-based-routing',
     pillar: 'Rasengan',
   },
@@ -53,7 +53,7 @@ const features: Feature[] = [
     icon: <Boxes size={20} />,
     name: 'Dependency Injection',
     description:
-      'Module-scoped providers with lifecycle hooks — no extra DI library needed.',
+      'Module-scoped providers with lifecycle hooks, no extra DI library needed.',
     href: '/docs/server/dependency-injection/providers',
     pillar: 'Rasengan Server',
   },
@@ -75,7 +75,7 @@ export default function Features() {
           Why This Ecosystem
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground/70">
-          Six capabilities, two from each pillar — the same care put into the
+          Six capabilities, two from each pillar, the same care put into the
           frontend shows up in the runtime and the backend too.
         </p>
       </div>

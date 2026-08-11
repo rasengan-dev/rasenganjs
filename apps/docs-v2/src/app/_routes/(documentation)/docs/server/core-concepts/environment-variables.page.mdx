@@ -1,0 +1,102 @@
+---
+metadata:
+  title: Environment Variables | Core Concepts | Rasengan Server | Rasengan.js
+  description: .env* loading order, process.env, and the PORT/HOST fallback in Rasengan Server.
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  CORE CONCEPTS
+</span>
+# Environment Variables
+
+Rasengan Server loads `.env*` files into `process.env` automatically, no `dotenv` setup needed. This covers your app code, `rasengan.server.ts` itself, and any third-party library that reads `process.env` directly.
+
+```ts title="src/main.ts" showLineNumbers
+import { bootstrap } from '@rasenganjs/server';
+
+console.log(process.env.DATABASE_URL); // already set, no import needed
+
+bootstrap((app) => {
+  // ...
+});
+```
+
+## File Precedence
+
+Four filenames are checked, in this order, later files overriding earlier ones for the same key:
+
+| Order | File                | Typical use                                                   |
+| ----- | ------------------- | -------------------------------------------------------------- |
+| 1     | `.env`               | Defaults shared across the team, usually committed             |
+| 2     | `.env.local`          | Personal overrides, git-ignored                                |
+| 3     | `.env.{mode}`         | Mode-specific values (`.env.development`, `.env.production`)   |
+| 4     | `.env.{mode}.local`   | Personal, mode-specific overrides, git-ignored                 |
+
+`{mode}` is `development` for `rasengan-server dev` and `production` for `rasengan-server start`/`build`.
+
+<Note title="A real environment variable always wins" type="info">
+  If a variable is already set in the real process environment (your shell,
+  CI, or a platform-injected secret), the value from a `.env*` file never
+  overrides it. Files only fill in what isn't already set.
+</Note>
+
+## Where Loading Happens
+
+Loading runs at the very top of the CLI, before anything else, including `rasengan.server.ts` itself:
+
+```txt title="rasengan-server dev/start/build"
+1. Load .env* into process.env
+2. Import and evaluate rasengan.server.ts   <- sees process.env
+3. Spawn the app (dev/start) or bundle it (build)  <- inherits process.env
+```
+
+This matters because `rasengan.server.ts` is plain JavaScript/TypeScript, evaluated like any other module: if it reads `process.env` at the top level, that read has to happen *after* loading, not before.
+
+```ts title="rasengan.server.ts: reading env in the config itself" showLineNumbers
+import { defineConfig } from '@rasenganjs/server';
+
+export default defineConfig({
+  entry: 'src/main.ts',
+  port: Number(process.env.PORT) || 3000, // sees .env* files correctly
+});
+```
+
+For `dev` and `start`, the CLI spawns your app as a child process (`tsx watch`/`bun --watch`/`node`), the loaded variables are forwarded into that child's own `process.env`, so it's available from the child's very first line too.
+
+## PORT and HOST Fallback
+
+`dev()`/`start()` resolve the listening port and host in this order:
+
+```txt
+config.port  ??  process.env.PORT  ??  3000
+config.host  ??  process.env.HOST  ??  '0.0.0.0'
+```
+
+A `PORT`/`HOST` environment variable (the convention most Node hosting platforms use) now configures the server automatically, as long as `rasengan.server.ts` doesn't set `port`/`host` explicitly. See [Config & Build](/docs/server/core-concepts/config-and-build) for the full resolution order including CLI flags.
+
+## Startup Banner
+
+`dev`/`start` confirm which `.env*` files were actually found, right below `Runtime:`:
+
+```txt
+Rasengan Server v1.0.0-beta.4 running
+
+→ Local:   http://localhost:3000
+→ Network: http://192.168.4.144:3000
+→ Runtime: Node.js
+→ Env:     .env.local, .env.development
+```
+
+No line appears if no `.env*` file exists in the project. This is checked against the runtime actually running `dev`/`start` (always real Node.js or Bun locally), not the `preset` configured for production. A project targeting `workerd` for its production build still shows this correctly during local development.
+
+<Pagination
+  prev={{
+    href: '/docs/server/core-concepts/config-and-build',
+    label: 'Config & Build',
+  }}
+  next={{
+    href: '/docs/server/ecosystem/websocket-gateways',
+    label: 'WebSocket Gateways',
+  }}
+/>
