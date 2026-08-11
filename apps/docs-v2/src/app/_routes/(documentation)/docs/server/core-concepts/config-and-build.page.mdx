@@ -40,21 +40,30 @@ export default defineConfig({
 | `watchDir` | `string \| string[]`           | `"src/"`        | Directory(ies) watched in `dev` mode |
 | `build`    | `BuildConfig`                  | see below       | Production build output options      |
 
+<Note title="port and host aren't hardcoded defaults" type="info">
+  `3000`/`"0.0.0.0"` are the *final* fallback, not a value baked into
+  `RasenganServerConfig` itself. `dev`/`start` resolve `config.port ??
+  process.env.PORT ?? 3000` (and the `HOST` equivalent) first. See
+  [Environment Variables](/docs/server/core-concepts/environment-variables)
+  for the full precedence chain.
+</Note>
+
 ## BuildConfig
 
 | Option    | Type                                  | Default                        | Description                 |
 | --------- | ------------------------------------- | ------------------------------ | --------------------------- |
 | `outDir`  | `string`                              | `"dist"`                       | Output directory            |
 | `minify`  | `boolean`                             | `true`                         | Minify the bundled output   |
-| `formats` | `Array<'single-file' \| 'directory'>` | `['single-file', 'directory']` | Output format(s) to produce |
+| `formats` | `Array<'single-file' \| 'directory'>` | `['directory']` | Output format(s) to produce |
 
 ## Resolution Order
 
-Configuration merges from three sources, later ones winning:
+Configuration merges from four sources, later ones winning:
 
 1. Built-in defaults (the table above).
-2. `rasengan.server.js` or `rasengan.server.ts` at the project root.
-3. CLI flag overrides (`--port`, `--host`, `--entry`, `--preset`, `--watch-dir`), see [CLI](/docs/server/getting-started/cli).
+2. `rasengan.server.js` or `rasengan.server.ts` at the project root. `.env*` files are already loaded by this point, so this file can read `process.env` itself (see [Environment Variables](/docs/server/core-concepts/environment-variables)).
+3. `PORT`/`HOST` environment variables, for `port`/`host` specifically.
+4. CLI flag overrides (`--port`, `--host`, `--entry`, `--preset`, `--watch-dir`), see [CLI](/docs/server/getting-started/cli).
 
 ## Build Output Formats
 
@@ -84,7 +93,7 @@ bootstrap(
     label: 'Module Plugins',
   }}
   next={{
-    href: '/docs/server/ecosystem/websocket-gateways',
-    label: 'WebSocket Gateways',
+    href: '/docs/server/core-concepts/environment-variables',
+    label: 'Environment Variables',
   }}
 />

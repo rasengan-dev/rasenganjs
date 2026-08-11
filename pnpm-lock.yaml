@@ -21,7 +21,7 @@ importers:
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(tsx@4.23.1)(typescript@5.9.3)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
     devDependencies:
       '@types/node':
         specifier: ^20.19.39
@@ -163,20 +163,23 @@ importers:
         specifier: 1.2.2
         version: 1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       '@rasenganjs/serve':
-        specifier: 2.0.0-beta.0
-        version: 2.0.0-beta.0(rasengan@2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))
+        specifier: beta
+        version: 2.0.0-beta.2(rasengan@2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))
       '@rasenganjs/theme':
         specifier: ^1.1.0
         version: 1.1.0(react@19.2.8)
       '@rasenganjs/vercel':
-        specifier: 2.0.0-beta.0
-        version: 2.0.0-beta.0(rasengan@2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))
+        specifier: beta
+        version: 2.0.0-beta.2(rasengan@2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))
       '@tailwindcss/vite':
         specifier: ^4.*
         version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       '@vercel/analytics':
         specifier: ^1.5.0
         version: 1.6.1(react@19.2.8)
+      algoliasearch:
+        specifier: ^5.56.0
+        version: 5.56.0
       axios:
         specifier: ^1.8.3
         version: 1.18.1
@@ -196,14 +199,17 @@ importers:
         specifier: ^1.4.3
         version: 1.6.6(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       rasengan:
-        specifier: 2.0.0-beta.1
-        version: 2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        specifier: beta
+        version: 2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       react:
         specifier: ^19.1.1
         version: 19.2.8
       react-dom:
         specifier: ^19.1.1
         version: 19.2.8(react@19.2.8)
+      react-instantsearch:
+        specifier: ^7.41.0
+        version: 7.41.0(algoliasearch@5.56.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-resizable-panels:
         specifier: 3.0.6
         version: 3.0.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1059,7 +1065,7 @@ importers:
         version: 4.1.9(vitest@4.1.10)
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@libsql/client@0.14.0)(@types/pg@8.20.0)(pg@8.22.0)
+        version: 0.45.2(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(@types/pg@8.20.0)(pg@8.22.0)
       pg:
         specifier: ^8.22.0
         version: 8.22.0
@@ -1074,7 +1080,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/ecosystem/i18n:
     dependencies:
@@ -1152,7 +1158,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/ecosystem/kage-demo:
     dependencies:
@@ -1220,7 +1226,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/ecosystem/theme:
     dependencies:
@@ -1258,7 +1264,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       zod:
         specifier: ^3.23.0
         version: 3.25.76
@@ -1291,7 +1297,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       ws:
         specifier: ^8.21.0
         version: 8.21.1
@@ -1312,7 +1318,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/framework/mdx:
     dependencies:
@@ -1455,7 +1461,7 @@ importers:
         version: 8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/framework/rasengan-server:
     dependencies:
@@ -1499,7 +1505,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
 packages:
 
@@ -2291,6 +2297,10 @@ packages:
 
   '@neon-rs/load@0.0.4':
     resolution: {integrity: sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw==}
+
+  '@opentelemetry/api@1.9.0':
+    resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
+    engines: {node: '>=8.0.0'}
 
   '@oxc-project/types@0.143.0':
     resolution: {integrity: sha512-u6JZdLBTLotrNC9Vd6vPssINdzcCzleKAH6EJKImQb7GtYvX5keN2dxkoK44stCc4tffE6QQRtZTXVSzsLUlWA==}
@@ -3122,8 +3132,8 @@ packages:
       react-dom: ^19.1.1
       vite: ^7.*
 
-  '@rasenganjs/runtime@1.0.0-beta.3':
-    resolution: {integrity: sha512-3nd+uMe+5gswl8mfKRlQZSladr10BdOH/PXOAneHP4dTaRAeL4WdjjHPB5U2pdx8UjlT1zyWYa7dp72fYu38BQ==}
+  '@rasenganjs/runtime@1.0.0-beta.5':
+    resolution: {integrity: sha512-T1tmSQLU1sRhhb9LEWCiGY17KQ/sH/dmSKo8LaYEIw/BGEYwYnNDgsnLO6KvquPYZCCIaOfFEZOQewf97sme0Q==}
     peerDependencies:
       '@rasenganjs/futon': 1.0.0-beta.3
 
@@ -3133,11 +3143,11 @@ packages:
     peerDependencies:
       rasengan: ^1.2.1-beta.4
 
-  '@rasenganjs/serve@2.0.0-beta.0':
-    resolution: {integrity: sha512-+qL1Ey5PhJ+Vf2c6exoQU7kjIsLMKYFGIJc9tWV4qG7pCTLv2FwkSDLSxywkEkAtwHXGD+bU0XVIIYRKFkwPTQ==}
+  '@rasenganjs/serve@2.0.0-beta.2':
+    resolution: {integrity: sha512-zioC4+sdTwXboHsI3dxR/CyGv2o/Ioy5kZuzUy+gfzuzJBSr159Gqlj5l0+CD1QHZG+Zw3QPU8qOhgjqRhRoUg==}
     hasBin: true
     peerDependencies:
-      rasengan: ^2.0.0-beta.0
+      rasengan: ^2.0.0-beta.4
 
   '@rasenganjs/theme@1.1.0':
     resolution: {integrity: sha512-fg5Ilzi2vUFVnvmTzSALV1pwxEAcVwUDcAro1+msJiYbRf6MgiWlVkEcrYjDwwA2+JLi7VCWnz0tFln+DQ/GFg==}
@@ -3149,10 +3159,10 @@ packages:
     peerDependencies:
       rasengan: ^1.2.1-beta.4
 
-  '@rasenganjs/vercel@2.0.0-beta.0':
-    resolution: {integrity: sha512-6osh/YQbQEHpWFj2CfQrSyaQr1Ov538bbe/ZN/odsatimK7slM/vwFd32IFdsv7j0SID7Jh+5aZwXzb1MLsDSA==}
+  '@rasenganjs/vercel@2.0.0-beta.2':
+    resolution: {integrity: sha512-jprsrUP+oPbVqPIlZjc/1IcuDc52ALNWZlny385WjyI3YED8i+O8uMCJRd/pdN0I0DzIaex22/nwcFgeFRe7PA==}
     peerDependencies:
-      rasengan: ^2.0.0-beta.1
+      rasengan: ^2.0.0-beta.3
 
   '@rolldown/binding-android-arm64@1.2.3':
     resolution: {integrity: sha512-zrJtHDcaZJ1Fp7xf4hNl+7seH9Cn/N5TwLYkhgXREtBwAd/jaqW3uqeHxpDugJLVICWg4eW44kOQEGJ1r6jCGw==}
@@ -6116,8 +6126,8 @@ packages:
       stylus:
         optional: true
 
-  rasengan@2.0.0-beta.1:
-    resolution: {integrity: sha512-xkIvRqcG7qIosCzFx5coIXw3fJKS58PIyepFVzGxVjGRsza9bJN39sxfoBHGvm1PKhfyvzj2de+9D/lE2qOvJQ==}
+  rasengan@2.0.0-beta.4:
+    resolution: {integrity: sha512-iAbfQ2iLB5GiutbgQkL1CThIXLIpQuiiCIrJe34k24lNrKgif6pSVMK4G6HQ40ycGxxHXKAE/omFCQI5Y5D2EQ==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -7795,6 +7805,9 @@ snapshots:
 
   '@neon-rs/load@0.0.4': {}
 
+  '@opentelemetry/api@1.9.0':
+    optional: true
+
   '@oxc-project/types@0.143.0': {}
 
   '@parcel/watcher-android-arm64@2.6.0':
@@ -8715,7 +8728,7 @@ snapshots:
       - shiki
       - supports-color
 
-  '@rasenganjs/runtime@1.0.0-beta.3(@rasenganjs/futon@1.0.0-beta.3)':
+  '@rasenganjs/runtime@1.0.0-beta.5(@rasenganjs/futon@1.0.0-beta.3)':
     dependencies:
       '@rasenganjs/futon': 1.0.0-beta.3
       ws: 8.21.1
@@ -8759,12 +8772,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@rasenganjs/serve@2.0.0-beta.0(rasengan@2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))':
+  '@rasenganjs/serve@2.0.0-beta.2(rasengan@2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))':
     dependencies:
       '@rasenganjs/futon': 1.0.0-beta.3
-      '@rasenganjs/runtime': 1.0.0-beta.3(@rasenganjs/futon@1.0.0-beta.3)
+      '@rasenganjs/runtime': 1.0.0-beta.5(@rasenganjs/futon@1.0.0-beta.3)
       get-port: 7.2.0
-      rasengan: 2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+      rasengan: 2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       source-map-support: 0.5.21
     transitivePeerDependencies:
       - bufferutil
@@ -8779,10 +8792,10 @@ snapshots:
       execa: 8.0.1
       rasengan: 1.2.2(@rasenganjs/mdx@1.2.1(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
-  '@rasenganjs/vercel@2.0.0-beta.0(rasengan@2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))':
+  '@rasenganjs/vercel@2.0.0-beta.2(rasengan@2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))':
     dependencies:
       execa: 8.0.1
-      rasengan: 2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+      rasengan: 2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   '@rolldown/binding-android-arm64@1.2.3':
     optional: true
@@ -9294,7 +9307,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -9954,9 +9967,10 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  drizzle-orm@0.45.2(@libsql/client@0.14.0)(@types/pg@8.20.0)(pg@8.22.0):
+  drizzle-orm@0.45.2(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(@types/pg@8.20.0)(pg@8.22.0):
     optionalDependencies:
       '@libsql/client': 0.14.0
+      '@opentelemetry/api': 1.9.0
       '@types/pg': 8.20.0
       pg: 8.22.0
 
@@ -12147,10 +12161,10 @@ snapshots:
       - babel-plugin-react-compiler
       - supports-color
 
-  rasengan@2.0.0-beta.1(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
+  rasengan@2.0.0-beta.4(@rasenganjs/mdx@1.2.2(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rollup@4.62.2)(shiki@4.3.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)))(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(less@4.8.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sass@1.101.7)(stylus@0.64.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@rasenganjs/futon': 1.0.0-beta.3
-      '@rasenganjs/runtime': 1.0.0-beta.3(@rasenganjs/futon@1.0.0-beta.3)
+      '@rasenganjs/runtime': 1.0.0-beta.5(@rasenganjs/futon@1.0.0-beta.3)
       '@vitejs/plugin-react': 6.0.5(babel-plugin-react-compiler@1.0.0)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
       chalk: 5.6.2
       commander: 11.1.0
@@ -13210,7 +13224,7 @@ snapshots:
       tsx: 4.23.1
       yaml: 2.9.0
 
-  vitest@4.1.10(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
+  vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@20.19.43)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
@@ -13233,12 +13247,13 @@ snapshots:
       vite: 8.2.1(@types/node@20.19.43)(esbuild@0.27.7)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@opentelemetry/api': 1.9.0
       '@types/node': 20.19.43
       '@vitest/coverage-v8': 4.1.9(vitest@4.1.10)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.10(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
+  vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@22.20.1)(@vitest/coverage-v8@4.1.9)(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
@@ -13261,12 +13276,13 @@ snapshots:
       vite: 8.2.1(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@opentelemetry/api': 1.9.0
       '@types/node': 22.20.1
       '@vitest/coverage-v8': 4.1.9(vitest@4.1.10)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
+  vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.9(vitest@4.1.10))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0))
@@ -13289,6 +13305,7 @@ snapshots:
       vite: 8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@opentelemetry/api': 1.9.0
       '@types/node': 24.13.3
       '@vitest/coverage-v8': 4.1.9(vitest@4.1.10)
     transitivePeerDependencies:

@@ -29,6 +29,12 @@ export class UserController extends Controller {
   }
 
   findAll: RouteHandler = async (ctx) => {
+    console.log({ ctx: ctx.runtime });
+
+    const file = await ctx.runtime.assets?.load('package.json');
+
+    console.log(file);
+
     const list = await this.userService.findAll();
     return ctx.res.json(list);
   };
