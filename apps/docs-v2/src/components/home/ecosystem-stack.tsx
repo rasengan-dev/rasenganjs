@@ -408,8 +408,8 @@ export default function EcosystemStack() {
           Built on a Foundation of Fast, Production-Grade Runtimes
         </h2>
         <p className="mx-auto max-w-[620px] mt-4 text-lg leading-relaxed text-foreground/70">
-          Futon powers Rasengan and Rasengan Server — and runs unmodified on
-          Node, Bun, or Workerd.
+          Futon powers Rasengan and Rasengan Server and runs unmodified on Node,
+          Bun, or Workerd.
         </p>
       </div>
 

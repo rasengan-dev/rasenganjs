@@ -98,7 +98,7 @@ export default function Ecosystem() {
           A Growing Ecosystem
         </h2>
         <p className="mt-4 text-lg leading-relaxed text-foreground/70">
-          Smaller packages that fill in the gaps — state, images, i18n,
+          Smaller packages that fill in the gaps. State, images, i18n,
           real-time, and more, each usable on its own.
         </p>
       </div>

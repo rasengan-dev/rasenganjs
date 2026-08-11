@@ -57,8 +57,8 @@ export default function Hero({
 
       <p className="mt-6 text-lg lg:text-xl text-foreground/70 max-w-[620px] leading-relaxed">
         Rasengan.js pairs a modern React meta-framework with Futon and Rasengan
-        Server — one ecosystem covering every layer of your stack, from
-        rendering to WebSockets.
+        Server. One ecosystem covering every layer of your stack, from rendering
+        to WebSockets.
       </p>
 
       <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
