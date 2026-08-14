@@ -1,5 +1,13 @@
 ## Unreleased
 
+## 2.0.0-beta.5 (2026-08-14)
+
+### Features
+
+- add @rasenganjs/cloudflare deploy adapter (RFC-0009 Phase 2) f628be6
+- add @rasenganjs/sitemap package for sitemap generation 379ca2d
+- additive modules option for RFC-0009's Cloudflare adapter groundwork eba1b3c
+
 ## 2.0.0-beta.4 (2026-08-10)
 
 ### Features
