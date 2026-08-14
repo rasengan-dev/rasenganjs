@@ -6,9 +6,18 @@ import { resolvePath } from '../../core/config/utils/path.js';
 import { generateRoutes } from '../../routing/utils/index.js';
 import { BuildOptions } from '../build/index.js';
 import { stripDataSuffix } from '../dev/utils.js';
+import type { RouterComponent } from '../../routing/interfaces.js';
 
 interface MatchRoutesGuardOptions {
   build: BuildOptions;
+  /**
+   * Pre-loaded router, bypassing the dynamic import() this middleware
+   * would otherwise do — for runtimes with no filesystem and no
+   * dynamic import-by-path support (Cloudflare Workers). Every other
+   * caller omits this and keeps today's exact behavior
+   * (RFC-0009 §Detailed Design 1).
+   */
+  modules?: { appRouter: RouterComponent };
 }
 
 /**
@@ -34,21 +43,23 @@ interface MatchRoutesGuardOptions {
 export function createMatchRoutesGuard(
   options: MatchRoutesGuardOptions
 ): Middleware {
-  const { build: buildOptions } = options;
+  const { build: buildOptions, modules } = options;
 
   return async (ctx: Context, next) => {
-    const AppRouter = await (
-      await import(
-        /* @vite-ignore */
-        resolvePath(
-          path.posix.join(
-            buildOptions.buildDirectory,
-            buildOptions.serverPathDirectory,
-            'app.router.js'
+    const AppRouter = modules
+      ? modules.appRouter
+      : await (
+          await import(
+            /* @vite-ignore */
+            resolvePath(
+              path.posix.join(
+                buildOptions.buildDirectory,
+                buildOptions.serverPathDirectory,
+                'app.router.js'
+              )
+            )
           )
-        )
-      )
-    ).default;
+        ).default;
 
     const staticRoutes = generateRoutes(AppRouter);
     const pathname = stripDataSuffix(new URL(ctx.request.url).pathname);

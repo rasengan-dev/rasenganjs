@@ -8,7 +8,7 @@
 
 `rasengan` currently ships two deploy adapters, `@rasenganjs/vercel` and `@rasenganjs/netlify` (both rewritten on Futon per RFC-0007, see their own CHANGELOGs), plus a Node/Bun production server (`@rasenganjs/serve`). All three assume a real filesystem and Node-style dynamic `import()` of build artifacts at request time. Cloudflare Workers — the third major serverless target, and one `AppConfig.runtime` already has a name for (`'workerd'`) — has neither: no filesystem at runtime, and no dynamic `import()` of a computed path. A worker must ship as a single, statically-bundled JS module.
 
-This RFC proposes `@rasenganjs/cloudflare`, a new deploy adapter mirroring `@rasenganjs/vercel`'s and `@rasenganjs/netlify`'s shape (a `configure()` export wired into `rasengan.config.js`'s `adapter` option), plus a small, additive, backward-compatible change to three existing `rasengan/server` exports (`createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`) so they can be driven by pre-loaded modules instead of always dynamically importing by path. Static assets are served via Cloudflare's modern **Workers Assets** feature (`wrangler.toml`'s `[assets]` block), the same "CDN serves static files directly, function only handles the rest" split Vercel's `handle: 'filesystem'` route and Netlify's static redirects already establish.
+This RFC proposes `@rasenganjs/cloudflare`, a new deploy adapter mirroring `@rasenganjs/vercel`'s and `@rasenganjs/netlify`'s shape (a `configure()` export wired into `rasengan.config.js`'s `adapter` option), plus a small, additive, backward-compatible change to four existing `rasengan/server`-reachable functions (`createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`, and `entry.server.tsx`'s `render()`) so they can be driven by pre-loaded modules instead of always dynamically importing by path. Static assets are served via Cloudflare's modern **Workers Assets** feature (`wrangler.toml`'s `[assets]` block), the same "CDN serves static files directly, function only handles the rest" split Vercel's `handle: 'filesystem'` route and Netlify's static redirects already establish.
 
 `@rasenganjs/runtime`'s `WorkerdProdAdapter` (`packages/platform/runtime/src/adapters/workerd/`) already exists at the low-level HTTP layer — this RFC is entirely about the deploy-time packaging problem above it, not about talking to workerd's `fetch` event model, which is already solved.
 
@@ -45,6 +45,35 @@ The path is **constructed at runtime** (`path.posix.join(...)`, then `resolvePat
 
 `ManifestManager` (`server/build/manifest.tsx`) has the same problem one layer down: its constructor calls `fs.readFileSync(this._manifestPath, 'utf-8')` synchronously to load `manifest.json`. `createRequestHandler` also does a raw `fs.existsSync`/`fs.readFileSync` on `config.json`. Both need a filesystem-free path too, not just the two `import()` calls.
 
+**A fourth call site, one layer deeper, was missed in an earlier draft of this RFC and is included here:** `createRequestHandler` calls `render(Router, { ..., buildOptions, ... })` (`server/node/index.tsx:163`), passing `buildOptions` straight through. `render` — the `RenderStreamFunction` exported by `entry.server.tsx` and one of the artifacts this RFC's generated Worker entry statically imports — has its own production branch (`entry.server.tsx:62-84`) that does exactly the same shape of problem two levels removed from `createRequestHandler`'s own fix:
+
+```ts
+if (buildOptions) {
+  App = (
+    await loadModuleSSR(
+      posix.join(
+        buildOptions.buildDirectory,
+        buildOptions.serverPathDirectory,
+        'main.js'
+      )
+    )
+  ).default;
+  Template = (
+    await loadModuleSSR(
+      join(
+        buildOptions.buildDirectory,
+        buildOptions.serverPathDirectory,
+        'template.js'
+      )
+    )
+  ).default;
+}
+```
+
+Statically importing `entry.server.js` into the Worker bundle (as § Detailed Design already proposes) does **not** fix this: the function body itself still calls `loadModuleSSR` with a computed path at request time, which fails identically to the other three call sites on a filesystem-less runtime. `main.js` and `template.js` have the same deterministic, unhashed filenames as `app.router.js` (see `defaults.ts`'s `rolldownOptions.input`), so the fix is the same shape as everywhere else in this RFC — see § Detailed Design 1 for the added `render()` overload.
+
+On the positive side, one layer deeper still: `renderToStream`/`renderToString` (`server/node/rendering.ts`), which `render()` calls into, already use `renderToReadableStream` from `react-dom/server.edge` (Web Streams), not the Node-only `renderToPipeableStream` — a RFC-0007 outcome, not new work this RFC needs to do. The React rendering layer itself is already edge-portable; the only remaining problem, at every level, is module loading.
+
 ## Static assets: Workers Assets, not KV/R2
 
 Older Cloudflare tutorials route static files through Workers KV ("Workers Sites") — that mechanism is deprecated in favor of **Workers Assets**, a `wrangler.toml`/`wrangler.json` `[assets]` block (`directory = "..."`) that Cloudflare's own edge CDN serves directly, without invoking the Worker at all for matched paths (conceptually identical to Vercel's `{ handle: 'filesystem' }` route and Netlify's static redirects, which both already exist in `@rasenganjs/vercel`/`@rasenganjs/netlify`). No KV namespace, no R2 bucket, no extra Cloudflare product needed just to ship `dist/client`.
@@ -56,7 +85,7 @@ Older Cloudflare tutorials route static files through Workers KV ("Workers Sites
 - A `@rasenganjs/cloudflare` package with the same `configure()`-returns-`AdapterConfig` shape as `@rasenganjs/vercel`/`@rasenganjs/netlify`, wired the same way in `rasengan.config.js`.
 - SSR builds (`config.ssr && !config.prerender`) produce a single bundled Worker script plus a generated `wrangler.toml`, deployable via `wrangler deploy` with no manual editing.
 - SPA/SSG builds produce **no Worker at all** — pure static hosting through Workers Assets, matching Vercel's/Netlify's own "no function for static-only builds" behavior.
-- `createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`, and `ManifestManager` gain an **additive, optional** way to be driven by pre-loaded modules — zero behavior change for every existing caller (`@rasenganjs/vercel`, `@rasenganjs/netlify`, `@rasenganjs/serve`, `server/dev/server.ts`) that doesn't pass the new option.
+- `createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`, `entry.server.tsx`'s `render()`, and `ManifestManager` gain an **additive, optional** way to be driven by pre-loaded modules — zero behavior change for every existing caller (`@rasenganjs/vercel`, `@rasenganjs/netlify`, `@rasenganjs/serve`, `server/dev/server.ts`) that doesn't pass the new option.
 - `_api/` routes (RFC-0008) work on Cloudflare the same as they do on Vercel/Netlify — the API router is just another statically-imported module in the bundle.
 
 ## Non-goals
@@ -92,7 +121,7 @@ rasengan build (ssr: false, or prerender: true)
 
 # Detailed Design
 
-## 1. Additive `modules` option on the three `rasengan/server` request-handling exports
+## 1. Additive `modules` option on the four `rasengan/server`-reachable request-handling functions
 
 ```ts
 // server/node/index.tsx
@@ -100,17 +129,19 @@ interface CreateRequestHandlerOptions {
   build: BuildOptions;
   /**
    * Pre-loaded build artifacts, bypassing every dynamic import() and
-   * filesystem read this function would otherwise do. Required on
-   * runtimes with no filesystem and no dynamic import-by-path support
-   * (Cloudflare Workers) — every other caller (Vercel, Netlify,
-   * @rasenganjs/serve, the dev server) omits this and keeps today's
-   * exact behavior.
+   * filesystem read this function (and, transitively, entry.server's
+   * render()) would otherwise do. Required on runtimes with no
+   * filesystem and no dynamic import-by-path support (Cloudflare
+   * Workers) — every other caller (Vercel, Netlify, @rasenganjs/serve,
+   * the dev server) omits this and keeps today's exact behavior.
    */
   modules?: {
     entryServer: { render: RenderStreamFunction };
     appRouter: RouterComponent;
     config: OptimizedAppConfig;
     manifest: Record<string, ManifestEntry>; // raw manifest.json content
+    app: FunctionComponent<AppProps>; // forwarded into render()'s own modules option, see below
+    template: FunctionComponent<TemplateProps>; // forwarded into render()'s own modules option, see below
   };
 }
 ```
@@ -142,6 +173,47 @@ const AppRouter = options.modules
 
 `createApiRouterMiddleware`'s current setup-time `fs.existsSync(apiRouterPath)` check (deciding whether to return a no-op passthrough) becomes `options.modules ? options.modules.apiRouter != null : fs.existsSync(apiRouterPath)` — a Cloudflare caller that has no `_api/` folder simply omits `apiRouter` from `modules`.
 
+### 1.1. `entry.server.tsx`'s `render()` needs the same treatment, one layer down
+
+`render`'s production branch (`entry.server.tsx:62-84`) does its own `loadModuleSSR` calls for `main.js`/`template.js`, driven by the same `buildOptions` `createRequestHandler` passes it (`server/node/index.tsx:163`, `render(Router, { ..., buildOptions, ... })`). Statically importing `entry.server.js` into the Worker bundle does not, by itself, fix this — the function body still tries to dynamically import by computed path at request time. `RenderStreamFunction`'s options gain the same additive shape:
+
+```ts
+// entries/server/entry.server.tsx
+export type RenderStreamFunction = (
+  StaticRouterComponent: React.ReactNode,
+  options: {
+    metadata: { page: Metadata; layout: MetadataWithoutTitleAndDescription };
+    assets?: JSX.Element[];
+    buildOptions?: BuildOptions;
+    statusCode?: number;
+    responseHeaders?: Record<string, string>;
+    /** Pre-loaded App/Template, bypassing render()'s own loadModuleSSR calls. */
+    modules?: {
+      App: FunctionComponent<AppProps>;
+      Template: FunctionComponent<TemplateProps>;
+    };
+  },
+  stream?: boolean
+) => Promise<Response>;
+```
+
+```ts
+// inside render(), replacing the `if (buildOptions)` branch's body
+if (options.modules) {
+  App = options.modules.App;
+  Template = options.modules.Template;
+} else if (buildOptions) {
+  App = (await loadModuleSSR(...)).default; // unchanged
+  Template = (await loadModuleSSR(...)).default; // unchanged
+} else {
+  // unchanged dev-mode branch
+}
+```
+
+`createRequestHandler`'s own `modules` branch forwards `app`/`template` straight through into its `render(...)` call's `modules` option — the Cloudflare Worker entry only ever populates `CreateRequestHandlerOptions.modules` once, and both levels read from the same object.
+
+`main.js` and `template.js` have the same deterministic, unhashed filenames as `app.router.js` (`defaults.ts`'s `rolldownOptions.input`), so § Detailed Design 3's generated Worker entry statically imports both alongside the other artifacts — no new bundling technique needed, just two more `import` statements.
+
 ## 2. `ManifestManager` accepts a pre-parsed manifest
 
 ```ts
@@ -166,6 +238,8 @@ Structurally the same shape `@rasenganjs/vercel`'s and `@rasenganjs/netlify`'s g
 ```ts
 import * as entryServer from './dist-server/entry.server.js';
 import appRouter from './dist-server/app.router.js';
+import app from './dist-server/main.js';
+import template from './dist-server/template.js';
 import apiRouter from './dist-server/api-router.js'; // omitted entirely when the app has no _api/
 import config from './dist-server/config.json' with { type: 'json' };
 import manifest from './dist-client/.vite/manifest.json' with { type: 'json' };
@@ -180,7 +254,7 @@ import { WorkerdProdAdapter } from '@rasenganjs/runtime/adapters/workerd';
 const build = {
   /* BuildOptions — directory fields become irrelevant, everything is pre-loaded */
 };
-const modules = { entryServer, appRouter, config, manifest };
+const modules = { entryServer, appRouter, config, manifest, app, template };
 
 const app = new Futon();
 const adapter = new WorkerdProdAdapter({ passthrough: true });
@@ -233,7 +307,7 @@ directory = ".cloudflare/assets"
 # Migration Phases
 
 **Phase 1 — Core additive `modules` support**
-Add the `modules` option to `createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`, and the `ManifestManager` constructor overload. No new package yet. Verification: full existing `rasengan` test suite stays green untouched (proves zero behavior change for the no-`modules` path), plus new unit tests exercising the `modules`-provided path directly (constructing a `RouterComponent`/fake `Router` by hand, same technique the existing `generate-routes.test.ts`/`api-router-middleware.test.ts` suites already use).
+Add the `modules` option to `createRequestHandler`, `createMatchRoutesGuard`, `createApiRouterMiddleware`, `entry.server.tsx`'s `render()` (§ Detailed Design 1.1 — the call site missed in an earlier draft of this RFC), and the `ManifestManager` constructor overload. No new package yet. Verification: full existing `rasengan` test suite stays green untouched (proves zero behavior change for the no-`modules` path), plus new unit tests exercising the `modules`-provided path directly (constructing a `RouterComponent`/fake `Router` by hand, same technique the existing `generate-routes.test.ts`/`api-router-middleware.test.ts` suites already use) — including a test that drives `createRequestHandler` end-to-end with `modules` set and asserts `render()` never calls `loadModuleSSR`, since that's the specific failure mode a filesystem-less runtime would hit.
 
 **Phase 2 — `@rasenganjs/cloudflare` package**
 The `prepare()` pipeline described above: directory setup, `dist/client` → assets copy, Worker entry generation, esbuild bundling, `wrangler.toml` generation. `Adapters.CLOUDFLARE` wired into `core/plugins/index.ts`. Verification target: a real `apps/playground/*-cloudflare` (or a temporary addition to an existing playground, following `@rasenganjs/netlify`'s own precedent of testing against `file-based-routing`) — confirm the bundle is syntactically valid (`node --check`, or an actual `esbuild`/`wrangler`-level check), and, if `wrangler` can run locally in this environment, `wrangler dev` against the generated output for a real end-to-end request.
@@ -246,7 +320,7 @@ A dedicated playground (mirroring `api-routes-demo`'s role for RFC-0008), `READM
 # Open Questions
 
 - **`detectDeploymentPlatform()`'s Cloudflare signal**: what environment variable does Cloudflare's own build system actually set (for Pages CI builds specifically, since raw `wrangler deploy` runs locally/from arbitrary CI and has no single reliable env var the way Vercel/Netlify's own hosted build runners do)? May need `detectDeploymentPlatform()` to stay opt-in for Cloudflare (i.e. the adapter's `prepare()` always runs when configured, regardless of platform auto-detection) rather than gated the same way Vercel/Netlify are — needs research before Phase 2.
-- **`nodejs_compat` scope**: how much of `rasengan`'s SSR code path (React's own server-rendering internals, `node:path`/`node:stream` usage inside `entry.server.js`'s render pipeline) actually needs Cloudflare's `nodejs_compat` flag versus already being portable? Affects whether the generated `wrangler.toml` can omit it for a leaner Worker.
+- **`nodejs_compat` scope**: partially resolved — `server/node/rendering.ts` already renders via `renderToReadableStream` from `react-dom/server.edge` (Web Streams), not the Node-only `renderToPipeableStream`, so the React rendering layer itself needs no Node compat shim. What's still unconfirmed: `renderToStream` and `api-router-middleware.ts`'s error-message branch both read `process.env.NODE_ENV` at what looks like request time, and it's not confirmed whether Vite's `ssr`/`ssg` build already inlines that as a literal via `define` (making the runtime `process` object moot) or genuinely needs `nodejs_compat`'s `process.env` shim. Confirm before deciding whether the generated `wrangler.toml` can omit the flag.
 - **esbuild vs. Rolldown for the bundling step**: `rasengan`'s own build already uses Rolldown (RFC-0007) for the `ssr`/`ssg`/`client` Vite environments — should `@rasenganjs/cloudflare`'s adapter-side bundling pass use Rolldown too (consistency, one fewer toolchain) instead of esbuild? esbuild is the more common choice for this exact "bundle a small entry + its imports into one Worker file" job (matches `rasengan-server`'s own `--preset workerd` precedent, and Wrangler's own internal bundler is esbuild-based), but worth confirming against `rasengan-server`'s actual implementation before deciding.
 - **Bundle size**: React's server-rendering runtime plus `react-router` plus `@rasenganjs/futon` bundled into a single Worker file — Cloudflare Workers have a script-size limit (varies by plan). Worth measuring against a real playground build in Phase 2 before considering it a solved problem.
 - **`_api`-only apps (no page routes at all)**: does it make sense to support a Cloudflare deploy with `_routes/` entirely absent, API-only? Not blocking — `flatRoutes()`'s `DefaultLayout` fallback already means an app with zero pages still produces a valid (if empty) router, so this likely falls out of the existing design for free, but worth a Phase 2 test case.

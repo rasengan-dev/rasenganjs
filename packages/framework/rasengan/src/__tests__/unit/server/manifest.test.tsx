@@ -136,4 +136,16 @@ describe('ManifestManager', () => {
     expect(manager.findEntry('src/index.js')?.file).toBe('assets/index-abc.js');
     expect(manager.findEntry('does/not/exist.js')).toBeUndefined();
   });
+
+  it('accepts a pre-parsed manifest object instead of a path, with no filesystem read (RFC-0009)', () => {
+    const manager = new ManifestManager({
+      'src/index.js': { name: 'src/index', file: 'assets/index-abc.js' },
+    });
+
+    expect(manager.resolveAssets('')).toEqual({
+      scripts: ['assets/index-abc.js'],
+      styles: [],
+    });
+    expect(manager.findEntry('src/index.js')?.file).toBe('assets/index-abc.js');
+  });
 });

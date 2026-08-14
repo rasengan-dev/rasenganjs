@@ -23,6 +23,17 @@ export type RenderStreamFunction = (
     buildOptions?: BuildOptions;
     statusCode?: number;
     responseHeaders?: Record<string, string>;
+    /**
+     * Pre-loaded App/Template, bypassing this function's own
+     * `loadModuleSSR` calls entirely — for runtimes with no
+     * filesystem and no dynamic import-by-path support (Cloudflare
+     * Workers). Every other caller omits this and keeps today's
+     * exact behavior (RFC-0009 §Detailed Design 1.1).
+     */
+    modules?: {
+      App: FunctionComponent<AppProps>;
+      Template: FunctionComponent<TemplateProps>;
+    };
   },
   stream?: boolean
 ) => Promise<Response>;
@@ -48,7 +59,7 @@ export const render: RenderStreamFunction = async (
   options,
   stream = true
 ) => {
-  const { metadata, assets, buildOptions } = options;
+  const { metadata, assets, buildOptions, modules } = options;
 
   // Root path
   const rootPath = process.cwd();
@@ -56,8 +67,11 @@ export const render: RenderStreamFunction = async (
   let App: FunctionComponent<AppProps>;
   let Template: FunctionComponent<TemplateProps>;
 
-  // If build options are provided, that means we are in production mode
-  if (buildOptions) {
+  if (modules) {
+    App = modules.App;
+    Template = modules.Template;
+  } else if (buildOptions) {
+    // If build options are provided, that means we are in production mode
     App = (
       await loadModuleSSR(
         posix.join(

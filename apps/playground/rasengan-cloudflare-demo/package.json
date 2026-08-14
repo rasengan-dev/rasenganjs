@@ -1,0 +1,25 @@
+{
+  "name": "rasengan-cloudflare-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rasengan dev",
+    "build": "rasengan build",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@rasenganjs/cloudflare": "workspace:*",
+    "rasengan": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.0",
+    "miniflare": "4.20260730.0",
+    "typescript": "^5.8.2",
+    "vite": "^8.2.1",
+    "wrangler": "^4.0.0"
+  }
+}

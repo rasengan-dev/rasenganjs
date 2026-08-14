@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { Router, json } from '@rasenganjs/futon';
 import {
   createApiRouterMiddleware,
   isHttpErrorLike,
@@ -197,5 +198,41 @@ describe('createApiRouterMiddleware', () => {
     } finally {
       process.env.NODE_ENV = previousEnv;
     }
+  });
+
+  it('uses a pre-loaded router from `modules` instead of fs.existsSync + dynamic import (RFC-0009)', async () => {
+    const apiRouter = new Router();
+    apiRouter.get('/api/health', async () => json({ status: 'ok' }));
+
+    // Points at an empty directory with no api-router.js at all — proves
+    // the middleware never touches the filesystem when `modules` is set.
+    const middleware = createApiRouterMiddleware({
+      build: resolveBuildOptions({ buildDirectory: tmpDir }),
+      prefix: '/api',
+      modules: { apiRouter },
+    });
+
+    const matched = await middleware(
+      ctx('GET', 'http://x/api/health'),
+      fallback
+    );
+    expect(matched.status).toBe(200);
+    expect(await matched.json()).toEqual({ status: 'ok' });
+
+    const outsidePrefix = await middleware(
+      ctx('GET', 'http://x/pricing'),
+      fallback
+    );
+    expect(await outsidePrefix.text()).toBe('fallthrough');
+  });
+
+  it('is a no-op passthrough when `modules.apiRouter` is omitted, even with `modules` set', async () => {
+    const middleware = createApiRouterMiddleware({
+      build: resolveBuildOptions({ buildDirectory: tmpDir }),
+      modules: { apiRouter: undefined as any },
+    });
+
+    const res = await middleware(ctx('GET', 'http://x/api/health'), fallback);
+    expect(await res.text()).toBe('fallthrough');
   });
 });

@@ -96,4 +96,43 @@ describe('createMatchRoutesGuard', () => {
 
     expect(nextCalled).toBe(true);
   });
+
+  it('uses a pre-loaded router from `modules` instead of dynamic import (RFC-0009)', async () => {
+    const Layout = () => null;
+    (Layout as any).path = '/app';
+
+    const About = () => null;
+    (About as any).path = '/about';
+
+    const appRouter = {
+      layout: Layout,
+      pages: [About],
+      routers: [],
+      useParentLayout: true,
+    } as any;
+
+    // Points at an empty directory with no app.router.js at all — proves
+    // the guard never falls back to a dynamic import when `modules` is set.
+    const guard = createMatchRoutesGuard({
+      build: {
+        buildDirectory: dir,
+        serverPathDirectory: 'does-not-exist',
+      } as any,
+      modules: { appRouter },
+    });
+
+    let nextCalled = false;
+    const matched = await guard(makeCtx('http://x/app/about'), async () => {
+      nextCalled = true;
+      return new Response('ok');
+    });
+    expect(nextCalled).toBe(true);
+    expect(await (matched as Response).text()).toBe('ok');
+
+    const unmatched = (await guard(
+      makeCtx('http://x/does-not-exist'),
+      async () => new Response('ok')
+    )) as Response;
+    expect(unmatched.status).toBe(404);
+  });
 });

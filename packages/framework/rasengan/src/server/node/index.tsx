@@ -1,5 +1,6 @@
 import type { Context } from '@rasenganjs/futon';
-import { ManifestManager } from '../build/manifest.js';
+import type { FunctionComponent } from 'react';
+import { ManifestManager, ManifestEntry } from '../build/manifest.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { RenderStreamFunction } from '../../entries/server/entry.server.js';
@@ -21,9 +22,29 @@ import { handleDataRequest, handleRedirectRequest } from '../dev/handlers.js';
 import { OptimizedAppConfig } from '../../core/config/type.js';
 import { resolvePath } from '../../core/config/utils/path.js';
 import { BuildOptions } from '../build/index.js';
+import type { RouterComponent } from '../../routing/interfaces.js';
+import type { AppProps } from '../../core/types.js';
+import type { TemplateProps } from '../../routing/types.js';
 
 interface CreateRequestHandlerOptions {
   build: BuildOptions;
+  /**
+   * Pre-loaded build artifacts, bypassing every dynamic import() and
+   * filesystem read this function (and, transitively, entry.server's
+   * render()) would otherwise do. Required on runtimes with no
+   * filesystem and no dynamic import-by-path support (Cloudflare
+   * Workers) — every other caller (Vercel, Netlify, @rasenganjs/serve,
+   * the dev server) omits this and keeps today's exact behavior
+   * (RFC-0009 §Detailed Design 1).
+   */
+  modules?: {
+    entryServer: { render: RenderStreamFunction };
+    appRouter: RouterComponent;
+    config: OptimizedAppConfig;
+    manifest: Record<string, ManifestEntry>;
+    app: FunctionComponent<AppProps>;
+    template: FunctionComponent<TemplateProps>;
+  };
 }
 
 /**
@@ -39,15 +60,17 @@ interface CreateRequestHandlerOptions {
  * @returns
  */
 export function createRequestHandler(options: CreateRequestHandlerOptions) {
-  const { build: buildOptions } = options;
+  const { build: buildOptions, modules } = options;
 
   const manifest = new ManifestManager(
-    path.posix.join(
-      buildOptions.buildDirectory,
-      buildOptions.clientPathDirectory,
-      buildOptions.manifestPathDirectory,
-      'manifest.json'
-    )
+    modules
+      ? modules.manifest
+      : path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory,
+          buildOptions.manifestPathDirectory,
+          'manifest.json'
+        )
   );
 
   return async function requestHandler(ctx: Context): Promise<Response> {
@@ -55,57 +78,63 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
 
     try {
       // Get server entry
-      const entry = await import(
-        /* @vite-ignore */
-        resolvePath(
-          path.posix.join(
-            buildOptions.buildDirectory,
-            buildOptions.serverPathDirectory,
-            buildOptions.entryServerPath
-          )
-        )
-      );
-      // Get AppRouter
-      const AppRouter = await (
-        await import(
-          /* @vite-ignore */
-          resolvePath(
-            path.posix.join(
-              buildOptions.buildDirectory,
-              buildOptions.serverPathDirectory,
-              'app.router.js'
+      const render: RenderStreamFunction = modules
+        ? modules.entryServer.render
+        : (
+            await import(
+              /* @vite-ignore */
+              resolvePath(
+                path.posix.join(
+                  buildOptions.buildDirectory,
+                  buildOptions.serverPathDirectory,
+                  buildOptions.entryServerPath
+                )
+              )
             )
-          )
-        )
-      ).default;
-      // Get Config
-      const configPath = path.posix.join(
-        buildOptions.buildDirectory,
-        buildOptions.clientPathDirectory,
-        buildOptions.assetPathDirectory,
-        'config.json'
-      );
+          ).render;
+      // Get AppRouter
+      const AppRouter = modules
+        ? modules.appRouter
+        : await (
+            await import(
+              /* @vite-ignore */
+              resolvePath(
+                path.posix.join(
+                  buildOptions.buildDirectory,
+                  buildOptions.serverPathDirectory,
+                  'app.router.js'
+                )
+              )
+            )
+          ).default;
 
-      const configPathExist = fs.existsSync(configPath);
+      let config: OptimizedAppConfig;
 
-      if (!configPathExist) {
-        throw new Error(
-          'No config.json file found in dist/client/assets, please make a build again by running "npm run build"'
+      if (modules) {
+        config = modules.config;
+      } else {
+        // Get Config
+        const configPath = path.posix.join(
+          buildOptions.buildDirectory,
+          buildOptions.clientPathDirectory,
+          buildOptions.assetPathDirectory,
+          'config.json'
         );
+
+        const configPathExist = fs.existsSync(configPath);
+
+        if (!configPathExist) {
+          throw new Error(
+            'No config.json file found in dist/client/assets, please make a build again by running "npm run build"'
+          );
+        }
+
+        // Read the config.json file
+        const configData = fs.readFileSync(configPath, 'utf-8').toString();
+
+        // Parse the config.json file
+        config = JSON.parse(configData) as OptimizedAppConfig;
       }
-
-      // Read the config.json file
-      const configData = fs.readFileSync(configPath, 'utf-8').toString();
-
-      // Parse the config.json file
-      const config = JSON.parse(configData) as OptimizedAppConfig;
-
-      // extract render function
-      const {
-        render,
-      }: {
-        render: RenderStreamFunction;
-      } = entry;
 
       // Get static routes
       const staticRoutes = generateRoutes(AppRouter);
@@ -166,6 +195,9 @@ export function createRequestHandler(options: CreateRequestHandlerOptions) {
           buildOptions,
           statusCode: context.statusCode,
           responseHeaders: Object.fromEntries(headers),
+          modules: modules
+            ? { App: modules.app, Template: modules.template }
+            : undefined,
         });
       }
 

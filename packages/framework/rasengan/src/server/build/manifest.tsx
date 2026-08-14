@@ -1,6 +1,6 @@
 import fs from "fs";
 
-interface ManifestEntry {
+export interface ManifestEntry {
 	file?: string;
 	name: string;
 	imports?: string[];
@@ -21,9 +21,20 @@ export class ManifestManager {
 	private _manifest: Record<string, ManifestEntry>;
 	private _entry = "src/index";
 
-	constructor(manifestPath: string) {
-		this._manifestPath = manifestPath;
-		this._manifest = this.loadManifest();
+	/**
+	 * `manifestPathOrData` accepts either a path to read and parse
+	 * (existing behavior, unchanged) or an already-parsed manifest
+	 * object — for runtimes with no filesystem (Cloudflare Workers),
+	 * where the manifest is statically imported as JSON instead.
+	 */
+	constructor(manifestPathOrData: string | Record<string, ManifestEntry>) {
+		if (typeof manifestPathOrData === "string") {
+			this._manifestPath = manifestPathOrData;
+			this._manifest = this.loadManifest();
+		} else {
+			this._manifestPath = "";
+			this._manifest = manifestPathOrData;
+		}
 	}
 
 	/**
