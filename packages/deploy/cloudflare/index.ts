@@ -204,6 +204,15 @@ const build = {
 // already a plain RouterComponent, and awaiting a non-Promise value is
 // a safe no-op, so this is unconditionally correct either way.
 const resolvedAppRouter = await appRouter;
+${
+  hasApiRouter
+    ? `
+// Same shape as app.router.js above: flatApiRoutes() (RFC-0008) is
+// also async, so api-router.js's default export is a Promise<Router>,
+// not a resolved Router — awaited here for the same reason.
+const resolvedApiRouter = await apiRouter;`
+    : ''
+}
 
 const modules = {
   entryServer,
@@ -234,7 +243,7 @@ app_.use(
   createApiRouterMiddleware({
     build,
     prefix: config.api?.prefix,
-    modules: { apiRouter: ${hasApiRouter ? 'apiRouter' : 'undefined'} },
+    modules: { apiRouter: ${hasApiRouter ? 'resolvedApiRouter' : 'undefined'} },
   })
 );
 
