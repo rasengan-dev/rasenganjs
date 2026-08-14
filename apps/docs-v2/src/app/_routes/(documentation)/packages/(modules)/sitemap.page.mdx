@@ -1,0 +1,122 @@
+---
+metadata:
+  title: Rasengan Sitemap Package - Modules | Packages | Rasengan.js
+  description: "Documentation for the Rasengan Sitemap package: automatic sitemap.xml generation for Rasengan frontend apps."
+toc: true
+---
+
+<span className="text-[12px] font-mono-regular text-foreground/60">
+  PACKAGES
+</span>
+# Rasengan Sitemap
+
+`@rasenganjs/sitemap` generates a spec-compliant `sitemap.xml` for a [Rasengan](/docs/getting-started/introduction) app, in `ssr` or `prerender` (SSG) mode. It's a standalone CLI that runs as a separate step after `rasengan build`, not a Vite plugin, so it always sees the final, complete build output.
+
+<Note title="Frontend only" type="info">
+  This package targets the `rasengan` frontend framework exclusively. Futon
+  and [Rasengan Server](/docs/server/getting-started/introduction) are backend
+  frameworks with no concept of a "page," so a sitemap doesn't apply to them.
+  `_api/` routes are JSON endpoints and are never included, they're excluded
+  by construction rather than by a filter.
+</Note>
+
+## Installation
+
+```bash title="Terminal"
+npm install -D @rasenganjs/sitemap
+```
+
+## Usage
+
+Create a `rasengan-sitemap.config.js` at your project root:
+
+```ts title="rasengan-sitemap.config.js" showLineNumbers
+import { defineSitemapConfig } from '@rasenganjs/sitemap';
+
+export default defineSitemapConfig({
+  siteUrl: 'https://your-site.com', // required
+  changefreq: 'weekly', // optional
+  priority: 0.7, // optional
+  exclude: ['/admin/*'], // optional, glob against the route path
+  generateRobotsTxt: false, // optional, off by default
+});
+```
+
+Then run the CLI after your build:
+
+```bash title="Terminal"
+rasengan build && rasengan-sitemap
+```
+
+Or wire it into your `package.json`:
+
+```json title="package.json" showLineNumbers
+{
+  "scripts": {
+    "build": "rasengan build && rasengan-sitemap"
+  }
+}
+```
+
+`rasengan-sitemap` reads the build's `config.json` to know which mode the app was built in, then writes `sitemap.xml` into the same directory the app actually produced:
+
+- `prerender: true` → `static/sitemap.xml`
+- `ssr: true`, `prerender: false` → `dist/client/sitemap.xml`
+
+<Note title="Pure SPA builds are not supported yet" type="warning">
+  A `ssr: false, prerender: false` build produces no server-rendered route
+  bundle, so there's nothing for `rasengan-sitemap` to enumerate routes from.
+  Set `ssr: true` in `rasengan.config.js`, run `rasengan build`, then
+  `rasengan-sitemap`, the route tree is identical either way, only the
+  rendering strategy differs.
+</Note>
+
+## What Gets Excluded Automatically
+
+- The catch-all `*`/404 route.
+- `_api/` routes, dispatched through a separate router and never part of the page route tree.
+- Any route matching a `source` in your `rasengan.config.js`'s `redirects()`, a URL that immediately redirects elsewhere is a low-quality sitemap entry.
+- Anything matching your own `exclude` glob patterns.
+
+## Per-Route Overrides
+
+For control beyond the static `changefreq`/`priority` defaults, use `transform`:
+
+```ts title="rasengan-sitemap.config.js" showLineNumbers
+import { defineSitemapConfig } from '@rasenganjs/sitemap';
+
+export default defineSitemapConfig({
+  siteUrl: 'https://your-site.com',
+  transform: async (path) => ({
+    loc: path,
+    changefreq: path === '/' ? 'daily' : 'weekly',
+    priority: path === '/' ? 1.0 : 0.7,
+  }),
+});
+```
+
+## `robots.txt` Generation
+
+Set `generateRobotsTxt: true` to also write a minimal `robots.txt` alongside `sitemap.xml`, with a `Sitemap:` line pointing at it. Off by default, so it never silently overwrites a hand-written `robots.txt`.
+
+## Community
+
+Join the Rasengan.js community to get support, ask questions, and share your projects:
+
+- <Link
+    to="https://github.com/rasengan-dev/rasenganjs/discussions"
+    target="_blank"
+    rel="noopener noreferrer"
+  >GitHub Discussions</Link> : Ask questions and share ideas.
+- <Link to="https://x.com/rasenganjs" target="_blank" rel="noopener noreferrer">X (Twitter)</Link> : Stay updated with the latest news.
+- <Link
+    to="https://www.linkedin.com/company/rasenganjs/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >Linkedin</Link> : Follow the company page.
+
+Let's build something amazing with Rasengan.js! 🚀
+
+## License
+
+This package is [MIT licensed](https://github.com/rasengan-dev/rasenganjs/blob/main/LICENSE).

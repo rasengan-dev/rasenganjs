@@ -484,6 +484,10 @@ static/          # Pre-rendered HTML files (if prerendering)
 .vercel/output/  # Vercel deployment output (if Vercel adapter)
 ```
 
+### Writing style: no em-dash in generated interface text
+
+When generating text that will be displayed in any interface (docs-v2 MDX content, UI copy/labels, README content, generated markdown, etc.), never use the "—" (em-dash) character. Use a comma, period, colon, or parentheses instead, whichever reads most naturally. This applies to newly written content and to edits of existing content that already contains one.
+
 ---
 
 ## 8. Scripts (`/scripts/`)

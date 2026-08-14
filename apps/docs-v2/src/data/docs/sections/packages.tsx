@@ -33,7 +33,6 @@ export const packagesNavigation: NavigationItem[] = [
         link: '/packages/kurama',
         level: 2,
         // visible: false,
-        isNew: true,
       },
       {
         id: randomId(),
@@ -49,15 +48,13 @@ export const packagesNavigation: NavigationItem[] = [
         link: '/packages/kage-demo',
         level: 2,
         // visible: false,
-        isNew: true,
       },
       {
         id: randomId(),
         name: 'Sitemap',
-        link: '#',
+        link: '/packages/sitemap',
         level: 2,
-        // visible: false,
-        isComingSoon: true,
+        isNew: true,
       },
       {
         id: randomId(),

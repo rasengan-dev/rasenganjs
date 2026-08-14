@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "rasengan dev",
-    "build": "rasengan build",
+    "build": "rasengan build && rasengan-sitemap",
     "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "@rasenganjs/kage-demo": "1.0.1",
     "@rasenganjs/mdx": "1.2.2",
     "@rasenganjs/serve": "beta",
+    "@rasenganjs/sitemap": "workspace:*",
     "@rasenganjs/theme": "^1.1.0",
     "@rasenganjs/vercel": "beta",
     "@tailwindcss/vite": "^4.*",

@@ -1,6 +1,13 @@
-import { Link } from 'rasengan';
+import { Link, useLocation } from 'rasengan';
 import ThemeButton from '../atoms/buttons/theme-button';
-import { ArrowUpRight, ChevronDown, Coffee } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ChevronDown,
+  Coffee,
+  Menu,
+  PanelLeft,
+  X,
+} from 'lucide-react';
 import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
 import AppLogo from '../atoms/logo';
@@ -13,8 +20,19 @@ import {
 } from '@/components/ui/popover';
 import { useTheme } from '@rasenganjs/theme';
 import Search from '@/components/ui/search';
+import { useMobileMenuStore } from '@/store/mobile-menu';
+import { useNavigationStore } from '@/store/navigation';
+import { AnimatePresence, motion } from 'motion/react';
 
 const env = import.meta.env;
+
+const productLinks = [
+  { name: 'Rasengan UI', href: 'https://ui.rasengan.dev' },
+  { name: 'Rasengan Hub', href: 'https://hub.rasengan.dev' },
+  { name: 'Chidori', href: 'https://chidori.rasengan.dev' },
+  { name: 'Nindo', href: 'https://nindo.rasengan.dev' },
+  { name: 'Chunin', href: 'https://chunin.rasengan.dev' },
+];
 
 type Props = {
   className?: ComponentProps<'header'>['className'];
@@ -22,6 +40,7 @@ type Props = {
 
 export default function Navbar({ className }: Props) {
   const { isDark } = useTheme();
+  const { pathname } = useLocation();
 
   const algoliaAppId = env.RASENGAN_ALGOLIA_APP_ID;
   const algoliaApiKey = env.RASENGAN_ALGOLIA_API_KEY;
@@ -32,6 +51,18 @@ export default function Navbar({ className }: Props) {
     algoliaAppId && algoliaApiKey && algoliaIndexName
   );
 
+  // Two independent mobile controllers: the main site menu (this
+  // component, every page) and the docs sidebar (only relevant on
+  // /docs and /packages, driven by the store sidebar.tsx already reads).
+  const {
+    isOpen: isMenuOpen,
+    toggle: toggleMenu,
+    close: closeMenu,
+  } = useMobileMenuStore();
+  const { isOpen: isSidebarOpen, toggle: toggleSidebar } = useNavigationStore();
+  const hasSidebar =
+    pathname.startsWith('/docs') || pathname.startsWith('/packages');
+
   return (
     <header
       id="navbar"
@@ -41,7 +72,22 @@ export default function Navbar({ className }: Props) {
       )}
     >
       <div className="flex items-center gap-8">
-        <AppLogo size="sm" />
+        <div className="flex items-center gap-1">
+          {hasSidebar && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+              onClick={toggleSidebar}
+            >
+              <PanelLeft size={20} />
+            </Button>
+          )}
+
+          <AppLogo size="sm" />
+        </div>
 
         <nav className="hidden lg:block">
           <ul className="flex items-center gap-1 text-foreground text-sm">
@@ -64,56 +110,19 @@ export default function Navbar({ className }: Props) {
               <PopoverContent className={isDark ? 'dark bg-input/30' : ''}>
                 <nav className="text-sm">
                   <ul className="flex flex-col gap-2">
-                    <Link
-                      to="https://ui.rasengan.dev"
-                      className="hover:text-primary"
-                      target="_blank"
-                    >
-                      <li className="flex items-center gap-2">
-                        <span>Rasengan UI</span>
-                        <ArrowUpRight size={16} />
-                      </li>
-                    </Link>
-                    <Link
-                      to="https://hub.rasengan.dev"
-                      className="hover:text-primary"
-                      target="_blank"
-                    >
-                      <li className="flex items-center gap-2">
-                        <span>Rasengan Hub</span>
-                        <ArrowUpRight size={16} />
-                      </li>
-                    </Link>
-                    <Link
-                      to="https://chidori.rasengan.dev"
-                      className="hover:text-primary"
-                      target="_blank"
-                    >
-                      <li className="flex items-center gap-2">
-                        <span>Chidori</span>
-                        <ArrowUpRight size={16} />
-                      </li>
-                    </Link>
-                    <Link
-                      to="https://nindo.rasengan.dev"
-                      className="hover:text-primary"
-                      target="_blank"
-                    >
-                      <li className="flex items-center gap-2">
-                        <span>Nindo</span>
-                        <ArrowUpRight size={16} />
-                      </li>
-                    </Link>
-                    <Link
-                      to="https://chunin.rasengan.dev"
-                      className="hover:text-primary"
-                      target="_blank"
-                    >
-                      <li className="flex items-center gap-2">
-                        <span>Chunin</span>
-                        <ArrowUpRight size={16} />
-                      </li>
-                    </Link>
+                    {productLinks.map((product) => (
+                      <Link
+                        key={product.name}
+                        to={product.href}
+                        className="hover:text-primary"
+                        target="_blank"
+                      >
+                        <li className="flex items-center gap-2">
+                          <span>{product.name}</span>
+                          <ArrowUpRight size={16} />
+                        </li>
+                      </Link>
+                    ))}
                   </ul>
                 </nav>
               </PopoverContent>
@@ -186,7 +195,74 @@ export default function Navbar({ className }: Props) {
             <span>Support us</span>
           </Button>
         </Link>
+
+        {/* vertical separator */}
+        <div className="h-4 w-[1px] bg-border dark:bg-input lg:hidden"></div>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          onClick={toggleMenu}
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
       </div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={closeMenu}
+            className="z-20 fixed top-0 left-0 w-full h-full bg-background/90 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.2 }}
+            className="z-40 fixed top-0 right-0 h-full w-[280px] bg-background border-l border-border/40 dark:border-border lg:hidden"
+          >
+            <nav className="flex flex-col gap-1 p-6 pt-20 text-sm">
+              {NavigationData.navbar.map((nav) => (
+                <Link key={nav.id} to={nav.link ?? '#'} onClick={closeMenu}>
+                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md font-semibold">
+                    {nav.name}
+                  </div>
+                </Link>
+              ))}
+
+              <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
+                Products
+              </div>
+              {productLinks.map((product) => (
+                <Link
+                  key={product.name}
+                  to={product.href}
+                  target="_blank"
+                  onClick={closeMenu}
+                >
+                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md flex items-center gap-2">
+                    <span>{product.name}</span>
+                    <ArrowUpRight size={16} />
+                  </div>
+                </Link>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

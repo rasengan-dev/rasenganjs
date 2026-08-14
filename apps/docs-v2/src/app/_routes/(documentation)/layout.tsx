@@ -3,16 +3,18 @@ import DocsNavTabs from '@/components/common/layout/nav-tabs';
 import { Outlet, LayoutComponent } from 'rasengan';
 import SidebarNavigation from '@/components/common/layout/sidebar';
 import Footer from '@/components/common/layout/footer';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { twMerge } from 'tailwind-merge';
 import { ScrollRestoration } from '@/components/common/molecules/scroll-restoration';
 import { cn } from '@/lib/utils';
+import { useNavigationStore } from '@/store/navigation';
 
 const DocsLayout: LayoutComponent = () => {
   const targetRef = useRef<HTMLElement>(null);
 
-  const [navigationOpen, setNavigationOpen] = useState(false);
+  const { isOpen: navigationOpen, close: closeNavigation } =
+    useNavigationStore();
 
   return (
     <section
@@ -38,28 +40,38 @@ const DocsLayout: LayoutComponent = () => {
         <div className="w-full relative flex">
           <SidebarNavigation className="hidden lg:flex h-auto" />
 
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: navigationOpen ? 0 : '-100%' }}
-            transition={{ duration: 0.2 }}
-            className={twMerge(
-              'z-40 fixed top-[110px] bg-background block lg:hidden'
+          {/* Mounted only while open (AnimatePresence handles the exit
+              animation), matching the overlay right below, instead of
+              always rendering a 280px drawer off-screen at -100%. */}
+          <AnimatePresence>
+            {navigationOpen && (
+              <motion.div
+                key="mobile-sidebar"
+                initial={{ x: '-100%' }}
+                animate={{ x: '0%' }}
+                exit={{ x: '-100%' }}
+                transition={{ duration: 0.2 }}
+                className={twMerge(
+                  'z-40 fixed top-[110px] bg-background block lg:hidden'
+                )}
+              >
+                <SidebarNavigation
+                  className="h-auto"
+                  onClose={() => closeNavigation()}
+                />
+              </motion.div>
             )}
-          >
-            <SidebarNavigation
-              className="h-auto"
-              onClose={() => setNavigationOpen(false)}
-            />
-          </motion.div>
+          </AnimatePresence>
 
           <AnimatePresence>
             {navigationOpen && (
               <motion.div
+                key="mobile-sidebar-overlay"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: navigationOpen ? 1 : 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => setNavigationOpen(false)}
+                onClick={() => closeNavigation()}
                 className="z-20 fixed top-0 left-0 w-full h-full bg-background/90 block lg:hidden"
               />
             )}
