@@ -624,6 +624,37 @@ importers:
         specifier: ^7.3.2
         version: 7.3.6(@types/node@24.13.3)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  apps/playground/rasengan-cloudflare-demo:
+    dependencies:
+      '@rasenganjs/cloudflare':
+        specifier: workspace:*
+        version: link:../../../packages/deploy/cloudflare
+      rasengan:
+        specifier: workspace:*
+        version: link:../../../packages/framework/rasengan
+      react:
+        specifier: ^19.1.1
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.10
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.17)
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vite:
+        specifier: ^8.2.1
+        version: 8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.8.0)(sass@1.101.7)(stylus@0.64.0)(tsx@4.23.1)(yaml@2.9.0)
+      wrangler:
+        specifier: ^4.0.0
+        version: 4.114.0
+
   apps/playground/rasengan-i18n-demo:
     dependencies:
       '@rasenganjs/i18n':
