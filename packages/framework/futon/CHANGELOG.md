@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.4 (2026-08-14)
+
+### Bug Fixes
+
+- duplicate Content-Type header breaking SSR on workerd (RFC-0009) 965f861, closes #mergeInit
+
 ## 1.0.0-beta.3 (2026-08-06)
 
 ## 1.0.0-beta.2 (2026-08-06)
