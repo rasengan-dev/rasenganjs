@@ -16,6 +16,8 @@ export {
   defineRoutesGroup,
   defineStaticPaths,
   flatRoutes,
+  generateRoutes,
+  getAllRoutesPath,
 } from './utils/index.js';
 export { RouterComponent } from './interfaces.js';
 export {

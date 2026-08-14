@@ -3,10 +3,14 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   Check,
   ChevronRight,
+  ChevronsUpDown,
   Copy,
   FileCode2,
   Folder,
   FolderOpen,
+  Layers,
+  Maximize2,
+  Minus,
   TerminalSquare,
   X,
 } from 'lucide-react';
@@ -170,12 +174,28 @@ function FileTreeNode({
 
 // ── Window chrome ────────────────────────────────────────────
 
-function TrafficLights() {
+function TrafficLights({
+  onMaximize,
+  onMinimize,
+}: {
+  onMaximize: () => void;
+  onMinimize: () => void;
+}) {
   return (
     <div aria-hidden="true" className="flex items-center gap-2">
-      <span className="size-3 rounded-full bg-[#FF5F57]" />
-      <span className="size-3 rounded-full bg-[#FEBC2E]" />
-      <span className="size-3 rounded-full bg-[#28C840]" />
+      <span className="size-4 rounded-full bg-[#FF5F57]" />
+      <span
+        className="size-4 rounded-full bg-[#FEBC2E] flex items-center justify-center [&>svg]:text-transparent hover:[&>svg]:text-black transition-all"
+        onClick={onMinimize}
+      >
+        <Minus size={10} />
+      </span>
+      <span
+        className="size-4 rounded-full bg-[#28C840] flex items-center justify-center [&>svg]:text-transparent hover:[&>svg]:text-black transition-all"
+        onClick={onMaximize}
+      >
+        <ChevronsUpDown size={10} className="rotate-[45deg]" />
+      </span>
     </div>
   );
 }
@@ -447,6 +467,8 @@ export default function CodeEditor({
     return initial;
   });
 
+  const [isMaximized, setIsMaximized] = useState(false);
+
   const activeFramework =
     frameworks.find((f) => f.key === activeFrameworkKey) ?? frameworks[0];
 
@@ -515,12 +537,20 @@ export default function CodeEditor({
   const [mobileTerminalOpen, setMobileTerminalOpen] = useState(false);
 
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-border bg-(--code-block-bg)">
+    <div
+      className={cn(
+        'w-full overflow-hidden rounded-xl border border-border bg-(--code-block-bg)',
+        isMaximized && 'fixed inset-0 z-50 rounded-none'
+      )}
+    >
       {/* ── Desktop / tablet ── */}
       <div className="hidden md:block">
         <div className="w-full flex items-center justify-between bg-muted  border-b border-border px-4 pr-1">
           <div className="flex h-10 items-center gap-3">
-            <TrafficLights />
+            <TrafficLights
+              onMaximize={() => setIsMaximized(true)}
+              onMinimize={() => setIsMaximized(false)}
+            />
             <span className="truncate font-mono text-xs text-foreground/50">
               {activeFile ?? activeFramework.title}
             </span>
@@ -536,7 +566,7 @@ export default function CodeEditor({
         <ResizablePanelGroup
           id="home-code-editor-vertical"
           direction="vertical"
-          className="h-[660px]!"
+          className={cn(isMaximized ? 'h-screen!' : 'h-[660px]!')}
         >
           <ResizablePanel
             id="home-code-editor-main"
@@ -605,7 +635,10 @@ export default function CodeEditor({
       {/* ── Mobile ── */}
       <div className="md:hidden">
         <div className="flex h-10 items-center justify-between border-b border-border bg-muted px-3">
-          <TrafficLights />
+          <TrafficLights
+            onMaximize={() => setIsMaximized(true)}
+            onMinimize={() => setIsMaximized(false)}
+          />
 
           <div className="flex items-center gap-1">
             <button

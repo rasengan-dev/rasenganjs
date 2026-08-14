@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 
 /**
- * Controls the docs sidebar drawer on mobile (< lg). Desktop shows the
- * sidebar inline and never touches this store.
+ * Controls the main site nav drawer on mobile (< lg): Docs/Skills/Blog/
+ * Showcase/Products. Separate from the docs sidebar's own store
+ * (@/store/navigation) — the two can be open independently on doc pages.
  */
 type State = {
   isOpen: boolean;
@@ -14,7 +15,7 @@ type Actions = {
   toggle: () => void;
 };
 
-export const useNavigationStore = create<State & Actions>((set) => ({
+export const useMobileMenuStore = create<State & Actions>((set) => ({
   isOpen: false,
   open: () => set({ isOpen: true }),
   close: () => set({ isOpen: false }),
