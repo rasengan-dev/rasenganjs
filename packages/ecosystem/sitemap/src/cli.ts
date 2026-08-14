@@ -21,10 +21,13 @@ export async function main(): Promise<void> {
     const config = await loadSitemapConfig(cwd);
     const build = await loadBuildConfig(cwd);
 
-    if (!build.prerender) {
+    if (!build.prerender && !build.ssr) {
       throw new Error(
-        'rasengan-sitemap currently only supports SSG (prerender: true) apps. ' +
-          'SSR/SPA support is planned for a future release.'
+        'rasengan-sitemap needs a server-rendered route bundle to enumerate ' +
+          'routes, which pure SPA builds (ssr: false, prerender: false) do not ' +
+          'produce. Temporarily set `ssr: true` in rasengan.config.js, run ' +
+          '`rasengan build`, then `rasengan-sitemap` (the route tree is the ' +
+          'same regardless of ssr/spa, only the rendering strategy differs).'
       );
     }
 

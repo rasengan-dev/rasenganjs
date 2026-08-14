@@ -84,7 +84,6 @@ export const documentationNavigation: NavigationItem[] = [
             name: 'File-Based Routing',
             link: '/docs/routing/file-based-routing',
             level: 3,
-            isNew: true,
           },
           {
             id: randomId(),
@@ -110,7 +109,6 @@ export const documentationNavigation: NavigationItem[] = [
             name: 'Active Links',
             link: '/docs/routing/active-link',
             level: 3,
-            isNew: true,
           },
           {
             id: randomId(),
@@ -205,7 +203,6 @@ export const documentationNavigation: NavigationItem[] = [
             name: 'React Compiler',
             link: '/docs/optimizing/react-compiler',
             level: 3,
-            isNew: true,
           },
         ],
       },
@@ -284,7 +281,6 @@ export const documentationNavigation: NavigationItem[] = [
             name: 'NavLink',
             link: '/docs/api-reference/components/navlink',
             level: 3,
-            isNew: true,
           },
           {
             id: randomId(),
@@ -327,7 +323,6 @@ export const documentationNavigation: NavigationItem[] = [
             name: 'ScrollRestoration',
             link: '/docs/api-reference/components/scroll-restoration',
             level: 3,
-            isNew: true,
           },
         ],
       },
