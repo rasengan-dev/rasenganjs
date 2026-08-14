@@ -108,7 +108,10 @@ describe('streamResponse', () => {
     const res = streamResponse(stream);
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
-    expect(res.headers.get('transfer-encoding')).toBe('chunked');
+    // No Transfer-Encoding: it's hop-by-hop, the runtime sets it itself
+    // for a streamed body — manually setting it broke workerd/
+    // HTMLRewriter-based response post-processing (RFC-0009 finding).
+    expect(res.headers.get('transfer-encoding')).toBeNull();
     expect(await res.text()).toBe('chunk');
   });
 });

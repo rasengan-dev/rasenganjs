@@ -66,13 +66,21 @@ export function text(value: string, init?: ResponseInit): Response {
  * @param init  — Optional status + headers overrides
  */
 export function html(value: string, init?: ResponseInit): Response {
+  // Built via a real Headers instance, not a plain-object spread:
+  // `init.headers` can already carry a differently-cased
+  // 'content-type' key (e.g. from Object.fromEntries(someHeaders)),
+  // and `{...init.headers, 'Content-Type': ...}` would keep BOTH as
+  // distinct object properties — Headers' own fill algorithm then
+  // appends both, producing a genuinely malformed, duplicated
+  // Content-Type value. `Headers.set()` is case-insensitive and
+  // can't produce that.
+  const headers = new Headers(init?.headers);
+  headers.set('Content-Type', 'text/html; charset=utf-8');
+
   return tagRawBody(
     new Response(value, {
       ...init,
-      headers: {
-        ...init?.headers,
-        'Content-Type': 'text/html; charset=utf-8',
-      },
+      headers,
     }),
     value
   );
@@ -141,13 +149,32 @@ export function streamResponse(
   stream: ReadableStream<Uint8Array>,
   init?: ResponseInit
 ): Response {
+  // No explicit Transfer-Encoding: it's hop-by-hop, the runtime sets it
+  // itself for a streamed body, never something user code sets on a
+  // Fetch API Response.
+  //
+  // Headers built via a real Headers instance, not a plain-object
+  // spread: `init.headers` can already carry a differently-cased
+  // 'content-type' key (e.g. rasengan's extractHeadersFromRRContext
+  // hands this a plain object produced by
+  // Object.fromEntries(someHeaders), always lowercase), and
+  // `{'Content-Type': ..., ...init.headers}` would keep BOTH as
+  // distinct object properties — Headers' own fill algorithm then
+  // appends both, producing a genuinely malformed, duplicated
+  // Content-Type value (`text/html; charset=utf-8, text/html;
+  // charset=utf-8`). Node/undici silently tolerates that; workerd's
+  // HTMLRewriter-based response post-processing (e.g. wrangler dev's
+  // live-reload injection) does not, and fails the whole response
+  // with "Parser error: Unknown character encoding has been
+  // provided" — confirmed by reproducing and fixing exactly this.
+  const headers = new Headers(init?.headers);
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'text/html; charset=utf-8');
+  }
+
   return new Response(stream, {
     ...init,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Transfer-Encoding': 'chunked',
-      ...init?.headers,
-    },
+    headers,
   });
 }
 
