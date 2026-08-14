@@ -12,6 +12,16 @@ interface ApiRouterMiddlewareOptions {
    * @default '/api'
    */
   prefix?: string;
+  /**
+   * Pre-loaded API router, bypassing the setup-time fs.existsSync
+   * check and the dynamic import() this middleware would otherwise
+   * do — for runtimes with no filesystem and no dynamic
+   * import-by-path support (Cloudflare Workers). A caller with no
+   * `_api/` folder simply omits `apiRouter`. Every other caller
+   * omits `modules` entirely and keeps today's exact behavior
+   * (RFC-0009 §Detailed Design 1).
+   */
+  modules?: { apiRouter: Router };
 }
 
 /**
@@ -50,7 +60,7 @@ export function isHttpErrorLike(
 export function createApiRouterMiddleware(
   options: ApiRouterMiddlewareOptions
 ): Middleware {
-  const { build: buildOptions, prefix = '/api' } = options;
+  const { build: buildOptions, prefix = '/api', modules } = options;
 
   const apiRouterPath = path.posix.join(
     buildOptions.buildDirectory,
@@ -58,7 +68,11 @@ export function createApiRouterMiddleware(
     'api-router.js'
   );
 
-  if (!fs.existsSync(apiRouterPath)) {
+  const hasApiRouter = modules
+    ? modules.apiRouter != null
+    : fs.existsSync(apiRouterPath);
+
+  if (!hasApiRouter) {
     return async (_ctx, next) => next();
   }
 
@@ -70,9 +84,11 @@ export function createApiRouterMiddleware(
     }
 
     try {
-      const ApiRouter: Router = await (
-        await import(/* @vite-ignore */ resolvePath(apiRouterPath))
-      ).default;
+      const ApiRouter: Router = modules
+        ? modules.apiRouter
+        : await (
+            await import(/* @vite-ignore */ resolvePath(apiRouterPath))
+          ).default;
       const dispatch = ApiRouter.middleware();
 
       return await dispatch(ctx, async () =>
