@@ -207,6 +207,7 @@ const fixCPathPlugin = (): Plugin => {
 export const Adapters = {
   VERCEL: 'vercel',
   NETLIFY: 'netlify',
+  CLOUDFLARE: 'cloudflare',
   DEFAULT: '',
 } as const;
 
@@ -452,7 +453,16 @@ export function rasengan({
         const platform = detectDeploymentPlatform();
         console.log(`Detected deployment platform: ${platform}`);
 
-        if (platform !== 'local' && platform !== 'unknown') {
+        // Cloudflare deploys via a separate `wrangler deploy` step, not a
+        // hosted build environment `rasengan build` runs inside of the way
+        // Vercel/Netlify's own build runners do — there's no reliable env
+        // var to detect at `vite build` time (RFC-0009 Open Questions).
+        // The adapter being explicitly configured is signal enough on its
+        // own, so it bypasses the platform-detection gate below.
+        if (
+          adapter.name === Adapters.CLOUDFLARE ||
+          (platform !== 'local' && platform !== 'unknown')
+        ) {
           // Prepare the app for deployment
           await prepareToDeploy(adapter);
         }
