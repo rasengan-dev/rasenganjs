@@ -1,0 +1,206 @@
+---
+metadata:
+  title: 'Rasengan 2.0 Beta: A New Foundation'
+  description: 'Rasengan v2.0.0 beta is here: a Futon-powered core, colocated API routes, a Cloudflare Workers adapter, automatic sitemap generation, and a cleaner environment variable story.'
+  openGraph:
+    title: 'Rasengan 2.0 Beta: A New Foundation'
+    description: 'Rasengan v2.0.0 beta is here: a Futon-powered core, colocated API routes, a Cloudflare Workers adapter, automatic sitemap generation, and a cleaner environment variable story.'
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-2-beta.png'
+  twitter:
+    title: 'Rasengan 2.0 Beta: A New Foundation'
+    description: 'Rasengan v2.0.0 beta is here: a Futon-powered core, colocated API routes, a Cloudflare Workers adapter, automatic sitemap generation, and a cleaner environment variable story.'
+    image: 'https://rasengan.dev/assets/blog/rasengan-2-beta.png'
+---
+
+<BlogDetailsHeader />
+
+Today we are publishing **Rasengan v2.0.0 beta**, the biggest release in the framework's history. Under the hood, Rasengan now runs on [Futon](/blog/rasengan-futon-and-server) instead of Express, and that shift unlocked most of what's in this release:
+
+- **A Futon-powered core**, lighter, faster, and no longer tied to Node
+- **Colocated API routes**, backend endpoints living right next to your pages
+- **A cleaner environment variable story**, one loading order, front to back
+- **Three deploy adapters**, Vercel and Netlify rebuilt on the new core, plus a brand new one for **Cloudflare Workers**
+- **Automatic sitemap generation**, a new `@rasenganjs/sitemap` package
+
+Let's go through each one.
+
+<br />
+
+## A Futon powered core
+
+Rasengan's dev server and production request handler used to run on Express. In v2, they run on [Futon](/docs/futon/getting-started/introduction), the same WinterCG compatible HTTP runtime that powers [Rasengan Server](/docs/server/getting-started/introduction).
+
+This is not a cosmetic change. Express only runs on Node, and it works with Node's own `req`/`res` objects. Futon works directly with the standard `Request`/`Response` objects, the same ones browsers, Deno, Bun, and Cloudflare Workers already use. That's what makes everything else in this release possible: the same rendering pipeline that serves your app on Node can now be bundled into a single Cloudflare Worker with no adapter code translating between two different request models.
+
+Nothing changes in how you write your app. `main.tsx`, `template.tsx`, and your pages stay exactly the same. The difference is entirely under the hood.
+
+<AlertWithLink
+  status="info"
+  title="Read more about Futon"
+  link="/docs/futon/getting-started/introduction"
+/>
+
+<br />
+
+## Colocated API routes
+
+You can now write backend endpoints directly inside your Rasengan app, under `src/app/_api/`. No separate server, no extra deployment target.
+
+```ts title="src/app/_api/health.route.ts" showLineNumbers
+import { json } from 'rasengan/server';
+import type { Context } from 'rasengan/server';
+
+export async function GET(ctx: Context) {
+  return json({ status: 'ok' });
+}
+```
+
+That file alone gives you `GET /api/health`. Folders map to URL segments, and dynamic ones work the same way file-based page routing already does:
+
+```ts title="src/app/_api/users/[id].route.ts" showLineNumbers
+import { json, notFound } from 'rasengan/server';
+import type { Context } from 'rasengan/server';
+
+export async function GET(ctx: Context) {
+  const user = await findUser(ctx.params.id);
+
+  if (!user) {
+    return notFound('User not found');
+  }
+
+  return json(user);
+}
+```
+
+Each HTTP method is its own named export (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), and a `middleware.ts` file in any folder applies to every route below it, the same scoping model Futon itself uses. `_api/` routes are JSON only by design: they never render HTML, and they're excluded from prerendering and sitemap generation automatically.
+
+<AlertWithLink
+  status="info"
+  title="Read the full API routes documentation"
+  link="/docs/routing/api-routes"
+/>
+
+<br />
+
+## One environment variable loading order
+
+Before v2, environment variables were loaded in different places depending on whether you were in `rasengan dev`, `rasengan build`, or reading `process.env` inside an `_api/` route. That inconsistency is gone. `.env`, `.env.local`, `.env.development`, and `.env.production` are now loaded once, at the very top of every command, before your config or any route module is ever imported.
+
+Client side, nothing changed: variables prefixed with `RASENGAN_` are exposed through `import.meta.env`, same as before.
+
+```ts title="src/app/_api/weather.route.ts" showLineNumbers
+import { json } from 'rasengan/server';
+
+export async function GET() {
+  const apiKey = process.env.WEATHER_API_KEY;
+
+  const res = await fetch(`https://api.weather.example/v1/current?key=${apiKey}`);
+  const data = await res.json();
+
+  return json(data);
+}
+```
+
+Server side, unprefixed variables are simply read from `process.env`, and they're guaranteed to be there whether that code runs during a request, inside `generatePaths()`, or during static prerendering. The dev server's startup banner now also prints an `Env:` line listing exactly which files it loaded, so a missing variable is a two second check instead of a guessing game.
+
+<AlertWithLink
+  status="info"
+  title="Read the environment variables documentation"
+  link="/docs/configuring/environment-variables"
+/>
+
+<br />
+
+## Deploy anywhere
+
+`@rasenganjs/vercel` and `@rasenganjs/netlify` have been rebuilt on top of Futon. Both now generate a serverless function that speaks `Request`/`Response` directly, with no Node compatibility shim in between. Along the way we also fixed a real bug on Vercel where POST requests with a body would hang until timeout.
+
+The bigger news: **Rasengan now deploys to Cloudflare Workers**, through the new `@rasenganjs/cloudflare` package.
+
+```js title="rasengan.config.js" showLineNumbers
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+import { configure } from '@rasenganjs/cloudflare';
+
+export default defineConfig({
+  ssr: true,
+  runtime: 'workerd',
+  vite: {
+    plugins: [
+      rasengan({
+        adapter: configure({}),
+      }),
+    ],
+  },
+});
+```
+
+```bash title="Terminal"
+npm run build
+wrangler deploy
+```
+
+That's the whole setup. The adapter bundles your SSR build into a single Worker script with esbuild, no filesystem access and no dynamic imports involved, since neither exists on Cloudflare's edge runtime. Static assets are served through Cloudflare's own Workers Assets, straight from the edge CDN, without the Worker being invoked at all. `_api/` routes work exactly the same as everywhere else.
+
+<AlertWithLink
+  status="info"
+  title="View @rasenganjs/cloudflare on GitHub"
+  link="https://github.com/rasengan-dev/rasenganjs/tree/main/packages/deploy/cloudflare"
+/>
+
+<br />
+
+## Automatic sitemap generation
+
+`@rasenganjs/sitemap` is a new package that generates a `sitemap.xml` for your app after every build. It runs as a separate CLI step, not a Vite plugin, so it always sees your final build output rather than racing a build hook.
+
+```js title="rasengan-sitemap.config.js" showLineNumbers
+import { defineSitemapConfig } from '@rasenganjs/sitemap';
+
+export default defineSitemapConfig({
+  siteUrl: 'https://your-site.com',
+  changefreq: 'weekly',
+  priority: 0.7,
+  generateRobotsTxt: true,
+});
+```
+
+```json title="package.json" showLineNumbers
+{
+  "scripts": {
+    "build": "rasengan build && rasengan-sitemap"
+  }
+}
+```
+
+It reuses the exact route enumeration logic prerendering already relies on, so the URLs in your sitemap always match your real route tree. Redirect sources, the catch-all 404 route, and `_api/` routes are all excluded automatically, no configuration needed.
+
+<AlertWithLink
+  status="info"
+  title="Read the sitemap documentation"
+  link="/packages/sitemap"
+/>
+
+<br />
+
+## Beta, honestly
+
+This is a large release, and it's shipping as a **public beta** for a reason. The Futon migration touches the rendering pipeline every Rasengan app depends on, and while it's already running in production for this documentation site, we'd rather have real projects put it through its paces before calling it stable.
+
+If you hit something that doesn't feel right, open an issue or start a discussion. That feedback is exactly what will shape the `2.0.0` stable release.
+
+## What's next?
+
+- Stabilizing the Futon powered core toward a `2.0.0` stable release
+- A dedicated docs page and richer examples for `@rasenganjs/cloudflare`
+- Sitemap support for pure SPA builds
+- More `_api/` route examples, including file uploads and validation
+
+## Try it
+
+```bash title="Terminal"
+npx create-rasengan@beta
+```
+
+[Explore the docs](/docs/getting-started/introduction) and happy building, Ninja! 🌀
