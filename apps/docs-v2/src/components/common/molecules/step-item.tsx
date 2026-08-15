@@ -21,7 +21,7 @@ export function StepItem({ children, step, title, content, className }: Props) {
           <span className="font-medium">{title}</span>
         </div>
 
-        <span className="text-sm">
+        <span className="text-md">
           {/* <Markdown content={content} overwriteStyle={true} /> */}
           {content}
         </span>

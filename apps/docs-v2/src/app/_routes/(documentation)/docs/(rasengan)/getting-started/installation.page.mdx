@@ -19,10 +19,7 @@ With **Rasengan.js**, you can **focus on building your app**, while it handles t
 
 ## Pre-requisites
 
-- <Link href="https://nodejs.org" target="_blank" rel="noopener noreferrer">
-    Node.js 20.18
-  </Link>
-  or later.
+- <Link href="https://nodejs.org" target="_blank" rel="noopener noreferrer">Node.js 20.18</Link> or later.
 - macOS, Windows, and Linux are supported.
 
 ## Installation
@@ -253,10 +250,8 @@ export default defineRouter({
   `}
 >
 ```jsx title="main.jsx" showLineNumbers 
-import AppRouter from "@/app/app.router";
-
 export default function App({ Component, children }) {
-  return <Component router={AppRouter}>{children}</Component>;
+  return <Component>{children}</Component>;
 }
 ```
 </StepItem>
@@ -303,8 +298,9 @@ export default function Template({
 ```jsx title="index.js" showLineNumbers {4}
 import { renderApp } from 'rasengan/client';
 import App from './main';
+import AppRouter from "@/app/app.router";
 
-renderApp(App, { reactStrictMode: true });
+renderApp(App, AppRouter, { reactStrictMode: true });
 ````
 
 </StepItem>
@@ -433,16 +429,15 @@ touch src/main.tsx src/template.tsx src/index.ts
 import { type PageComponent } from "rasengan";
 
 const Home: PageComponent = () => {
-return (
-
-<main>Home Page</main>
-)
+  return (
+    <main>Home Page</main>
+  )
 }
 
 Home.path = "/";
 Home.metadata = {
-title: "Home",
-description: "Home page",
+  title: "Home",
+  description: "Home page",
 }
 
 export default Home;
@@ -477,10 +472,9 @@ export default defineRouter({
 >
 ```jsx title="main.tsx" showLineNumbers 
 import { type AppProps } from "rasengan";
-import AppRouter from "@/app/app.router";
 
 export default function App({ Component, children }: AppProps) {
-  return <Component router={AppRouter}>{children}</Component>;
+  return <Component>{children}</Component>;
 }
 ```
 </StepItem>
@@ -529,8 +523,9 @@ export default function Template({
 ```jsx title="index.ts" showLineNumbers {4}
 import { renderApp } from 'rasengan/client';
 import App from './main';
+import AppRouter from "@/app/app.router";
 
-renderApp(App, { reactStrictMode: true });
+renderApp(App, AppRouter, { reactStrictMode: true });
 ````
 
 </StepItem>

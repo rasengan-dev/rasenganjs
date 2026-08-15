@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/futon",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "WinterCG-compatible runtime abstraction layer for Rasengan.JS — middleware pipeline, router, and request/response utilities",
   "type": "module",
   "main": "dist/index.js",

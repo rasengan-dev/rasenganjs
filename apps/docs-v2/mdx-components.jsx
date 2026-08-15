@@ -27,7 +27,7 @@ export default defineMDXConfig({
     p: ({ children, ...props }) => (
       <p
         {...props}
-        className="text-[0.9rem] font-medium leading-relaxed [&:not(:first-child)]:mt-6 text-foreground/90"
+        className="text-md font-medium leading-relaxed [&:not(:first-child)]:mt-6 text-foreground/90"
       >
         {children}
       </p>
@@ -35,7 +35,7 @@ export default defineMDXConfig({
     a: ({ children, ...props }) => (
       <a
         {...props}
-        className="inline text-foreground font-semibold underline underline-offset-4 cursor-pointer"
+        className="inline text-primary font-semibold underline underline-offset-4 cursor-pointer"
       >
         {children}
       </a>
@@ -90,7 +90,7 @@ export default defineMDXConfig({
       </ul>
     ),
     li: ({ children, ...props }) => (
-      <li {...props} className="mt-2 text-sm font-medium text-foreground/90">
+      <li {...props} className="mt-2 text-md font-medium text-foreground/90">
         {children}
       </li>
     ),
@@ -110,10 +110,11 @@ export default defineMDXConfig({
           className={`
             my-[10px]
             rounded-lg
-            bg-[var(--bg-code)]
+            dark:bg-[var(--bg-code)]
             text-[var(--fg-code)]
             overflow-hidden
             has-[pre[data-language]]:block
+            border border-border
             ${className}
           `}
           {...props}
@@ -138,7 +139,7 @@ export default defineMDXConfig({
             px-5 py-2.5
             border-b border-b-border
             text-sm font-medium
-            bg-(--code-block-bg)!
+            dark:bg-(--code-block-bg)!
             text-[var(--fg-code)]
             [&_svg]:size-4 [&_svg]:opacity-70
             ${className}
@@ -195,7 +196,7 @@ export default defineMDXConfig({
       if (!props['data-language']) {
         return (
           <code
-            className="rounded-md px-1 text-xs font-semibold py-[2px] bg-muted"
+            className="rounded-sm px-1.5 text-sm font-semibold py-0.5 border border-border"
             {...props}
           >
             {children}
@@ -245,7 +246,7 @@ export default defineMDXConfig({
             break-words
             overflow-auto
 
-            bg-(--code-block-bg)!
+            dark:bg-(--code-block-bg)!
 
             data-[line-numbers]:[counter-reset:line]
 
@@ -291,7 +292,7 @@ export default defineMDXConfig({
       <div className="no-scrollbar my-6 w-full overflow-x-auto rounded-xl border">
         <table
           className={cn(
-            'relative w-full overflow-hidden border-none text-sm [&_tbody_tr:last-child]:border-b-0',
+            'relative w-full overflow-hidden border-none text-md [&_tbody_tr:last-child]:border-b-0',
             className
           )}
           {...props}
@@ -334,7 +335,7 @@ export default defineMDXConfig({
     Link: ({ className, ...props }) => (
       <Link
         className={cn(
-          'text-foreground font-semibold underline underline-offset-4 cursor-pointer',
+          'text-primary font-semibold underline underline-offset-4 cursor-pointer',
           className
         )}
         {...props}
