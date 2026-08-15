@@ -8,9 +8,21 @@
  *
  * ## How it works
  *
- * - `serve(app)` registers the Futon's fetch handler via
- *   `self.addEventListener('fetch', ...)`, the standard service-worker
- *   pattern supported by workerd.
+ * - Defaults to **Module Worker** format: `serve(app)` builds
+ *   `fetchHandler`, a `(request, env, ctx) => Promise<Response>`
+ *   function meant for `export default { fetch: adapter.fetchHandler }`.
+ *   `env` (bindings: D1, R2, KV, service bindings, secrets) and `ctx`
+ *   (`ExecutionContext.waitUntil`/`passThroughOnException`) are both
+ *   forwarded into the Futon's `RuntimeContext` on every request
+ *   (RFC-0013) — read them via `ctx.runtime.env` / `ctx.runtime.executionCtx`
+ *   inside handlers and middleware.
+ * - Set `passthrough: false` to instead register via the legacy
+ *   **Service Worker** format (`self.addEventListener('fetch', ...)`).
+ *   That format predates bindings-as-arguments and workerd never
+ *   passes `env` to it — `ctx.runtime.env` stays empty in this mode,
+ *   only `ctx.runtime.executionCtx.waitUntil` is available (backed by
+ *   `FetchEvent.waitUntil`). Use Module Worker format if the app reads
+ *   any binding.
  * - Assets are **no-ops** — workerd has no local filesystem at runtime.
  *   To serve static assets, use Workers KV, R2, or a build-time upload.
  * - `watch()` is **not implemented** — no file watcher in production
@@ -22,18 +34,10 @@
  * import { WorkerdProdAdapter } from "@rasenganjs/runtime/adapters/workerd";
  *
  * const app = new Futon();
- * app.get("/hello", () => new Response("Hello from the edge!"));
+ * app.get("/hello", (ctx) => new Response(`Hello, DB is ${ctx.runtime.env?.DB}`));
  *
  * const adapter = new WorkerdProdAdapter();
- * adapter.serve(app);
- * ```
- *
- * ES modules format (workers.dev / custom build):
- * ```ts
- * import { WorkerdProdAdapter } from "@rasenganjs/runtime/adapters/workerd";
- * import app from "./app";
- *
- * const adapter = new WorkerdProdAdapter({ passthrough: true });
+ * await adapter.serve(app);
  * export default { fetch: adapter.fetchHandler };
  * ```
  */
@@ -46,9 +50,12 @@ export interface WorkerdProdAdapterOptions {
   /** Host (ignored by workerd — exists for type compatibility). */
   host?: string;
   /**
-   * Pass the application's fetch handler as a module-level export
-   * for the ES modules format.  When `false` (default), the adapter
-   * registers via `self.addEventListener('fetch', ...)` instead.
+   * Expose the application's fetch handler as a module-level export
+   * for the ES modules (Module Worker) format. Defaults to `true`
+   * (RFC-0013) since it is the only format workerd passes bindings
+   * to. Set to `false` to fall back to the legacy Service Worker
+   * format (`self.addEventListener('fetch', ...)`), which never
+   * receives `env` — see the class doc comment.
    */
   passthrough?: boolean;
 }
@@ -58,11 +65,21 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
 
   /**
    * The raw fetch handler, suitable for `export default { fetch }`.
-   * Only available after `serve()` has been called.
+   * Only available after `serve()` has been called. Matches workerd's
+   * own Module Worker signature, `env` and `ctx` are forwarded into
+   * the Futon's `RuntimeContext` (RFC-0013).
    */
-  fetchHandler: ((request: Request) => Promise<Response>) | null = null;
+  fetchHandler:
+    | ((
+        request: Request,
+        env?: unknown,
+        ctx?: ExecutionContext
+      ) => Promise<Response>)
+    | null = null;
 
   constructor(private options: WorkerdProdAdapterOptions = {}) {
+    this.options.passthrough = this.options.passthrough ?? true;
+
     // workerd has no local filesystem at runtime.
     // Assets can be served via KV / R2 / D1 at the Futon layer.
     this.assets = {
@@ -94,7 +111,20 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
     await app.init();
 
     this.app = app;
-    this.fetchHandler = (request: Request) => app.fetch(request);
+    this.fetchHandler = (
+      request: Request,
+      env?: unknown,
+      ctx?: ExecutionContext
+    ) =>
+      app.fetch(request, {
+        env: (env ?? {}) as Record<string, unknown>,
+        executionCtx: ctx
+          ? {
+              waitUntil: (promise: Promise<unknown>) => ctx.waitUntil(promise),
+              passThroughOnException: () => ctx.passThroughOnException(),
+            }
+          : undefined,
+      });
 
     if (this.options.passthrough) {
       // Caller will export fetchHandler manually via `export default`.
@@ -137,11 +167,20 @@ export class WorkerdProdAdapter implements RuntimeAdapter {
   /**
    * Handle a FetchEvent by delegating to the Futon.
    * Returns a 503 response if the server has been closed.
+   *
+   * Service Worker format has no `env` argument to forward (see the
+   * class doc comment) — only `executionCtx.waitUntil` is wired here,
+   * backed by `FetchEvent.waitUntil`.
    */
   private async handleEvent(event: FetchEvent): Promise<Response> {
     if (this.closed || !this.app) {
       return new Response('Server closed', { status: 503 });
     }
-    return this.app.fetch(event.request);
+    return this.app.fetch(event.request, {
+      executionCtx: {
+        waitUntil: (promise: Promise<unknown>) =>
+          event.waitUntil(promise.then(() => undefined)),
+      },
+    });
   }
 }

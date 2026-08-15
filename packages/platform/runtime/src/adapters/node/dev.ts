@@ -29,6 +29,7 @@ import { NodeAssets } from './assets.js';
 import { NodeWatcher } from './watcher.js';
 import { startNodeServer, type NodeServerHandle } from './server.js';
 import { loadNodeEnvFiles } from './env.js';
+import { createWaitUntilStub } from '../wait-until-stub.js';
 
 export interface NodeDevAdapterOptions {
   port?: number;
@@ -124,11 +125,15 @@ export class NodeDevAdapter implements RuntimeAdapter {
 
   /** Start the in-process HTTP server. */
   private startServer(app: any): void {
-    this.serverHandle = startNodeServer((request) => app.fetch(request), {
-      port: this.options.port,
-      host: this.options.host,
-      onListening: this.serveOptions.onListening,
-      websocket: this.serveOptions.websocket,
-    });
+    const executionCtx = createWaitUntilStub();
+    this.serverHandle = startNodeServer(
+      (request) => app.fetch(request, { executionCtx }),
+      {
+        port: this.options.port,
+        host: this.options.host,
+        onListening: this.serveOptions.onListening,
+        websocket: this.serveOptions.websocket,
+      }
+    );
   }
 }

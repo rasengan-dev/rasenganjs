@@ -374,6 +374,7 @@ export class Futon {
     const mergedRuntime: RuntimeContext = {
       ...runtime,
       env: { ...this.env, ...runtime.env },
+      executionCtx: runtime.executionCtx,
       server: runtime.server ?? this.serverInfo,
       assets: runtime.assets ?? this.assets,
     };

@@ -11,6 +11,28 @@
  */
 
 /**
+ * Fire-and-forget lifecycle handle for work that should not delay
+ * the response (RFC-0013).
+ *
+ * On Workerd this is backed by the platform's real `ExecutionContext`
+ * (`waitUntil` keeps the isolate alive until the promise settles).
+ * On Node/Bun, where no such concept exists, the adapter provides a
+ * stub that still runs the promise to completion and logs rejections
+ * instead of leaving them unhandled — so the same `ctx.runtime.executionCtx?.waitUntil(...)`
+ * call is safe to write once and run on every runtime.
+ */
+export interface ExecutionContext {
+  /** Extend the request's lifetime until `promise` settles. */
+  waitUntil(promise: Promise<unknown>): void;
+  /**
+   * Workerd-only: report an unhandled exception without failing the
+   * response that already started streaming. Not implemented by
+   * every adapter — check for its presence before calling it.
+   */
+  passThroughOnException?(): void;
+}
+
+/**
  * Runtime environment information.
  * This is the only platform-specific concept in Context.
  * It lets the same handler code run in Node, Bun, Deno,
@@ -18,7 +40,22 @@
  * (optionally) platform bindings.
  */
 export interface RuntimeContext {
-  env?: Record<string, string>;
+  /**
+   * Environment variables and, on Workerd, platform bindings
+   * (D1 databases, R2 buckets, KV namespaces, service bindings,
+   * secrets). Typed loosely (`unknown` values) here since a binding
+   * is a live object, not a string — see RFC-0013 for the follow-up
+   * that lets a project declare its own typed `Bindings` shape.
+   */
+  env?: Record<string, unknown>;
+
+  /**
+   * Fire-and-forget work handle (RFC-0013). Populated by every
+   * adapter, real `ExecutionContext` on Workerd, a logging stub on
+   * Node/Bun. Absent only if a Futon app is invoked directly via
+   * `app.fetch(request)` outside of any adapter (e.g. in a unit test).
+   */
+  executionCtx?: ExecutionContext;
 
   /**
    * Server info — populated by the adapter when the

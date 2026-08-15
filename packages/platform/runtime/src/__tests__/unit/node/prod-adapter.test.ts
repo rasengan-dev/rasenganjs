@@ -16,6 +16,23 @@ function createMockApp() {
   };
 }
 
+/** Mock app that records the `runtime` argument every `fetch()` receives. */
+function createRecordingMockApp() {
+  const calls: any[] = [];
+  return {
+    configureServer: () => {},
+    configureAssets: () => {},
+    loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
+    fetch: (request: Request, runtime?: any) => {
+      calls.push(runtime);
+      return Promise.resolve(new Response('ok'));
+    },
+    calls,
+  };
+}
+
 describe('NodeProdAdapter', () => {
   let rootDir: string;
 
@@ -110,5 +127,37 @@ describe('NodeProdAdapter', () => {
     const adapter = new NodeProdAdapter({ rootDir });
     await adapter.close();
     await adapter.close();
+  });
+
+  it('passes a waitUntil-capable executionCtx to app.fetch() (RFC-0013)', async () => {
+    const adapter = new NodeProdAdapter({ port: 0, rootDir });
+    const app = createRecordingMockApp();
+
+    const started = new Promise<{ port: number }>((resolve) => {
+      const origServe = adapter.serve.bind(adapter);
+      adapter.serve = (a: any, opts?: any) =>
+        origServe(a, {
+          ...opts,
+          onListening: (info: { port: number }) => resolve(info),
+        });
+    });
+
+    const servePromise = adapter.serve(app);
+    const { port } = await started;
+
+    await fetch(`http://127.0.0.1:${port}/`);
+    await adapter.close();
+    await servePromise;
+
+    expect(app.calls).toHaveLength(1);
+    const runtime = app.calls[0];
+    expect(typeof runtime.executionCtx.waitUntil).toBe('function');
+
+    // A rejected promise handed to waitUntil must not throw or reject.
+    await expect(
+      Promise.resolve(
+        runtime.executionCtx.waitUntil(Promise.reject(new Error('boom')))
+      )
+    ).resolves.toBeUndefined();
   });
 });

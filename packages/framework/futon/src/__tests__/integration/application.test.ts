@@ -21,6 +21,33 @@ describe('Futon (integration)', () => {
     expect(await res.json()).toEqual({ message: 'world' });
   });
 
+  it('exposes non-string bindings via ctx.runtime.env (RFC-0013)', async () => {
+    const db = { prepare: () => 'fake-d1-binding' };
+    app.get('/binding', async (ctx) =>
+      json({ hasDb: ctx.runtime.env?.DB === db })
+    );
+
+    const req = new Request('http://localhost/binding');
+    const res = await app.fetch(req, { env: { DB: db } });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ hasDb: true });
+  });
+
+  it('exposes ctx.runtime.executionCtx.waitUntil when provided by the adapter (RFC-0013)', async () => {
+    const waitUntil = vi.fn();
+    app.get('/wait', async (ctx) => {
+      ctx.runtime.executionCtx?.waitUntil(Promise.resolve('usage-event'));
+      return json({ ok: true });
+    });
+
+    const req = new Request('http://localhost/wait');
+    const res = await app.fetch(req, { executionCtx: { waitUntil } });
+
+    expect(res.status).toBe(200);
+    expect(waitUntil).toHaveBeenCalledTimes(1);
+  });
+
   it('responds to a registered POST route', async () => {
     app.post('/data', async () => json({ created: true }));
 

@@ -27,6 +27,7 @@ import { BunWatcher } from './watcher.js';
 import { startBunServer, type BunServerHandle } from './server.js';
 import { loadBunEnvFiles } from './env.js';
 import { Futon } from '@rasenganjs/futon';
+import { createWaitUntilStub } from '../wait-until-stub.js';
 
 /** Minimal interface for a Bun child subprocess. */
 interface BunChildSubprocess {
@@ -111,11 +112,15 @@ export class BunDevAdapter implements RuntimeAdapter {
 
   /** Start the in-process HTTP server via Bun.serve(). */
   private startServer(app: Futon): void {
-    this.serverHandle = startBunServer((request) => app.fetch(request), {
-      port: this.options.port,
-      host: this.options.host,
-      onListening: this.serveOptions.onListening,
-      websocket: this.serveOptions.websocket,
-    });
+    const executionCtx = createWaitUntilStub();
+    this.serverHandle = startBunServer(
+      (request) => app.fetch(request, { executionCtx }),
+      {
+        port: this.options.port,
+        host: this.options.host,
+        onListening: this.serveOptions.onListening,
+        websocket: this.serveOptions.websocket,
+      }
+    );
   }
 }

@@ -20,6 +20,7 @@ import type { RuntimeAdapter, ServeOptions, Assets } from '../../types.js';
 
 import { startBunServer, type BunServerHandle } from './server.js';
 import { loadBunEnvFiles } from './env.js';
+import { createWaitUntilStub } from '../wait-until-stub.js';
 import { join, resolve, relative } from 'node:path';
 import { readdir, stat } from 'node:fs/promises';
 import type { Dirent } from 'node:fs';
@@ -103,12 +104,16 @@ export class BunProdAdapter implements RuntimeAdapter {
 
     await app.init();
 
-    this.serverHandle = startBunServer((request) => app.fetch(request), {
-      port: this.options.port,
-      host: this.options.host,
-      onListening: options?.onListening,
-      websocket: options?.websocket,
-    });
+    const executionCtx = createWaitUntilStub();
+    this.serverHandle = startBunServer(
+      (request) => app.fetch(request, { executionCtx }),
+      {
+        port: this.options.port,
+        host: this.options.host,
+        onListening: options?.onListening,
+        websocket: options?.websocket,
+      }
+    );
 
     return this.serverHandle.ready;
   }
