@@ -15,16 +15,16 @@ import { parseQueryString } from '../router/utils.js';
  * `response` is lazily created on first access — if no handler
  * uses the chainable API, no builder is allocated.
  */
-export function createContext(
+export function createContext<Env = Record<string, unknown>>(
   request: Request,
   params: Record<string, string> = {},
-  runtime: RuntimeContext = {}
-): Context {
+  runtime: RuntimeContext<Env> = {}
+): Context<any, Record<string, string>, QueryParams, Env> {
   const state: Record<string, unknown> = {};
   let _query: QueryParams | undefined;
   let _response: ResponseBuilder | undefined;
 
-  const ctx: Context = {
+  const ctx: Context<any, Record<string, string>, QueryParams, Env> = {
     request,
     req: request,
     body: undefined,

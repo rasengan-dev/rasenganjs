@@ -37,6 +37,7 @@
 import type {
   Assets,
   Context,
+  QueryParams,
   RuntimeContext,
   ServerInfo,
 } from '../context/types.js';
@@ -48,8 +49,25 @@ import { Router } from '../router/index.js';
 import { getPathname } from '../router/utils.js';
 import { text } from '../response/utils.js';
 import { HookSystem } from '../hooks/index.js';
+import type { ErrorHandler, Handler } from '../types.js';
 
-export class Futon {
+/**
+ * `Env` is the shape of `ctx.runtime.env` (RFC-0013 Phase 2). Declare
+ * a project's own `Bindings` type and pass it as `new Futon<Bindings>()`
+ * to get full autocomplete on `ctx.runtime.env` in every handler and
+ * middleware registered through this instance, the same ergonomics
+ * as Hono's `c.env`. Defaults to `Record<string, unknown>`, so
+ * `new Futon()` needs no changes.
+ *
+ * `Router`/`Middleware`'s own internals stay untyped for `Env`
+ * (a deliberate scope limit, see RFC-0013's Phase 2 "Open questions")
+ * — routes registered through `.group()` on the raw `Router` returned
+ * by `getRouter()` do not get a typed `ctx.runtime.env`, only routes
+ * registered directly through this class's `get`/`post`/etc. do. The
+ * casts below are safe: `Env` only changes what TypeScript infers for
+ * `ctx.runtime.env`, never the actual object shape at runtime.
+ */
+export class Futon<Env = Record<string, unknown>> {
   private middlewares: Middleware[] = [];
   private router: Router;
 
@@ -128,19 +146,25 @@ export class Futon {
    * app.use("/api", authMiddleware);     // scoped to /api/*
    * ```
    */
-  use(middleware: Middleware): this;
-  use(path: string, middleware: Middleware): this;
-  use(pathOrMiddleware: string | Middleware, middleware?: Middleware): this {
+  use(middleware: Middleware<Env>): this;
+  use(path: string, middleware: Middleware<Env>): this;
+  use(
+    pathOrMiddleware: string | Middleware<Env>,
+    middleware?: Middleware<Env>
+  ): this {
     if (typeof pathOrMiddleware === 'string' && middleware) {
       const path = pathOrMiddleware;
       this.middlewares.push(async (ctx, next) => {
         if (getPathname(ctx.request.url).startsWith(path)) {
-          return middleware(ctx, next);
+          return middleware(
+            ctx as Context<any, Record<string, string>, QueryParams, Env>,
+            next
+          );
         }
         return next();
       });
     } else {
-      this.middlewares.push(pathOrMiddleware as Middleware);
+      this.middlewares.push(pathOrMiddleware as unknown as Middleware);
     }
     this._chain = null;
     return this;
@@ -148,38 +172,59 @@ export class Futon {
 
   // ── Route shortcuts (delegate to internal Router) ──────────
 
-  get(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.get(pattern, handler);
+  get(pattern: string, handler: Handler<Env>): this {
+    this.router.get(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  post(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.post(pattern, handler);
+  post(pattern: string, handler: Handler<Env>): this {
+    this.router.post(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  put(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.put(pattern, handler);
+  put(pattern: string, handler: Handler<Env>): this {
+    this.router.put(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  patch(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.patch(pattern, handler);
+  patch(pattern: string, handler: Handler<Env>): this {
+    this.router.patch(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  delete(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.delete(pattern, handler);
+  delete(pattern: string, handler: Handler<Env>): this {
+    this.router.delete(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  head(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.head(pattern, handler);
+  head(pattern: string, handler: Handler<Env>): this {
+    this.router.head(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
-  options(pattern: string, handler: (ctx: Context) => Promise<Response>): this {
-    this.router.options(pattern, handler);
+  options(pattern: string, handler: Handler<Env>): this {
+    this.router.options(
+      pattern,
+      handler as unknown as (ctx: Context) => Promise<Response>
+    );
     return this;
   }
 
@@ -223,9 +268,9 @@ export class Futon {
 
   // ── Error / 404 handlers ───────────────────────────────────
 
-  private notFoundHandler?: (ctx: Context) => Promise<Response>;
-  private fallbackHandler?: (ctx: Context) => Promise<Response>;
-  private errorHandler?: (error: Error, ctx: Context) => Promise<Response>;
+  private notFoundHandler?: Handler<Env>;
+  private fallbackHandler?: Handler<Env>;
+  private errorHandler?: ErrorHandler<Env>;
 
   /**
    * Register a custom 404 handler for unmatched routes.
@@ -239,7 +284,7 @@ export class Futon {
    *
    * If not set, returns a plain-text "Not Found" response.
    */
-  notFound(handler: (ctx: Context) => Promise<Response>): this {
+  notFound(handler: Handler<Env>): this {
     this.notFoundHandler = handler;
     return this;
   }
@@ -260,7 +305,7 @@ export class Futon {
    *
    * Takes priority over `notFound()` when both are registered.
    */
-  fallback(handler: (ctx: Context) => Promise<Response>): this {
+  fallback(handler: Handler<Env>): this {
     this.fallbackHandler = handler;
     return this;
   }
@@ -271,7 +316,7 @@ export class Futon {
    * If not set, returns a plain-text "Internal Server Error"
    * response with status 500.
    */
-  onError(handler: (error: Error, ctx: Context) => Promise<Response>): this {
+  onError(handler: ErrorHandler<Env>): this {
     this.errorHandler = handler;
     return this;
   }
@@ -367,18 +412,23 @@ export class Futon {
    */
   async fetch(
     request: Request,
-    runtime: RuntimeContext = {}
+    runtime: RuntimeContext<Env> = {}
   ): Promise<Response> {
     // Merge app-level props into the runtime context so they
     // flow through to every handler and middleware via ctx.runtime.*.
-    const mergedRuntime: RuntimeContext = {
+    // The env merge is cast to `Env`: `this.env` (dotenv-loaded string
+    // vars) and `runtime.env` (adapter-provided, real bindings on
+    // Workerd) are plumbing, not a type the merge itself can prove —
+    // a project's own `Bindings` type is expected to cover whatever
+    // keys actually end up here.
+    const mergedRuntime: RuntimeContext<Env> = {
       ...runtime,
-      env: { ...this.env, ...runtime.env },
+      env: { ...this.env, ...runtime.env } as Env,
       executionCtx: runtime.executionCtx,
       server: runtime.server ?? this.serverInfo,
       assets: runtime.assets ?? this.assets,
     };
-    const ctx = createContext(request, {}, mergedRuntime);
+    const ctx = createContext<Env>(request, {}, mergedRuntime);
 
     // Fire beforeRequest hook (errors here are swallowed per hook spec).
     // Guarded so hookless apps skip the async-call overhead entirely.
@@ -411,7 +461,7 @@ export class Futon {
     let response: Response;
 
     try {
-      response = await chain(ctx, finalHandler);
+      response = await chain(ctx as unknown as Context, finalHandler);
     } catch (error) {
       // Fire onError hook
       if (error instanceof Error && this.hooks.has('onError')) {

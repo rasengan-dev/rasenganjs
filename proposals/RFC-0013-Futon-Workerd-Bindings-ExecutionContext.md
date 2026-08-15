@@ -1,6 +1,6 @@
 # RFC 0013 - Workers Bindings and ExecutionContext for Futon on Workerd
 
-**Status:** Draft
+**Status:** Implemented (Phase 1: 2026-08-15, Phase 2: 2026-08-15)
 **Author:** Rasengan.js Core Team
 **Date:** 2026-08-15
 
@@ -224,3 +224,15 @@ The adapter side does not need its own generic parameter. `WorkerdProdAdapter.se
 
 - Should Phase 2's `Env` generic eventually also cover `state` (Hono's `Variables` slot), or stay bindings-only indefinitely? Left open, not blocking Phase 1 or Phase 2 as scoped here.
 - Should `@rasenganjs/cloudflare` (RFC-0009) or a future BaaS-side CLI own generating a project's `Bindings` type from `wrangler.jsonc` or a schema file, once Phase 2 ships? Noted as a natural follow-up, not decided here.
+
+---
+
+# As implemented
+
+Both phases shipped 2026-08-15, on branch `feat/futon-workerd-bindings`. Two real deviations from this RFC's original sketch, both found while implementing, neither changing the outcome for a caller:
+
+**`Env` is the last type parameter on `Context`, not conceptually "first."** A grep across the repo before touching the signature found a real, existing 3-positional-argument call site: `packages/framework/rasengan-server/src/router/index.ts`'s `Context<InferBody<S>, InferParams<S>, InferQuery<S>>`. Inserting `Env` anywhere before the existing `Body, Params, Query` triplet would have silently rebound that call site's arguments to the wrong parameters, a breaking change this RFC's Goals explicitly rule out ("Zero public API change" in spirit, no existing 3-arg `Context<...>` caller should need to change). `Context<Body = any, Params = Record<string, string>, Query = QueryParams, Env = Record<string, unknown>>` keeps that call site compiling unchanged; `RuntimeContext<Env>` (single parameter) and the new `Handler<Env, Params>` / `ErrorHandler<Env>` types had no such constraint and use `Env` as their first parameter.
+
+**`Router` and `Middleware`'s internal call sites stay untyped for `Env`, only `Futon`'s own `get`/`post`/`put`/`patch`/`delete`/`head`/`options`/`use`/`notFound`/`fallback`/`onError` are typed.** Making `Router<Env>` generic (and `SubRouter<Env> extends Router<Env>`, and `RouteEntry<Env>`, and `compose()`) to thread `Env` all the way into the radix-tree dispatch internals was judged out of proportion to the goal: that machinery has no code path that reads `ctx.runtime.env` itself, only user handlers do. Instead, `Futon<Env>`'s public methods accept `Handler<Env>`/`Middleware<Env>`-typed callbacks and cast once at the boundary into the router's untyped internals (`handler as unknown as (ctx: Context) => Promise<Response>`). This is sound because `Env` only changes what TypeScript infers for `ctx.runtime.env`, never the actual object at runtime: the same value flows through regardless of which type parameter labeled it at any given point. One consequence, called out in a code comment on the `Futon` class itself: routes registered through `app.group()` on the raw `Router` returned by `getRouter()` do not get a typed `ctx.runtime.env` (they fall back to `Record<string, unknown>`), only routes registered directly through `Futon`'s own methods do. Left as a known, explicit gap rather than a silent one, closing it is the natural next step if `group()`-registered routes turn out to need typed bindings too, not attempted here.
+
+**Verification:** `@rasenganjs/futon` 347/347 tests (2 new for Phase 1's `env`/`executionCtx` on `Futon.fetch()`, 1 new proving Phase 2's typed `ctx.runtime.env` compiles with zero casts inside a handler). `@rasenganjs/runtime` 111/151 (40 skipped, Bun/Workerd-gated, not runnable under plain Node/vitest), 7 new tests across the four Node/Bun adapters and Workerd's `WorkerdProdAdapter` covering `env`/`executionCtx` forwarding and the new `passthrough: true` default. `@rasenganjs/server` (downstream consumer, including the `Context<...>` 3-arg call site above) 118/118 tests unchanged, builds clean. `tsc --noEmit` on all three packages shows only errors confirmed pre-existing on the `docs` base branch via `git stash` comparison, no new errors introduced by either phase.

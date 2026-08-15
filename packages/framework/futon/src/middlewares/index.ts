@@ -1,4 +1,4 @@
-import type { Context } from '../context/types.js';
+import type { Context, QueryParams } from '../context/types.js';
 
 /**
  * Middleware is the core abstraction for the request pipeline.
@@ -25,7 +25,7 @@ import type { Context } from '../context/types.js';
  * };
  * ```
  */
-export type Middleware = (
-  ctx: Context,
+export type Middleware<Env = Record<string, unknown>> = (
+  ctx: Context<any, Record<string, string>, QueryParams, Env>,
   next: () => Promise<Response>
 ) => Promise<Response>;

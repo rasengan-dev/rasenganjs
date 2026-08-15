@@ -39,15 +39,16 @@ export interface ExecutionContext {
  * Cloudflare Workers, etc. by carrying env vars and
  * (optionally) platform bindings.
  */
-export interface RuntimeContext {
+export interface RuntimeContext<Env = Record<string, unknown>> {
   /**
    * Environment variables and, on Workerd, platform bindings
    * (D1 databases, R2 buckets, KV namespaces, service bindings,
-   * secrets). Typed loosely (`unknown` values) here since a binding
-   * is a live object, not a string — see RFC-0013 for the follow-up
-   * that lets a project declare its own typed `Bindings` shape.
+   * secrets). Defaults to `Record<string, unknown>` — a project that
+   * wants full autocomplete declares its own `Bindings` type and
+   * passes it to `new Futon<Bindings>()` (RFC-0013 Phase 2), which
+   * flows here without this interface ever needing to know its shape.
    */
-  env?: Record<string, unknown>;
+  env?: Env;
 
   /**
    * Fire-and-forget work handle (RFC-0013). Populated by every
@@ -163,11 +164,17 @@ import type { ResponseBuilder } from '../response/builder.js';
  * @typeParam Body   — Typed request body (set by body parser + validation)
  * @typeParam Params — Typed URL path parameters
  * @typeParam Query  — Typed query parameters (intersected with callable access)
+ * @typeParam Env    — Typed `ctx.runtime.env` bindings (RFC-0013 Phase 2).
+ *   Placed last, after the three existing parameters, on purpose: an
+ *   existing 3-argument `Context<Body, Params, Query>` call site (e.g.
+ *   `@rasenganjs/server`'s router) keeps compiling unchanged, `Env`
+ *   simply falls back to its default.
  */
 export interface Context<
   Body = any,
   Params = Record<string, string>,
   Query = QueryParams,
+  Env = Record<string, unknown>,
 > {
   /** The incoming Web API Request */
   request: Request;
@@ -206,7 +213,7 @@ export interface Context<
   query: Query & QueryParams;
 
   /** Runtime environment info */
-  runtime: RuntimeContext;
+  runtime: RuntimeContext<Env>;
 
   /**
    * Chainable response builder.

@@ -34,6 +34,26 @@ describe('Futon (integration)', () => {
     expect(await res.json()).toEqual({ hasDb: true });
   });
 
+  it('types ctx.runtime.env from a declared Bindings type (RFC-0013 Phase 2)', async () => {
+    type Bindings = { DB: { prepare: (sql: string) => string } };
+    const db: Bindings['DB'] = { prepare: (sql) => `prepared: ${sql}` };
+
+    const typedApp = new Futon<Bindings>();
+    typedApp.get('/query', async (ctx) => {
+      // No cast, no `as`, no `?.` needed — this line is the actual
+      // compile-time proof: ctx.runtime.env is typed as `Bindings`,
+      // not `Record<string, unknown>`, inside this handler.
+      const result = ctx.runtime.env.DB.prepare('select 1');
+      return json({ result });
+    });
+
+    const req = new Request('http://localhost/query');
+    const res = await typedApp.fetch(req, { env: { DB: db } });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ result: 'prepared: select 1' });
+  });
+
   it('exposes ctx.runtime.executionCtx.waitUntil when provided by the adapter (RFC-0013)', async () => {
     const waitUntil = vi.fn();
     app.get('/wait', async (ctx) => {
