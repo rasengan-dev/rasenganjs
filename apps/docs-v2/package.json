@@ -13,7 +13,7 @@
     "@rasenganjs/kage-demo": "1.0.1",
     "@rasenganjs/mdx": "1.2.2",
     "@rasenganjs/serve": "beta",
-    "@rasenganjs/sitemap": "workspace:*",
+    "@rasenganjs/sitemap": "beta",
     "@rasenganjs/theme": "^1.1.0",
     "@rasenganjs/vercel": "beta",
     "@tailwindcss/vite": "^4.*",
