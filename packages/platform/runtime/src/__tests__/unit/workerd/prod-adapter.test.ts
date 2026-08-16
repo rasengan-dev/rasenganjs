@@ -19,6 +19,34 @@ function createMockApp() {
   };
 }
 
+/** Mock app that records the `runtime` argument every `fetch()` receives. */
+function createRecordingMockApp() {
+  const calls: any[] = [];
+  return {
+    configureServer: () => {},
+    configureAssets: () => {},
+    loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
+    fetch: (request: Request, runtime?: any) => {
+      calls.push(runtime);
+      return Promise.resolve(new Response('ok'));
+    },
+    calls,
+  };
+}
+
+function createMockExecutionCtx() {
+  const waitUntilPromises: Promise<unknown>[] = [];
+  return {
+    waitUntil: (p: Promise<unknown>) => {
+      waitUntilPromises.push(p);
+    },
+    passThroughOnException: () => {},
+    waitUntilPromises,
+  };
+}
+
 describe('WorkerdProdAdapter', () => {
   let adapter: WorkerdProdAdapter;
 
@@ -69,6 +97,62 @@ describe('WorkerdProdAdapter', () => {
     expect(await response.text()).toBe('ok');
   });
 
+  it('defaults to passthrough mode when no options are given (RFC-0013)', async () => {
+    adapter = new WorkerdProdAdapter();
+    const app = createMockApp();
+
+    // Resolves (rather than hanging on the never-settling promise the
+    // addEventListener path returns) — proof passthrough is the default.
+    await adapter.serve(app);
+
+    expect(adapter.fetchHandler).not.toBeNull();
+  });
+
+  it('forwards env to app.fetch() as ctx.runtime.env (RFC-0013)', async () => {
+    adapter = new WorkerdProdAdapter();
+    const app = createRecordingMockApp();
+    await adapter.serve(app);
+
+    const env = { DB: { prepare: () => {} }, SECRET: 'shh' };
+    await adapter.fetchHandler!(new Request('http://test/'), env);
+
+    expect(app.calls).toHaveLength(1);
+    expect(app.calls[0].env).toBe(env);
+  });
+
+  it('forwards ctx.waitUntil/passThroughOnException as ctx.runtime.executionCtx (RFC-0013)', async () => {
+    adapter = new WorkerdProdAdapter();
+    const app = createRecordingMockApp();
+    await adapter.serve(app);
+
+    const mockCtx = createMockExecutionCtx();
+    await adapter.fetchHandler!(
+      new Request('http://test/'),
+      {},
+      mockCtx as any
+    );
+
+    const executionCtx = app.calls[0].executionCtx;
+    expect(typeof executionCtx.waitUntil).toBe('function');
+
+    const marker = Promise.resolve('usage-event');
+    executionCtx.waitUntil(marker);
+    expect(mockCtx.waitUntilPromises).toContain(marker);
+
+    executionCtx.passThroughOnException();
+  });
+
+  it('defaults env to an empty object and executionCtx to undefined when omitted', async () => {
+    adapter = new WorkerdProdAdapter();
+    const app = createRecordingMockApp();
+    await adapter.serve(app);
+
+    await adapter.fetchHandler!(new Request('http://test/'));
+
+    expect(app.calls[0].env).toEqual({});
+    expect(app.calls[0].executionCtx).toBeUndefined();
+  });
+
   it('close clears fetchHandler', async () => {
     adapter = new WorkerdProdAdapter({ passthrough: true });
     await adapter.serve(createMockApp());
@@ -78,24 +162,27 @@ describe('WorkerdProdAdapter', () => {
     expect(adapter.fetchHandler).toBeNull();
   });
 
-  describeIfWorkerd('workerd mode (addEventListener)', () => {
-    it('serve registers fetch listener', async () => {
-      adapter = new WorkerdProdAdapter();
-      const app = createMockApp();
+  describeIfWorkerd(
+    'workerd mode (addEventListener, passthrough: false)',
+    () => {
+      it('serve registers fetch listener', async () => {
+        adapter = new WorkerdProdAdapter({ passthrough: false });
+        const app = createMockApp();
 
-      const servePromise = adapter.serve(app);
-      await expect(servePromise).resolves.toBeUndefined();
+        const servePromise = adapter.serve(app);
+        await expect(servePromise).resolves.toBeUndefined();
 
-      expect(adapter.fetchHandler).not.toBeNull();
-    });
+        expect(adapter.fetchHandler).not.toBeNull();
+      });
 
-    it('close removes fetch listener', async () => {
-      adapter = new WorkerdProdAdapter();
-      await adapter.serve(createMockApp());
+      it('close removes fetch listener', async () => {
+        adapter = new WorkerdProdAdapter({ passthrough: false });
+        await adapter.serve(createMockApp());
 
-      await adapter.close();
+        await adapter.close();
 
-      expect(adapter.fetchHandler).toBeNull();
-    });
-  });
+        expect(adapter.fetchHandler).toBeNull();
+      });
+    }
+  );
 });

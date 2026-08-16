@@ -244,15 +244,15 @@ program
       }
 
       // Getting the version based on the --beta option
-      let versionName = '';
+      // let versionName = '';
 
-      if (experimental) {
-        if (Versions.beta) {
-          versionName = Versions.beta;
-        }
-      } else {
-        versionName = Versions.stable;
-      }
+      // if (experimental) {
+      //   if (Versions.beta) {
+      //     versionName = Versions.beta;
+      //   }
+      // } else {
+      //   versionName = Versions.stable;
+      // }
 
       // Resolve the project kind
       let kind: Kind;
@@ -366,7 +366,7 @@ program
         projectPath,
         templateKey,
         initGit: Boolean(initGit),
-        rasenganVersion: versionName || undefined,
+        // rasenganVersion: versionName || undefined,
       });
     }
   });

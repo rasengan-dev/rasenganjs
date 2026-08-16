@@ -11,14 +11,52 @@
  */
 
 /**
+ * Fire-and-forget lifecycle handle for work that should not delay
+ * the response (RFC-0013).
+ *
+ * On Workerd this is backed by the platform's real `ExecutionContext`
+ * (`waitUntil` keeps the isolate alive until the promise settles).
+ * On Node/Bun, where no such concept exists, the adapter provides a
+ * stub that still runs the promise to completion and logs rejections
+ * instead of leaving them unhandled — so the same `ctx.runtime.executionCtx?.waitUntil(...)`
+ * call is safe to write once and run on every runtime.
+ */
+export interface ExecutionContext {
+  /** Extend the request's lifetime until `promise` settles. */
+  waitUntil(promise: Promise<unknown>): void;
+  /**
+   * Workerd-only: report an unhandled exception without failing the
+   * response that already started streaming. Not implemented by
+   * every adapter — check for its presence before calling it.
+   */
+  passThroughOnException?(): void;
+}
+
+/**
  * Runtime environment information.
  * This is the only platform-specific concept in Context.
  * It lets the same handler code run in Node, Bun, Deno,
  * Cloudflare Workers, etc. by carrying env vars and
  * (optionally) platform bindings.
  */
-export interface RuntimeContext {
-  env?: Record<string, string>;
+export interface RuntimeContext<Env = Record<string, unknown>> {
+  /**
+   * Environment variables and, on Workerd, platform bindings
+   * (D1 databases, R2 buckets, KV namespaces, service bindings,
+   * secrets). Defaults to `Record<string, unknown>` — a project that
+   * wants full autocomplete declares its own `Bindings` type and
+   * passes it to `new Futon<Bindings>()` (RFC-0013 Phase 2), which
+   * flows here without this interface ever needing to know its shape.
+   */
+  env?: Env;
+
+  /**
+   * Fire-and-forget work handle (RFC-0013). Populated by every
+   * adapter, real `ExecutionContext` on Workerd, a logging stub on
+   * Node/Bun. Absent only if a Futon app is invoked directly via
+   * `app.fetch(request)` outside of any adapter (e.g. in a unit test).
+   */
+  executionCtx?: ExecutionContext;
 
   /**
    * Server info — populated by the adapter when the
@@ -126,11 +164,17 @@ import type { ResponseBuilder } from '../response/builder.js';
  * @typeParam Body   — Typed request body (set by body parser + validation)
  * @typeParam Params — Typed URL path parameters
  * @typeParam Query  — Typed query parameters (intersected with callable access)
+ * @typeParam Env    — Typed `ctx.runtime.env` bindings (RFC-0013 Phase 2).
+ *   Placed last, after the three existing parameters, on purpose: an
+ *   existing 3-argument `Context<Body, Params, Query>` call site (e.g.
+ *   `@rasenganjs/server`'s router) keeps compiling unchanged, `Env`
+ *   simply falls back to its default.
  */
 export interface Context<
   Body = any,
   Params = Record<string, string>,
   Query = QueryParams,
+  Env = Record<string, unknown>,
 > {
   /** The incoming Web API Request */
   request: Request;
@@ -169,7 +213,7 @@ export interface Context<
   query: Query & QueryParams;
 
   /** Runtime environment info */
-  runtime: RuntimeContext;
+  runtime: RuntimeContext<Env>;
 
   /**
    * Chainable response builder.

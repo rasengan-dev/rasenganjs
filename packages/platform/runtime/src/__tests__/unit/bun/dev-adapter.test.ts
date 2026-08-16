@@ -18,6 +18,23 @@ function createMockApp() {
   };
 }
 
+/** Mock app that records the `runtime` argument every `fetch()` receives. */
+function createRecordingMockApp() {
+  const calls: any[] = [];
+  return {
+    configureServer: () => {},
+    configureAssets: () => {},
+    loadEnv: () => {},
+    init: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
+    fetch: (request: Request, runtime?: any) => {
+      calls.push(runtime);
+      return Promise.resolve(new Response('ok'));
+    },
+    calls,
+  };
+}
+
 describe('BunDevAdapter', () => {
   let rootDir: string;
 
@@ -100,6 +117,34 @@ describe('BunDevAdapter', () => {
 
       await adapter.close();
       await servePromise;
+    });
+
+    it('passes a waitUntil-capable executionCtx to app.fetch() (RFC-0013)', async () => {
+      const adapter = new BunDevAdapter({ port: 0, rootDir });
+      const app = createRecordingMockApp();
+
+      const { port, servePromise } = await new Promise<{
+        port: number;
+        servePromise: Promise<void>;
+      }>((resolve) => {
+        const origServe = adapter.serve.bind(adapter);
+        adapter.serve = (a: any, opts?: any) => {
+          const sp = origServe(a, {
+            ...opts,
+            onListening: (i: { port: number }) =>
+              resolve({ port: i.port, servePromise: sp }),
+          });
+          return sp;
+        };
+        adapter.serve(app);
+      });
+
+      await fetch(`http://127.0.0.1:${port}/`);
+      await adapter.close();
+      await servePromise;
+
+      expect(app.calls).toHaveLength(1);
+      expect(typeof app.calls[0].executionCtx.waitUntil).toBe('function');
     });
   });
 });

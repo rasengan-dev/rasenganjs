@@ -30,3 +30,14 @@ interface ServiceWorkerGlobalScope {
 
 /** The global `self` object in Worker environments. */
 declare var self: ServiceWorkerGlobalScope;
+
+/**
+ * The `ExecutionContext` passed as the third argument to a Module
+ * Worker's exported `fetch(request, env, ctx)` handler (RFC-0013).
+ * Declared ambiently, same rationale as `FetchEvent` above: no
+ * dependency on `@cloudflare/workers-types`.
+ */
+interface ExecutionContext {
+  waitUntil(promise: Promise<unknown>): void;
+  passThroughOnException(): void;
+}

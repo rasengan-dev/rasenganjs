@@ -26,7 +26,7 @@ const spinner = (text: string) =>
  */
 async function rewritePackageJson(
   packageJsonPath: string,
-  { name, rasenganVersion }: { name?: string; rasenganVersion?: string }
+  { name }: { name?: string }
 ) {
   let packageJsonString: string;
 
@@ -39,10 +39,6 @@ async function rewritePackageJson(
   const packageJson = JSON.parse(packageJsonString);
 
   if (name) packageJson.name = name;
-
-  if (rasenganVersion && packageJson.dependencies?.rasengan) {
-    packageJson.dependencies.rasengan = rasenganVersion;
-  }
 
   await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
@@ -183,14 +179,11 @@ export default async function fetchStarterTemplate(options: {
     // every kind, including the mono-repo's workspace root)
     await rewritePackageJson(path.join(projectPath, 'package.json'), {
       name: nameOfProject,
-      rasenganVersion,
     });
 
     // The mono-repo template nests a `rasengan` frontend under `web/` —
     // its own package.json also needs the version pin (name stays "web")
-    await rewritePackageJson(path.join(projectPath, 'web', 'package.json'), {
-      rasenganVersion,
-    });
+    await rewritePackageJson(path.join(projectPath, 'web', 'package.json'), {});
 
     // Removing the temporary folder
     rimraf.sync(tmpFolder);

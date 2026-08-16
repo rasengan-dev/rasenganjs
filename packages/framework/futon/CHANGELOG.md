@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Features
+
+- add typed `Env` generic on `Context`/`Futon`/`Handler`/`Middleware` — declare a project's own `Bindings` type and pass it to `new Futon<Bindings>()` for full autocomplete on `ctx.runtime.env` in every handler/middleware registered through `get`/`post`/`put`/`patch`/`delete`/`head`/`options`/`use`, matching Hono's `c.env`; defaults to `Record<string, unknown>` so existing untyped apps compile unchanged (RFC-0013 Phase 2) 946c1b5
+- add `RuntimeContext.executionCtx` (`ExecutionContext.waitUntil`/`passThroughOnException`) and widen `RuntimeContext.env` from `Record<string, string>` to `Record<string, unknown>` — Workers bindings (D1, R2, KV, service bindings, secrets) and fire-and-forget work are now reachable from `ctx.runtime` on every adapter: real `ExecutionContext` on Workerd, a logging stub on Node/Bun (RFC-0013 Phase 1) 2b790f9
+
 ## 1.0.0-beta.4 (2026-08-14)
 
 ### Bug Fixes
