@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Features
+
+- `WorkerdProdAdapter.fetchHandler` now forwards `env` and `ctx` (`ExecutionContext`) into Futon's `RuntimeContext` on every request, and defaults `passthrough` to `true` — the Service Worker registration format (`self.addEventListener('fetch', ...)`) never receives `env` from workerd by platform design, so Module Worker format (`export default { fetch }`) is now the default rather than an opt-in, otherwise a deployed Futon app could not read a single binding (D1, R2, KV, service bindings, secrets) (RFC-0013 Phase 1) 2b790f9
+- Node and Bun adapters (dev + prod) now pass a `RuntimeContext.executionCtx` stub into every `app.fetch()` call — a fire-and-forget `waitUntil` that runs the promise to completion and logs rejections instead of leaving them unhandled, so `ctx.runtime.executionCtx?.waitUntil(...)` is safe to call the same way on every runtime (RFC-0013 Phase 1) 2b790f9
+
 ## 1.0.0-beta.5 (2026-08-10)
 
 ## 1.0.0-beta.4 (2026-08-10)
