@@ -246,7 +246,7 @@ describe('Container', () => {
       await expect(container.destroyAll()).resolves.toBeUndefined();
     });
 
-    it('does not track useValue providers', async () => {
+    it('does not track useValue providers that are not Provider instances', async () => {
       let initCalled = false;
       const c = new Container();
 
@@ -262,6 +262,74 @@ describe('Container', () => {
 
       await c.initAll();
       expect(initCalled).toBe(false);
+    });
+
+    it('calls onInit/onDestroy for a useValue provider that is a Provider instance (RFC-0012)', async () => {
+      const order: string[] = [];
+
+      class PreBuilt extends Provider {
+        async onInit() {
+          order.push('init');
+        }
+        async onDestroy() {
+          order.push('destroy');
+        }
+      }
+
+      const c = new Container();
+      const preBuilt = new PreBuilt();
+      c.register({ provide: 'PreBuilt', useValue: preBuilt });
+      c.resolve('PreBuilt' as any);
+
+      await c.initAll();
+      await c.destroyAll();
+
+      expect(order).toEqual(['init', 'destroy']);
+    });
+
+    it('only fires onInit once for a useValue provider resolved multiple times (RFC-0012)', async () => {
+      let initCount = 0;
+
+      class Counted extends Provider {
+        async onInit() {
+          initCount++;
+        }
+      }
+
+      const c = new Container();
+      const instance = new Counted();
+      c.register({ provide: 'Counted', useValue: instance });
+
+      c.resolve('Counted' as any);
+      c.resolve('Counted' as any);
+      c.resolve('Counted' as any);
+
+      await c.initAll();
+      expect(initCount).toBe(1);
+    });
+
+    it('interleaves useValue and useClass providers in registration order (RFC-0012)', async () => {
+      const order: string[] = [];
+
+      class ClassProvider extends Provider {
+        async onInit() {
+          order.push('class');
+        }
+      }
+      class ValueProvider extends Provider {
+        async onInit() {
+          order.push('value');
+        }
+      }
+
+      const c = new Container();
+      c.register(ClassProvider);
+      c.register({ provide: 'value', useValue: new ValueProvider() });
+      c.resolve(ClassProvider);
+      c.resolve('value' as any);
+
+      await c.initAll();
+      expect(order).toEqual(['class', 'value']);
     });
   });
 });
