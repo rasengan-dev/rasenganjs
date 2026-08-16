@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 1.0.0-beta.5 (2026-08-16)
+
+### Features
+
+- **futon,runtime:** forward env/ExecutionContext to Futon on Workerd 2b790f9
+- **futon:** typed Env generic on Context/Futon/Handler (RFC-0013 Phase 2) 946c1b5
+
 ### Features
 
 - add typed `Env` generic on `Context`/`Futon`/`Handler`/`Middleware` — declare a project's own `Bindings` type and pass it to `new Futon<Bindings>()` for full autocomplete on `ctx.runtime.env` in every handler/middleware registered through `get`/`post`/`put`/`patch`/`delete`/`head`/`options`/`use`, matching Hono's `c.env`; defaults to `Record<string, unknown>` so existing untyped apps compile unchanged (RFC-0013 Phase 2) 946c1b5
