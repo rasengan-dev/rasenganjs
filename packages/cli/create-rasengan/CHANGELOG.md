@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.5.0-beta.5 (2026-08-16)
+
+### Features
+
+- **create-rasengan:** remove the rasengan version overwrite logic 1e992d0
+
 ## 1.5.0-beta.4 (2026-07-24)
 
 ### Bug Fixes
