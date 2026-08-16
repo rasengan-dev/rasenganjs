@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.5 (2026-08-16)
+
+### Bug Fixes
+
+- **server:** fire lifecycle hooks for Provider-instance useValue providers 352c49a
+
 ### Bug Fixes
 
 - **`{ provide, useValue }` providers never received `onInit()`/`onDestroy()` lifecycle callbacks, even when the value was a `Provider` subclass instance** (RFC-0012) — `Container.instantiate()`'s `useValue` branch returned before ever reaching the `instanceof Provider` → `lifecycleInstances.push()` check, silently skipping the eager-resolution guarantee RFC-0003 already promised for every declared provider. A pre-built resource (e.g. a database connection pool) registered via `useValue` would leak on every graceful shutdown with no error or warning. Fixed by caching the resolved value into the same `entry.instance` slot the `useClass` path already uses, so the lifecycle push happens exactly once, keeping `useValue` and `useClass` providers consistent 352c49a
