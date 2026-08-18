@@ -382,18 +382,17 @@ function workerdEntryTemplate(sourcePath: string): string {
   return (
     `import { ServerApp } from '@rasenganjs/server';\n` +
     `import { WorkerdProdAdapter } from '@rasenganjs/runtime/adapters/workerd';\n` +
-    `import module from ${JSON.stringify(sourcePath)};\n` +
+    `import configureApp from ${JSON.stringify(sourcePath)};\n` +
     `\n` +
     `const serverApp = new ServerApp();\n` +
-    `const configureApp = (module.default || module).configureApp;\n` +
-    `configureApp(serverApp);\n` +
+    `(configureApp.default || configureApp)(serverApp);\n` +
     `const runtimeApp = serverApp.compile();\n` +
     `\n` +
     `const adapter = new WorkerdProdAdapter({ passthrough: true });\n` +
     `await adapter.serve(runtimeApp);\n` +
     `\n` +
     `export default {\n` +
-    `  fetch: (request) => adapter.fetchHandler(request),\n` +
+    `  fetch: (request, env, ctx) => adapter.fetchHandler(request, env, ctx),\n` +
     `};\n`
   );
 }

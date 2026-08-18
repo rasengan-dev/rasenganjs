@@ -329,7 +329,7 @@ The router is not a separate subsystem — it's the terminal middleware in the g
 
 **4. Eager Body Parsing**
 
-The `bodyParser()` middleware consumes the `Request` body immediately and stores the result on `ctx.state`. This is necessary because the body is a single-use `ReadableStream` — once read, it cannot be re-read. Handlers access the parsed body via `ctx.get('parsedBody')` synchronously.
+The `bodyParser()` middleware consumes the `Request` body immediately and stores the result on `ctx.state`. This is necessary because the body is a single-use `ReadableStream` — once read, it cannot be re-read. Handlers access the parsed body via `ctx.body` (or `ctx.get('body')`) synchronously. Only recognized content types (JSON, url-encoded, multipart, text/plain) are parsed by default — anything else is left unread so a handler can still consume the raw stream itself (e.g. streaming a binary upload straight into storage).
 
 **5. Linear Route Scan**
 

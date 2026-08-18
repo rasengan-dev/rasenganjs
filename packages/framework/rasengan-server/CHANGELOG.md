@@ -2,6 +2,7 @@
 
 ### Bug Fixes
 
+- `rasengan-server build --preset workerd`'s generated entry file imported the app's `configureApp` export incorrectly (`module.default.configureApp` instead of the default export itself) and never forwarded `env`/`ctx` to `adapter.fetchHandler`, so Workers bindings and `ExecutionContext` never reached the app on Workerd deploys 76206a6
 - **`{ provide, useValue }` providers never received `onInit()`/`onDestroy()` lifecycle callbacks, even when the value was a `Provider` subclass instance** (RFC-0012) — `Container.instantiate()`'s `useValue` branch returned before ever reaching the `instanceof Provider` → `lifecycleInstances.push()` check, silently skipping the eager-resolution guarantee RFC-0003 already promised for every declared provider. A pre-built resource (e.g. a database connection pool) registered via `useValue` would leak on every graceful shutdown with no error or warning. Fixed by caching the resolved value into the same `entry.instance` slot the `useClass` path already uses, so the lifecycle push happens exactly once, keeping `useValue` and `useClass` providers consistent 352c49a
 
 ## 1.0.0-beta.4 (2026-08-10)
