@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Bug Fixes
+
+- `rasengan-server build --preset workerd`'s generated entry file imported the app's `configureApp` export incorrectly (`module.default.configureApp` instead of the default export itself) and never forwarded `env`/`ctx` to `adapter.fetchHandler`, so Workers bindings and `ExecutionContext` never reached the app on Workerd deploys 76206a6
+
 ## 1.0.0-beta.4 (2026-08-10)
 
 ### Features
