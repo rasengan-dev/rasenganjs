@@ -383,7 +383,8 @@ export class Container {
    *
    * Resolution priority:
    * 1. Return cached instance if already resolved.
-   * 2. Return `useValue` if provided.
+   * 2. Return `useValue` if provided (tracking it for lifecycle hooks on
+   *    first resolution, same as the `useClass` path below).
    * 3. Construct `useClass` (or `fallbackToken`) with explicit `deps`.
    * 4. Construct with auto-detected constructor parameter names.
    * 5. Construct with no arguments.
@@ -401,6 +402,13 @@ export class Container {
     if (entry.instance !== undefined) return entry.instance;
 
     if ('useValue' in entry && entry.useValue !== undefined) {
+      // Cache into `entry.instance` so a second resolution short-circuits
+      // above instead of re-entering this branch, that's what keeps the
+      // `lifecycleInstances` push below a one-time event (RFC-0012).
+      entry.instance = entry.useValue;
+      if (entry.instance instanceof Provider) {
+        this.lifecycleInstances.push(entry.instance);
+      }
       return entry.useValue;
     }
 
