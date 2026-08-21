@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/drizzle",
   "version": "1.0.0-beta.2",
-  "description": "Drizzle ORM integration for Rasengan Server — DataSource provider + DrizzleModule.forRoot(), driver-agnostic via a small adapter interface.",
+  "description": "Drizzle ORM integration for Rasengan.js, DataSource provider + DrizzleModule.forRoot() on Rasengan Server, or a plain drizzle() helper on Futon directly, driver-agnostic via a small adapter interface.",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -15,10 +15,20 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./futon": {
+      "types": "./dist/futon.d.ts",
+      "import": "./dist/futon.js",
+      "require": "./dist/futon.cjs"
+    },
     "./drivers/node-postgres": {
       "types": "./dist/drivers/node-postgres.d.ts",
       "import": "./dist/drivers/node-postgres.js",
       "require": "./dist/drivers/node-postgres.cjs"
+    },
+    "./drivers/d1": {
+      "types": "./dist/drivers/d1.d.ts",
+      "import": "./dist/drivers/d1.js",
+      "require": "./dist/drivers/d1.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -33,16 +43,24 @@
     "deploy:beta": "pnpm run deploy --tag beta"
   },
   "peerDependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.22.0"
   },
   "peerDependenciesMeta": {
+    "@rasenganjs/futon": {
+      "optional": true
+    },
+    "@rasenganjs/server": {
+      "optional": true
+    },
     "pg": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/server": "workspace:*",
     "@types/node": "^22.10.0",
     "@types/pg": "^8.20.0",
