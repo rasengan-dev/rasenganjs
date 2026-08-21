@@ -115,6 +115,50 @@ describe('ServerApp — module plugins', () => {
     expect(calls).toEqual([]);
   });
 
+  it('runs middleware a plugin registers via app.use() during register(), ahead of a matched controller route', async () => {
+    const { Controller } = await import('../controller/index.js');
+
+    const order: string[] = [];
+
+    const plugin: ModulePlugin = {
+      key: 'gateways',
+      register(app) {
+        // register() runs during dispatchPlugins(), after compile() has
+        // already created the real Futon instance — this is exactly the
+        // call ServerApp.compile()'s middlewareList drain used to make
+        // dead on arrival.
+        app.use(async (_ctx, next) => {
+          order.push('plugin-middleware');
+          return next();
+        });
+      },
+    };
+
+    class NoopController extends Controller {
+      routes(router: any) {
+        router.get('/test', (_ctx: any) => {
+          order.push('handler');
+          return new Response('ok');
+        });
+      }
+    }
+
+    const app = new ServerApp();
+    app.registerPlugin(plugin);
+    app.registerModule(
+      defineModule({
+        controllers: [NoopController],
+        gateways: ['whatever'],
+      })
+    );
+
+    const runtime = app.compile();
+    const response = await runtime.fetch(new Request('http://localhost/test'));
+
+    expect(response.status).toBe(200);
+    expect(order).toEqual(['plugin-middleware', 'handler']);
+  });
+
   it('forwards extension keys from nested (imported) modules too', () => {
     const received: unknown[] = [];
     const plugin: ModulePlugin = {

@@ -185,9 +185,22 @@ export class ServerApp {
   /**
    * Register global middleware that applies to every request.
    *
+   * Before `compile()` runs, this only buffers into `middlewareList`,
+   * drained into the real `Futon` instance once, early in `compile()`.
+   * That drain never runs a second time, so a call reaching here once
+   * `this.futon` already exists (a `ModulePlugin`'s `register()`, called
+   * from `dispatchPlugins()` during `compile()`, or any call made after
+   * `compile()` has already returned) attaches directly to the live
+   * `Futon` instance instead, which picks it up correctly since
+   * `Futon.use()` invalidates its cached middleware chain on every call.
+   *
    * @param middleware - The middleware function.
    */
   use(middleware: Middleware): void {
+    if (this.futon) {
+      this.futon.use(middleware);
+      return;
+    }
     this.middlewareList.push({ middleware });
   }
 
