@@ -1,5 +1,13 @@
 ## Unreleased
 
+## 1.0.0-beta.6 (2026-09-01)
+
+### Bug Fixes
+
+- **rasengan-server:** correct the generated workerd entry template 76206a6
+- **rasengan-server:** route ServerApp.use() to the live Futon instance once compiled d03f4a7
+- **rasengan-server:** run CORS middleware before other global middleware d792afa
+
 ## 1.0.0-beta.5 (2026-08-16)
 
 ### Bug Fixes
