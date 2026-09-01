@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "rasengan dev",
     "build": "rasengan build && rasengan-sitemap",
-    "serve": "rasengan-serve ./dist"
+    "serve": "rasengan-serve ./static"
   },
   "dependencies": {
     "@rasenganjs/image": "^1.0.0",
