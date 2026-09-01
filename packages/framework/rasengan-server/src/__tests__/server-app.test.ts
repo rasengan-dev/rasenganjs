@@ -168,6 +168,50 @@ describe('ServerApp — middleware layering', () => {
     expect(await response.text()).toBe('route-only');
     expect(order).toEqual(['route', 'handler']);
   });
+
+  it('answers an OPTIONS preflight with CORS headers even when a later global middleware would reject the request unauthenticated', async () => {
+    // Regression test: a preflight `OPTIONS` request never carries
+    // credentials, so a global auth-style `.use()` middleware sees it
+    // as unauthenticated. If `cors` isn't the first thing in the
+    // chain, that middleware short-circuits with its own 401 before
+    // `cors` ever gets to answer the preflight — the browser then
+    // sees a header-less response and blocks the real request too,
+    // regardless of `enableCors()`'s own config.
+    const rejectUnauthenticated = async (ctx: any, next: any) => {
+      return ctx.res.status(401).json({ error: 'Unauthorized' });
+    };
+
+    const { Controller } = await import('../controller/index.js');
+
+    class ProtectedController extends Controller {
+      routes(router: any) {
+        router.get('/protected', (_ctx: any) => new Response('ok'));
+      }
+    }
+
+    const { defineModule } = await import('../server/module.js');
+
+    const app = new ServerApp();
+    app.enableCors({ origin: 'http://localhost:5320', credentials: true });
+    app.use(rejectUnauthenticated);
+    app.registerModule(defineModule({ controllers: [ProtectedController] }));
+
+    const runtime = app.compile();
+    const response = await runtime.fetch(
+      new Request('http://localhost/protected', {
+        method: 'OPTIONS',
+        headers: { Origin: 'http://localhost:5320' },
+      })
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+      'http://localhost:5320'
+    );
+    expect(response.headers.get('Access-Control-Allow-Credentials')).toBe(
+      'true'
+    );
+  });
 });
 
 describe('ServerApp — module and handler registration', () => {
