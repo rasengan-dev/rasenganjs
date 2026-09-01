@@ -33,7 +33,7 @@ describe('bodyParser', () => {
     const mw = bodyParser();
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
     expect(next).toHaveBeenCalledOnce();
   });
 
@@ -45,7 +45,7 @@ describe('bodyParser', () => {
     const mw = bodyParser();
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
     expect(next).toHaveBeenCalledOnce();
   });
 
@@ -57,7 +57,24 @@ describe('bodyParser', () => {
     const mw = bodyParser();
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
+  });
+
+  it('leaves an unrecognized content type unparsed by default so its stream stays readable', async () => {
+    const req = new Request('http://localhost', {
+      method: 'PUT',
+      body: new Uint8Array([0xff, 0xd8, 0xff, 0x00]),
+      headers: { 'Content-Type': 'application/octet-stream' },
+    });
+    const ctx = createCtx(req);
+    const next = vi.fn().mockResolvedValue(new Response('ok'));
+
+    const mw = bodyParser();
+    await mw(ctx, next);
+
+    expect(ctx.state.body).toBeUndefined();
+    expect(ctx.request.bodyUsed).toBe(false);
+    expect(next).toHaveBeenCalledOnce();
   });
 
   it('returns 413 when body exceeds maxSize', async () => {
@@ -91,7 +108,7 @@ describe('bodyParser', () => {
     const mw = bodyParser({ allowedTypes: ['application/json'] });
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
     expect(next).toHaveBeenCalledOnce();
   });
 
@@ -107,7 +124,7 @@ describe('bodyParser', () => {
     const mw = bodyParser();
     await mw(ctx, next);
 
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
     expect(next).toHaveBeenCalledOnce();
   });
 
@@ -124,7 +141,7 @@ describe('bodyParser', () => {
     await mw(ctx, next);
 
     expect(ctx.state.myBody).toEqual({ x: 1 });
-    expect(ctx.state.parsedBody).toBeUndefined();
+    expect(ctx.state.body).toBeUndefined();
   });
 
   // ── maxSize (streaming byte-count limits) ───────────────────

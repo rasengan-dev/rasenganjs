@@ -6,10 +6,12 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    futon: 'src/futon.ts',
     'drivers/node-postgres': 'src/drivers/node-postgres.ts',
+    'drivers/d1': 'src/drivers/d1.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  external: ['@rasenganjs/server', 'drizzle-orm', 'pg'],
+  external: ['@rasenganjs/futon', '@rasenganjs/server', 'drizzle-orm', 'pg'],
 });

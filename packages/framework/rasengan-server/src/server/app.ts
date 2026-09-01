@@ -185,9 +185,22 @@ export class ServerApp {
   /**
    * Register global middleware that applies to every request.
    *
+   * Before `compile()` runs, this only buffers into `middlewareList`,
+   * drained into the real `Futon` instance once, early in `compile()`.
+   * That drain never runs a second time, so a call reaching here once
+   * `this.futon` already exists (a `ModulePlugin`'s `register()`, called
+   * from `dispatchPlugins()` during `compile()`, or any call made after
+   * `compile()` has already returned) attaches directly to the live
+   * `Futon` instance instead, which picks it up correctly since
+   * `Futon.use()` invalidates its cached middleware chain on every call.
+   *
    * @param middleware - The middleware function.
    */
   use(middleware: Middleware): void {
+    if (this.futon) {
+      this.futon.use(middleware);
+      return;
+    }
     this.middlewareList.push({ middleware });
   }
 
@@ -342,12 +355,27 @@ export class ServerApp {
     const app = new Futon();
     this.futon = app;
 
-    for (const { middleware } of this.middlewareList) {
-      app.use(middleware);
-    }
-
+    // CORS must run before every other global middleware, `.use()`
+    // order notwithstanding: a preflight `OPTIONS` request never
+    // carries credentials (cookies, auth headers), so any auth-style
+    // middleware registered via `.use()` sees it as unauthenticated
+    // and short-circuits with a 401 before `cors` middleware — added
+    // after the loop below, previously — ever got a chance to answer
+    // the preflight with its own 204 + CORS headers. The browser then
+    // sees a header-less preflight response and blocks the real
+    // request, regardless of what `cors`'s own logic would have
+    // allowed. Registering `cors` first, unconditionally ahead of the
+    // rest of `middlewareList`, means it always gets first refusal on
+    // an `OPTIONS` request before anything else can intercept it —
+    // this is why `enableCors()`'s own doc comment and every example
+    // call it before `.use(...)`, even though `middlewareList` itself
+    // doesn't otherwise preserve call order between the two.
     if (this.corsOptions !== undefined) {
       app.use(cors(this.corsOptions));
+    }
+
+    for (const { middleware } of this.middlewareList) {
+      app.use(middleware);
     }
 
     if (this.errorHandler) {

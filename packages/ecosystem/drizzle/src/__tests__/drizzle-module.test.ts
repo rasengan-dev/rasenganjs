@@ -129,4 +129,36 @@ describe('DrizzleModule.forRoot() + DataSource', () => {
     const instance = new DataSource<FakeDb>();
     expect(() => instance.db).toThrow(/forRoot\(\) must appear/);
   });
+
+  it('a resolver-based connection (RFC-0014) declares the drizzleConnection module key', () => {
+    const { adapter } = fakeAdapter();
+    const module = DrizzleModule.forRoot({
+      adapter,
+      connection: () => ({ url: 'fake://from-resolver' }),
+      schema: {},
+    });
+    expect(module.drizzleConnection).toBeDefined();
+  });
+
+  it('a static connection declares no drizzleConnection key at all', () => {
+    const { adapter } = fakeAdapter();
+    const module = DrizzleModule.forRoot({
+      adapter,
+      connection: { url: 'fake://' },
+      schema: {},
+    });
+    expect(module.drizzleConnection).toBeUndefined();
+  });
+
+  it('resolving DataSource.db for a resolver-based connection, before the resolver has run, throws a distinct "waiting on the first request" error, not the "forRoot() never ran" one', () => {
+    const { adapter } = fakeAdapter();
+    DrizzleModule.forRoot({
+      adapter,
+      connection: () => ({ url: 'fake://from-resolver' }),
+      schema: {},
+    });
+    const instance = new DataSource<FakeDb>();
+    expect(() => instance.db).toThrow(/first incoming request/);
+    expect(() => instance.db).not.toThrow(/forRoot\(\) must appear/);
+  });
 });
