@@ -16,7 +16,7 @@
     "@rasenganjs/futon": "workspace:*",
     "@rasenganjs/runtime": "workspace:*",
     "express": "^5.1.0",
-    "fastify": "^5.2.0",
+    "fastify": "^5.12.1",
     "hono": "^4.7.0",
     "koa": "^2.16.0"
   },
