@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { runMigrations } from '../migrate.js';
-import type { DrizzleAdapter } from '../adapter.js';
+import { runMigrations } from '../core/migrate.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 describe('runMigrations', () => {
   it('connects, migrates, and always closes — even a short-lived, separate connection from any running module', async () => {

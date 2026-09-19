@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { z } from 'zod';
-import { createValidationMiddleware } from '../middleware.js';
+import { createValidationMiddleware } from '../core/middleware.js';
 import { zodAdapter } from '../adapters/zod.js';
 import type { Context, Middleware } from '@rasenganjs/runtime';
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Futon } from '@rasenganjs/futon';
-import { drizzle } from '../futon.js';
-import type { DrizzleAdapter } from '../adapter.js';
+import { drizzle } from '../futon/drizzle.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 interface FakeDb {
   queried: boolean;
