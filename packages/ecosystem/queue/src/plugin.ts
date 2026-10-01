@@ -303,11 +303,26 @@ function startWorkerLoop(
     }
   }
 
+  // `setInterval` doesn't await `tick()`, so without this guard a
+  // `reserve()` slower than the poll interval stacks up without bound.
+  // `RedisQueueAdapter.reserve()` is a `BLMOVE` blocking up to 20ms on a
+  // connection every queue shares: with three queues that's 120 calls/s
+  // against ~50/s of capacity, and the surplus piles up as pending
+  // ioredis commands until the heap runs out.
+  let reserving = false;
+
   async function tick(): Promise<void> {
     if (stopped) return;
     drainBuffer();
+    if (reserving) return;
 
-    const stored = await adapter.reserve(queueName, stallTimeout);
+    reserving = true;
+    let stored: StoredJob | null;
+    try {
+      stored = await adapter.reserve(queueName, stallTimeout);
+    } finally {
+      reserving = false;
+    }
     if (!stored) return;
 
     if (hasCapacity(stored.name)) {
@@ -350,11 +365,25 @@ function startSweeper(
   queueNames: Set<string>,
   sweepInterval: number
 ): void {
+  // Same reason as the worker loop's `reserving`: a sweep slower than
+  // `sweepInterval` (a slow or unreachable Redis) must not stack up.
+  let sweeping = false;
   const timer = setInterval(() => {
+    if (sweeping) return;
+    sweeping = true;
     const now = Date.now();
-    for (const queueName of queueNames) {
-      void adapter.sweep(queueName, now);
-    }
+    void Promise.all(
+      [...queueNames].map((queueName) =>
+        adapter.sweep(queueName, now).catch((error: unknown) => {
+          console.error(
+            `[rasengan-queue] Sweep of queue "${queueName}" failed:`,
+            error
+          );
+        })
+      )
+    ).finally(() => {
+      sweeping = false;
+    });
   }, sweepInterval);
 
   app.onDestroy(() => clearInterval(timer));
