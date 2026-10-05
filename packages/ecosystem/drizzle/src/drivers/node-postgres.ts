@@ -1,7 +1,7 @@
 import pg from 'pg';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import type { DrizzleAdapter } from '../adapter.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 export interface NodePostgresConfig extends pg.PoolConfig {}
 

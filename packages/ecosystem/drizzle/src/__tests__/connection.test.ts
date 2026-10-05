@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { createConnection } from '../connection.js';
-import type { DrizzleAdapter } from '../adapter.js';
+import { createConnection } from '../core/connection.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 interface FakeDb {
   id: number;

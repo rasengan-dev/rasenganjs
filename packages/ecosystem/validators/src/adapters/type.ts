@@ -7,4 +7,4 @@
  * See `zod.ts` for a reference implementation.
  */
 
-export type { SchemaAdapter } from '../types.js';
+export type { SchemaAdapter } from '../core/types.js';

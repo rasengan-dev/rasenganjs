@@ -1,5 +1,5 @@
 import { Provider } from '@rasenganjs/server';
-import type { ConnectionCore } from './connection.js';
+import type { ConnectionCore } from '../core/connection.js';
 
 let activeConnection: ConnectionCore<unknown> | null = null;
 

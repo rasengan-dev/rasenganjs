@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 1.0.0-beta.6 (2026-09-01)
+
+### Bug Fixes
+
+- **rasengan-server:** correct the generated workerd entry template 76206a6
+- **rasengan-server:** route ServerApp.use() to the live Futon instance once compiled d03f4a7
+- **rasengan-server:** run CORS middleware before other global middleware d792afa
+
+## 1.0.0-beta.5 (2026-08-16)
+
+### Bug Fixes
+
+- **server:** fire lifecycle hooks for Provider-instance useValue providers 352c49a
+
 ### Bug Fixes
 
 - **CORS preflight requests could get blocked by an unrelated global middleware.** `compile()` always appended `cors` after every `.use()` middleware had drained from `middlewareList`, regardless of the order `enableCors()`/`.use()` were actually called in `bootstrap()`. A preflight `OPTIONS` request never carries credentials, so any auth-style global middleware saw it as unauthenticated and short-circuited (e.g. with a 401) before `cors` ever got to answer the preflight with its own 204 and headers, and the browser then blocked the real request too, even though `enableCors()` was configured correctly. `cors` is now registered first, unconditionally, ahead of the rest of `middlewareList`, so it always gets first refusal on `OPTIONS` d792afa
