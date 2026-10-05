@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { OpenApiRegistry } from '../../core/registry.js';
+import { buildRouteConfig } from '../../core/route-config.js';
 
 describe('OpenApiRegistry', () => {
   it('registers a route and produces a path in the generated document', () => {
@@ -94,5 +95,37 @@ describe('OpenApiRegistry', () => {
       info: { title: 'Widgets API', version: '1.0.0' },
     });
     expect(registry.title).toBe('Widgets API');
+  });
+
+  it('emits operationId, x-* extensions and examples in the document', () => {
+    const registry = new OpenApiRegistry({
+      info: { title: 'Test API', version: '1.0.0' },
+    });
+    registry.registerRoute(
+      buildRouteConfig(
+        'post',
+        '/orgs',
+        { body: z.object({ name: z.string() }) },
+        {
+          summary: 'Create an org',
+          operationId: 'create-org',
+          'x-public': true,
+          bodyExample: { name: 'Acme' },
+          responses: {
+            201: {
+              description: 'Created',
+              schema: z.object({ id: z.string() }),
+              example: { id: 'org_1' },
+            },
+          },
+        }
+      )
+    );
+
+    const operation = (registry.generateDocument().paths?.['/orgs'] as any).post;
+    expect(operation.operationId).toBe('create-org');
+    expect(operation['x-public']).toBe(true);
+    expect(operation.requestBody.content['application/json'].example).toEqual({ name: 'Acme' });
+    expect(operation.responses['201'].content['application/json'].example).toEqual({ id: 'org_1' });
   });
 });

@@ -9,9 +9,20 @@ export interface RouteDoc {
   summary: string;
   description?: string;
   tags?: string[];
+  /** A unique, stable name for the operation: an anchor for docs, a method name for client generators. */
+  operationId?: string;
+  deprecated?: boolean;
   /** OpenAPI security requirement objects, e.g. `[{ session: [] }]`. */
   security?: Array<Record<string, string[]>>;
-  responses: Record<number, { description: string; schema?: ZodTypeAny }>;
+  /** A sample request body, emitted as the body's `application/json` `example`. Ignored without a body schema. */
+  bodyExample?: unknown;
+  responses: Record<
+    number,
+    { description: string; schema?: ZodTypeAny; example?: unknown }
+  >;
+  // OpenAPI's OperationObject allows arbitrary `x-*` extension fields,
+  // copied onto the operation as written.
+  [key: `x-${string}`]: unknown;
 }
 
 /**
@@ -51,16 +62,26 @@ export function buildRouteConfig(
   doc: RouteDoc
 ): RouteConfig {
   return {
+    ...extensionsOf(doc),
     method,
     path,
     summary: doc.summary,
     description: doc.description,
     tags: doc.tags,
+    operationId: doc.operationId,
+    deprecated: doc.deprecated,
     security: doc.security,
     request: schema
       ? {
           body: schema.body
-            ? { content: { 'application/json': { schema: schema.body } } }
+            ? {
+                content: {
+                  'application/json': withExample(
+                    { schema: schema.body },
+                    doc.bodyExample
+                  ),
+                },
+              }
             : undefined,
           params: schema.params,
           query: schema.query,
@@ -72,10 +93,30 @@ export function buildRouteConfig(
         {
           description: r.description,
           content: r.schema
-            ? { 'application/json': { schema: r.schema } }
+            ? {
+                'application/json': withExample(
+                  { schema: r.schema },
+                  r.example
+                ),
+              }
             : undefined,
         },
       ])
     ),
   };
+}
+
+/** The doc's `x-*` fields, and nothing else: an unknown key never reaches the document. */
+function extensionsOf(doc: RouteDoc): Record<`x-${string}`, unknown> {
+  return Object.fromEntries(
+    Object.entries(doc).filter(([key]) => key.startsWith('x-'))
+  );
+}
+
+/** Adds `example` only when one was given, so a document without examples stays byte-identical. */
+function withExample<T extends object>(
+  media: T,
+  example: unknown
+): T & { example?: unknown } {
+  return example === undefined ? media : { ...media, example };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@rasenganjs/openapi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OpenAPI 3.1 generation + Scalar/Swagger docs UI. Futon-native core (@rasenganjs/openapi/futon), no DI/Module required, with a thin Rasengan Server adapter (@rasenganjs/openapi/server) — OpenApiModule.forRoot() + DI-injected OpenApiRegistry — built on top of it.",
   "type": "module",
   "license": "MIT",

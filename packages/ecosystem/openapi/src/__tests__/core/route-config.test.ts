@@ -70,4 +70,65 @@ describe('buildRouteConfig', () => {
     expect(config.tags).toEqual(['orgs']);
     expect(config.security).toEqual([{ session: [] }]);
   });
+
+  it('carries operationId and deprecated through', () => {
+    const config = buildRouteConfig('get', '/orgs', undefined, {
+      summary: 'List orgs',
+      operationId: 'list-orgs',
+      deprecated: true,
+      responses: { 200: { description: 'OK' } },
+    });
+
+    expect(config.operationId).toBe('list-orgs');
+    expect(config.deprecated).toBe(true);
+  });
+
+  it('copies x-* extensions onto the operation, and only those', () => {
+    const doc = {
+      summary: 'List orgs',
+      'x-public': true,
+      'x-permission': 'orgs.read',
+      responses: { 200: { description: 'OK' } },
+    };
+    const config = buildRouteConfig('get', '/orgs', undefined, doc);
+
+    expect((config as any)['x-public']).toBe(true);
+    expect((config as any)['x-permission']).toBe('orgs.read');
+  });
+
+  it('attaches body and response examples next to their schemas', () => {
+    const BodySchema = z.object({ name: z.string() });
+    const ResponseSchema = z.object({ id: z.string() });
+    const config = buildRouteConfig(
+      'post',
+      '/orgs',
+      { body: BodySchema },
+      {
+        summary: 'Create',
+        bodyExample: { name: 'Acme' },
+        responses: {
+          201: { description: 'Created', schema: ResponseSchema, example: { id: 'org_1' } },
+        },
+      }
+    );
+
+    expect(config.request?.body).toEqual({
+      content: { 'application/json': { schema: BodySchema, example: { name: 'Acme' } } },
+    });
+    expect((config.responses[201] as any).content['application/json']).toEqual({
+      schema: ResponseSchema,
+      example: { id: 'org_1' },
+    });
+  });
+
+  it('adds no example key when none was given', () => {
+    const config = buildRouteConfig(
+      'post',
+      '/orgs',
+      { body: z.object({ name: z.string() }) },
+      { summary: 'Create', responses: { 201: { description: 'Created' } } }
+    );
+
+    expect(Object.keys((config.request?.body as any).content['application/json'])).toEqual(['schema']);
+  });
 });

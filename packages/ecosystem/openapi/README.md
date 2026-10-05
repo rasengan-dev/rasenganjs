@@ -96,6 +96,31 @@ Calling `OpenApiModule.forRoot()` more than once in the same process
 each call produces its own independent `OpenApiRegistry` and its own
 docs routes.
 
+## Route metadata
+
+Beyond `summary`, `description`, `tags`, `security` and `responses`, a
+`RouteDoc` takes:
+
+- `operationId`: a unique, stable name for the operation (docs anchors,
+  client generators);
+- `deprecated`;
+- `bodyExample`, and `example` on each response: emitted as the
+  `application/json` media type's `example`, next to its schema;
+- any `x-*` key, copied onto the operation as written. Other unknown keys
+  never reach the document.
+
+```ts
+docs.post('/widgets', [], this.create, createWidgetSchema, {
+  summary: 'Create a widget',
+  operationId: 'create-widget',
+  'x-internal': false,
+  bodyExample: { name: 'Gear' },
+  responses: {
+    201: { description: 'Created', schema: WidgetSchema, example: { id: 'wdg_1', name: 'Gear' } },
+  },
+});
+```
+
 ## Package layout
 
 Three entry points, one per `src/` subfolder:
