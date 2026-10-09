@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.3 (2026-09-01)
+
+### Features
+
+- **drizzle:** Futon-native usage, a D1 adapter, and a shared connection core f6d9a35
+
 ### Features
 
 - **Futon-native usage, no `@rasenganjs/server` required** (RFC-0014 phases 1-4). `drizzle(app, adapter, source, schema)`, a new `./futon` subpath export, wires a `Drizzle` connection straight onto a plain `Futon` app with no DI container, `Module`, or `Provider` involved, and returns a zero-argument accessor usable from a handler, a background job, or anywhere else in the process

@@ -208,6 +208,11 @@ export const Adapters = {
   VERCEL: 'vercel',
   NETLIFY: 'netlify',
   CLOUDFLARE: 'cloudflare',
+  // @rasenganjs/uzubase: same "no build-time env var to detect" situation
+  // as Cloudflare (see the platform-detection bypass below) — it also
+  // ships an SSR build as a single bundled Worker, just handed to
+  // Uzubase's own deploy API instead of `wrangler deploy`.
+  UZUBASE: 'uzubase',
   DEFAULT: '',
 } as const;
 
@@ -453,14 +458,17 @@ export function rasengan({
         const platform = detectDeploymentPlatform();
         console.log(`Detected deployment platform: ${platform}`);
 
-        // Cloudflare deploys via a separate `wrangler deploy` step, not a
-        // hosted build environment `rasengan build` runs inside of the way
-        // Vercel/Netlify's own build runners do — there's no reliable env
-        // var to detect at `vite build` time (RFC-0009 Open Questions).
-        // The adapter being explicitly configured is signal enough on its
-        // own, so it bypasses the platform-detection gate below.
+        // Cloudflare and Uzubase both deploy via a separate step (`wrangler
+        // deploy`, or Uzubase's own build runner uploading the artifact),
+        // not a hosted build environment `rasengan build` runs inside of
+        // the way Vercel/Netlify's own build runners do — there's no
+        // reliable env var to detect at `vite build` time (RFC-0009 Open
+        // Questions). The adapter being explicitly configured is signal
+        // enough on its own, so both bypass the platform-detection gate
+        // below.
         if (
           adapter.name === Adapters.CLOUDFLARE ||
+          adapter.name === Adapters.UZUBASE ||
           (platform !== 'local' && platform !== 'unknown')
         ) {
           // Prepare the app for deployment

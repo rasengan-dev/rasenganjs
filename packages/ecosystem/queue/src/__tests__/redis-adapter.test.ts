@@ -12,6 +12,8 @@ import {
   SPAWN_REPEAT_SCRIPT,
   RECLAIM_STALLED_SCRIPT,
   RETRY_DEAD_SCRIPT,
+  EXTEND_SCRIPT,
+  RELEASE_SCRIPT,
 } from '../adapters/redis-scripts.js';
 import type { StoredJob } from '../types.js';
 
@@ -414,6 +416,93 @@ describe('RedisQueueAdapter', () => {
     });
   });
 
+  describe('extend() (RFC-0017 §2)', () => {
+    it('evals EXTEND_SCRIPT with [activeDeadlineKey] and [deadline, ...ids], returning the ids extended', async () => {
+      const client = fakeRedisLike();
+      client.eval.mockResolvedValueOnce(['job-1']);
+      const adapter = new RedisQueueAdapter({
+        client,
+        blockingClient: fakeRedisLike(),
+      });
+      const before = Date.now();
+
+      const extended = await adapter.extend(
+        'emails',
+        ['job-1', 'job-2'],
+        30_000
+      );
+
+      expect(extended).toEqual(['job-1']);
+      const [script, numKeys, key, deadline, ...ids] =
+        client.eval.mock.calls[0];
+      expect(script).toBe(EXTEND_SCRIPT);
+      expect(numKeys).toBe(1);
+      expect(key).toBe('queue:emails:active:deadline');
+      expect(deadline).toBeGreaterThanOrEqual(before + 30_000);
+      expect(ids).toEqual(['job-1', 'job-2']);
+    });
+
+    it('makes no round trip for an empty id list', async () => {
+      const client = fakeRedisLike();
+      const adapter = new RedisQueueAdapter({
+        client,
+        blockingClient: fakeRedisLike(),
+      });
+
+      expect(await adapter.extend('emails', [], 30_000)).toEqual([]);
+      expect(client.eval).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('release() (RFC-0017 §4)', () => {
+    it('evals RELEASE_SCRIPT with [activeKey, activeDeadlineKey, waitingKey] and the ids in order, returning the ids released', async () => {
+      const client = fakeRedisLike();
+      client.eval.mockResolvedValueOnce(['job-1', 'job-2']);
+      const adapter = new RedisQueueAdapter({
+        client,
+        blockingClient: fakeRedisLike(),
+      });
+
+      const released = await adapter.release('emails', ['job-1', 'job-2']);
+
+      expect(released).toEqual(['job-1', 'job-2']);
+      expect(client.eval).toHaveBeenCalledWith(
+        RELEASE_SCRIPT,
+        3,
+        'queue:emails:active',
+        'queue:emails:active:deadline',
+        'queue:emails:waiting',
+        'job-1',
+        'job-2'
+      );
+    });
+
+    it('makes no round trip for an empty id list', async () => {
+      const client = fakeRedisLike();
+      const adapter = new RedisQueueAdapter({
+        client,
+        blockingClient: fakeRedisLike(),
+      });
+
+      expect(await adapter.release('emails', [])).toEqual([]);
+      expect(client.eval).not.toHaveBeenCalled();
+    });
+
+    it('extend() and release() never touch the blocking client', async () => {
+      const blockingClient = fakeRedisLike();
+      const adapter = new RedisQueueAdapter({
+        client: fakeRedisLike(),
+        blockingClient,
+      });
+
+      await adapter.extend('emails', ['job-1'], 30_000);
+      await adapter.release('emails', ['job-1']);
+
+      expect(blockingClient.eval).not.toHaveBeenCalled();
+      expect(blockingClient.blmove).not.toHaveBeenCalled();
+    });
+  });
+
   describe('key scheme', () => {
     it('namespaces keys as "queue:{name}:{struct}" by default, e.g. "queue:emails:waiting"', async () => {
       const client = fakeRedisLike();
@@ -458,5 +547,11 @@ describe('RedisQueueAdapter', () => {
   // Matches the RFC's own bar for this phase — same as RedisGatewayAdapter.
   it.todo(
     'live-Redis integration — flagged as outstanding per RFC-0004 Phase 3'
+  );
+  it.todo(
+    'live-Redis: an extended reservation survives RECLAIM_STALLED_SCRIPT (RFC-0017)'
+  );
+  it.todo(
+    'live-Redis: a released job is reserved next, with its attempt unchanged (RFC-0017)'
   );
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DrizzleModule } from '../drizzle.module.js';
-import { DataSource, __resetForTesting } from '../data-source.js';
-import type { DrizzleAdapter } from '../adapter.js';
+import { DrizzleModule } from '../server/module.js';
+import { DataSource, __resetForTesting } from '../server/data-source.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 interface FakeDb {
   queried: boolean;

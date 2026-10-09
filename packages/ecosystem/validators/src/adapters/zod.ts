@@ -14,8 +14,8 @@
  * ```
  */
 
-import type { SchemaAdapter } from '../types.js';
-import { formatZodError } from '../errors.js';
+import type { SchemaAdapter } from '../core/types.js';
+import { formatZodError } from '../core/errors.js';
 
 /**
  * Zod adapter singleton.

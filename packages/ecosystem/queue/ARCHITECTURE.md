@@ -141,6 +141,13 @@ interface QueueAdapter {
   sweep(queue: string, now: number): Promise<void>;
   getDead(queue: string): Promise<StoredJob[]>;
   retryDead(queue: string, id: string): Promise<void>;
+  // RFC-0017, optional:
+  extend?(
+    queue: string,
+    ids: string[],
+    stallTimeout: number
+  ): Promise<string[]>;
+  release?(queue: string, ids: string[]): Promise<string[]>;
 }
 ```
 
@@ -160,6 +167,16 @@ Design notes:
 - `fail()` with `retryAt` present means "re-schedule"; omitted means
   "exhausted or unroutable — dead-letter." Unchanged since Phase 1 —
   retry-backoff still uses its own mechanism, not `sweep()` (see §5).
+- `extend()` and `release()` (RFC-0017) are **optional**, so an adapter
+  written before them still type-checks. `extend()` pushes the stall
+  deadline of each id still active to `now + stallTimeout` (lease
+  renewal); `release()` puts each id still active back at the head of
+  `waiting`, in the order given, deadline cleared and `attempt`
+  unchanged. Both skip an id that's no longer active and resolve with
+  the ids they acted on. Without them the plugin warns once and keeps
+  the pre-RFC-0017 behavior: `stallTimeout` bounds a job's whole
+  reserved lifetime, and a stopped worker's unstarted jobs wait for the
+  sweeper.
 
 ## 5. `MemoryQueueAdapter` (`src/adapters/memory.ts`)
 
@@ -246,42 +263,83 @@ name. `add(name, data, options?)`:
 
 ## 7. The worker loop (`startWorkerLoop`)
 
-A poll loop, one per queue, per process (when `worker !== false`):
+A poll loop, one per queue, per process (when `worker !== false`).
+RFC-0017 reshaped it; the RFC has the full reasoning.
 
 ```
 every WORKER_POLL_INTERVAL_MS (25ms):
-  1. drainBuffer() — retry dispatching anything held back for lack of
-     per-name concurrency, now that capacity may have freed up
-  2. reserve() one job from the adapter
-  3. if the job's name has free concurrency capacity → dispatch it
-     otherwise → push it into a local readyBuffer (already reserved —
-     safe, no other worker can double-dispatch it — just executed later)
+  1. drainBuffer() — dispatch buffered jobs whose name has a free slot,
+     oldest first (FIFO)
+  2. skip if a reserve() is still pending (one in flight per queue), or
+     if inFlight + buffered >= Σ concurrency (capacity-gated: a worker
+     never holds more than it can run)
+  3. reserve() one job; on success, add its id to `held`
+  4. if the job's name has free concurrency capacity → dispatch it
+     otherwise → push it into the local readyBuffer (reserved, its lease
+     renewed while it waits)
+
+every max(1, stallTimeout / 3) ms, when the adapter has extend():
+  renew the lease of every id in `held` (buffered or running); an id
+  the adapter didn't extend was reclaimed by the sweeper: stop renewing
+  it, and drop it from the buffer if it's there (it runs elsewhere)
 ```
+
+What that guarantees:
+
+- A queue with one job name never buffers anything: it reserves only
+  when a slot is free. With several names, the buffer holds at most
+  `Σ concurrency` minus what's running.
+- A queue with no handler (`Σ concurrency === 0`) never reserves, so a
+  producer-only `Queue` in a worker process can't dead-letter its own
+  jobs (the RFC-0016 scenario).
+- Several workers on one adapter share the work: a worker at capacity
+  stops reserving.
+- A job held by a live worker is never reclaimed, however long it
+  waits or runs. `stallTimeout` is how long a dead worker's jobs stay
+  stuck, not the longest a job may take.
 
 `dispatch()`:
 
 - No handler registered for the job's name → logs and calls
   `adapter.fail(queue, id, {})` (straight to dead-letter) instead of
-  leaving the reservation stuck forever.
-- Otherwise increments the per-name in-flight counter, runs the
-  handler, and decrements the counter in a `finally` once it settles
-  (success or failure).
+  leaving the reservation stuck forever. A rejection of that `fail()`
+  is logged, never left unhandled.
+- Otherwise increments the per-name and total in-flight counters, runs
+  the handler, and decrements them in a `finally` once it settles.
 
-`runJob()` — the resolve/throw contract:
+`runJob()` — never rejects. The handler and the ack are separate
+steps, so an ack failure isn't mistaken for a handler failure:
 
 ```ts
+let handlerFailed = false;
 try {
   await handler(job);
-  await adapter.complete(queue, id);
 } catch {
-  if (job.attempt < options.attempts) {
-    const retryAt = Date.now() + options.backoff * 2 ** (job.attempt - 1);
-    await adapter.fail(queue, id, { retryAt }); // exponential backoff
-  } else {
-    await adapter.fail(queue, id, {}); // dead-letter
-  }
+  handlerFailed = true;
+}
+try {
+  if (!handlerFailed) await adapter.complete(queue, id);
+  else if (job.attempt < options.attempts)
+    await adapter.fail(queue, id, {
+      retryAt: Date.now() + options.backoff * 2 ** (job.attempt - 1),
+    });
+  else await adapter.fail(queue, id, {}); // dead-letter
+} catch (error) {
+  // The job stays active and is no longer renewed: the sweeper
+  // reclaims it after stallTimeout (at-least-once).
+  log(error);
+} finally {
+  held.delete(id);
 }
 ```
+
+**Adapter errors** (`reserve()`, the acks, `extend()`, `release()`,
+`sweep()`) go through one logger per plugin instance
+(`createAdapterErrorLog`): the first failure of a queue/operation, then
+at most one line every 10 s with how many it suppressed, then one line
+when the operation works again. With Redis down, `reserve()` fails 40
+times a second per queue. A `reserve()` failing after the stop isn't
+logged at all: closing the connection is part of shutting down.
 
 ### Lifecycle: why `app.onDestroy()`, not `Queue.onInit()`/`onDestroy()`
 
@@ -302,20 +360,30 @@ runs) and stopped via **`app.onDestroy()`** — exactly
   `destroyAll()` runs in reverse resolution order) — neither guarantee
   is what a worker loop needs.
 
-Shutdown sequence for one queue's loop:
+Shutdown sequence for one queue's loop (RFC-0017 §4):
 
 ```ts
 app.onDestroy(async () => {
   stopped = true;
   clearInterval(timer);
-  await Promise.all(inFlight); // "await in-flight jobs"
-  // Anything still sitting in the local readyBuffer was reserved (its
-  // stall deadline ticking) but never dispatched. The sweeper reclaims
-  // it once that deadline passes — same path as any other stalled
-  // reservation, whether this process restarts or a separate one
-  // shares the adapter.
+  await reserving; // a reserve() in flight lands in the buffer, not dispatched
+  const unstarted = readyBuffer.splice(0);
+  // Reserved, never started: back to the head of `waiting` now, in
+  // order and with `attempt` unchanged, so other workers take them
+  // while this one drains. Without adapter.release() (or if it fails),
+  // the sweeper reclaims them after stallTimeout, as before.
+  await adapter.release?.(
+    queue,
+    unstarted.map((job) => job.id)
+  );
+  await Promise.all(inFlight); // running jobs keep their lease until they ack
+  clearInterval(heartbeat);
 });
 ```
+
+Apps that close the adapter's own clients (a Redis connection) must do
+it after `app.close()` resolves, or the release fails (logged; the
+sweeper then reclaims the jobs as before RFC-0017).
 
 ## 8. The sweeper (`startSweeper`)
 
@@ -448,6 +516,18 @@ what ws's Node/ioredis-only adapter needed to solve.
   `attempts`-exhaustion check, same as `MemoryQueueAdapter`.
 - **`getDead()` / `retryDead()`** — plain reads (`lrange` + batched
   `hmget`) and one script, respectively.
+- **`extend(queue, ids, stallTimeout)`** (RFC-0017) — one
+  `EXTEND_SCRIPT` call for all the ids: `ZADD` of the new deadline for
+  each id still in `active:deadline`, so a reservation completed,
+  failed or reclaimed since the heartbeat started is never brought
+  back. The deadline is computed on the worker, like `reserve()`'s. An
+  empty list makes no round trip.
+- **`release(queue, ids)`** (RFC-0017) — one `RELEASE_SCRIPT` call:
+  walks the ids backwards and, for each one still in
+  `active:deadline`, removes it from `active` and the zset and `LPUSH`es
+  it onto `waiting`, so `ids[0]` is the next `BLMOVE … LEFT`. `attempt`
+  (in the `jobs` hash) isn't touched. An id the sweeper already
+  reclaimed is skipped, so it's never in `waiting` twice.
 
 ### Why retry-backoff and `{ delay }` are unified here, unlike `MemoryQueueAdapter`
 
@@ -553,3 +633,19 @@ RFC's own stated bar for this phase.
 - **No live-Redis integration test** — matches the RFC's own explicitly
   stated bar for this phase (same as `RedisGatewayAdapter`), not an
   oversight.
+
+**RFC-0017:**
+
+- **`extend()` and `release()` are optional** on `QueueAdapter`, so no
+  out-of-tree adapter breaks; the plugin warns once for each missing
+  one and keeps the old behavior for it.
+- **The heartbeat runs every `max(1, stallTimeout / 3)` ms**, not the
+  RFC's `max(1_000, …)`: a one-second floor would let a lease lapse
+  whenever `stallTimeout` is under three seconds.
+- **Stalled-job reclaim still ignores `attempts`.** With leases,
+  "reclaimed" now really means "its worker died", so counting it
+  against `attempts` becomes reasonable, but the sweeper still doesn't
+  know each name's `attempts`. Open question in the RFC.
+- **No fencing token** on `complete()`/`fail()`: a worker that lost its
+  lease (a partition longer than `stallTimeout`) can still ack a job
+  another worker now holds. Rare with leases; its own RFC if needed.

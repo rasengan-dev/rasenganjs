@@ -1,6 +1,6 @@
 import { defineModule, type ModuleConfig } from '@rasenganjs/server';
-import type { DrizzleAdapter } from './adapter.js';
-import { createConnection, type ConnectionSource } from './connection.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
+import { createConnection, type ConnectionSource } from '../core/connection.js';
 import { DataSource, __setActiveConnection } from './data-source.js';
 
 export interface DrizzleModuleOptions<

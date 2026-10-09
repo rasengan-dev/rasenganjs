@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0-beta.6 (2026-08-16)
+
+### Features
+
+- **futon,runtime:** forward env/ExecutionContext to Futon on Workerd 2b790f9
+
 ### Features
 
 - `WorkerdProdAdapter.fetchHandler` now forwards `env` and `ctx` (`ExecutionContext`) into Futon's `RuntimeContext` on every request, and defaults `passthrough` to `true` — the Service Worker registration format (`self.addEventListener('fetch', ...)`) never receives `env` from workerd by platform design, so Module Worker format (`export default { fetch }`) is now the default rather than an opt-in, otherwise a deployed Futon app could not read a single binding (D1, R2, KV, service bindings, secrets) (RFC-0013 Phase 1) 2b790f9

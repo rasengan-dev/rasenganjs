@@ -10,6 +10,8 @@ import {
   SPAWN_REPEAT_SCRIPT,
   RECLAIM_STALLED_SCRIPT,
   RETRY_DEAD_SCRIPT,
+  EXTEND_SCRIPT,
+  RELEASE_SCRIPT,
 } from './redis-scripts.js';
 
 /**
@@ -275,6 +277,42 @@ export class RedisQueueAdapter implements QueueAdapter {
       now,
       this.sweepBatchSize
     );
+  }
+
+  /**
+   * RFC-0017 §2. The deadline is computed here, on the worker, the same
+   * way `reserve()` computes it for STAMP_DEADLINE_SCRIPT.
+   */
+  async extend(
+    queue: string,
+    ids: string[],
+    stallTimeout: number
+  ): Promise<string[]> {
+    if (ids.length === 0) return [];
+    const k = this.keys(queue);
+    const extended = await this.client.eval(
+      EXTEND_SCRIPT,
+      1,
+      k.activeDeadline,
+      Date.now() + stallTimeout,
+      ...ids
+    );
+    return (extended as string[] | null) ?? [];
+  }
+
+  /** RFC-0017 §4. */
+  async release(queue: string, ids: string[]): Promise<string[]> {
+    if (ids.length === 0) return [];
+    const k = this.keys(queue);
+    const released = await this.client.eval(
+      RELEASE_SCRIPT,
+      3,
+      k.active,
+      k.activeDeadline,
+      k.waiting,
+      ...ids
+    );
+    return (released as string[] | null) ?? [];
   }
 
   async getDead(queue: string): Promise<StoredJob[]> {

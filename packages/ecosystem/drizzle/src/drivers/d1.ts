@@ -3,7 +3,7 @@ import {
   type AnyD1Database,
   type DrizzleD1Database,
 } from 'drizzle-orm/d1';
-import type { DrizzleAdapter } from '../adapter.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 /**
  * `TConfig` is the D1 binding itself (e.g. `ctx.runtime.env.DB`), not a

@@ -44,13 +44,13 @@ export {
   type InferParams,
   type InferQuery,
   defaultErrorHandler,
-} from './types.js';
+} from './core/types.js';
 
 // ── Middleware factory ─────────────────────────────────
-export { createValidationMiddleware } from './middleware.js';
+export { createValidationMiddleware } from './core/middleware.js';
 
 // ── Adapters ───────────────────────────────────────────
 export { zodAdapter } from './adapters/zod.js';
 
 // ── Error formatting ──────────────────────────────────
-export { formatZodError } from './errors.js';
+export { formatZodError } from './core/errors.js';

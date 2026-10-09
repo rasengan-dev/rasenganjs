@@ -1,5 +1,5 @@
 import type { ModulePlugin } from '@rasenganjs/server';
-import type { ConnectionCore } from './connection.js';
+import type { ConnectionCore } from '../core/connection.js';
 
 /**
  * Claims the `drizzleConnection` module-extension key that

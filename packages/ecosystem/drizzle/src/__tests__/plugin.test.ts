@@ -5,10 +5,10 @@ import {
   Controller,
   Provider,
 } from '@rasenganjs/server';
-import { DrizzleModule } from '../drizzle.module.js';
-import { DataSource, __resetForTesting } from '../data-source.js';
-import { createDrizzlePlugin } from '../plugin.js';
-import type { DrizzleAdapter } from '../adapter.js';
+import { DrizzleModule } from '../server/module.js';
+import { DataSource, __resetForTesting } from '../server/data-source.js';
+import { createDrizzlePlugin } from '../server/plugin.js';
+import type { DrizzleAdapter } from '../core/adapter.js';
 
 interface FakeDb {
   source: string;

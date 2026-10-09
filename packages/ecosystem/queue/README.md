@@ -157,9 +157,12 @@ createQueuePlugin({
 });
 ```
 
-- **`stallTimeout`** — how long a reserved job may go unacknowledged
-  (no `complete()`/`fail()`) before it's presumed abandoned by a dead
-  worker and returned to the queue, with its attempt count incremented.
+- **`stallTimeout`** — how long a dead worker's jobs stay stuck before
+  they're returned to the queue, with their attempt count incremented.
+  A live worker renews the lease of everything it holds every
+  `stallTimeout / 3`, so a job may run (or wait for a slot) as long as
+  it needs: this is not a limit on job duration. With a custom adapter
+  that doesn't implement `extend()`, it still is.
 - **`sweepInterval`** — how often the plugin checks for delayed/repeat
   jobs that have become due and reservations that have stalled, across
   every queue it registers.
@@ -241,18 +244,34 @@ const dead = await this.emailQueue.getDead();
 await this.emailQueue.retryDead(dead[0].id);
 ```
 
+## Scaling out and shutting down
+
+Run more worker processes on the same `RedisQueueAdapter` to process
+more jobs: `concurrency` is per job name, **per process**, and a worker
+only reserves what it has room to run, so the others get the rest.
+
+Give job names with very different durations their own queues. A worker
+reserves from a queue without knowing the job's name first, so a slow
+name at its `concurrency` limit can hold the slot a fast name was
+waiting for.
+
+On `app.close()`, each worker puts the jobs it reserved but never
+started back at the head of the queue, then waits for the ones it's
+running. Other workers take them over immediately. If your app closes
+the adapter's Redis clients itself, do it after `app.close()` resolves.
+
 ## Current limitations
 
 `@rasenganjs/queue` has shipped Phases 1 (Core), 2 (Time), and 3
 (Redis) of its RFC:
 
-- A handler that consistently outlives `stallTimeout` can be reclaimed
-  and reprocessed indefinitely — stalled-job reclaim doesn't consult
-  `attempts`/dead-letter (matches the underlying job lifecycle model;
-  see [ARCHITECTURE.md](./ARCHITECTURE.md) for why).
-- `RedisQueueAdapter`'s live-Redis behavior is untested against a real
-  server today (tests run against a faked client only — same bar
-  `@rasenganjs/ws`'s Redis adapter shipped at).
+- A job whose worker crashes every time it runs is reclaimed and
+  retried indefinitely: stalled-job reclaim doesn't consult
+  `attempts`/dead-letter (see [ARCHITECTURE.md](./ARCHITECTURE.md) for
+  why).
+- `RedisQueueAdapter`'s test suite runs against a faked client only
+  (same bar `@rasenganjs/ws`'s Redis adapter shipped at); its RFC-0017
+  scripts were checked by hand against a real Redis.
 - `reserve()`'s `BLMOVE` is capped to a short timeout to fit
   `@rasenganjs/queue`'s existing fixed-interval poll loop, so it
   doesn't yet deliver `BLMOVE`'s usual near-zero-latency wakeup —

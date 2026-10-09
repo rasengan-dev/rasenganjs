@@ -31,8 +31,9 @@ export interface StoredJob {
   enqueuedAt: number;
   /**
    * Stall deadline (Phase 2): set by `reserve()` to `now + stallTimeout`
-   * when a job is reserved. `sweep()` reclaims any active job whose
-   * `reservedAt` has passed, returning it to `waiting` with
+   * when a job is reserved, and pushed back by `extend()` while the
+   * worker holding it is alive (RFC-0017). `sweep()` reclaims any active
+   * job whose `reservedAt` has passed, returning it to `waiting` with
    * `attempt` incremented. Not an "instant" — a deadline.
    */
   reservedAt?: number;
@@ -127,6 +128,31 @@ export interface QueueAdapter {
   getDead(queue: string): Promise<StoredJob[]>;
   /** Move a dead-lettered job back to waiting, with `attempt` reset to 1. */
   retryDead(queue: string, id: string): Promise<void>;
+  /**
+   * RFC-0017 §2: push the stall deadline of each still-active reservation
+   * in `ids` to `now + stallTimeout`. An id that is no longer active
+   * (completed, failed, or already reclaimed by the sweeper) is skipped,
+   * not re-activated. Resolves with the ids that were actually extended.
+   *
+   * Optional: an adapter without it keeps pre-RFC-0017 semantics, where
+   * `stallTimeout` bounds a job's total reserved lifetime.
+   */
+  extend?(
+    queue: string,
+    ids: string[],
+    stallTimeout: number
+  ): Promise<string[]>;
+  /**
+   * RFC-0017 §4: put each still-active reservation in `ids` back at the
+   * head of `waiting`, in the order given (`ids[0]` is reserved next),
+   * with its stall deadline cleared and `attempt` unchanged: these jobs
+   * never started. An id that is no longer active is skipped. Resolves
+   * with the ids released.
+   *
+   * Optional: without it, a stopped worker's unstarted reservations
+   * wait for the sweeper, as before RFC-0017.
+   */
+  release?(queue: string, ids: string[]): Promise<string[]>;
 }
 
 /** A `Queue` subclass constructor, as passed to `defineModule({ queues })`. */
