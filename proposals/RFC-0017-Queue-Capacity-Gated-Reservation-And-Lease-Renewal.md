@@ -1,6 +1,6 @@
 # RFC 0017 - Capacity-Gated Reservation, Lease Renewal, FIFO Dispatch and Release on Shutdown (`@rasenganjs/queue`)
 
-**Status:** Draft
+**Status:** Implemented (2026-10-09, branch `feat/queue-rfc-0017`; not yet released)
 **Author:** Rasengan.js Core Team (drafted from a downstream production-readiness review — Hiraiship, RFC-0005/RFC-0031)
 **Date:** 2026-09-29
 **Revised:** 2026-10-09: adds §4 (release on shutdown) and §5 (reserve and ack failures), from Hiraiship's RFC-0063 live test and the shutdown crash it traced to `tick()`
@@ -572,3 +572,60 @@ Unit tests stay adapter-level. Integration tests use `MemoryQueueAdapter` and re
 - **Poison jobs.** A job that crashes its worker every time is still reclaimed forever, since stall-reclaim ignores `attempts`. With leases, "reclaimed" really does mean "its worker died", so counting reclaims against `attempts` becomes reasonable. That needs the sweeper to know each job name's `attempts`, which it currently doesn't.
 - **The `reserve()` → stamp window.** `RECLAIM_STALLED_SCRIPT`'s self-heal scan picks up any `active` id without a deadline, which includes a job that was just moved by `BLMOVE` and whose `STAMP_DEADLINE_SCRIPT` hasn't run yet. Under load that's a real (if narrow) duplicate path. Maybe the self-heal should only take ids with no deadline that were already seen on the _previous_ sweep pass. Small enough to fold into this RFC's implementation if reviewers agree.
 - **One blocking connection per queue.** `RedisQueueAdapter` takes a single `blockingClient`, so every queue's `BLMOVE` waits its turn on it. With the single-in-flight guard that costs latency, not memory. The adapter could `duplicate()` one blocking connection per queue on first `reserve()`, at the price of one Redis connection per queue per process. Opt-in option, or the new default?
+
+---
+
+# Implementation notes
+
+All five sections, in `packages/ecosystem/queue`:
+
+- **`src/plugin.ts`**: the worker loop as designed. `tick()` is
+  synchronous and starts `reserveOne()` as the single pending
+  reservation, which is also what `onDestroy` awaits, so a reservation
+  that lands after the stop goes to the buffer and is released. `held`
+  tracks every id from reservation to ack.
+- **`src/types.ts`, both adapters**: `extend()` and `release()`;
+  `EXTEND_SCRIPT` and `RELEASE_SCRIPT` in `redis-scripts.ts`.
+- **`createAdapterErrorLog`** (exported from `plugin.ts`, not from the
+  package): one per plugin instance, shared by the worker loops and the
+  sweeper.
+
+Two departures from the text above:
+
+- **Heartbeat interval** `max(1, floor(stallTimeout / 3))` ms, not
+  `max(1_000, …)`: the one-second floor would let a lease lapse for any
+  `stallTimeout` under three seconds (the tests use 60 ms).
+- **`runJob()` tracks `handlerFailed`** rather than the error itself:
+  a handler can throw `undefined`.
+
+Tests:
+
+- `src/__tests__/rfc-0017.test.ts`: 18 tests over real `ServerApp`s
+  and `MemoryQueueAdapter`, covering §1–§5, `createAdapterErrorLog` and
+  the memory adapter's new methods. Against the previous `plugin.ts`,
+  13 of them fail.
+- `redis-adapter.test.ts`: `extend()`/`release()` at the orchestration
+  grain, plus two live-Redis `it.todo`s.
+- `integration.test.ts`: the old "a handler outliving `stallTimeout` is
+  reclaimed" test now runs on an adapter without `extend()`, where that
+  is still the behavior.
+- The package suite: 99 passed, 3 todo. `tsc --noEmit` reports only the
+  two unused `@ts-expect-error` in `plugin-registration.test.ts` that
+  predate this RFC.
+
+Checked by hand against a real Redis (7, local), not committed:
+
+- the scripts: an extended reservation survives `RECLAIM_STALLED_SCRIPT`
+  while a non-extended one is reclaimed; `release()` skips an id the
+  sweeper already reclaimed (it stays in `waiting` once), puts released
+  ids at the head in order, clears the deadline, and the next
+  `reserve()` returns the first one with `attempt` unchanged;
+- the rolling-deploy scenario: two workers, a `log` name at
+  `concurrency: 1` (plus `record` at 4) with 40 jobs of 40 ms, the first
+  worker closed after 300 ms. All 40 completed exactly once, all at
+  attempt 1, the last 1.4 s after the close (before: up to
+  `stallTimeout`, 30 s), nothing left in `active` or `waiting`.
+
+Still to do: release `1.0.0-beta.2`; Hiraiship then drops
+`patches/@rasenganjs__queue@1.0.0-beta.1.patch` and reruns its RFC-0063
+live test.

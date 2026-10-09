@@ -169,6 +169,42 @@ export class MemoryQueueAdapter implements QueueAdapter {
     }
   }
 
+  /** RFC-0017 §2: renews the stall deadline of the ids still active. */
+  async extend(
+    queue: string,
+    ids: string[],
+    stallTimeout: number
+  ): Promise<string[]> {
+    const state = this.state(queue);
+    const deadline = Date.now() + stallTimeout;
+    const extended: string[] = [];
+    for (const id of ids) {
+      const job = state.active.get(id);
+      if (!job) continue;
+      job.reservedAt = deadline;
+      extended.push(id);
+    }
+    return extended;
+  }
+
+  /**
+   * RFC-0017 §4: puts the ids still active back at the head of `waiting`,
+   * `ids[0]` first, without touching `attempt`.
+   */
+  async release(queue: string, ids: string[]): Promise<string[]> {
+    const state = this.state(queue);
+    const released: string[] = [];
+    for (let i = ids.length - 1; i >= 0; i--) {
+      const job = state.active.get(ids[i]);
+      if (!job) continue;
+      state.active.delete(ids[i]);
+      job.reservedAt = undefined;
+      state.waiting.unshift(job);
+      released.unshift(ids[i]);
+    }
+    return released;
+  }
+
   async getDead(queue: string): Promise<StoredJob[]> {
     return [...this.state(queue).dead];
   }

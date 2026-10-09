@@ -271,3 +271,50 @@ end
 redis.call('RPUSH', KEYS[3], ARGV[1])
 return 1
 `;
+
+/**
+ * RFC-0017 §2: lease renewal.
+ *
+ * KEYS: [activeDeadlineZset]
+ * ARGV: [deadline, ...ids]
+ * Returns the ids whose deadline was moved. Only ids already in the
+ * deadline zset are touched, so a reservation completed, failed or
+ * reclaimed since the heartbeat started is never brought back.
+ */
+export const EXTEND_SCRIPT = `
+local deadline = tonumber(ARGV[1])
+local extended = {}
+for i = 2, #ARGV do
+  if redis.call('ZSCORE', KEYS[1], ARGV[i]) then
+    redis.call('ZADD', KEYS[1], deadline, ARGV[i])
+    extended[#extended + 1] = ARGV[i]
+  end
+end
+return extended
+`;
+
+/**
+ * RFC-0017 §4: release on shutdown.
+ *
+ * KEYS: [activeList, activeDeadlineZset, waitingList]
+ * ARGV: ids, in reservation order
+ * Returns the ids released. Walks the ids backwards and LPUSHes, so
+ * `ARGV[1]` ends at the head of `waiting`, where `reserve()`'s
+ * `BLMOVE ... LEFT` takes it next. Guarded by the deadline zset like
+ * EXTEND_SCRIPT: a reservation the sweeper already reclaimed is not
+ * pushed a second time. `attempt` (in the jobs hash) is not touched:
+ * these jobs never started.
+ */
+export const RELEASE_SCRIPT = `
+local released = {}
+for i = #ARGV, 1, -1 do
+  local id = ARGV[i]
+  if redis.call('ZSCORE', KEYS[2], id) then
+    redis.call('ZREM', KEYS[2], id)
+    redis.call('LREM', KEYS[1], 1, id)
+    redis.call('LPUSH', KEYS[3], id)
+    table.insert(released, 1, id)
+  end
+end
+return released
+`;

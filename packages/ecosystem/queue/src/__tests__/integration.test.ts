@@ -12,6 +12,7 @@ import {
   MemoryQueueAdapter,
   type Job,
 } from '../index.js';
+import type { QueueAdapter } from '../types.js';
 
 /**
  * End-to-end tests over a real `ServerApp` + DI container — no fakes.
@@ -402,7 +403,7 @@ describe('@rasenganjs/queue — end-to-end', () => {
     await app.close();
   });
 
-  it('a job whose handler outlives stallTimeout is reclaimed by the sweeper and reprocessed (attempt 2)', async () => {
+  it('without extend() (a pre-RFC-0017 adapter), a job whose handler outlives stallTimeout is reclaimed by the sweeper and reprocessed (attempt 2)', async () => {
     const attempts: number[] = [];
 
     class SlowOnceQueue extends Queue {
@@ -434,8 +435,24 @@ describe('@rasenganjs/queue — end-to-end', () => {
     }
 
     const app = new ServerApp();
+    // RFC-0017: `MemoryQueueAdapter` renews leases now, so the old
+    // behavior needs an adapter without `extend()`.
+    const memory = new MemoryQueueAdapter();
+    const legacyAdapter: QueueAdapter = {
+      add: memory.add.bind(memory),
+      reserve: memory.reserve.bind(memory),
+      complete: memory.complete.bind(memory),
+      fail: memory.fail.bind(memory),
+      sweep: memory.sweep.bind(memory),
+      getDead: memory.getDead.bind(memory),
+      retryDead: memory.retryDead.bind(memory),
+    };
     app.registerPlugin(
-      createQueuePlugin({ stallTimeout: 30, sweepInterval: 15 })
+      createQueuePlugin({
+        adapter: legacyAdapter,
+        stallTimeout: 30,
+        sweepInterval: 15,
+      })
     );
     app.registerModule(
       defineModule({ name: 'M', queues: [SlowOnceQueue], controllers: [C] })
