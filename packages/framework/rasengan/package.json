@@ -118,7 +118,7 @@
     "cross-env": "^7.0.3",
     "tsup": "^8.5.1",
     "vite": "^8.2.1",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   },
   "license": "MIT",
   "engines": {
