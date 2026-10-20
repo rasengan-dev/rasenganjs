@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import { ComponentProps } from 'react';
+import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 import AppLogo from '../atoms/logo';
 import { Button } from '@/components/ui/button';
@@ -63,7 +64,7 @@ export default function Navbar({ className }: Props) {
   const hasSidebar =
     pathname.startsWith('/docs') || pathname.startsWith('/packages');
 
-  return (
+  const navbar = (
     <header
       id="navbar"
       className={twMerge(
@@ -82,7 +83,7 @@ export default function Navbar({ className }: Props) {
               aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
               onClick={toggleSidebar}
             >
-              <PanelLeft size={20} />
+              {isSidebarOpen ? <X size={20} /> : <PanelLeft size={20} />}
             </Button>
           )}
 
@@ -188,7 +189,7 @@ export default function Navbar({ className }: Props) {
         <Link
           to="https://buymeacoffee.com/dilane3"
           target="_blank"
-          className="h-8"
+          className="h-8 hidden sm:flex"
         >
           <Button className="h-8">
             <Coffee />
@@ -210,59 +211,83 @@ export default function Navbar({ className }: Props) {
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </Button>
       </div>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={closeMenu}
-            className="z-20 fixed top-0 left-0 w-full h-full bg-background/90 lg:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.2 }}
-            className="z-40 fixed top-0 right-0 h-full w-[280px] bg-background border-l border-border/40 dark:border-border lg:hidden"
-          >
-            <nav className="flex flex-col gap-1 p-6 pt-20 text-sm">
-              {NavigationData.navbar.map((nav) => (
-                <Link key={nav.id} to={nav.link ?? '#'} onClick={closeMenu}>
-                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md font-semibold">
-                    {nav.name}
-                  </div>
-                </Link>
-              ))}
-
-              <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
-                Products
-              </div>
-              {productLinks.map((product) => (
-                <Link
-                  key={product.name}
-                  to={product.href}
-                  target="_blank"
-                  onClick={closeMenu}
-                >
-                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md flex items-center gap-2">
-                    <span>{product.name}</span>
-                    <ArrowUpRight size={16} />
-                  </div>
-                </Link>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
+  );
+
+  // Portalled to document.body: `header` has `backdrop-blur-md`, which
+  // establishes a new containing block for `position: fixed` descendants
+  // in every modern browser engine. Rendered as children of `header`,
+  // these `fixed` overlay/panel elements had their `h-full`/`top-0`
+  // resolve against the header's own 60px box instead of the viewport,
+  // squashing the whole menu into a 60px-tall strip. Portalling escapes
+  // that containing block the same way `search.tsx`'s overlay already
+  // does.
+  return (
+    <>
+      {navbar}
+
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <>
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={closeMenu}
+                  className="z-20 fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm lg:hidden"
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  key="mobile-menu"
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={{ duration: 0.2 }}
+                  className="z-40 fixed top-0 right-0 h-full w-[280px] bg-background border-l border-border/40 dark:border-border lg:hidden"
+                >
+                  <nav className="flex flex-col gap-1 p-6 pt-20 text-sm">
+                    {NavigationData.navbar.map((nav) => (
+                      <Link
+                        key={nav.id}
+                        to={nav.link ?? '#'}
+                        onClick={closeMenu}
+                      >
+                        <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md font-semibold">
+                          {nav.name}
+                        </div>
+                      </Link>
+                    ))}
+
+                    <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
+                      Products
+                    </div>
+                    {productLinks.map((product) => (
+                      <Link
+                        key={product.name}
+                        to={product.href}
+                        target="_blank"
+                        onClick={closeMenu}
+                      >
+                        <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md flex items-center gap-2">
+                          <span>{product.name}</span>
+                          <ArrowUpRight size={16} />
+                        </div>
+                      </Link>
+                    ))}
+                  </nav>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
+        )}
+    </>
   );
 }

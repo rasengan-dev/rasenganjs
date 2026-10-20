@@ -52,7 +52,7 @@ const DocsLayout: LayoutComponent = () => {
                 exit={{ x: '-100%' }}
                 transition={{ duration: 0.2 }}
                 className={twMerge(
-                  'z-40 fixed top-[110px] bg-background block lg:hidden'
+                  'z-40 fixed top-[100px] bg-background block lg:hidden'
                 )}
               >
                 <SidebarNavigation
@@ -72,7 +72,7 @@ const DocsLayout: LayoutComponent = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => closeNavigation()}
-                className="z-20 fixed top-0 left-0 w-full h-full bg-background/90 block lg:hidden"
+                className="z-20 fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm block lg:hidden"
               />
             )}
           </AnimatePresence>
