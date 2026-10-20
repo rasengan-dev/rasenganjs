@@ -1,5 +1,5 @@
 /* Load Urbanist and Comfortaa font */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'tw-animate-css';
@@ -56,6 +56,19 @@
   --code-block-bg: oklch(0.9791 0 0);
   --code-block-highlight-bg: oklch(0.9612 0 0);
   --code-block-highlight-border: oklch(0.7668 0 0);
+
+  /* Ecosystem layer colors: one hue per layer of the stack, used by the
+     landing page, the skills page, the registry and every layer chip so the
+     whole site reads as one system. Light values are darkened so they stay
+     readable as text on a white background. */
+  --layer-rasengan: var(--primary);
+  --layer-futon: oklch(0.6 0.118 184.7); /* teal, #14B8A6 family */
+  --layer-server: oklch(0.56 0.22 296); /* violet, #B06BFF family */
+
+  /* Runtime brand colors, used by the PCB board and runtime cards. */
+  --runtime-node: #4f8a3f;
+  --runtime-bun: #b38900;
+  --runtime-workerd: #d96a0b;
 }
 
 .dark {
@@ -94,6 +107,13 @@
   --code-block-bg: oklch(0.2002 0 0);
   --code-block-highlight-bg: oklch(0.2686 0 0);
   --code-block-highlight-border: oklch(0.4997 0 0);
+
+  --layer-futon: oklch(0.78 0.13 181); /* #2dd4bf */
+  --layer-server: oklch(0.7 0.18 300); /* #B06BFF */
+
+  --runtime-node: #7cc164;
+  --runtime-bun: #f2d03b;
+  --runtime-workerd: #f6913a;
 }
 
 @theme inline {
@@ -136,6 +156,13 @@
   --color-code-block-bg: var(--code-block-bg);
   --color-code-block-highlight-bg: var(--code-block-highlight-bg);
   --color-code-block-highlight-border: var(--code-block-highlight-border);
+  --color-layer-rasengan: var(--layer-rasengan);
+  --color-layer-futon: var(--layer-futon);
+  --color-layer-server: var(--layer-server);
+  --color-runtime-node: var(--runtime-node);
+  --color-runtime-bun: var(--runtime-bun);
+  --color-runtime-workerd: var(--runtime-workerd);
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Fonts */
   --font-sans: Geist, sans-serif;
@@ -331,4 +358,34 @@ input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
   -webkit-appearance: none;
+}
+
+/* Blinking caret at the end of the landing code editor's terminal. */
+@keyframes editor-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Futon engine (landing hero): a dash running along each runtime wire. */
+@keyframes engine-wire {
+  from {
+    stroke-dashoffset: 0.2;
+  }
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* Futon engine: brief glow on a tile or plate when a file lands. */
+@keyframes engine-flash {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0;
+  }
 }

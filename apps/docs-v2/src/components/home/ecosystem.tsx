@@ -1,154 +1,141 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'rasengan';
-import {
-  ArrowRight,
-  Database,
-  FlaskConical,
-  Image as ImageIcon,
-  Languages,
-  ListOrdered,
-  MousePointerClick,
-  Network,
-  Package2,
-  Palette,
-  ShieldCheck,
-  Wifi,
-} from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import LayerChip from '@/components/common/atoms/badges/layer-chip';
+import { PACKAGES, type Layer } from '@/data/ecosystem';
 
-type Package = {
-  icon: React.ReactNode;
-  name: string;
-  description: string;
-  href: string;
-  isBeta?: boolean;
-};
-
-const packages: Package[] = [
-  {
-    icon: <Package2 size={18} />,
-    name: 'kurama',
-    description: 'Lightweight state management, Zustand-inspired.',
-    href: '/packages/kurama',
-  },
-  {
-    icon: <ImageIcon size={18} />,
-    name: 'image',
-    description: 'Optimized image component with lazy loading.',
-    href: '/packages/image',
-  },
-  {
-    icon: <Palette size={18} />,
-    name: 'theme',
-    description: 'Light, dark, and system theme management.',
-    href: '/packages/theme',
-  },
-  {
-    icon: <Languages size={18} />,
-    name: 'i18n',
-    description: 'Internationalization with locale-aware routing.',
-    href: '/packages/i18n',
-  },
-  {
-    icon: <Wifi size={18} />,
-    name: 'io',
-    description: 'Real-time client for WebSocket gateways.',
-    href: '/packages/io',
-    isBeta: true,
-  },
-  {
-    icon: <MousePointerClick size={18} />,
-    name: 'kage-demo',
-    description: 'Interactive feature tours and onboarding flows.',
-    href: '/packages/kage-demo',
-  },
-  {
-    icon: <ShieldCheck size={18} />,
-    name: 'validators',
-    description: 'Schema validation middleware, Zod adapter included.',
-    href: '/docs/server/ecosystem/validation-adapters',
-    isBeta: true,
-  },
-  {
-    icon: <Network size={18} />,
-    name: 'ws',
-    description: 'WebSocket gateways with rooms and broadcasting.',
-    href: '/packages/ws',
-    isBeta: true,
-  },
-  {
-    icon: <ListOrdered size={18} />,
-    name: 'queue',
-    description: 'Background job queues with retries and dead-letter.',
-    href: '/packages/queue',
-    isBeta: true,
-  },
-  {
-    icon: <Database size={18} />,
-    name: 'drizzle',
-    description: 'Drizzle ORM integration for Rasengan Server.',
-    href: '/packages/drizzle',
-    isBeta: true,
-  },
+/** Filter options of the registry. `all` shows every package. */
+const FILTERS: Array<{ id: Layer | 'all'; label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'rasengan', label: 'Frontend' },
+  { id: 'futon', label: 'Runtime' },
+  { id: 'server', label: 'Backend' },
+  { id: 'tooling', label: 'Tooling' },
 ];
 
+/**
+ * Landing page package registry: every published package as one row with
+ * its layer, status and a one-line description, filterable by layer. Rows
+ * link to the package docs (or npm for packages without a docs page).
+ */
 export default function Ecosystem() {
+  const [filter, setFilter] = useState<Layer | 'all'>('all');
+
+  const rows = useMemo(
+    () =>
+      filter === 'all' ? PACKAGES : PACKAGES.filter((p) => p.layer === filter),
+    [filter]
+  );
+
   return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-[620px] text-center">
-        <h2 className="text-3xl font-bold text-foreground lg:text-4xl">
-          A Growing Ecosystem
-        </h2>
-        <p className="mt-4 text-lg leading-relaxed text-foreground/70">
-          Smaller packages that fill in the gaps. State, images, i18n,
-          real-time, and more, each usable on its own.
-        </p>
-      </div>
+    <section className="mx-auto max-w-[1200px] py-16 lg:py-24">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-[620px]">
+          <p className="font-mono text-xs uppercase tracking-[0.08em] text-foreground/50">
+            Ecosystem
+          </p>
+          <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.02em] text-foreground lg:text-4xl">
+            {PACKAGES.length} packages, one registry
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-foreground/70">
+            Every package is versioned in the same monorepo and usable on its
+            own. Add what you need, when you need it.
+          </p>
+        </div>
 
-      <div className="mt-12 max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 rounded-xld border-t border-l border-dashed border-border overflow-hidden">
-        {packages.map((pkg) => (
-          <Link
-            key={pkg.name}
-            to={pkg.href}
-            className="group relative flex flex-col gap-3 border-r border-b border-dashed border-border p-5 transition-colors duration-200 ease-out hover:z-10 hover:bg-muted/40 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
-          >
-            <div className="flex items-center justify-between">
-              <div
-                aria-hidden="true"
-                className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
-              >
-                {pkg.icon}
-              </div>
-
-              {pkg.isBeta && (
-                <FlaskConical
-                  size={14}
-                  aria-label="Beta"
-                  className="text-green-500"
-                />
+        <div
+          role="group"
+          aria-label="Filter packages by layer"
+          className="flex flex-wrap gap-1.5"
+        >
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                'cursor-pointer rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 ease-out',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                filter === f.id
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border text-foreground/70 hover:bg-muted hover:text-foreground'
               )}
-            </div>
-
-            <div>
-              <h3 className="font-mono text-sm font-semibold text-foreground">
-                {pkg.name}
-              </h3>
-              <p className="mt-1 text-xs leading-relaxed text-foreground/60">
-                {pkg.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 overflow-hidden rounded-xl border border-border">
+        <div
+          aria-hidden="true"
+          className="hidden grid-cols-[240px_120px_minmax(0,1fr)_80px] gap-4 border-b border-border bg-muted/50 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-foreground/50 md:grid"
+        >
+          <span>Package</span>
+          <span>Layer</span>
+          <span>What it does</span>
+          <span className="text-right">Status</span>
+        </div>
+
+        <ul>
+          {rows.map((pkg) => {
+            const external = pkg.href.startsWith('http');
+            return (
+              <li
+                key={pkg.name}
+                className="border-b border-border last:border-b-0"
+              >
+                <Link
+                  to={pkg.href}
+                  target={external ? '_blank' : undefined}
+                  className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-5 py-3 text-sm transition-colors duration-150 hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-none md:grid-cols-[240px_120px_minmax(0,1fr)_80px]"
+                >
+                  <span className="flex min-w-0 items-center gap-1.5 font-mono font-medium text-foreground">
+                    <span className="truncate">{pkg.name}</span>
+                    {external && (
+                      <ArrowUpRight
+                        size={12}
+                        aria-hidden="true"
+                        className="shrink-0 text-foreground/40"
+                      />
+                    )}
+                  </span>
+                  <span className="justify-self-end md:justify-self-start">
+                    <LayerChip layer={pkg.layer} />
+                  </span>
+                  <span className="col-span-2 text-foreground/60 md:col-span-1">
+                    {pkg.description}
+                  </span>
+                  <span
+                    className={cn(
+                      'hidden justify-self-end rounded-md border px-1.5 py-0.5 font-mono text-[10.5px] md:inline',
+                      pkg.status === 'beta'
+                        ? 'border-[color-mix(in_oklab,var(--layer-futon)_40%,transparent)] text-layer-futon'
+                        : 'border-border text-foreground/60'
+                    )}
+                  >
+                    {pkg.status}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="mt-6">
         <Link
           to="/packages"
-          className="group flex items-center gap-1.5 rounded-md text-sm font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="group inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <span>Browse all packages</span>
+          Read the packages documentation
           <ArrowRight
             size={14}
             aria-hidden="true"
-            className="motion-safe:group-hover:translate-x-1 transition-transform duration-200 ease-out"
+            className="transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-1"
           />
         </Link>
       </div>

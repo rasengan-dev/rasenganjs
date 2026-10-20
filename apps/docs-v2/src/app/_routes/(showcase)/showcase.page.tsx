@@ -1,183 +1,210 @@
 import { PageComponent } from 'rasengan';
-import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { ArrowUpRight, Plus } from 'lucide-react';
+import Image from '@rasenganjs/image';
+import { cn } from '@/lib/utils';
 import CTA from '@/components/common/molecules/cta';
-import { ShowcaseCard } from '@/components/common/molecules/showcase-card';
+import PageHeader from '@/components/common/molecules/page-header';
+import {
+  SHOWCASE,
+  SHOWCASE_SUBMIT_URL,
+  type ShowcaseCategory,
+  type ShowcaseProject,
+} from '@/data/showcase';
 
-const projects = [
-  {
-    image: '/assets/images/showcase/rasenganjs.png',
-    title: 'Rasengan.js',
-    link: 'https://rasengan.dev',
-    category: 'Framework',
-  },
-  {
-    image: '/assets/images/showcase/rasengan-ui.png',
-    title: 'Rasengan UI',
-    link: 'https://ui.rasengan.dev',
-    category: 'UI Library',
-  },
-  {
-    image: '/assets/images/showcase/rasengan-hub.png',
-    title: 'Rasengan Hub',
-    link: 'https://hub.rasengan.dev',
-    category: 'Marketplace',
-  },
-  {
-    image: '/assets/images/showcase/chunin.png',
-    title: 'Chunin',
-    link: 'https://chunin.rasengan.dev',
-    category: 'Tool',
-  },
-  {
-    image: '/assets/images/showcase/nindo.png',
-    title: 'Nindo',
-    link: 'https://nindo.rasengan.dev',
-    category: 'Framework',
-  },
-  {
-    image: '/assets/images/showcase/chidori.png',
-    title: 'Chidori',
-    link: 'https://chidori.rasengan.dev',
-    category: 'Framework',
-  },
-  {
-    image: '/assets/images/showcase/biccas.png',
-    title: 'Biccas',
-    link: 'https://www.hub.rasengan.dev/templates/rh_landing-biccas',
-    category: 'Template',
-  },
-  {
-    image: '/assets/images/showcase/kronix.png',
-    title: 'Kronix',
-    link: 'https://www.hub.rasengan.dev/templates/rh_saas-kronix',
-    category: 'Template',
-  },
-  {
-    image: '/assets/images/showcase/enver.png',
-    title: 'Enver',
-    link: 'https://www.hub.rasengan.dev/templates/rh_landing-enver',
-    category: 'Template',
-  },
-  {
-    image: '/assets/images/showcase/rasengan.png',
-    title: 'Rasengan',
-    link: 'https://www.hub.rasengan.dev/templates/rh_saas-rasengan',
-    category: 'Template',
-  },
-  {
-    image: '/assets/images/showcase/hano.png',
-    title: 'Hano',
-    link: 'https://www.hub.rasengan.dev/templates/rh_saas-hano',
-    category: 'Template',
-  },
-];
-
-const categories = [
+/** Filter chips: "All" plus every category that has at least one project. */
+const CATEGORIES: Array<ShowcaseCategory | 'All'> = [
   'All',
-  'Framework',
-  'UI Library',
-  'Marketplace',
-  'Template',
-  'Tool',
+  ...Array.from(new Set(SHOWCASE.map((p) => p.category))),
 ];
 
-const Page: PageComponent = () => {
-  const [activeCategory, setActiveCategory] = useState('All');
+/** "https://www.hub.rasengan.dev/templates/x" → "hub.rasengan.dev". */
+const domainOf = (link: string) => new URL(link).hostname.replace(/^www\./, '');
 
-  const filtered =
-    activeCategory === 'All'
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
-
+/**
+ * One showcase tile. `featured` makes it span two columns and two rows on
+ * desktop and shows the summary and the verified package stack.
+ */
+function ProjectCard({
+  project,
+  featured,
+}: {
+  project: ShowcaseProject;
+  featured?: boolean;
+}) {
   return (
-    <div className="w-full">
-      <section className="pt-16 pb-8 lg:pt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-[800px]"
+    <li className={cn(featured && 'sm:col-span-2 lg:row-span-2')}>
+      <a
+        href={project.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-background transition-[border-color,box-shadow] duration-200 ease-out hover:border-primary/40 hover:shadow-[0_20px_40px_-28px_rgba(15,26,51,0.5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <div
+          className={cn(
+            'relative overflow-hidden border-b border-border bg-muted',
+            featured
+              ? 'aspect-[16/10] lg:aspect-auto lg:flex-1'
+              : 'aspect-[16/10]'
+          )}
         >
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-            Showcase
-          </h2>
-          <h1 className="mb-4 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-tight text-foreground">
-            Built with{' '}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-400">
-              Rasengan.js
-            </span>
-          </h1>
-          <p className="max-w-[600px] text-lg leading-relaxed text-foreground/70">
-            Explore a collection of websites, apps, and templates built by the
-            Rasengan.js community.
-          </p>
-        </motion.div>
+          <Image
+            src={project.image}
+            alt={`Screenshot of ${project.title}`}
+            width="100%"
+            height="100%"
+            className="h-full w-full object-cover object-top transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
+          />
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mt-10 flex flex-wrap gap-2"
-        >
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(cat)}
-              className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium duration-300 ${
-                activeCategory === cat
-                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-                  : 'bg-muted text-foreground/70 hover:bg-muted/80 hover:text-foreground'
-              }`}
+        <div className="flex flex-col gap-2.5 p-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2
+              className={cn(
+                'font-semibold text-foreground transition-colors group-hover:text-primary',
+                featured && 'text-lg'
+              )}
             >
-              {cat}
-            </button>
-          ))}
-        </motion.div>
-      </section>
+              {project.title}
+            </h2>
+            <span className="flex shrink-0 items-center gap-1 font-mono text-[11px] text-foreground/50">
+              {domainOf(project.link)}
+              <ArrowUpRight size={12} aria-hidden="true" />
+            </span>
+          </div>
 
-      <section className="pb-16 lg:pb-24">
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {filtered.map((project) => (
-              <ShowcaseCard
-                key={project.title}
-                image={project.image}
-                title={project.title}
-                link={project.link}
-              />
+          {featured && project.summary && (
+            <p className="text-sm leading-relaxed text-foreground/70">
+              {project.summary}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-1.5">
+            <span className="rounded-md border border-border px-1.5 py-0.5 font-mono text-[10.5px] text-foreground/60">
+              {project.category.toLowerCase()}
+            </span>
+            {project.stack?.map((pkg) => (
+              <span
+                key={pkg}
+                className={cn(
+                  'rounded-md border px-1.5 py-0.5 font-mono text-[10.5px]',
+                  pkg === 'rasengan'
+                    ? 'border-[color-mix(in_oklab,var(--layer-rasengan)_40%,transparent)] text-layer-rasengan'
+                    : 'border-border text-foreground/60'
+                )}
+              >
+                {pkg}
+              </span>
             ))}
           </div>
-        ) : (
-          <p className="py-20 text-center text-lg text-foreground/50">
-            No projects found in this category.
-          </p>
-        )}
-      </section>
+        </div>
+      </a>
+    </li>
+  );
+}
 
-      <section className="pb-16 lg:pb-24">
-        <CTA />
-      </section>
+/**
+ * Showcase (Direction A): a bento grid with the first project featured,
+ * category filters with counts, and a link to submit a project.
+ */
+const Page: PageComponent = () => {
+  const [category, setCategory] = useState<ShowcaseCategory | 'All'>('All');
+
+  const projects = useMemo(
+    () =>
+      category === 'All'
+        ? SHOWCASE
+        : SHOWCASE.filter((p) => p.category === category),
+    [category]
+  );
+
+  const countOf = (c: ShowcaseCategory | 'All') =>
+    c === 'All'
+      ? SHOWCASE.length
+      : SHOWCASE.filter((p) => p.category === c).length;
+
+  return (
+    <div className="mx-auto w-full max-w-[1200px]">
+      <PageHeader
+        eyebrow="Showcase"
+        title="Built with Rasengan.js"
+        description="Sites, frameworks and templates running on Rasengan in production."
+        aside={
+          <a
+            href={SHOWCASE_SUBMIT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-border bg-background px-5 text-sm font-semibold text-foreground transition-colors duration-200 ease-out hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <Plus size={16} aria-hidden="true" />
+            Submit a project
+          </a>
+        }
+      />
+
+      <div
+        role="group"
+        aria-label="Filter projects by category"
+        className="flex flex-wrap gap-1.5"
+      >
+        {CATEGORIES.map((c) => (
+          <button
+            key={c}
+            type="button"
+            aria-pressed={category === c}
+            onClick={() => setCategory(c)}
+            className={cn(
+              'flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 ease-out',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+              category === c
+                ? 'border-foreground bg-foreground text-background'
+                : 'border-border text-foreground/70 hover:bg-muted hover:text-foreground'
+            )}
+          >
+            {c}
+            <span
+              className={cn(
+                'font-mono text-xs',
+                category === c ? 'text-background/60' : 'text-foreground/40'
+              )}
+            >
+              {countOf(c)}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <ul className="mt-8 grid grid-cols-1 gap-5 pb-8 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project, index) => (
+          <ProjectCard
+            key={project.title}
+            project={project}
+            featured={category === 'All' && index === 0}
+          />
+        ))}
+      </ul>
+
+      <CTA
+        title="Built something with Rasengan?"
+        description="Open an issue with a link and a screenshot and we will add it to the showcase."
+      />
     </div>
   );
 };
 
 Page.metadata = {
   title: 'Rasengan.js - Showcase',
-  description: 'Explore the showcase of Rasengan.js projects and applications.',
+  description: 'Sites, frameworks and templates built with Rasengan.js.',
   openGraph: {
     title: 'Rasengan.js - Showcase',
-    description:
-      'Explore the showcase of Rasenganjs projects and applications.',
-    url: 'https://rasengan.dev',
+    description: 'Sites, frameworks and templates built with Rasengan.js.',
+    url: 'https://rasengan.dev/showcase',
     image: 'https://rasengan.dev/assets/images/metadata/showcase.png',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Rasengan.js - Showcase',
-    description:
-      'Explore the showcase of Rasengan.js projects and applications.',
+    description: 'Sites, frameworks and templates built with Rasengan.js.',
     image: 'https://rasengan.dev/assets/images/metadata/showcase.png',
   },
 };

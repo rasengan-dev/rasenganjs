@@ -6,6 +6,7 @@ import {
   Coffee,
   Menu,
   PanelLeft,
+  Rocket,
   X,
 } from 'lucide-react';
 import { ComponentProps } from 'react';
@@ -24,16 +25,12 @@ import Search from '@/components/ui/search';
 import { useMobileMenuStore } from '@/store/mobile-menu';
 import { useNavigationStore } from '@/store/navigation';
 import { AnimatePresence, motion } from 'motion/react';
+import { DEPLOY_URL, PRODUCTS } from '@/data/ecosystem';
 
 const env = import.meta.env;
 
-const productLinks = [
-  { name: 'Rasengan UI', href: 'https://ui.rasengan.dev' },
-  { name: 'Rasengan Hub', href: 'https://hub.rasengan.dev' },
-  { name: 'Chidori', href: 'https://chidori.rasengan.dev' },
-  { name: 'Nindo', href: 'https://nindo.rasengan.dev' },
-  { name: 'Chunin', href: 'https://chunin.rasengan.dev' },
-];
+/** Product menu entries, sourced from the shared ecosystem data. */
+const productLinks = PRODUCTS.map(({ name, href }) => ({ name, href }));
 
 type Props = {
   className?: ComponentProps<'header'>['className'];
@@ -189,13 +186,25 @@ export default function Navbar({ className }: Props) {
         <Link
           to="https://buymeacoffee.com/dilane3"
           target="_blank"
-          className="h-8 hidden sm:flex"
+          className="h-8 hidden xl:flex"
         >
-          <Button className="h-8">
+          <Button variant="outline" className="h-8">
             <Coffee />
             <span>Support us</span>
           </Button>
         </Link>
+
+        {/* Deploy: sends people to Hiraiship, the deployment platform for
+            Rasengan apps. Primary-styled so it reads as the main action. */}
+        <a
+          href={DEPLOY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors duration-200 ease-out hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex"
+        >
+          <Rocket size={14} aria-hidden="true" />
+          <span>Deploy</span>
+        </a>
 
         {/* vertical separator */}
         <div className="h-4 w-[1px] bg-border dark:bg-input lg:hidden"></div>
@@ -264,6 +273,17 @@ export default function Navbar({ className }: Props) {
                         </div>
                       </Link>
                     ))}
+
+                    <a
+                      href={DEPLOY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={closeMenu}
+                      className="mt-2 flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 font-semibold text-primary-foreground"
+                    >
+                      <Rocket size={16} aria-hidden="true" />
+                      Deploy with Hiraiship
+                    </a>
 
                     <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
                       Products
