@@ -20,6 +20,6 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.8.2",
-    "vite": "^8.2.1"
+    "vite": "^8.2.4"
   }
 }
