@@ -1,5 +1,14 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **`rasengan dev` created a new Vite SSR module runner on every request** (in both the `_api/` routes middleware and the SSR handler), so the whole `_api/`/`_routes/` module graph was re-evaluated each time and module-level state (in-memory stores, database clients) was lost between requests. The dev server now reuses one module runner per server instance
+- **production SSR rendered an empty `<div id="root">`** (no app markup, just the hydration script) on every document request. Root cause: Vite/Rolldown's SSR build was bundling `react-router` directly into the app's own SSR chunks (any `layout.tsx`/`page.tsx` file, and the `flatRoutes()`/`DefaultLayout` internals), creating a second, separate `react-router` module instance from the one rasengan's own pre-built server code resolves via Node. `<Outlet />`'s `useContext(RouteContext)` read from that second instance's context, which `StaticRouterProvider` (running on the other instance) never provided a value for, so `<Outlet />` always rendered nothing, silently, with no error. Fixed by externalizing `react`, `react-dom`, and `react-router` for the `ssr`/`ssg` build environments, so the app's own SSR chunks resolve the exact same module instance rasengan's server code uses
+
+### Breaking Changes
+
+- **`react-router` moved from a `rasengan` dependency to a `peerDependency`** (alongside `react`/`react-dom`), a required consequence of the fix above: the app's own SSR build now needs `react-router` resolvable directly from the app's own `node_modules`, not only transitively through `rasengan`. Apps upgrading to this version must add `"react-router": "^8.3.0"` to their own `package.json` dependencies
+
 ## 2.0.0-beta.5 (2026-08-14)
 
 ### Features
