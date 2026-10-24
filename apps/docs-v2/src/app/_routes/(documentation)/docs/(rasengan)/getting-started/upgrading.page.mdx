@@ -27,15 +27,9 @@ To update to the latest `beta` version of Rasengan.js, you just have to run the 
 pnpm add rasengan@beta
 ```
 
-## Upgrade to 2.0.0-beta
+## Upgrade from 1.x to 2.0
 
-<Note title="Currently in beta" type="warning">
-  `2.0.0` is not yet the stable release. Install it with `rasengan@beta`, not
-  `rasengan@latest` (see <Link to="#latest-beta-version">Latest Beta version</Link>{' '}
-  above), until it's promoted to stable.
-</Note>
-
-**Version `2.0.0-beta`** rewrites Rasengan.js's entire server layer on top of <Link to="/docs/futon/getting-started/introduction">Futon</Link>, a lightweight WinterCG-compatible HTTP engine, replacing Express everywhere: the dev server, production request handling, and every deployment adapter.
+**Version `2.0.0`** rewrites Rasengan.js's entire server layer on top of <Link to="/docs/futon/getting-started/introduction">Futon</Link>, a lightweight WinterCG-compatible HTTP engine, replacing Express everywhere: the dev server, production request handling, and every deployment adapter. Read the <Link to="/blog/rasengan-2-stable">2.0 announcement</Link> for the full picture.
 
 ### What changed
 
@@ -58,7 +52,7 @@ pnpm add rasengan@beta
   className="mt-8"
 >
 ```bash title="Terminal"
-pnpm add rasengan@beta react@latest react-dom@latest vite@latest
+pnpm add rasengan@latest react@latest react-dom@latest vite@latest
 ```
 </StepItem>
 
