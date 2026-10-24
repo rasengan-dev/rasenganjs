@@ -7,10 +7,6 @@
 - **rasengan:** apps must add react-router ^8.3.0 to their own
   dependencies.
 
-### Features
-
-- **uzubase:** add the @rasenganjs/uzubase deploy adapter 53e5a08
-
 ### Bug Fixes
 
 - publish internal dependencies as caret ranges df168a7
