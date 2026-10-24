@@ -1,5 +1,22 @@
 ## Unreleased
 
+## 2.0.0 (2026-10-24)
+
+### ⚠ BREAKING CHANGES
+
+- **rasengan:** apps must add react-router ^8.3.0 to their own
+  dependencies.
+
+### Features
+
+- **uzubase:** add the @rasenganjs/uzubase deploy adapter 53e5a08
+
+### Bug Fixes
+
+- publish internal dependencies as caret ranges df168a7
+- **rasengan:** externalize react and react-router in SSR builds 0ed1ed1
+- **rasengan:** reuse one SSR module runner per dev server a7aeab6
+
 ### Bug Fixes
 
 - **`rasengan dev` created a new Vite SSR module runner on every request** (in both the `_api/` routes middleware and the SSR handler), so the whole `_api/`/`_routes/` module graph was re-evaluated each time and module-level state (in-memory stores, database clients) was lost between requests. The dev server now reuses one module runner per server instance
