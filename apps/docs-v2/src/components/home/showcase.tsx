@@ -643,7 +643,7 @@ const TERMINAL_LOGS: Record<string, TerminalLine[]> = {
     { text: '> rasengan dev' },
     { text: '' },
     { text: '- Starting server in development mode...' },
-    { text: 'Rasengan v2.0.0-beta running', className: 'text-emerald-500' },
+    { text: 'Rasengan v2.0.0 running', className: 'text-emerald-500' },
     { text: '' },
     { text: '→ Local:   http://localhost:5320', className: 'text-blue-400' },
     { text: '→ Network: http://192.168.1.42:5320', className: 'text-blue-400' },
@@ -671,7 +671,7 @@ const TERMINAL_LOGS: Record<string, TerminalLine[]> = {
     { text: '$ npm run dev', className: 'text-foreground/40' },
     { text: '' },
     {
-      text: 'Rasengan Server v1.0.0-beta.6 running',
+      text: 'Rasengan Server v1.0.0 running',
       className: 'text-emerald-500',
     },
     { text: '' },

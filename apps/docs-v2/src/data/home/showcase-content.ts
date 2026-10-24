@@ -27,9 +27,11 @@ export const showcaseFrameworks: ShowcaseFramework[] = [
     "serve": "rasengan-serve ./dist"
   },
   "dependencies": {
-    "rasengan": "^1.2.2",
+    "rasengan": "^2.0.0",
+    "@rasenganjs/serve": "^2.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router": "^8.3.0"
   }
 }`,
       },
@@ -141,8 +143,8 @@ export default Home;`,
     "build": "tsc"
   },
   "dependencies": {
-    "@rasenganjs/futon": "^1.0.0-beta.1",
-    "@rasenganjs/runtime": "^1.0.0-beta.1"
+    "@rasenganjs/futon": "^1.0.0",
+    "@rasenganjs/runtime": "^1.0.1"
   }
 }`,
       },
@@ -208,7 +210,7 @@ runtime.serve(app, {
     "start": "rasengan-server start"
   },
   "dependencies": {
-    "@rasenganjs/server": "^1.0.0-beta.3"
+    "@rasenganjs/server": "^1.0.0"
   }
 }`,
       },
