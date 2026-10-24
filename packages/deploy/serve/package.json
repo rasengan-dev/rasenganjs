@@ -21,6 +21,8 @@
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm run build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -36,7 +38,8 @@
   },
   "devDependencies": {
     "@types/source-map-support": "^0.5.10",
-    "tsup": "^8.5.1"
+    "tsup": "^8.5.1",
+    "vitest": "^4.1.9"
   },
   "files": [
     "dist/",

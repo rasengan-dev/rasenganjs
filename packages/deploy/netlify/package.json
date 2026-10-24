@@ -24,6 +24,8 @@
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm run build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "deploy": "pnpm publish --access public",
     "deploy:beta": "pnpm run deploy --tag beta",
     "pack": "pnpm pack --pack-destination ./release/"
@@ -40,5 +42,8 @@
   ],
   "dependencies": {
     "execa": "^8.0.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
   }
 }

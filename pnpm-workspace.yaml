@@ -4,6 +4,7 @@ packages:
   - packages/ecosystem/*
   - packages/cli/*
   - packages/deploy/*
+  - packages/deploy/serve/__tests__/fixture
   - apps/playground/**
   - apps/docs/**
   - apps/docs-v2/**
