@@ -200,9 +200,22 @@ from scratch.
 1. **Pre-flight.** Run everything in §5. Fix or explicitly accept any
    failing item before continuing, don't cut a release with an unresolved
    red item.
-2. **Pick the release order.** Using §2, list the packages you're
+2. **Clean working tree.** The release script runs `git add -A` before
+   committing, so anything uncommitted ends up inside the
+   `release: <tag>` commit. Commit or stash everything first.
+3. **Pick the release order.** Using §2, list the packages you're
    releasing this round in dependency order (dependencies first).
-3. **Release each package, in that order:**
+4. **Dry run the first package** (optional but recommended):
+
+   ```bash
+   pnpm run release --dry
+   ```
+
+   Same prompts, same version bump and `CHANGELOG.md` update, but no
+   commit, no tag and no push. Inspect `git diff`, then discard it with
+   `git checkout -- .` before the real run.
+
+5. **Release each package, in that order:**
 
    ```bash
    pnpm run release
@@ -211,31 +224,26 @@ from scratch.
    This runs `scripts/release.ts`, an interactive wrapper around
    `@vitejs/release-scripts`' `release()`. For each run it will:
    - Ask which package to release (pick the next one in your ordered list).
-   - Ask for the new version (type it explicitly, e.g. `2.0.0`, or
-     `1.0.0-beta.6`).
-   - Update that package's `CHANGELOG.md` per §4.
-   - Create the commit and the git tag (`v2.0.0`, `rasengan-futon@1.0.0`,
-     …) locally, it does **not** push anything yet.
+   - Run `publint` on the package and ask to continue if it reports
+     anything.
+   - Ask for the release type; pick `custom` and type the version
+     explicitly (e.g. `2.0.0`, or `1.0.0-beta.6`).
+   - Ask you to confirm the tag (`v2.0.0`, `rasengan-futon@1.0.0`, …).
+   - Bump `package.json`, update `CHANGELOG.md` per §4, commit
+     `release: <tag>` and create the annotated tag.
+   - **Push the tag and the current branch immediately.** The tag push
+     triggers CI (see §8), so the package is published to npm within
+     minutes of confirming. There is no separate "review then push" step:
+     the confirm prompt is the last chance to back out.
 
-   Run it once per package. Since each package's `workspace:*` deps resolve
-   against whatever's already been tagged/published, releasing in the
-   wrong order ships a broken dependency pin, go in the order from §2, not
-   in whatever order is convenient.
+   Run it once per package, in the order from §3. A version containing
+   `beta`/`alpha` is published under that dist-tag; anything else is
+   published as `latest`.
 
-4. **Review before pushing.** Check `git log` and `git diff` for the
-   generated commits/tags, confirm each `CHANGELOG.md` reads sensibly and
-   no version was fat-fingered.
-5. **Push.**
-   ```bash
-   git push --follow-tags
-   ```
-   Pushing the tags is what triggers CI (see §8), nothing is published to
-   npm before this point.
 6. **Watch CI.** `publish.yml` runs once per pushed tag; confirm each one
-   goes green before considering the release done. A failed publish for one
-   package in the middle of a release round still leaves earlier packages
-   published, don't re-run the whole batch, just fix and re-tag the one
-   that failed.
+   goes green. A failed publish for one package in the middle of a
+   release round still leaves earlier packages published, don't re-run
+   the whole batch, just fix and re-tag the one that failed.
 7. **Post-release:**
    - Confirm `release-tag.yml` created a GitHub Release for each
      non-alpha tag.
@@ -244,7 +252,7 @@ from scratch.
    - Announce (community channels, changelog page) once everything is
      green.
 
-## 8. What CI does after you push tags
+## 8. What CI does after a tag is pushed
 
 - **`publish.yml`** triggers on tags matching `v*`, `create-rasengan*`,
   `rasengan-*`. It runs `pnpm run ci-publish`
