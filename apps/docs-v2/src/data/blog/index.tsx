@@ -25,6 +25,21 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Rasengan 2.0 is Stable',
+    description: `
+      Rasengan v2.0.0 is out of beta. A Futon-powered core, colocated API routes, Bun and Cloudflare Workers support, and the fixes that came out of two months of real-world beta testing.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'October 24, 2026',
+    link: '/blog/rasengan-2-stable',
+    kind: 'release',
+    version: 'v2.0.0',
+    cover: { label: '2.0', layers: ['rasengan', 'futon'] },
+    image: '/assets/blog/rasengan-2-stable.png',
+    readingTime: '6 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan 2.0 Beta: A New Foundation',
     description: `
       Rasengan v2.0.0 beta is here: a Futon-powered core, colocated API routes, a Cloudflare Workers adapter, automatic sitemap generation, and a cleaner environment variable story.

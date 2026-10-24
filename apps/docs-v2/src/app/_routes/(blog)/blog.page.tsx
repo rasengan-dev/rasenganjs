@@ -54,7 +54,8 @@ function KindTag({ kind }: { kind: BlogDataType['kind'] }) {
 /**
  * Blog index (Direction A).
  *
- * The newest post is featured with a generated cover next to a release
+ * The newest post is featured with its own image (falling back to the
+ * generated cover if it fails to load) next to a release
  * track (every release post, as a version timeline). Everything else is a
  * dense list grouped by year. Searching collapses the page into the
  * grouped list of matches.
@@ -62,6 +63,7 @@ function KindTag({ kind }: { kind: BlogDataType['kind'] }) {
 const Page: PageComponent = () => {
   const { blog: posts } = useBlogStore();
   const [query, setQuery] = useState('');
+  const [featuredImageFailed, setFeaturedImageFailed] = useState(false);
 
   const q = query.trim().toLowerCase();
   const matches = useMemo(
@@ -113,10 +115,19 @@ const Page: PageComponent = () => {
             to={featured.link}
             className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
-            <BlogCover
-              post={featured}
-              className="transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5"
-            />
+            {featuredImageFailed ? (
+              <BlogCover
+                post={featured}
+                className="transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5"
+              />
+            ) : (
+              <img
+                src={featured.image}
+                alt=""
+                onError={() => setFeaturedImageFailed(true)}
+                className="block aspect-[1540/1037] w-full rounded-xl border border-border object-cover transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5"
+              />
+            )}
             <div className="mt-5 flex flex-wrap items-center gap-3 font-mono text-xs text-foreground/50">
               <KindTag kind={featured.kind} />
               <span>{featured.postedAt}</span>

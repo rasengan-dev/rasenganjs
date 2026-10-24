@@ -1,0 +1,178 @@
+---
+metadata:
+  title: 'Rasengan 2.0 is Stable'
+  description: 'Rasengan v2.0.0 is out of beta. A Futon-powered core, colocated API routes, Bun and Cloudflare Workers support, and the fixes that came out of two months of real-world beta testing.'
+  openGraph:
+    title: 'Rasengan 2.0 is Stable'
+    description: 'Rasengan v2.0.0 is out of beta. A Futon-powered core, colocated API routes, Bun and Cloudflare Workers support, and the fixes that came out of two months of real-world beta testing.'
+    url: 'https://rasengan.dev'
+    image: 'https://rasengan.dev/assets/blog/rasengan-2-stable.png'
+  twitter:
+    title: 'Rasengan 2.0 is Stable'
+    description: 'Rasengan v2.0.0 is out of beta. A Futon-powered core, colocated API routes, Bun and Cloudflare Workers support, and the fixes that came out of two months of real-world beta testing.'
+    image: 'https://rasengan.dev/assets/blog/rasengan-2-stable.png'
+---
+
+<BlogDetailsHeader />
+
+Two months ago we published the [Rasengan 2.0 beta](/blog/rasengan-2-beta) and asked you to put it through its paces. You did, and today **Rasengan v2.0.0 is stable** and available on [npm](https://www.npmjs.com/package/rasengan) under the `latest` tag.
+
+```bash title="Terminal"
+npx create-rasengan@latest
+```
+
+If you followed the beta, most of this post will look familiar. If you're coming straight from v1, here's the short version of what v2 brings:
+
+- **A Futon-powered core**, built on standard `Request`/`Response` instead of Express
+- **Colocated API routes**, backend endpoints living right next to your pages in `src/app/_api/`
+- **More places to run**: Node.js, Bun, and Cloudflare Workers
+- **Rebuilt deploy adapters** for Vercel and Netlify
+- **Vite 8 and React Router 8** under the hood
+
+<br />
+
+## What stable means
+
+This release promotes the packages every Rasengan app depends on to stable versions:
+
+| Package | Version |
+| --- | --- |
+| `rasengan` | `2.0.0` |
+| `@rasenganjs/futon` | `1.0.0` |
+| `@rasenganjs/runtime` | `1.0.0` |
+| `@rasenganjs/server` | `1.0.0` |
+| `@rasenganjs/serve` | `2.0.0` |
+| `@rasenganjs/vercel` | `2.0.0` |
+| `@rasenganjs/netlify` | `1.0.0` |
+| `create-rasengan` | `1.5.0` |
+
+From here on, these follow semantic versioning strictly: no breaking changes outside a major version.
+
+The newer ecosystem packages (`@rasenganjs/cloudflare`, `@rasenganjs/sitemap`, `@rasenganjs/ws`, `@rasenganjs/queue`, `@rasenganjs/drizzle`, `@rasenganjs/validators`, `@rasenganjs/openapi`, `@rasenganjs/io`) stay on the `beta` tag for now. They work, but they're younger and haven't seen the same amount of real traffic yet. We'd rather promote each of them when it's earned it than ship everything at once.
+
+<br />
+
+## A Futon powered core
+
+The biggest change in v2 is one you mostly won't see. Rasengan's dev server and production request handler used to run on Express. They now run on [Futon](/docs/futon/getting-started/introduction), the same WinterCG compatible HTTP runtime that powers [Rasengan Server](/docs/server/getting-started/introduction).
+
+Express only runs on Node and works with Node's own `req`/`res` objects. Futon works directly with the standard `Request` and `Response` objects that browsers, Bun, Deno, and Cloudflare Workers already speak. Server-side rendering moved along with it, from Node streams to Web Streams. That single shift is what makes running the same app on several runtimes possible without an adapter translating between two request models.
+
+Your `main.tsx`, `template.tsx`, layouts, and pages don't change.
+
+<AlertWithLink
+  status="info"
+  title="Read more about Futon"
+  link="/docs/futon/getting-started/introduction"
+/>
+
+<br />
+
+## Colocated API routes
+
+Backend endpoints can live directly inside your Rasengan app, under `src/app/_api/`. No separate server, no extra deployment target.
+
+```ts title="src/app/_api/users/[id].route.ts" showLineNumbers
+import { json, notFound } from 'rasengan/server';
+import type { Context } from 'rasengan/server';
+
+export async function GET(ctx: Context) {
+  const user = await findUser(ctx.params.id);
+
+  if (!user) {
+    return notFound('User not found');
+  }
+
+  return json(user);
+}
+```
+
+Folders map to URL segments with the same conventions as page routing, each HTTP method is its own named export, and a `middleware.ts` in any folder applies to every route below it.
+
+<AlertWithLink
+  status="info"
+  title="Read the API routes documentation"
+  link="/docs/routing/api-routes"
+/>
+
+<br />
+
+## Run it on Node, Bun, or the edge
+
+A new `runtime` option in `rasengan.config.js` tells the build which runtime it targets:
+
+```js title="rasengan.config.js" showLineNumbers {5}
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+
+export default defineConfig({
+  runtime: 'bun', // 'node' (default) | 'bun' | 'workerd'
+  vite: {
+    plugins: [rasengan()],
+  },
+});
+```
+
+With `runtime: 'bun'`, `@rasenganjs/serve` serves your production build on Bun with the exact same middleware stack it uses on Node. With `runtime: 'workerd'` and the `@rasenganjs/cloudflare` adapter, the whole app is bundled into a single Cloudflare Worker. The default stays `'node'`, so existing apps don't need to change anything.
+
+<AlertWithLink
+  status="info"
+  title="Read the @rasenganjs/serve documentation"
+  link="/packages/serve"
+/>
+
+<br />
+
+## What the beta taught us
+
+Shipping a public beta was the right call. Real projects found real bugs, and every one of them is fixed in this release. A few worth calling out:
+
+- **Data requests in production.** Client-side navigations in production received a full HTML document instead of the route's loader data, and `.data` URLs fell through to the 404 route. Both are fixed, in dev and in production.
+- **The built-in 404 page now returns a real `404`.** It used to respond with HTTP `200`, which search engines don't love.
+- **SPA and SSG builds under Vite 8.** SPA builds failed to emit their template, and prerendering crashed on layouts with dynamic segments like `[_locale]`. Both work again.
+- **Module state in dev.** `rasengan dev` re-evaluated your whole `_api/` and `_routes/` module graph on every request, so anything held in memory (a cache, a database client) was lost between requests. The dev server now keeps one module runner for its whole lifetime.
+- **Empty pages in production SSR.** This was the last and most serious one. Production builds rendered your layout's shell but nothing inside `<Outlet />`: the server sent a hydration script and an otherwise empty `<div id="root">`, so the page only appeared once JavaScript had loaded. The cause was a second copy of React Router getting bundled into your app's own server chunks, with its own route context that never received any data. It's fixed by keeping `react`, `react-dom`, and `react-router` external to the server build, so there's only ever one instance.
+
+That last fix comes with the one change you need to know about if you're upgrading from a beta.
+
+<br />
+
+## Upgrading from the beta
+
+`react-router` is now a **peer dependency** of `rasengan`, like `react` and `react-dom` already were. Your app needs to list it directly:
+
+```bash title="Terminal"
+pnpm add rasengan@latest react-router@^8.3.0
+```
+
+Skipping this step doesn't produce an error. The build succeeds, and the page silently renders empty in production. New projects created with `create-rasengan` already include it.
+
+<br />
+
+## Upgrading from v1
+
+Most v1 apps only need a dependency bump and a rebuild:
+
+```bash title="Terminal"
+pnpm add rasengan@latest react@^19.2.7 react-dom@^19.2.7 react-router@^8.3.0 vite@^8.0.0
+```
+
+The extra work only applies if you customized the server. `rasengan/server` no longer exports `express` or `compression`, and `createRequestHandler` now returns a standard `(ctx) => Promise<Response>` handler instead of an Express one. If you only deploy with `rasengan-serve`, Vercel, or Netlify, there's nothing else to change.
+
+<AlertWithLink
+  status="info"
+  title="Read the full upgrade guide"
+  link="/docs/getting-started/upgrading"
+/>
+
+<br />
+
+## What's next?
+
+- Promoting `@rasenganjs/cloudflare` and `@rasenganjs/sitemap` to stable
+- More end-to-end test coverage for the deploy adapters
+- Richer `_api/` examples, including file uploads and validation
+
+Thank you to everyone who tried the beta, filed issues, and sent feedback. This release is better because of it.
+
+[Explore the docs](/docs/getting-started/introduction) and happy building, Ninja! 🌀

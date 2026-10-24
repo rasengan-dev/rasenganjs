@@ -23,13 +23,13 @@ export default function Hero() {
       <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         <div className="min-w-0">
           <Link
-            to="/blog/rasengan-2-beta"
+            to="/blog/rasengan-2-stable"
             className="group mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background py-1 pl-1 pr-3 text-xs font-medium text-foreground/70 transition-colors duration-200 ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span className="rounded-full bg-foreground px-2 py-0.5 text-[10.5px] font-semibold text-background">
-              2.0 beta
+              2.0 stable
             </span>
-            <span>A new foundation, powered by Futon</span>
+            <span>Rasengan 2.0 is ready for production</span>
             <ArrowRight
               size={13}
               aria-hidden="true"
