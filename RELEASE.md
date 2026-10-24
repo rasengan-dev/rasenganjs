@@ -143,22 +143,26 @@ Run this before cutting any release, and especially before a stable
 
 - [ ] `pnpm run build` from the repo root, must exit 0 with no TS or build
       errors across every workspace package.
-- [ ] Each core package's own test suite is green
-      (`pnpm run test` inside `packages/framework/rasengan`,
-      `packages/framework/futon`, `packages/framework/rasengan-server`,
-      `packages/platform/runtime`, …). `packages/deploy/serve`,
-      `packages/deploy/vercel`, `packages/deploy/netlify` and
-      `packages/cli/create-rasengan` currently have no test script at all:
-      verify manually (see next item) until that gap is closed.
-- [ ] Manual smoke test against at least one real app in
-      `apps/playground/`: `rasengan build` then `rasengan-serve ./dist`,
-      and diff the SSR output against what `rasengan dev` renders for the
-      same routes. Don't rely on type-checking or unit tests alone to prove
-      a rendering change actually works, build output is a different
-      code path than dev mode (Vite's SSR module runner vs a real Rolldown
-      SSR bundle) and bugs can live in that gap. This is exactly how the
-      empty-`<div id="root">` production SSR bug was found: `tsc` and the
-      unit suite were clean, only a real `build` + `serve` + `curl` showed it.
+- [ ] Each core package's own test suite is green (`pnpm run test` inside
+      `packages/framework/rasengan`, `packages/framework/futon`,
+      `packages/framework/rasengan-server`, `packages/platform/runtime`,
+      `packages/deploy/serve`, `packages/deploy/vercel`,
+      `packages/deploy/netlify` and `packages/cli/create-rasengan`).
+      `serve`'s suite builds a real fixture app
+      (`packages/deploy/serve/__tests__/fixture`) and boots the CLI against
+      it, so it exercises the production SSR path end to end.
+- [ ] Manual smoke test against a fresh project: `rasengan build` then
+      `rasengan-serve ./dist`, and diff the SSR output against what
+      `rasengan dev` renders for the same routes. Don't rely on
+      type-checking or unit tests alone to prove a rendering change
+      actually works, build output is a different code path than dev mode
+      (Vite's SSR module runner vs a real Rolldown SSR bundle) and bugs can
+      live in that gap. This is exactly how the empty-`<div id="root">`
+      production SSR bug was found: `tsc` and the unit suite were clean,
+      only a real `build` + `serve` + `curl` showed it. That bug only
+      appeared in an app without its own `react-router` dependency, so
+      also check a project as users actually create it
+      (`npx create-rasengan@latest`), not only the monorepo fixtures.
 - [ ] Every package being released has a non-empty `## Unreleased` section
       in its `CHANGELOG.md`, or has zero commits since its last tag for
       that package's directory (check with
