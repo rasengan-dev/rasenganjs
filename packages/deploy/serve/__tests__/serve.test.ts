@@ -1,68 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import http from 'node:http';
-import net from 'node:net';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
+import {
+  buildFixture,
+  cliPath,
+  fixtureDir,
+  rawGet,
+  startServer,
+  tsxBin,
+  type RunningServer,
+} from './helpers';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const fixtureDir = path.join(here, 'fixture');
-const cliPath = path.resolve(here, '..', 'cli.ts');
-const repoRoot = path.resolve(here, '..', '..', '..', '..');
-const tsxBin = path.join(repoRoot, 'node_modules', '.bin', 'tsx');
-const rasenganBin = path.join(fixtureDir, 'node_modules', '.bin', 'rasengan');
-
-let server: ChildProcess;
-let output = '';
+let server: RunningServer;
 let baseUrl: string;
-
-function freePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const probe = net.createServer();
-    probe.once('error', reject);
-    probe.listen(0, () => {
-      const { port } = probe.address() as net.AddressInfo;
-      probe.close(() => resolve(port));
-    });
-  });
-}
-
-/** Starts the CLI from source and resolves once it reports it is listening. */
-function startServer(args: string[]): Promise<ChildProcess> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(tsxBin, [cliPath, ...args], {
-      cwd: fixtureDir,
-      env: { ...process.env, NODE_ENV: 'production' },
-    });
-
-    const onData = (chunk: Buffer) => {
-      output += chunk.toString();
-      if (output.includes('running')) resolve(child);
-    };
-    child.stdout.on('data', onData);
-    child.stderr.on('data', onData);
-    child.once('error', reject);
-    child.once('exit', (code) =>
-      reject(new Error(`rasengan-serve exited early (${code}):\n${output}`))
-    );
-  });
-}
-
-/**
- * GET with the path sent byte for byte. `fetch` normalizes dot segments
- * (including `%2e%2e`) before sending, which would hide traversal attempts.
- */
-function rawGet(rawPath: string): Promise<{ status: number; body: string }> {
-  return new Promise((resolve, reject) => {
-    const { hostname, port } = new URL(baseUrl);
-    const req = http.get({ hostname, port, path: rawPath }, (res) => {
-      let body = '';
-      res.on('data', (chunk) => (body += chunk));
-      res.on('end', () => resolve({ status: res.statusCode ?? 0, body }));
-    });
-    req.once('error', reject);
-  });
-}
 
 /** Markup inside `<div id="root">`, before the router hydration script. */
 function renderedRoot(html: string): string {
@@ -74,24 +23,17 @@ function renderedRoot(html: string): string {
 }
 
 beforeAll(async () => {
-  execFileSync(rasenganBin, ['build'], { cwd: fixtureDir, stdio: 'pipe' });
-
-  const port = await freePort();
-  baseUrl = `http://localhost:${port}`;
-  server = await startServer(['dist', '--port', String(port)]);
+  buildFixture({ prerender: false });
+  server = await startServer('dist');
+  baseUrl = server.baseUrl;
 });
 
-afterAll(async () => {
-  if (!server || server.exitCode !== null) return;
-  const exited = new Promise((resolve) => server.once('exit', resolve));
-  server.kill('SIGTERM');
-  await exited;
-});
+afterAll(() => server?.stop());
 
 describe('rasengan-serve, SSR build', () => {
   it('prints the running banner with the served port', () => {
-    expect(output).toContain('Rasengan v');
-    expect(output).toContain(new URL(baseUrl).port);
+    expect(server.output()).toContain('Rasengan v');
+    expect(server.output()).toContain(new URL(baseUrl).port);
   });
 
   it('renders the layout and the page inside #root', async () => {
@@ -120,6 +62,17 @@ describe('rasengan-serve, SSR build', () => {
     );
   });
 
+  it('renders a nested route', async () => {
+    const res = await fetch(`${baseUrl}/docs/intro`, {
+      headers: { Accept: 'text/html' },
+    });
+
+    expect(res.status).toBe(200);
+    expect(renderedRoot(await res.text())).toContain(
+      '<h1>Fixture docs intro</h1>'
+    );
+  });
+
   it('answers .data requests with the loader JSON', async () => {
     const res = await fetch(`${baseUrl}/data.data`);
 
@@ -140,6 +93,21 @@ describe('rasengan-serve, SSR build', () => {
     expect(await res.json()).toMatchObject({
       props: { message: 'loaded on the server' },
     });
+  });
+
+  it('applies config redirects to their exact source only', async () => {
+    const redirected = await fetch(`${baseUrl}/docs`, { redirect: 'manual' });
+    expect(redirected.status).toBe(301);
+    expect(new URL(redirected.headers.get('location')!, baseUrl).pathname).toBe(
+      '/docs/intro'
+    );
+
+    // The destination contains the source: a substring match looped here.
+    const destination = await fetch(`${baseUrl}/docs/intro`, {
+      redirect: 'manual',
+      headers: { Accept: 'text/html' },
+    });
+    expect(destination.status).toBe(200);
   });
 
   it('returns 404 for an unknown route', async () => {
@@ -179,7 +147,7 @@ describe('rasengan-serve, SSR build', () => {
   });
 
   it('does not serve files outside public/ through encoded dot segments', async () => {
-    const res = await rawGet('/%2e%2e/package.json');
+    const res = await rawGet(baseUrl, '/%2e%2e/package.json');
 
     expect(res.status).not.toBe(200);
     expect(res.body).not.toContain('rasengan-serve-test-fixture');

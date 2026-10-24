@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Bug Fixes
+
+- **prerendered sites answered 500 on every page but `/`** when the URL had no trailing slash (`/blog` instead of `/blog/`), which is how a site links to its own pages. The request fell through to the SSR handler, which has no server bundle to load in a prerendered build. Prerendered builds now resolve `/blog` to `blog/index.html` and never call the SSR handler; a path with no prerendered page gets the SPA shell (`spa-fallback.html`, else `index.html`) so routes left out of `prerender.routes` still render on the client, as on Vercel and Netlify
+- **`redirects` from `rasengan.config.js` matched any URL containing their source**, so a `/docs` redirect also caught every `/docs/...` page, its own destination included, and looped forever. Redirects now match the exact path and query, like the rasengan dev server and SSR handler already did
+
 ## 2.0.0 (2026-10-24)
 
 ### Bug Fixes
