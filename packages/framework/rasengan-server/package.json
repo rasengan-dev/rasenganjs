@@ -39,11 +39,11 @@
   },
   "dependencies": {
     "esbuild": "^0.28.1",
-    "@rasenganjs/futon": "workspace:*",
-    "@rasenganjs/runtime": "workspace:*"
+    "@rasenganjs/futon": "workspace:^",
+    "@rasenganjs/runtime": "workspace:^"
   },
   "peerDependencies": {
-    "@rasenganjs/validators": "workspace:*"
+    "@rasenganjs/validators": "workspace:^"
   },
   "devDependencies": {
     "@rasenganjs/validators": "workspace:*"

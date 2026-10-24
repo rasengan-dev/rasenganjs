@@ -26,8 +26,8 @@
     "pack": "pnpm pack --pack-destination ./release/"
   },
   "dependencies": {
-    "@rasenganjs/futon": "workspace:*",
-    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/futon": "workspace:^",
+    "@rasenganjs/runtime": "workspace:^",
     "get-port": "^7.1.0",
     "source-map-support": "^0.5.21"
   },

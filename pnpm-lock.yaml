@@ -1081,10 +1081,10 @@ importers:
   packages/deploy/serve:
     dependencies:
       '@rasenganjs/futon':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../framework/futon
       '@rasenganjs/runtime':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../platform/runtime
       get-port:
         specifier: ^7.1.0
@@ -1533,10 +1533,10 @@ importers:
   packages/framework/rasengan:
     dependencies:
       '@rasenganjs/futon':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../futon
       '@rasenganjs/runtime':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../platform/runtime
       '@vitejs/plugin-react':
         specifier: ^6.0.0
@@ -1606,10 +1606,10 @@ importers:
   packages/framework/rasengan-server:
     dependencies:
       '@rasenganjs/futon':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../futon
       '@rasenganjs/runtime':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../platform/runtime
       esbuild:
         specifier: ^0.28.1
@@ -1622,7 +1622,7 @@ importers:
   packages/platform/runtime:
     dependencies:
       '@rasenganjs/futon':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../framework/futon
       ws:
         specifier: ^8.21.0
