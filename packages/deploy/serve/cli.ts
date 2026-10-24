@@ -162,6 +162,63 @@ function publicFiles(prefix = '/') {
   };
 }
 
+const htmlResponse = (body: string) =>
+  new Response(body, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+
+/**
+ * Answer a request against a prerendered build, which has no server
+ * bundle to render with (its `config.json` still says `ssr: true`).
+ *
+ * The static mounts only add `index.html` to paths ending in `/`, so
+ * `/blog` is resolved to `blog/index.html` here. Anything else gets the
+ * SPA shell: `config.json` only records `prerender` as a boolean, so a
+ * request can't be told apart from a route left out of
+ * `prerender.routes`, which the client router has to render. That
+ * matches what the Vercel and Netlify adapters do.
+ * @param buildPath
+ * @param request
+ */
+async function servePrerendered(
+  buildPath: string,
+  request: Request
+): Promise<Response> {
+  const root = path.resolve(buildPath);
+
+  let segments: string[] = [];
+  try {
+    segments = decodeURIComponent(new URL(request.url).pathname)
+      .split('/')
+      .filter(Boolean);
+  } catch {
+    // Malformed percent-encoding: not a page, fall through to the shell.
+  }
+
+  const page = path.resolve(root, ...segments, 'index.html');
+
+  if (page.startsWith(root + path.sep)) {
+    try {
+      return htmlResponse(await fs.promises.readFile(page, 'utf-8'));
+    } catch {
+      // No prerendered page at this path.
+    }
+  }
+
+  for (const shell of ['spa-fallback.html', 'index.html']) {
+    try {
+      return htmlResponse(
+        await fs.promises.readFile(path.join(root, shell), 'utf-8')
+      );
+    } catch {
+      // Try the next shell.
+    }
+  }
+
+  return new Response('Not Found', { status: 404 });
+}
+
 /**
  * `BunProdAdapter.serve()` calls `Bun.serve()` deep inside
  * `@rasenganjs/runtime`'s Bun adapter, which needs a real Bun process —
@@ -333,19 +390,24 @@ async function run() {
   app.fallback(async (ctx) => {
     const request = ctx.request;
 
-    // Handle custom redirections. Mirrors Express's `req.url` (path +
-    // query, no origin) — `.includes()`, not an exact match, matching
-    // the original behavior.
+    // Handle custom redirections, matched against path + query.
     const requestUrl = new URL(request.url);
     const requestPath = requestUrl.pathname + requestUrl.search;
 
     for (const redirectEntry of config.redirects) {
-      if (requestPath.includes(redirectEntry.source)) {
+      // Exact match, like rasengan's own isStaticRedirectFromConfig():
+      // a substring match made `/docs` redirect every `/docs/...` page,
+      // its own destination included, into an endless loop.
+      if (requestPath === redirectEntry.source) {
         return redirect(
           redirectEntry.destination,
           redirectEntry.permanent ? 301 : 302
         );
       }
+    }
+
+    if (config.prerender) {
+      return servePrerendered(buildPath, request);
     }
 
     if (config.ssr) {
