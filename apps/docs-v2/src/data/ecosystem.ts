@@ -67,7 +67,7 @@ export const PACKAGES: EcosystemPackage[] = [
   {
     name: 'rasengan',
     layer: 'rasengan',
-    status: 'beta',
+    status: 'stable',
     description:
       'Full-stack React framework: SSR, SSG, SPA, file and config routing',
     href: '/docs/getting-started/introduction',
@@ -75,14 +75,14 @@ export const PACKAGES: EcosystemPackage[] = [
   {
     name: '@rasenganjs/futon',
     layer: 'futon',
-    status: 'beta',
+    status: 'stable',
     description: 'Fetch-native HTTP runtime with Koa-style middleware',
     href: '/docs/futon/getting-started/introduction',
   },
   {
     name: '@rasenganjs/server',
     layer: 'server',
-    status: 'beta',
+    status: 'stable',
     description: 'Modules, controllers, providers and scoped DI',
     href: '/docs/server/getting-started/introduction',
   },
@@ -172,7 +172,7 @@ export const PACKAGES: EcosystemPackage[] = [
   {
     name: 'create-rasengan',
     layer: 'tooling',
-    status: 'beta',
+    status: 'stable',
     description: 'Project scaffolding CLI',
     href: '/packages/create-rasengan',
   },
@@ -186,21 +186,21 @@ export const PACKAGES: EcosystemPackage[] = [
   {
     name: '@rasenganjs/serve',
     layer: 'tooling',
-    status: 'beta',
+    status: 'stable',
     description: 'Production server for built apps',
     href: '/packages/serve',
   },
   {
     name: '@rasenganjs/vercel',
     layer: 'tooling',
-    status: 'beta',
+    status: 'stable',
     description: 'Vercel adapter, Build Output API v3',
     href: '/packages/vercel',
   },
   {
     name: '@rasenganjs/netlify',
     layer: 'tooling',
-    status: 'beta',
+    status: 'stable',
     description: 'Netlify adapter',
     href: '/packages/netlify',
   },
