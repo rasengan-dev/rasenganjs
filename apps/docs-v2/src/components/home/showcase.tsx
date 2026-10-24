@@ -8,7 +8,6 @@ import {
   CircleCheck,
   Copy,
   FileCode2,
-  FileJson,
   Files,
   Folder,
   FolderOpen,
@@ -77,7 +76,18 @@ function buildTree(files: HighlightedFile[]): TreeNode[] {
     });
   }
 
-  return root;
+  return sortFoldersFirst(root);
+}
+
+/** Folders before files at every level; order within each group is kept. */
+function sortFoldersFirst(nodes: TreeNode[]): TreeNode[] {
+  return [...nodes]
+    .sort((a, b) => Number(a.type === 'file') - Number(b.type === 'file'))
+    .map((node) =>
+      node.type === 'folder'
+        ? { ...node, children: sortFoldersFirst(node.children) }
+        : node
+    );
 }
 
 // ── Look & feel ──────────────────────────────────────────────
@@ -102,31 +112,146 @@ function languageOf(name: string | null): string {
   return 'Plain Text';
 }
 
-/** Icon + color for a file in the tree and the tab bar. */
-function FileIcon({ name, size = 14 }: { name: string; size?: number }) {
-  if (name.endsWith('.json')) {
-    return (
-      <FileJson
-        size={size}
-        aria-hidden="true"
-        className="shrink-0 text-amber-400"
-      />
-    );
-  }
-  const color = name.endsWith('.tsx')
-    ? 'text-sky-400'
-    : name.endsWith('.ts')
-      ? 'text-blue-400'
-      : name.endsWith('.js')
-        ? 'text-yellow-300'
-        : 'text-foreground/60';
+/** Rounded tile with a short label, the shape most language logos share. */
+function LabelTile({
+  size,
+  bg,
+  fg,
+  label,
+}: {
+  size: number;
+  bg: string;
+  fg: string;
+  label: string;
+}) {
   return (
-    <FileCode2
-      size={size}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
       aria-hidden="true"
-      className={cn('shrink-0', color)}
-    />
+      className="shrink-0"
+    >
+      <rect width="24" height="24" rx="3" fill={bg} />
+      <text
+        x="21"
+        y="20.5"
+        textAnchor="end"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="800"
+        fontSize={label.length > 2 ? 8.5 : 11}
+        fill={fg}
+      >
+        {label}
+      </text>
+    </svg>
   );
+}
+
+function ReactLogo({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="-12 -12 24 24"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <circle r="2.1" fill="#61DAFB" />
+      <g stroke="#61DAFB" strokeWidth="1.6" fill="none">
+        <ellipse rx="10.5" ry="4" />
+        <ellipse rx="10.5" ry="4" transform="rotate(60)" />
+        <ellipse rx="10.5" ry="4" transform="rotate(120)" />
+      </g>
+    </svg>
+  );
+}
+
+function JsonLogo({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <text
+        x="12"
+        y="17.5"
+        textAnchor="middle"
+        fontFamily="ui-monospace, monospace"
+        fontWeight="800"
+        fontSize="16"
+        fill="#F5C518"
+      >
+        {'{}'}
+      </text>
+    </svg>
+  );
+}
+
+function MarkdownLogo({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <rect
+        x="1"
+        y="5"
+        width="22"
+        height="14"
+        rx="2.5"
+        fill="none"
+        stroke="#9ECBFF"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M5 15.5v-7l2.5 3 2.5-3v7M15.5 8.5v6M13 12.5l2.5 3 2.5-3"
+        fill="none"
+        stroke="#9ECBFF"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Technology logo for a file in the tree and the tab bar, by extension. */
+function FileIcon({ name, size = 14 }: { name: string; size?: number }) {
+  const ext = name.slice(name.lastIndexOf('.') + 1).toLowerCase();
+
+  switch (ext) {
+    case 'tsx':
+    case 'jsx':
+      return <ReactLogo size={size} />;
+    case 'ts':
+      return <LabelTile size={size} bg="#3178C6" fg="#fff" label="TS" />;
+    case 'js':
+    case 'mjs':
+    case 'cjs':
+      return <LabelTile size={size} bg="#F7DF1E" fg="#000" label="JS" />;
+    case 'json':
+      return <JsonLogo size={size} />;
+    case 'md':
+    case 'mdx':
+      return <MarkdownLogo size={size} />;
+    case 'css':
+      return <LabelTile size={size} bg="#663399" fg="#fff" label="CSS" />;
+    default:
+      return (
+        <FileCode2
+          size={size}
+          aria-hidden="true"
+          className="shrink-0 text-foreground/60"
+        />
+      );
+  }
 }
 
 // ── File tree ────────────────────────────────────────────────
