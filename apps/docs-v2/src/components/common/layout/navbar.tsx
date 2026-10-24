@@ -6,9 +6,11 @@ import {
   Coffee,
   Menu,
   PanelLeft,
+  Rocket,
   X,
 } from 'lucide-react';
 import { ComponentProps } from 'react';
+import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 import AppLogo from '../atoms/logo';
 import { Button } from '@/components/ui/button';
@@ -23,16 +25,12 @@ import Search from '@/components/ui/search';
 import { useMobileMenuStore } from '@/store/mobile-menu';
 import { useNavigationStore } from '@/store/navigation';
 import { AnimatePresence, motion } from 'motion/react';
+import { DEPLOY_URL, PRODUCTS } from '@/data/ecosystem';
 
 const env = import.meta.env;
 
-const productLinks = [
-  { name: 'Rasengan UI', href: 'https://ui.rasengan.dev' },
-  { name: 'Rasengan Hub', href: 'https://hub.rasengan.dev' },
-  { name: 'Chidori', href: 'https://chidori.rasengan.dev' },
-  { name: 'Nindo', href: 'https://nindo.rasengan.dev' },
-  { name: 'Chunin', href: 'https://chunin.rasengan.dev' },
-];
+/** Product menu entries, sourced from the shared ecosystem data. */
+const productLinks = PRODUCTS.map(({ name, href }) => ({ name, href }));
 
 type Props = {
   className?: ComponentProps<'header'>['className'];
@@ -63,7 +61,7 @@ export default function Navbar({ className }: Props) {
   const hasSidebar =
     pathname.startsWith('/docs') || pathname.startsWith('/packages');
 
-  return (
+  const navbar = (
     <header
       id="navbar"
       className={twMerge(
@@ -82,7 +80,7 @@ export default function Navbar({ className }: Props) {
               aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
               onClick={toggleSidebar}
             >
-              <PanelLeft size={20} />
+              {isSidebarOpen ? <X size={20} /> : <PanelLeft size={20} />}
             </Button>
           )}
 
@@ -188,13 +186,25 @@ export default function Navbar({ className }: Props) {
         <Link
           to="https://buymeacoffee.com/dilane3"
           target="_blank"
-          className="h-8"
+          className="h-8 hidden xl:flex"
         >
-          <Button className="h-8">
+          <Button variant="outline" className="h-8">
             <Coffee />
             <span>Support us</span>
           </Button>
         </Link>
+
+        {/* Deploy: sends people to Hiraiship, the deployment platform for
+            Rasengan apps. Primary-styled so it reads as the main action. */}
+        <a
+          href={DEPLOY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors duration-200 ease-out hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex"
+        >
+          <Rocket size={14} aria-hidden="true" />
+          <span>Deploy</span>
+        </a>
 
         {/* vertical separator */}
         <div className="h-4 w-[1px] bg-border dark:bg-input lg:hidden"></div>
@@ -210,59 +220,94 @@ export default function Navbar({ className }: Props) {
           {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </Button>
       </div>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={closeMenu}
-            className="z-20 fixed top-0 left-0 w-full h-full bg-background/90 lg:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.2 }}
-            className="z-40 fixed top-0 right-0 h-full w-[280px] bg-background border-l border-border/40 dark:border-border lg:hidden"
-          >
-            <nav className="flex flex-col gap-1 p-6 pt-20 text-sm">
-              {NavigationData.navbar.map((nav) => (
-                <Link key={nav.id} to={nav.link ?? '#'} onClick={closeMenu}>
-                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md font-semibold">
-                    {nav.name}
-                  </div>
-                </Link>
-              ))}
-
-              <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
-                Products
-              </div>
-              {productLinks.map((product) => (
-                <Link
-                  key={product.name}
-                  to={product.href}
-                  target="_blank"
-                  onClick={closeMenu}
-                >
-                  <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md flex items-center gap-2">
-                    <span>{product.name}</span>
-                    <ArrowUpRight size={16} />
-                  </div>
-                </Link>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
+  );
+
+  // Portalled to document.body: `header` has `backdrop-blur-md`, which
+  // establishes a new containing block for `position: fixed` descendants
+  // in every modern browser engine. Rendered as children of `header`,
+  // these `fixed` overlay/panel elements had their `h-full`/`top-0`
+  // resolve against the header's own 60px box instead of the viewport,
+  // squashing the whole menu into a 60px-tall strip. Portalling escapes
+  // that containing block the same way `search.tsx`'s overlay already
+  // does.
+  return (
+    <>
+      {navbar}
+
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <>
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={closeMenu}
+                  className="z-20 fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm lg:hidden"
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  key="mobile-menu"
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={{ duration: 0.2 }}
+                  className="z-40 fixed top-0 right-0 h-full w-[280px] bg-background border-l border-border/40 dark:border-border lg:hidden"
+                >
+                  <nav className="flex flex-col gap-1 p-6 pt-20 text-sm">
+                    {NavigationData.navbar.map((nav) => (
+                      <Link
+                        key={nav.id}
+                        to={nav.link ?? '#'}
+                        onClick={closeMenu}
+                      >
+                        <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md font-semibold">
+                          {nav.name}
+                        </div>
+                      </Link>
+                    ))}
+
+                    <a
+                      href={DEPLOY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={closeMenu}
+                      className="mt-2 flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 font-semibold text-primary-foreground"
+                    >
+                      <Rocket size={16} aria-hidden="true" />
+                      Deploy with Hiraiship
+                    </a>
+
+                    <div className="mt-4 px-3 text-[12px] font-mono text-foreground/60">
+                      Products
+                    </div>
+                    {productLinks.map((product) => (
+                      <Link
+                        key={product.name}
+                        to={product.href}
+                        target="_blank"
+                        onClick={closeMenu}
+                      >
+                        <div className="hover:bg-muted dark:hover:bg-muted transition-all px-3 py-2 rounded-md flex items-center gap-2">
+                          <span>{product.name}</span>
+                          <ArrowUpRight size={16} />
+                        </div>
+                      </Link>
+                    ))}
+                  </nav>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
+        )}
+    </>
   );
 }

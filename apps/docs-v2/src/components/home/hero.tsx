@@ -1,97 +1,73 @@
-import { useState } from 'react';
 import { Link } from 'rasengan';
-import { ArrowRight, Check, Copy } from 'lucide-react';
-import Button from '@/components/common/atoms/buttons/button';
-import CodeEditor from '@/components/home/showcase';
-import type { HighlightedFramework } from '@/data/home/highlight';
+import { ArrowRight } from 'lucide-react';
+import FutonEngine from '@/components/home/futon-engine';
+import CommandCopy from '@/components/common/molecules/command-copy';
 
-const INSTALL_COMMAND = 'npx create-rasengan@latest';
-
-export default function Hero({
-  frameworks,
-}: {
-  frameworks: HighlightedFramework[];
-}) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(INSTALL_COMMAND);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
+/**
+ * Landing hero (Direction A, "Layered Stack").
+ *
+ * Left: the pitch, the primary action and the copyable install command.
+ * Right: the Futon engine animation (files from a Rasengan app and a
+ * Rasengan Server app falling into Futon, which runs them on three
+ * runtimes). A faint blueprint grid sits behind both columns.
+ */
+export default function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center text-center py-24 lg:py-32">
+    <section className="relative -mx-4 overflow-hidden border-b border-border px-4 py-16 lg:-mx-8 lg:px-8 lg:py-24">
+      {/* Blueprint grid, faded out toward the bottom so it never fights the text. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] overflow-hidden"
-      >
-        <div className="absolute left-1/2 top-[-160px] h-[420px] w-[80%] -translate-x-1/2 rounded-full bg-linear-to-b from-primary via-primary/40 to-transparent opacity-20 blur-3xl dark:opacity-40" />
-      </div>
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] bg-[size:36px_36px] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
+      />
 
-      <Link
-        to="/blog/rasengan-futon-and-server"
-        className="group mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 py-1.5 pl-1.5 pr-4 text-[10px] sm:text-xs font-medium text-primary transition-colors duration-200 ease-out hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        <span className="rounded-full bg-primary px-2.5 py-1 text-[9px] sm:text-[10px] font-semibold text-primary-foreground">
-          New
-        </span>
-        <span>Introducing Futon &amp; Rasengan Server</span>
-        <ArrowRight
-          size={14}
-          className="motion-safe:group-hover:translate-x-1 transition-transform duration-200 ease-out"
-        />
-      </Link>
-
-      <h1 className="text-[clamp(2.5rem,5vw,4rem)] leading-[1.1] font-bold text-foreground max-w-[820px]">
-        Beyond the Frontend.
-        <br />
-        <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-400">
-          Built for the Full Stack.
-        </span>
-      </h1>
-
-      <p className="mt-6 text-lg lg:text-xl text-foreground/70 max-w-[620px] leading-relaxed">
-        Rasengan.js pairs a modern React meta-framework with Futon and Rasengan
-        Server. One ecosystem covering every layer of your stack, from rendering
-        to WebSockets.
-      </p>
-
-      <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <Link
-          to="/docs/getting-started/introduction"
-          className="w-full sm:w-auto rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          <Button className="group bg-primary text-primary-foreground h-[48px] px-8 w-full sm:w-auto flex items-center justify-center gap-2">
-            Get Started
+      <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <Link
+            to="/blog/rasengan-2-stable"
+            className="group mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background py-1 pl-1 pr-3 text-xs font-medium text-foreground/70 transition-colors duration-200 ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <span className="rounded-full bg-foreground px-2 py-0.5 text-[10.5px] font-semibold text-background">
+              2.0 stable
+            </span>
+            <span>Rasengan 2.0 is ready for production</span>
             <ArrowRight
-              size={16}
-              className="motion-safe:group-hover:translate-x-1 transition-transform ease-out duration-200"
+              size={13}
+              aria-hidden="true"
+              className="transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
             />
-          </Button>
-        </Link>
+          </Link>
 
-        <button
-          type="button"
-          onClick={handleCopy}
-          aria-label="Copy install command"
-          className="h-[48px] px-6 rounded-md border border-border font-mono text-sm text-foreground flex items-center gap-3 cursor-pointer hover:bg-muted transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          <span>{INSTALL_COMMAND}</span>
-          {copied ? (
-            <Check size={14} className="text-primary" />
-          ) : (
-            <Copy size={14} />
-          )}
-        </button>
-      </div>
+          <h1 className="text-balance text-[clamp(2.4rem,5vw,3.6rem)] font-extrabold leading-[1.04] tracking-[-0.035em] text-foreground">
+            One stack, from the{' '}
+            <span className="text-layer-rasengan">React page</span> to the
+            WebSocket.
+          </h1>
 
-      <div className="relative mt-16 w-full max-w-[1200px]">
-        <CodeEditor frameworks={frameworks} />
+          <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-foreground/70">
+            Rasengan.js pairs a modern React meta-framework with Futon and
+            Rasengan Server. One ecosystem covering every layer of your stack,
+            from rendering to WebSockets.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              to="/docs/getting-started/introduction"
+              className="group inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors duration-200 ease-out hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              Get started
+              <ArrowRight
+                size={16}
+                aria-hidden="true"
+                className="transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-1"
+              />
+            </Link>
+            <CommandCopy command="npx create-rasengan@latest" />
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <FutonEngine />
+        </div>
       </div>
     </section>
   );

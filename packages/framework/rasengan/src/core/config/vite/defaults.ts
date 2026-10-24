@@ -19,6 +19,32 @@ const NODE_BUILTIN_EXTERNALS = builtinModules.flatMap((mod) => [
 ]);
 
 /**
+ * React/react-router entry points shared between the app's own SSR
+ * chunks (built by this Rolldown config) and rasengan's own pre-built
+ * server bundle (`dist/server/node/index.js`, built separately via
+ * tsup, which imports these as plain externalized npm dependencies).
+ * Without externalizing them here too, Rolldown bundles a SECOND,
+ * separate copy of react-router into the app's SSR chunks (e.g. any
+ * `layout.tsx`/`page.tsx` file, or `flatRoutes()`'s own internals) —
+ * a dual-package hazard where `<Outlet />`'s `useContext(RouteContext)`
+ * reads a different `RouteContext` object than the one
+ * `StaticRouterProvider` (running from rasengan's own, separately
+ * resolved copy) provides a value for. The symptom is silent: no
+ * error, no hook-identity crash — `<Outlet />` just always renders
+ * nothing, so every nested route's content is missing from production
+ * SSR output while dev mode (which never bundles these) is unaffected.
+ */
+const REACT_RUNTIME_EXTERNALS = [
+  'react',
+  'react/jsx-runtime',
+  'react/jsx-dev-runtime',
+  'react-dom',
+  'react-dom/server',
+  'react-dom/server.edge',
+  'react-router',
+];
+
+/**
  * `resolve.conditions` per target runtime — lets package `exports`
  * maps that branch on condition (edge/worker-specific builds) resolve
  * to the right entry point. `node` uses Vite's own default (no
@@ -53,6 +79,7 @@ export const createDefaultViteConfig = (
   // externals, not overriding them (RFC-0007 §5 Open Questions).
   const ssrExternals = [
     ...(runtime === 'node' ? NODE_BUILTIN_EXTERNALS : []),
+    ...REACT_RUNTIME_EXTERNALS,
     ...userExternals,
   ];
 

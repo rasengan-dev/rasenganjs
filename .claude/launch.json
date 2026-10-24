@@ -4,8 +4,15 @@
     {
       "name": "docs-v2",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "rasengan-docs", "run", "dev"],
-      "port": 5320
+      "runtimeArgs": [
+        "--filter",
+        "./apps/docs-v2",
+        "run",
+        "dev",
+        "--port",
+        "5720"
+      ],
+      "port": 5720
     }
   ]
 }

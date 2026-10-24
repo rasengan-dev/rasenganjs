@@ -19,11 +19,6 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,scss,md,mdx,json}": "prettier --write"
   },
-  "resolutions": {
-    "@vitejs/plugin-react": "^6.0.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
   "devDependencies": {
     "@types/node": "^20.19.39",
     "@vitejs/release-scripts": "^1.6.0",

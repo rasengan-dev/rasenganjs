@@ -64,6 +64,40 @@ describe('createDefaultViteConfig', () => {
     expect(external).not.toContain('fs');
   });
 
+  // An app without its own react-router dependency used to get a second,
+  // bundled copy in its SSR chunks: <Outlet /> then read a context the
+  // server never provided and production rendered an empty #root.
+  // Keeping these external makes such an app fail loudly instead.
+  it.each(['ssr', 'ssg'] as const)(
+    'externalizes react, react-dom and react-router for the %s environment',
+    (env) => {
+      const root = makeRoot();
+      const cfg = createDefaultViteConfig(root, '/pkg', 'production', {});
+      const external = (cfg.environments![env]!.build!.rolldownOptions as any)
+        .external as string[];
+
+      for (const id of [
+        'react',
+        'react/jsx-runtime',
+        'react-dom',
+        'react-dom/server',
+        'react-dom/server.edge',
+        'react-router',
+      ]) {
+        expect(external).toContain(id);
+      }
+    }
+  );
+
+  it('never externalizes react or react-router for the client build', () => {
+    const root = makeRoot();
+    const cfg = createDefaultViteConfig(root, '/pkg', 'production', {});
+    const external = (cfg.build!.rolldownOptions as any).external as string[];
+
+    expect(external).not.toContain('react');
+    expect(external).not.toContain('react-router');
+  });
+
   it('sets resolve.conditions for bun/workerd but not for node', () => {
     const root = makeRoot();
 

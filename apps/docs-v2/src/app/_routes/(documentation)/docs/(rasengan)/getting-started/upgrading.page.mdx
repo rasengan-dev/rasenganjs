@@ -41,6 +41,8 @@ pnpm add rasengan@beta
 
 - **Express is gone.** `rasengan/server` no longer exports `express`/`compression`. If you were adding custom Express middleware to your app's server, it needs to move to a Futon `Middleware` instead. See the <Link to="/docs/futon/middleware">Futon Middleware</Link> guide.
 - **New peer dependency versions required**: `vite@^8.0.0`, `react-router@^8.3.0`, `react`/`react-dom@^19.2.7`.
+- **`react-router` must now be installed directly in your own project.** It moved from a `rasengan` dependency to a `peerDependency`, so your SSR build resolves the same `react-router` instance rasengan's own server code does. Skipping this makes the build succeed but renders an empty page in production (nested routes never show up, even though nothing errors): `react-router` would otherwise get bundled a second time inside your app's own SSR chunks, with its own, separate route context that never receives the data the real one provides.
+- **`detectRuntime()` was renamed to `detectDeploymentPlatform()`.** Only relevant if you imported it directly from `rasengan/server`; the name `detectRuntime` moved to `@rasenganjs/runtime`'s own, unrelated export.
 - **New `runtime` config option** (`'node' | 'bun' | 'workerd'`) lets `@rasenganjs/serve` run your production build on <Link to="/packages/serve">Bun instead of Node.js</Link>. Defaults to `'node'`, so existing apps don't need to change anything.
 - **New file-based <Link to="/docs/routing/api-routes">API routes</Link>** (`src/app/_api/`), a way to build server-only HTTP endpoints without a full page, entirely optional and additive.
 - **`@rasenganjs/netlify` now works.** The adapter had been broken since before this rewrite; it's rebuilt on Futon along with `@rasenganjs/vercel`. See <Link to="/docs/deploying/netlify">Deploying to Netlify</Link>.
@@ -62,6 +64,19 @@ pnpm add rasengan@beta react@latest react-dom@latest vite@latest
 
 <StepItem
   step="02"
+  title="Add react-router as a direct dependency"
+  content={`
+    This step is required for every app, not just ones with a custom server. react-router needs to be resolvable from your own project, not only transitively through rasengan.
+  `}
+  className="mt-8"
+>
+```bash title="Terminal"
+pnpm add react-router@^8.3.0
+```
+</StepItem>
+
+<StepItem
+  step="03"
   title="Remove any direct Express usage"
   content={`
     If your app doesn't customize the server at all (the vast majority of apps), you can skip this step entirely. If it does, replace any Express-specific middleware or request/response handling with Futon's equivalents.
@@ -88,7 +103,7 @@ app.use(staticFiles({ root: 'public' }));
 </StepItem>
 
 <StepItem
-  step="03"
+  step="04"
   title="Rebuild and test your deployment"
   content={`
     Run a fresh build and verify your app still deploys correctly, especially if you're on Netlify (previously broken) or use a custom deployment integration.
@@ -97,7 +112,10 @@ app.use(staticFiles({ root: 'public' }));
 >
   ```bash title="Terminal" 
   pnpm run build 
+  pnpm run serve
   ```
+
+  If you have SSR enabled, check that a real route's HTML response has your actual page content inside `<div id="root">`, not only a hydration script. A clean build doesn't guarantee the production render is correct, that's exactly the failure mode step 02 prevents.
 </StepItem>
 
 ## Upgrade from 1.1.x to 1.2.x

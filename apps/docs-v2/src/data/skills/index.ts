@@ -15,23 +15,42 @@ import {
   Network,
   ListOrdered,
   FileUp,
+  type LucideIcon,
 } from 'lucide-react';
-import type { Skill } from '@/components/common/molecules/skill-card';
 
-export type SkillGroup = {
+/** One installable agent skill from the rasengan-dev/agent-skills repo. */
+export type Skill = {
+  /** Skill folder name, also the `@id` used by `npx skills add`. */
   id: string;
   name: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+/** Skills grouped by the layer of the stack they teach. */
+export type SkillGroup = {
+  id: 'rasengan' | 'futon' | 'server';
+  name: string;
   tagline: string;
+  /** CSS color of the layer (a `--layer-*` token). */
   accent: string;
   skills: Array<Skill>;
 };
+
+/** Install command for a single skill. */
+export const skillInstallCommand = (id: string) =>
+  `npx skills add rasengan-dev/agent-skills@${id}`;
+
+/** Install command for every skill at once. */
+export const INSTALL_ALL_SKILLS_COMMAND =
+  'npx skills add rasengan-dev/agent-skills --all';
 
 export const SkillGroups: Array<SkillGroup> = [
   {
     id: 'rasengan',
     name: 'Rasengan',
     tagline: 'The frontend meta-framework',
-    accent: 'var(--color-primary)',
+    accent: 'var(--layer-rasengan)',
     skills: [
       {
         id: 'rasengan-pages',
@@ -100,7 +119,7 @@ export const SkillGroups: Array<SkillGroup> = [
     id: 'futon',
     name: 'Futon',
     tagline: 'The WinterCG-compatible HTTP runtime',
-    accent: '#14B8A6',
+    accent: 'var(--layer-futon)',
     skills: [
       {
         id: 'rasengan-futon-core',
@@ -129,7 +148,7 @@ export const SkillGroups: Array<SkillGroup> = [
     id: 'server',
     name: 'Rasengan Server',
     tagline: 'The modular backend framework',
-    accent: '#B06BFF',
+    accent: 'var(--layer-server)',
     skills: [
       {
         id: 'rasengan-server-core',
@@ -170,7 +189,7 @@ export const SkillGroups: Array<SkillGroup> = [
         id: 'rasengan-server-drizzle',
         name: 'Drizzle',
         description:
-          'Drizzle ORM integration — DrizzleModule.forRoot(), DataSource provider, driver adapters, migrations.',
+          'Drizzle ORM integration: DrizzleModule.forRoot(), DataSource provider, driver adapters, migrations.',
         icon: Database,
       },
     ],

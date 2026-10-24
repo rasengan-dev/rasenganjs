@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0 (2026-10-24)
+
+### Bug Fixes
+
+- **futon:** default bodyParser() to a safe content-type allowlist bd6d516
+
 ## 1.0.0-beta.5 (2026-08-16)
 
 ### Features

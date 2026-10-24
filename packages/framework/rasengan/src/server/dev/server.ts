@@ -1,10 +1,7 @@
 import { join } from 'node:path';
 import http from 'node:http';
 import type * as Vite from 'vite';
-import {
-  createServerModuleRunner,
-  createServer as createViteServer,
-} from 'vite';
+import { createServer as createViteServer } from 'vite';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import {
@@ -23,6 +20,7 @@ import {
   getLoadedEnvFiles,
 } from '@rasenganjs/runtime/adapters/node';
 import { isHttpErrorLike } from '../node/api-router-middleware.js';
+import { getDevModuleRunner } from './module-runner.js';
 
 // Load utilities functions
 import {
@@ -72,8 +70,9 @@ async function ssrHandler(
 ): Promise<Response> {
   const request = ctx.request;
 
-  // Get the module runner through ssr environment
-  const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+  // Shared across requests, so user modules are evaluated once per dev
+  // session (see getDevModuleRunner)
+  const runner = getDevModuleRunner(viteDevServer);
 
   if (options.config.ssr) {
     // Load app-router
@@ -118,9 +117,11 @@ async function ssrHandler(
 
 /**
  * Dispatches requests under `_api/`'s configured prefix (RFC-0008) to
- * the live `virtual:rasengan/api-router` module — resolved fresh
- * through Vite's SSR module runner, same as `ssrHandler` does for
- * `app.router`, so `_api/` edits are picked up without a rebuild.
+ * the live `virtual:rasengan/api-router` module, imported through the
+ * dev server's shared SSR module runner (same as `ssrHandler` does for
+ * `app.router`): `_api/` modules are evaluated once, so module-level
+ * state survives between requests, and Vite's HMR invalidates them on
+ * edit, so changes are picked up without a rebuild.
  *
  * Self-contained under the prefix: an unmatched path or an uncaught
  * handler error responds in JSON here, never falling through to
@@ -143,7 +144,7 @@ async function apiRouterDevMiddleware(
     return next();
   }
 
-  const runner = createServerModuleRunner(viteDevServer.environments.ssr);
+  const runner = getDevModuleRunner(viteDevServer);
 
   try {
     const ApiRouter: Router = await (
@@ -370,8 +371,8 @@ async function createDevNodeServer({
 
   // RFC-0010: load .env* into process.env before importing anything
   // user-authored — rasengan.config.js (loaded right below) and every
-  // _routes/_api module (loaded lazily per-request by Vite's SSR
-  // module runner, see ssrHandler/apiRouterDevMiddleware above) can
+  // _routes/_api module (loaded lazily, on first request, by the dev
+  // server's shared SSR module runner, see getDevModuleRunner) can
   // then read process.env.X like any other Node app, with no manual
   // dotenv usage required.
   await loadNodeEnvFiles(rootPath, 'development');

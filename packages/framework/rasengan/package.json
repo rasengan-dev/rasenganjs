@@ -1,7 +1,7 @@
 {
   "name": "rasengan",
   "private": false,
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0",
   "description": "The modern React Framework",
   "type": "module",
   "main": "dist/index.js",
@@ -73,22 +73,22 @@
     "pack": "pnpm pack --pack-destination ./release/"
   },
   "dependencies": {
-    "@rasenganjs/futon": "workspace:*",
-    "@rasenganjs/runtime": "workspace:*",
+    "@rasenganjs/futon": "workspace:^",
+    "@rasenganjs/runtime": "workspace:^",
     "@vitejs/plugin-react": "^6.0.0",
     "chalk": "^5.3.0",
     "commander": "^11.1.0",
     "execa": "^8.0.1",
     "inquirer": "^9.2.12",
     "open": "^10.1.0",
-    "ora": "^7.0.1",
-    "react-router": "^8.3.0"
+    "ora": "^7.0.1"
   },
   "peerDependencies": {
     "@types/node": ">=20.0.0",
     "less": "*",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-router": "^8.3.0",
     "sass": "*",
     "stylus": "*",
     "vite": "^8.0.0"
@@ -116,6 +116,7 @@
     "@types/react-dom": "^19.0.1",
     "@vitest/coverage-v8": "4.1.9",
     "cross-env": "^7.0.3",
+    "react-router": "^8.3.0",
     "tsup": "^8.5.1",
     "vite": "^8.2.1",
     "vitest": "^4.1.9"

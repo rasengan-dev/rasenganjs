@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.5.0 (2026-10-24)
+
+### Bug Fixes
+
+- **create-rasengan:** upgrade simple-git to v4 and patch brace-expansion ea399ce
+
 ## 1.5.0-beta.5 (2026-08-16)
 
 ### Features

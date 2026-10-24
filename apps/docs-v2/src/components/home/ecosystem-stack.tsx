@@ -1,89 +1,223 @@
+import { useState } from 'react';
 import { Link } from 'rasengan';
 import { ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// A "Powered By" style diagram: a central Futon chip on a PCB, etched
-// circuit traces routing out to Rasengan / Rasengan Server, and down into a
-// row of runtime foundation cards. All animation is plain CSS (see the
-// `comet` / `chip-shine` keyframes in styles/index.css) — no JS-driven
-// state, everything loops on its own.
+// "Runs anywhere" section: a circuit board with Futon as the central chip,
+// Rasengan and Rasengan Server as modules wired to it by three-lane buses,
+// and the three runtimes as sockets on the board's lower edge. Light pulses
+// travel from each runtime up into Futon and out to the two frameworks.
+//
+// Hovering (or focusing) any part lights up its own traces and dims the
+// rest, so the board doubles as an explanation of who depends on whom.
+// Pulses are plain CSS (the `comet` keyframes in styles/index.css) and stop
+// under prefers-reduced-motion. The board is a physical object, so it stays
+// dark in both themes, like the hero terminal.
+//
+// Below `lg` the SVG would shrink its labels to unreadable sizes, so a
+// simplified vertical version (`CompactBoard`) is rendered instead.
 
 // ── Data ─────────────────────────────────────────────────────
 
-const VIOLET = '#B06BFF';
+/** Every part of the board that can be hovered. */
+type PartKey = 'futon' | 'rasengan' | 'server' | 'node' | 'bun' | 'workerd';
 
 const RUNTIMES = {
-  node: '#68A063',
-  bun: '#F9DA1B',
-  workerd: '#F6821F',
+  node: 'var(--runtime-node)',
+  bun: 'var(--runtime-bun)',
+  workerd: 'var(--runtime-workerd)',
 };
 
+/** Board colors: fixed, because the board is always dark. */
+const PCB = {
+  substrate: '#0a1222',
+  edge: '#1f2b47',
+  trace: '#22314f',
+  silk: '#55658f',
+  pad: '#c9a45c',
+  chipTop: '#16203a',
+  chipBottom: '#0b1120',
+};
+
+/** Viewbox the coordinates below are hand-placed against. */
+const W = 960;
+const H = 460;
+
+/**
+ * One copper trace. `part` is the hoverable part it belongs to (a trace
+ * lights up when its part, or Futon, is active). `pulse` makes it carry an
+ * animated signal; `reverse` runs it from the end of the path to the start.
+ */
 type Trace = {
   id: string;
-  d: string;
-  /** Omit to render as an etched (unlit) trace only. */
-  pulse?: {
-    color: string;
-    duration: number;
-    delay?: number;
-    reverse?: boolean;
-  };
+  part: PartKey;
+  points: Array<[number, number]>;
+  color: string;
+  delay: number;
+  reverse?: boolean;
 };
 
-// Coordinates are hand-placed against the `0 0 780 300` board viewBox below
-// — the chip sits at roughly (390, 136), pins at y=98/174.
+/** Builds an SVG path through orthogonal/diagonal points. */
+const toPath = (points: Array<[number, number]>) =>
+  points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`).join(' ');
+
+const LANES = [0, 1, 2];
+
 const TRACES: Trace[] = [
-  // "powers" — out from the chip to Rasengan / Rasengan Server
-  {
-    id: 'to-rasengan',
-    d: 'M305 128 L214 128 C206 128 200 134 200 142 L142 142',
-    pulse: { color: 'var(--color-primary)', duration: 2.6 },
-  },
-  {
-    id: 'to-server',
-    d: 'M475 128 L566 128 C574 128 580 134 580 142 L638 142',
-    pulse: { color: VIOLET, duration: 2.6, delay: 0.5 },
-  },
-  // "runs on" — up from the runtime foundation, dissolving into the chip
-  {
-    id: 'from-node',
-    d: 'M350 174 L350 204 C350 212 344 218 336 218 L146 218 C138 218 132 224 132 232 L132 292',
-    pulse: { color: RUNTIMES.node, duration: 2.9, delay: 0.15, reverse: true },
-  },
-  {
-    id: 'from-bun',
-    d: 'M390 174 L390 292',
-    pulse: { color: RUNTIMES.bun, duration: 2.5, delay: 0.55, reverse: true },
-  },
-  {
-    id: 'from-workerd',
-    d: 'M430 174 L430 204 C430 212 436 218 444 218 L634 218 C642 218 648 224 648 232 L648 292',
-    pulse: {
-      color: RUNTIMES.workerd,
-      duration: 2.9,
-      delay: 0.35,
-      reverse: true,
-    },
-  },
-  // decorative top traces — etched only, no signal
-  { id: 'deco-left', d: 'M352 98 L352 62 C352 54 346 48 338 48 L302 48' },
-  { id: 'deco-mid', d: 'M390 98 L390 40' },
-  { id: 'deco-right', d: 'M428 98 L428 62 C428 54 434 48 442 48 L478 48' },
+  // Futon (left pins) → Rasengan module, three lanes with a 45° jog.
+  ...LANES.map((k) => ({
+    id: `rasengan-${k}`,
+    part: 'rasengan' as const,
+    points: [
+      [378, 200 + 14 * k],
+      [330, 200 + 14 * k],
+      [310, 180 + 14 * k],
+      [272, 180 + 14 * k],
+    ] as Array<[number, number]>,
+    color: 'var(--layer-rasengan)',
+    delay: 0.2 * k,
+  })),
+  // Futon (right pins) → Rasengan Server module, mirrored.
+  ...LANES.map((k) => ({
+    id: `server-${k}`,
+    part: 'server' as const,
+    points: [
+      [582, 200 + 14 * k],
+      [630, 200 + 14 * k],
+      [650, 180 + 14 * k],
+      [688, 180 + 14 * k],
+    ] as Array<[number, number]>,
+    color: 'var(--layer-server)',
+    delay: 0.5 + 0.2 * k,
+  })),
+  // Runtime sockets → Futon (bottom pins). Two lanes each; lane order is
+  // chosen so the lanes never cross on their two turns.
+  ...[0, 1].map((k) => ({
+    id: `node-${k}`,
+    part: 'node' as const,
+    points: [
+      [420 + 14 * k, 302],
+      [420 + 14 * k, 330 + 14 * k],
+      [188 + 14 * k, 330 + 14 * k],
+      [188 + 14 * k, 370],
+    ] as Array<[number, number]>,
+    color: RUNTIMES.node,
+    delay: 0.1 + 0.3 * k,
+    reverse: true,
+  })),
+  ...[0, 1].map((k) => ({
+    id: `bun-${k}`,
+    part: 'bun' as const,
+    points: [
+      [473 + 14 * k, 302],
+      [473 + 14 * k, 370],
+    ] as Array<[number, number]>,
+    color: RUNTIMES.bun,
+    delay: 0.4 + 0.3 * k,
+    reverse: true,
+  })),
+  ...[0, 1].map((k) => ({
+    id: `workerd-${k}`,
+    part: 'workerd' as const,
+    points: [
+      [526 + 14 * k, 302],
+      [526 + 14 * k, 344 - 14 * k],
+      [758 + 14 * k, 344 - 14 * k],
+      [758 + 14 * k, 370],
+    ] as Array<[number, number]>,
+    color: RUNTIMES.workerd,
+    delay: 0.25 + 0.3 * k,
+    reverse: true,
+  })),
 ];
 
-// Solder vias marking the end of each trace above.
-const VIAS: Array<[number, number]> = [
-  [132, 142],
-  [648, 142],
-  [132, 292],
-  [390, 292],
-  [648, 292],
-  [302, 48],
-  [390, 40],
-  [478, 48],
+/** Etched-only decorative traces (no signal, never highlighted). */
+const DECOR: Array<Array<[number, number]>> = [
+  [
+    [440, 158],
+    [440, 120],
+    [420, 100],
+    [360, 100],
+  ],
+  [
+    [480, 158],
+    [480, 92],
+  ],
+  [
+    [520, 158],
+    [520, 120],
+    [540, 100],
+    [600, 100],
+  ],
+  [
+    [160, 150],
+    [160, 110],
+    [140, 90],
+    [80, 90],
+  ],
+  [
+    [800, 150],
+    [800, 110],
+    [820, 90],
+    [880, 90],
+  ],
+];
+
+/** Small passive components scattered on the board, with silkscreen refs. */
+const PASSIVES: Array<{
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  ref: string;
+}> = [
+  { x: 340, y: 92, w: 18, h: 9, ref: 'C1' },
+  { x: 604, y: 92, w: 18, h: 9, ref: 'C2' },
+  { x: 62, y: 84, w: 16, h: 9, ref: 'R1' },
+  { x: 882, y: 84, w: 16, h: 9, ref: 'R2' },
+  { x: 300, y: 300, w: 18, h: 9, ref: 'C3' },
+  { x: 642, y: 300, w: 18, h: 9, ref: 'C4' },
+];
+
+/** The two framework modules on either side of Futon. */
+const MODULES = [
+  {
+    key: 'rasengan' as const,
+    ref: 'U2',
+    name: 'Rasengan',
+    detail: 'SSR · SSG · routing',
+    href: '/docs/getting-started/introduction',
+    color: 'var(--layer-rasengan)',
+    x: 60,
+    pinsSide: 'right' as const,
+  },
+  {
+    key: 'server' as const,
+    ref: 'U3',
+    name: 'Rasengan Server',
+    detail: 'modules · DI · WS',
+    href: '/docs/server/getting-started/introduction',
+    color: 'var(--layer-server)',
+    x: 700,
+    pinsSide: 'left' as const,
+  },
+];
+
+/** Runtime sockets along the bottom edge (center x). */
+const SOCKETS: Array<{
+  key: 'node' | 'bun' | 'workerd';
+  ref: string;
+  label: string;
+  cx: number;
+  pins: number[];
+}> = [
+  { key: 'node', ref: 'J1', label: 'NODE.JS', cx: 195, pins: [188, 202] },
+  { key: 'bun', ref: 'J2', label: 'BUN', cx: 480, pins: [473, 487] },
+  { key: 'workerd', ref: 'J3', label: 'WORKERD', cx: 765, pins: [758, 772] },
 ];
 
 type Foundation = {
+  key: 'node' | 'bun' | 'workerd';
   name: string;
   href: string;
   color: string;
@@ -93,11 +227,12 @@ type Foundation = {
 
 const FOUNDATIONS: Foundation[] = [
   {
+    key: 'node',
     name: 'Node.js',
     href: 'https://nodejs.org',
     color: RUNTIMES.node,
     description:
-      'The original JavaScript runtime — battle-tested, with the broadest ecosystem and deployment support anywhere.',
+      'The original JavaScript runtime, battle-tested, with the broadest ecosystem and deployment support anywhere.',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -112,11 +247,12 @@ const FOUNDATIONS: Foundation[] = [
     ),
   },
   {
+    key: 'bun',
     name: 'Bun',
     href: 'https://bun.sh',
     color: RUNTIMES.bun,
     description:
-      'An all-in-one toolkit built for speed — fast cold starts, a native bundler, and near drop-in node compatibility.',
+      'An all-in-one toolkit built for speed, fast cold starts, a native bundler, and near drop-in node compatibility.',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -164,11 +300,12 @@ const FOUNDATIONS: Foundation[] = [
     ),
   },
   {
+    key: 'workerd',
     name: 'Workerd',
     href: 'https://github.com/cloudflare/workerd',
     color: RUNTIMES.workerd,
     description:
-      "Cloudflare's Workers runtime for the edge — deploy Futon apps close to your users, in hundreds of locations worldwide.",
+      "Cloudflare's Workers runtime for the edge, deploy Futon apps close to your users, in hundreds of locations worldwide.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +313,7 @@ const FOUNDATIONS: Foundation[] = [
         className="size-6"
       >
         <linearGradient
-          id="a"
+          id="workerd-a"
           x1="-.556"
           x2="-.628"
           y1="128.705"
@@ -184,15 +321,15 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(155.9359 0 0 -364.3 119.128 47001.098)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#eb6f07" />
-          <stop offset="1" stop-color="#fab743" />
+          <stop offset="0" stopColor="#eb6f07" />
+          <stop offset="1" stopColor="#fab743" />
         </linearGradient>
         <path
-          fill="url(#a)"
+          fill="url(#workerd-a)"
           d="M33.882 9.694 48.491 36.05 35.075 60.199a7.75 7.75 0 0 0 0 7.543l13.416 24.209-14.609 26.356a15.501 15.501 0 0 1-6.559-6.172L4.068 71.737a15.563 15.563 0 0 1 0-15.503l23.255-40.398a15.501 15.501 0 0 1 6.559-6.142z"
         />
         <linearGradient
-          id="b"
+          id="workerd-b"
           x1="-.594"
           x2="-.715"
           y1="129.358"
@@ -200,16 +337,16 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(149.7049 0 0 -194.8 131.59 25305.098)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#d96504" />
-          <stop offset="1" stop-color="#d96504" stop-opacity="0" />
+          <stop offset="0" stopColor="#d96504" />
+          <stop offset="1" stopColor="#d96504" stopOpacity="0" />
         </linearGradient>
         <path
-          fill="url(#b)"
+          fill="url(#workerd-b)"
           d="M35.075 60.229a7.75 7.75 0 0 0 0 7.513l13.416 24.209-14.609 26.356a15.501 15.501 0 0 1-6.559-6.172L4.068 71.737c-1.848-3.19 8.497-7.006 31.007-11.478v-.03z"
           opacity=".7"
         />
         <linearGradient
-          id="c"
+          id="workerd-c"
           x1="-2.234"
           x2="-2.109"
           y1="128.901"
@@ -217,16 +354,16 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(95.8 0 0 -101.1 239.4 13048.3)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#eb6f07" />
-          <stop offset="1" stop-color="#eb720a" stop-opacity="0" />
+          <stop offset="0" stopColor="#eb6f07" />
+          <stop offset="1" stopColor="#eb720a" stopOpacity="0" />
         </linearGradient>
         <path
-          fill="url(#c)"
+          fill="url(#workerd-c)"
           d="m35.373 12.347 13.118 23.702-2.176 3.786-11.568-19.587c-3.339-5.456-8.437-2.624-14.818 8.408l.954-1.64 6.44-11.18a15.51 15.51 0 0 1 6.499-6.142l1.521 2.653h.03z"
           opacity=".5"
         />
         <linearGradient
-          id="d"
+          id="workerd-d"
           x1="-.847"
           x2="-.919"
           y1="128.688"
@@ -234,15 +371,15 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(207.975 0 0 -375 275.025 48376)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#ee6f05" />
-          <stop offset="1" stop-color="#fab743" />
+          <stop offset="0" stopColor="#ee6f05" />
+          <stop offset="1" stopColor="#fab743" />
         </linearGradient>
         <path
-          fill="url(#d)"
+          fill="url(#workerd-d)"
           d="m100.665 15.835 23.255 40.398a15.485 15.485 0 0 1 0 15.503l-23.255 40.398a15.504 15.504 0 0 1-13.416 7.752H63.994l28.92-52.145a7.75 7.75 0 0 0 0-7.513L63.994 8.084h23.255a15.502 15.502 0 0 1 13.416 7.751z"
         />
         <linearGradient
-          id="e"
+          id="workerd-e"
           x1="-2.602"
           x2="-2.229"
           y1="128.679"
@@ -250,16 +387,16 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(118.9101 0 0 -375.1 361.09 48388.902)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#d96504" stop-opacity=".8" />
-          <stop offset=".498" stop-color="#d96504" stop-opacity=".2" />
-          <stop offset="1" stop-color="#d96504" stop-opacity="0" />
+          <stop offset="0" stopColor="#d96504" stopOpacity=".8" />
+          <stop offset=".498" stopColor="#d96504" stopOpacity=".2" />
+          <stop offset="1" stopColor="#d96504" stopOpacity="0" />
         </linearGradient>
         <path
-          fill="url(#e)"
+          fill="url(#workerd-e)"
           d="m86.057 119.708-22.957.208 27.787-52.413a8.053 8.053 0 0 0 0-7.573L63.1 8.084h5.247l29.158 51.608a8.048 8.048 0 0 1-.03 7.99 4670.283 4670.283 0 0 0-18.693 32.796c-5.665 9.957-3.22 16.367 7.275 19.23z"
         />
         <linearGradient
-          id="f"
+          id="workerd-f"
           x1="-.561"
           x2="-.634"
           y1="128.688"
@@ -267,15 +404,15 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(201.2571 0 0 -375 180.743 48376)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#ffa95f" />
-          <stop offset="1" stop-color="#ffebc8" />
+          <stop offset="0" stopColor="#ffa95f" />
+          <stop offset="1" stopColor="#ffebc8" />
         </linearGradient>
         <path
-          fill="url(#f)"
+          fill="url(#workerd-f)"
           d="M40.739 119.886c-2.385 0-4.77-.566-6.857-1.58l28.681-51.727a5.353 5.353 0 0 0 0-5.188L33.882 9.694a15.492 15.492 0 0 1 6.857-1.61h23.255l28.92 52.145a7.75 7.75 0 0 1 0 7.513l-28.92 52.145H40.739z"
         />
         <linearGradient
-          id="g"
+          id="workerd-g"
           x1="-2.816"
           x2="-2.552"
           y1="128.861"
@@ -283,16 +420,16 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(109.2571 0 0 -375 364.743 48376)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#fff" stop-opacity=".5" />
-          <stop offset="1" stop-color="#fff" stop-opacity=".1" />
+          <stop offset="0" stopColor="#fff" stopOpacity=".5" />
+          <stop offset="1" stopColor="#fff" stopOpacity=".1" />
         </linearGradient>
         <path
-          fill="url(#g)"
+          fill="url(#workerd-g)"
           d="M90.886 61.391 61.311 8.084h2.683l28.92 52.145a7.75 7.75 0 0 1 0 7.513l-28.92 52.145h-2.683l29.576-53.308a5.35 5.35 0 0 0-.001-5.188z"
           opacity=".6"
         />
         <linearGradient
-          id="h"
+          id="workerd-h"
           x1="-2.34"
           x2="-2.001"
           y1="128.779"
@@ -300,11 +437,11 @@ const FOUNDATIONS: Foundation[] = [
           gradientTransform="matrix(107.2571 0 0 -371.4 274.743 47913.2)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#fff" stop-opacity=".5" />
-          <stop offset="1" stop-color="#fff" stop-opacity=".1" />
+          <stop offset="0" stopColor="#fff" stopOpacity=".5" />
+          <stop offset="1" stopColor="#fff" stopOpacity=".1" />
         </linearGradient>
         <path
-          fill="url(#h)"
+          fill="url(#workerd-h)"
           d="M62.563 61.391 33.882 9.694c.894-.477 1.968-.835 2.981-1.133 6.321 11.359 15.652 28.592 28.025 51.668a7.75 7.75 0 0 1 0 7.513L36.416 119.29c-1.014-.298-1.55-.507-2.504-.954l28.622-51.727a5.353 5.353 0 0 0 0-5.188l.029-.03z"
           opacity=".6"
         />
@@ -313,234 +450,692 @@ const FOUNDATIONS: Foundation[] = [
   },
 ];
 
-// ── Trace path ───────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────
 
-function TracePath({ trace }: { trace: Trace }) {
-  const { pulse } = trace;
+/** Converts viewBox coordinates into CSS percentages for HTML overlays. */
+const pct = (value: number, total: number) => `${(value / total) * 100}%`;
+
+/**
+ * Whether a trace should be lit for the current hover target. Futon is the
+ * hub, so hovering it lights every trace; nothing hovered lights everything
+ * at normal strength.
+ */
+function traceState(
+  trace: Trace,
+  active: PartKey | null
+): 'normal' | 'lit' | 'dim' {
+  if (!active) return 'normal';
+  if (active === 'futon' || active === trace.part) return 'lit';
+  return 'dim';
+}
+
+// ── SVG pieces ───────────────────────────────────────────────
+
+/** One copper trace with its animated pulse (two strokes: glow + core). */
+function TracePath({
+  trace,
+  state,
+}: {
+  trace: Trace;
+  state: 'normal' | 'lit' | 'dim';
+}) {
+  const d = toPath(trace.points);
+  const pulseStyle = {
+    animationName: 'comet',
+    animationDuration: '2.6s',
+    animationDelay: `${trace.delay}s`,
+    animationDirection: trace.reverse ? 'reverse' : 'normal',
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
+  } as React.CSSProperties;
 
   return (
-    <g>
+    <g
+      style={{ opacity: state === 'dim' ? 0.18 : 1 }}
+      className="transition-opacity duration-300 ease-out"
+    >
+      {/* copper: tinted by the signal color when lit */}
       <path
-        d={trace.d}
+        d={d}
         pathLength={1}
-        strokeWidth={1.25}
-        className="fill-none stroke-border opacity-55"
+        fill="none"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        stroke={state === 'lit' ? trace.color : PCB.trace}
+        strokeOpacity={state === 'lit' ? 0.55 : 1}
+        className="transition-[stroke] duration-300"
       />
-
-      {pulse && (
-        <>
-          <path
-            d={trace.d}
-            pathLength={1}
-            stroke={pulse.color}
-            strokeWidth={5}
-            strokeDasharray="0.16 0.84"
-            style={{
-              animationName: 'comet',
-              animationDuration: `${pulse.duration}s`,
-              animationDelay: `${pulse.delay ?? 0}s`,
-              animationDirection: pulse.reverse ? 'reverse' : 'normal',
-              animationTimingFunction: 'linear',
-              animationIterationCount: 'infinite',
-              filter: 'url(#ecosystem-stack-soften)',
-            }}
-            className="motion-reduce:hidden fill-none opacity-90"
-          />
-          <path
-            d={trace.d}
-            pathLength={1}
-            stroke={pulse.color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeDasharray="0.16 0.84"
-            style={{
-              animationName: 'comet',
-              animationDuration: `${pulse.duration}s`,
-              animationDelay: `${pulse.delay ?? 0}s`,
-              animationDirection: pulse.reverse ? 'reverse' : 'normal',
-              animationTimingFunction: 'linear',
-              animationIterationCount: 'infinite',
-            }}
-            className="motion-reduce:hidden fill-none"
-          />
-        </>
-      )}
+      <path
+        d={d}
+        pathLength={1}
+        fill="none"
+        stroke={trace.color}
+        strokeWidth={6}
+        strokeDasharray="0.14 0.86"
+        style={{ ...pulseStyle, filter: 'url(#board-soften)' }}
+        className="opacity-70 motion-reduce:hidden"
+      />
+      <path
+        d={d}
+        pathLength={1}
+        fill="none"
+        stroke={trace.color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeDasharray="0.14 0.86"
+        style={pulseStyle}
+        className="motion-reduce:hidden"
+      />
     </g>
   );
 }
 
-// ── Stack tap (Rasengan / Rasengan Server labels) ───────────
-
-function StackTap({
-  name,
-  href,
-  color,
-  left,
+/** A row of gold pins along one side of a package. */
+function Pins({
+  side,
+  x,
+  y,
+  count,
+  step,
+  length = 12,
 }: {
-  name: string;
-  href: string;
-  color: string;
-  left: string;
+  side: 'left' | 'right' | 'top' | 'bottom';
+  x: number;
+  y: number;
+  count: number;
+  step: number;
+  length?: number;
 }) {
   return (
-    <Link
-      to={href}
-      style={{ left, top: '47.3%', '--c': color } as React.CSSProperties}
-      className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-background/90 px-2.5 py-1.5 font-mono text-[clamp(11px,2cqw,13px)] font-medium text-foreground backdrop-blur-sm transition-colors duration-200 ease-out hover:border-[var(--c)]/60 hover:text-[var(--c)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    <g fill={PCB.pad} opacity={0.75}>
+      {Array.from({ length: count }, (_, i) => {
+        if (side === 'left' || side === 'right') {
+          const py = y + i * step;
+          return (
+            <rect
+              key={i}
+              x={side === 'left' ? x - length : x}
+              y={py - 2.5}
+              width={length}
+              height={5}
+              rx={1}
+            />
+          );
+        }
+        const px = x + i * step;
+        return (
+          <rect
+            key={i}
+            x={px - 2.5}
+            y={side === 'top' ? y - length : y}
+            width={5}
+            height={length}
+            rx={1}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+/** The SVG artwork of the board (everything except the HTML hit areas). */
+function BoardArt({ active }: { active: PartKey | null }) {
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      aria-hidden="true"
+      className="absolute inset-0 h-full w-full"
     >
-      <span
-        aria-hidden="true"
-        style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
-        className="size-[5px] rounded-full"
+      <defs>
+        <filter id="board-soften" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation={2.6} />
+        </filter>
+        <pattern
+          id="board-dots"
+          width="16"
+          height="16"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx="1" cy="1" r="0.9" fill="#ffffff" opacity="0.05" />
+        </pattern>
+        <linearGradient id="board-chip" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={PCB.chipTop} />
+          <stop offset="1" stopColor={PCB.chipBottom} />
+        </linearGradient>
+        <radialGradient id="board-futon-halo" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="var(--layer-futon)" stopOpacity="0.28" />
+          <stop offset="1" stopColor="var(--layer-futon)" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* substrate, dot texture, edge */}
+      <rect
+        x={8}
+        y={8}
+        width={W - 16}
+        height={H - 16}
+        rx={22}
+        fill={PCB.substrate}
       />
-      {name}
-    </Link>
+      <rect
+        x={8}
+        y={8}
+        width={W - 16}
+        height={H - 16}
+        rx={22}
+        fill="url(#board-dots)"
+      />
+      <rect
+        x={8}
+        y={8}
+        width={W - 16}
+        height={H - 16}
+        rx={22}
+        fill="none"
+        stroke={PCB.edge}
+        strokeWidth={1.5}
+      />
+
+      {/* mounting holes */}
+      {[
+        [36, 36],
+        [W - 36, 36],
+        [36, H - 36],
+        [W - 36, H - 36],
+      ].map(([cx, cy]) => (
+        <g key={`${cx}-${cy}`}>
+          <circle
+            cx={cx}
+            cy={cy}
+            r={11}
+            fill="none"
+            stroke={PCB.pad}
+            strokeOpacity={0.45}
+            strokeWidth={3}
+          />
+          <circle cx={cx} cy={cy} r={6} fill="#04070e" />
+        </g>
+      ))}
+
+      {/* silkscreen */}
+      <text
+        x={60}
+        y={42}
+        fill={PCB.silk}
+        className="font-mono"
+        fontSize={11}
+        letterSpacing={2}
+      >
+        RASENGAN.JS · STACK BOARD
+      </text>
+      <text
+        x={W - 60}
+        y={42}
+        fill={PCB.silk}
+        className="font-mono"
+        fontSize={11}
+        letterSpacing={2}
+        textAnchor="end"
+      >
+        REV 2.0-BETA
+      </text>
+
+      {/* decorative etched traces and passives */}
+      {DECOR.map((points, i) => (
+        <path
+          key={i}
+          d={toPath(points)}
+          fill="none"
+          stroke={PCB.trace}
+          strokeWidth={1.5}
+        />
+      ))}
+      {PASSIVES.map((p) => (
+        <g key={p.ref}>
+          <rect
+            x={p.x}
+            y={p.y}
+            width={p.w}
+            height={p.h}
+            rx={1.5}
+            fill="#1a2440"
+            stroke={PCB.pad}
+            strokeOpacity={0.5}
+          />
+          <text
+            x={p.x + p.w / 2}
+            y={p.y - 4}
+            fill={PCB.silk}
+            fontSize={8.5}
+            textAnchor="middle"
+            className="font-mono"
+          >
+            {p.ref}
+          </text>
+        </g>
+      ))}
+
+      {/* glow under Futon, stronger when the board is "live" on Futon */}
+      <ellipse
+        cx={480}
+        cy={230}
+        rx={170}
+        ry={110}
+        fill="url(#board-futon-halo)"
+        style={{ opacity: active === 'futon' ? 1 : 0.6 }}
+        className="transition-opacity duration-300"
+      />
+
+      {/* traces + pulses */}
+      {TRACES.map((trace) => (
+        <TracePath
+          key={trace.id}
+          trace={trace}
+          state={traceState(trace, active)}
+        />
+      ))}
+
+      {/* framework modules */}
+      {MODULES.map((m) => {
+        const lit = active === m.key || active === 'futon';
+        return (
+          <g key={m.key}>
+            <text
+              x={m.x}
+              y={142}
+              fill={PCB.silk}
+              fontSize={10}
+              className="font-mono"
+            >
+              {m.ref}
+            </text>
+            <Pins
+              side={m.pinsSide}
+              x={m.pinsSide === 'right' ? m.x + 200 : m.x}
+              y={180}
+              count={3}
+              step={14}
+            />
+            <rect
+              x={m.x}
+              y={150}
+              width={200}
+              height={110}
+              rx={10}
+              fill="url(#board-chip)"
+              stroke={m.color}
+              strokeOpacity={lit ? 0.9 : 0.4}
+              strokeWidth={1.5}
+              className="transition-[stroke-opacity] duration-300"
+            />
+            <circle
+              cx={m.x + 14}
+              cy={164}
+              r={2.5}
+              fill={m.color}
+              opacity={0.8}
+            />
+            <text
+              x={m.x + 100}
+              y={203}
+              fill="#ffffff"
+              fontSize={16}
+              fontWeight={600}
+              textAnchor="middle"
+              className="font-mono"
+            >
+              {m.name}
+            </text>
+            <text
+              x={m.x + 100}
+              y={225}
+              fill={m.color}
+              fontSize={11}
+              textAnchor="middle"
+              className="font-mono"
+            >
+              {m.detail}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Futon: the central chip */}
+      <g>
+        <text
+          x={390}
+          y={146}
+          fill={PCB.silk}
+          fontSize={10}
+          className="font-mono"
+        >
+          U1
+        </text>
+        <Pins side="left" x={390} y={200} count={3} step={14} />
+        <Pins side="right" x={570} y={200} count={3} step={14} />
+        <Pins side="top" x={420} y={170} count={6} step={24} />
+        <Pins side="bottom" x={420} y={290} count={2} step={14} />
+        <Pins side="bottom" x={473} y={290} count={2} step={14} />
+        <Pins side="bottom" x={526} y={290} count={2} step={14} />
+        <rect
+          x={390}
+          y={170}
+          width={180}
+          height={120}
+          rx={12}
+          fill="url(#board-chip)"
+          stroke="var(--layer-futon)"
+          strokeOpacity={active === 'futon' ? 1 : 0.6}
+          strokeWidth={1.75}
+          className="transition-[stroke-opacity] duration-300"
+        />
+        <circle
+          cx={406}
+          cy={186}
+          r={3}
+          fill="var(--layer-futon)"
+          opacity={0.8}
+        />
+        <text
+          x={480}
+          y={214}
+          fill="var(--layer-futon)"
+          fontSize={10.5}
+          letterSpacing={3}
+          textAnchor="middle"
+          className="font-mono"
+        >
+          CORE
+        </text>
+        <text
+          x={480}
+          y={240}
+          fill="#ffffff"
+          fontSize={22}
+          fontWeight={600}
+          textAnchor="middle"
+          className="font-mono"
+        >
+          Futon
+        </text>
+        <text
+          x={480}
+          y={262}
+          fill="#8fa4d6"
+          fontSize={10.5}
+          textAnchor="middle"
+          className="font-mono"
+        >
+          WinterCG HTTP runtime
+        </text>
+      </g>
+
+      {/* runtime sockets */}
+      {SOCKETS.map((s) => {
+        const lit = active === s.key || active === 'futon';
+        const color = RUNTIMES[s.key];
+        return (
+          <g key={s.key}>
+            <text
+              x={s.cx - 85}
+              y={H - 22}
+              fill={PCB.silk}
+              fontSize={9.5}
+              className="font-mono"
+            >
+              {s.ref}
+            </text>
+            <rect
+              x={s.cx - 85}
+              y={370}
+              width={170}
+              height={54}
+              rx={8}
+              fill="#0d1528"
+              stroke={color}
+              strokeOpacity={lit ? 0.95 : 0.35}
+              strokeWidth={1.5}
+              className="transition-[stroke-opacity] duration-300"
+            />
+            {s.pins.map((px) => (
+              <rect
+                key={px}
+                x={px - 4}
+                y={366}
+                width={8}
+                height={8}
+                rx={1.5}
+                fill={PCB.pad}
+                opacity={0.8}
+              />
+            ))}
+            <circle cx={s.cx - 58} cy={400} r={4} fill={color} />
+            <text
+              x={s.cx - 46}
+              y={404.5}
+              fill="#e5ebfa"
+              fontSize={13}
+              fontWeight={600}
+              letterSpacing={1.5}
+              className="font-mono"
+            >
+              {s.label}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ── Interactive board ────────────────────────────────────────
+
+/** Shared classes for the transparent, focusable hit areas over the board. */
+const hitArea =
+  'absolute z-10 rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80';
+
+/**
+ * The full-size board (lg and up): SVG art plus HTML hit areas laid over each
+ * part, so every part is a real link with keyboard focus.
+ */
+function Board({
+  active,
+  setActive,
+}: {
+  active: PartKey | null;
+  setActive: (key: PartKey | null) => void;
+}) {
+  const hover = (key: PartKey) => ({
+    onMouseEnter: () => setActive(key),
+    onMouseLeave: () => setActive(null),
+    onFocus: () => setActive(key),
+    onBlur: () => setActive(null),
+  });
+
+  return (
+    <div className="relative mx-auto aspect-[960/460] w-full max-w-[1100px]">
+      <BoardArt active={active} />
+
+      <Link
+        to="/docs/futon/getting-started/introduction"
+        aria-label="Futon documentation"
+        style={{
+          left: pct(390, W),
+          top: pct(170, H),
+          width: pct(180, W),
+          height: pct(120, H),
+        }}
+        className={hitArea}
+        {...hover('futon')}
+      />
+
+      {MODULES.map((m) => (
+        <Link
+          key={m.key}
+          to={m.href}
+          aria-label={`${m.name} documentation`}
+          style={{
+            left: pct(m.x, W),
+            top: pct(150, H),
+            width: pct(200, W),
+            height: pct(110, H),
+          }}
+          className={hitArea}
+          {...hover(m.key)}
+        />
+      ))}
+
+      {SOCKETS.map((s) => {
+        const foundation = FOUNDATIONS.find((f) => f.key === s.key)!;
+        return (
+          <a
+            key={s.key}
+            href={foundation.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${foundation.name} website`}
+            style={{
+              left: pct(s.cx - 85, W),
+              top: pct(370, H),
+              width: pct(170, W),
+              height: pct(54, H),
+            }}
+            className={hitArea}
+            {...hover(s.key)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * The small-screen version: the same relationships as a vertical stack of
+ * labelled blocks, readable at phone width.
+ */
+function CompactBoard() {
+  return (
+    <div className="grid gap-3 rounded-2xl border border-[#1f2b47] bg-[#0a1222] p-4 font-mono text-sm text-[#e5ebfa]">
+      <div className="grid grid-cols-2 gap-3">
+        {MODULES.map((m) => (
+          <Link
+            key={m.key}
+            to={m.href}
+            style={{ '--c': m.color } as React.CSSProperties}
+            className="grid gap-1 rounded-lg border border-[color-mix(in_oklab,var(--c)_50%,transparent)] bg-[#0f182c] p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          >
+            <span className="font-semibold">{m.name}</span>
+            <span className="text-[11px] text-[var(--c)]">{m.detail}</span>
+          </Link>
+        ))}
+      </div>
+      <p
+        aria-hidden="true"
+        className="text-center text-[10px] tracking-[0.2em] text-[#55658f]"
+      >
+        ▲ POWERED BY ▲
+      </p>
+      <Link
+        to="/docs/futon/getting-started/introduction"
+        className="grid gap-1 rounded-lg border border-[color-mix(in_oklab,var(--layer-futon)_60%,transparent)] bg-[#0f182c] p-3 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+      >
+        <span className="text-[10px] tracking-[0.25em] text-layer-futon">
+          CORE
+        </span>
+        <span className="text-lg font-semibold">Futon</span>
+      </Link>
+      <p
+        aria-hidden="true"
+        className="text-center text-[10px] tracking-[0.2em] text-[#55658f]"
+      >
+        ▲ RUNS ON ▲
+      </p>
+      <div className="grid grid-cols-3 gap-2">
+        {SOCKETS.map((s) => (
+          <span
+            key={s.key}
+            style={{ '--c': RUNTIMES[s.key] } as React.CSSProperties}
+            className="flex items-center justify-center gap-1.5 rounded-lg border border-[color-mix(in_oklab,var(--c)_45%,transparent)] py-2 text-[11px]"
+          >
+            <span
+              aria-hidden="true"
+              className="size-1.5 rounded-full bg-[var(--c)]"
+            />
+            {s.label}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
 // ── Section ──────────────────────────────────────────────────
 
 export default function EcosystemStack() {
+  const [active, setActive] = useState<PartKey | null>(null);
+
   return (
-    <section className="py-16 lg:py-20 border border-border p-4">
-      <div className="border-b border-border pb-16 text-center lg:pb-20">
-        <h2 className="mx-auto max-w-[620px] text-3xl font-bold text-foreground lg:text-4xl">
-          Built on a Foundation of Fast, Production-Grade Runtimes
+    <section className="mx-auto max-w-[1200px] py-16 lg:py-24">
+      <div className="max-w-[720px]">
+        <p className="font-mono text-xs uppercase tracking-[0.08em] text-foreground/50">
+          Runs anywhere
+        </p>
+        <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.02em] text-foreground lg:text-4xl">
+          One runtime under both frameworks
         </h2>
-        <p className="mx-auto max-w-[620px] mt-4 text-lg leading-relaxed text-foreground/70">
-          Futon powers Rasengan and Rasengan Server and runs unmodified on Node,
-          Bun, or Workerd.
+        <p className="mt-4 text-lg leading-relaxed text-foreground/70">
+          Futon powers Rasengan and Rasengan Server, and runs unmodified on
+          Node.js, Bun and Workerd.{' '}
+          <span className="hidden lg:inline">
+            Hover any part of the board to trace its connections.
+          </span>
         </p>
       </div>
 
-      <div className="relative mx-auto mt-12 aspect-[780/300] w-full max-w-[780px] [container-type:inline-size]">
-        <svg
-          viewBox="0 0 780 300"
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full overflow-visible"
-        >
-          <defs>
-            <filter
-              id="ecosystem-stack-soften"
-              x="-20%"
-              y="-20%"
-              width="140%"
-              height="140%"
-            >
-              <feGaussianBlur stdDeviation={2.4} />
-            </filter>
-          </defs>
-
-          {/* halo the pulses dissolve into */}
-          <ellipse
-            cx={390}
-            cy={136}
-            rx={150}
-            ry={86}
-            fill="url(#ecosystem-stack-halo)"
-          />
-
-          {/* chip pin ticks */}
-          <g className="stroke-border" strokeWidth={2} opacity={0.7}>
-            <path d="M340 98 L340 90 M390 98 L390 90 M440 98 L440 90" />
-            <path d="M340 174 L340 182 M390 174 L390 182 M440 174 L440 182" />
-            <path d="M305 120 L297 120 M305 152 L297 152" />
-            <path d="M475 120 L483 120 M475 152 L483 152" />
-          </g>
-
-          {TRACES.map((trace) => (
-            <TracePath key={trace.id} trace={trace} />
-          ))}
-
-          {VIAS.map(([cx, cy]) => (
-            <g key={`${cx}-${cy}`}>
-              <circle cx={cx} cy={cy} r={3.5} className="fill-background" />
-              <circle
-                cx={cx}
-                cy={cy}
-                r={3.5}
-                strokeWidth={1}
-                className="fill-none stroke-border"
-              />
-            </g>
-          ))}
-        </svg>
-
-        {/* Futon chip — a real IC package, so it stays dark on both themes */}
-        <Link
-          to="/docs/futon/getting-started/introduction"
-          style={{ left: '50%', top: '45.3%' }}
-          className="absolute z-10 grid h-[9.8cqw] min-h-[60px] w-[21.8cqw] min-w-[132px] -translate-x-1/2 -translate-y-1/2 place-items-center gap-0.5 overflow-hidden rounded-lg border border-[#2f3b56] bg-[linear-gradient(180deg,#1a2338_0%,#0a0e18_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-12px_20px_-16px_rgba(0,0,0,0.8),0_12px_28px_-14px_rgba(0,0,0,0.7),0_0_36px_-10px_rgba(77,157,255,0.45)] transition-[border-color,box-shadow] duration-300 ease-out hover:border-[#4d9dff] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-12px_20px_-16px_rgba(0,0,0,0.8),0_12px_28px_-14px_rgba(0,0,0,0.7),0_0_46px_-6px_rgba(77,157,255,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4d9dff] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          {/* pin-1 orientation mark, like a real IC package */}
-          <span
-            aria-hidden="true"
-            className="absolute left-[10%] top-[16%] size-[3px] rounded-full bg-[#6fa8ff]/70"
-          />
-
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 motion-safe:[animation:chip-shine_4.5s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/10 to-transparent"
-          />
-
-          <span className="font-mono text-[clamp(9px,2.1cqw,11px)] uppercase tracking-[0.22em] text-[#6fa8ff]">
-            core
-          </span>
-          <span className="font-mono text-[clamp(13px,3.4cqw,15px)] font-semibold text-white">
-            Futon
-          </span>
-        </Link>
-
-        <StackTap
-          name="Rasengan"
-          href="/docs/getting-started/introduction"
-          color="var(--color-primary)"
-          left="9.5%"
-        />
-        <StackTap
-          name="Rasengan Server"
-          href="/docs/server/getting-started/introduction"
-          color={VIOLET}
-          left="90.5%"
-        />
+      <div className="mt-10 hidden lg:block">
+        <Board active={active} setActive={setActive} />
+      </div>
+      <div className="mt-8 lg:hidden">
+        <CompactBoard />
       </div>
 
-      <div className="mx-auto mt-8 grid max-w-[900px] grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {FOUNDATIONS.map((foundation) => (
           <a
             key={foundation.name}
             href={foundation.href}
             target="_blank"
             rel="noopener noreferrer"
+            onMouseEnter={() => setActive(foundation.key)}
+            onMouseLeave={() => setActive(null)}
+            onFocus={() => setActive(foundation.key)}
+            onBlur={() => setActive(null)}
             style={{ '--c': foundation.color } as React.CSSProperties}
             className={cn(
-              'group flex flex-col gap-3 rounded-xl border border-border p-5',
+              'group flex flex-col gap-3 rounded-xl border border-border bg-background p-5',
               'transition-[transform,border-color,box-shadow] duration-200 ease-out',
-              'hover:-translate-y-1 hover:border-[var(--c)]/50 hover:shadow-[0_16px_34px_-18px_var(--c)]',
+              'motion-safe:hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--c)_50%,transparent)] hover:shadow-[0_16px_34px_-22px_var(--c)]',
+              active === foundation.key &&
+                'border-[color-mix(in_oklab,var(--c)_50%,transparent)]',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background'
             )}
           >
-            <div
-              aria-hidden="true"
-              style={{
-                color: foundation.color,
-                backgroundColor: `${foundation.color}1f`,
-                borderColor: `${foundation.color}52`,
-              }}
-              className="flex size-10 items-center justify-center rounded-lg border"
-            >
-              {foundation.icon}
-            </div>
-
-            <div className="flex items-center gap-1.5 font-semibold text-foreground">
-              {foundation.name}
-              <ArrowUpRight
-                size={14}
+            <div className="flex items-center gap-3">
+              <div
                 aria-hidden="true"
-                className="text-foreground/40 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--c)]"
-              />
+                className="flex size-10 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--c)_35%,transparent)] bg-[color-mix(in_oklab,var(--c)_12%,transparent)]"
+              >
+                {foundation.icon}
+              </div>
+              <span className="flex items-center gap-1.5 font-semibold text-foreground">
+                {foundation.name}
+                <ArrowUpRight
+                  size={14}
+                  aria-hidden="true"
+                  className="text-foreground/40 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--c)]"
+                />
+              </span>
             </div>
-
             <p className="text-sm leading-relaxed text-foreground/70">
               {foundation.description}
             </p>

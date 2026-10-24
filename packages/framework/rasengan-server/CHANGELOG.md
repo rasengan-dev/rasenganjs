@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 1.0.0 (2026-10-24)
+
+### Bug Fixes
+
+- publish internal dependencies as caret ranges df168a7
+
 ## 1.0.0-beta.6 (2026-09-01)
 
 ### Bug Fixes
