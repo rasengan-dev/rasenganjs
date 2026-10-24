@@ -677,7 +677,7 @@ function BoardArt({ active }: { active: PartKey | null }) {
         letterSpacing={2}
         textAnchor="end"
       >
-        REV 2.0-BETA
+        REV 2.0
       </text>
 
       {/* decorative etched traces and passives */}
