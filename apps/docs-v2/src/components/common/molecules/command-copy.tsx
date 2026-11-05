@@ -21,7 +21,7 @@ export default function CommandCopy({ command, className }: Props) {
       onClick={() => copy(command)}
       aria-label={`Copy command: ${command}`}
       className={cn(
-        'group inline-flex h-11 max-w-full cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 font-mono text-[13px] text-foreground',
+        'group inline-flex h-11 max-w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 font-mono text-[13px] text-foreground',
         'transition-colors duration-200 ease-out hover:bg-muted',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         className
