@@ -260,6 +260,7 @@ export type Product = {
 
 export const PRODUCTS: Product[] = [
   { name: 'Rasengan UI', kind: 'Components', href: 'https://ui.rasengan.dev' },
+  { name: 'Hiraiship', kind: 'Hosting', href: 'https://hiraiship.com' },
   { name: 'Rasengan Hub', kind: 'Templates', href: 'https://hub.rasengan.dev' },
   { name: 'Chidori', kind: 'Framework', href: 'https://chidori.rasengan.dev' },
   { name: 'Nindo', kind: 'Framework', href: 'https://nindo.rasengan.dev' },

@@ -44,7 +44,7 @@ export default function Tooling() {
         <p className="font-mono text-xs uppercase tracking-[0.08em] text-foreground/50">
           Built on Rasengan
         </p>
-        <ul className="mt-4 grid grid-cols-2 overflow-hidden rounded-xl border border-border sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="mt-4 grid grid-cols-2 overflow-hidden rounded-xl border border-border sm:grid-cols-3 lg:grid-cols-6">
           {PRODUCTS.map((product) => (
             <li
               key={product.name}
