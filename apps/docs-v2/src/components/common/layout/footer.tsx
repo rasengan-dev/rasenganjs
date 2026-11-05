@@ -11,6 +11,7 @@ import { newsletterProvider } from '@/api/newsletter';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUpRight, CheckCircle, Coffee, XCircle } from 'lucide-react';
 import AppLogo from '../atoms/logo';
+import { PRODUCTS } from '@/data/ecosystem';
 // import { checkEmail } from 'utils/check';
 
 export default function Footer() {
@@ -104,56 +105,19 @@ export default function Footer() {
 
               <nav className="mt-4 text-sm">
                 <ul className="flex flex-col gap-2">
-                  <Link
-                    to="https://ui.rasengan.dev"
-                    className="hover:text-primary"
-                    target="_blank"
-                  >
-                    <li className="flex items-center gap-2">
-                      <span>Rasengan UI</span>
-                      <ArrowUpRight size={16} />
-                    </li>
-                  </Link>
-                  <Link
-                    to="https://hub.rasengan.dev"
-                    className="hover:text-primary"
-                    target="_blank"
-                  >
-                    <li className="flex items-center gap-2">
-                      <span>Rasengan Hub</span>
-                      <ArrowUpRight size={16} />
-                    </li>
-                  </Link>
-                  <Link
-                    to="https://chidori.rasengan.dev"
-                    className="hover:text-primary"
-                    target="_blank"
-                  >
-                    <li className="flex items-center gap-2">
-                      <span>Chidori</span>
-                      <ArrowUpRight size={16} />
-                    </li>
-                  </Link>
-                  <Link
-                    to="https://nindo.rasengan.dev"
-                    className="hover:text-primary"
-                    target="_blank"
-                  >
-                    <li className="flex items-center gap-2">
-                      <span>Nindo</span>
-                      <ArrowUpRight size={16} />
-                    </li>
-                  </Link>
-                  <Link
-                    to="https://chunin.rasengan.dev"
-                    className="hover:text-primary"
-                    target="_blank"
-                  >
-                    <li className="flex items-center gap-2">
-                      <span>Chunin</span>
-                      <ArrowUpRight size={16} />
-                    </li>
-                  </Link>
+                  {PRODUCTS.map((product) => (
+                    <Link
+                      key={product.name}
+                      to={product.href}
+                      className="hover:text-primary"
+                      target="_blank"
+                    >
+                      <li className="flex items-center gap-2">
+                        <span>{product.name}</span>
+                        <ArrowUpRight size={16} />
+                      </li>
+                    </Link>
+                  ))}
                 </ul>
               </nav>
             </div>

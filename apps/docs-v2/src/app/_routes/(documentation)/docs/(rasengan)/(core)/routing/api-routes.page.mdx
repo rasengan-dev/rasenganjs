@@ -10,12 +10,12 @@ toc: true
 </span>
 # API Routes
 
-<Note title="New in v2.0.0-beta">
+<Note title="New in v2.0.0">
   File-based API routes require `ssr: true` with `prerender` disabled. See{' '}
   <Link to="#build-requirement">Build Requirement</Link> below.
 </Note>
 
-Introduced in `v2.0.0-beta`, `_api` is a file-based convention for server-only HTTP endpoints: JSON APIs, webhooks, form actions that aren't a full page navigation. It mirrors `app/_routes/` exactly in its segment rules (`[param]`, `[_param]`, `(group)`, `_optional`), but instead of producing a React page tree, it resolves to a real HTTP router with no React/SSR machinery involved at all.
+Introduced in `v2.0.0`, `_api` is a file-based convention for server-only HTTP endpoints: JSON APIs, webhooks, form actions that aren't a full page navigation. It mirrors `app/_routes/` exactly in its segment rules (`[param]`, `[_param]`, `(group)`, `_optional`), but instead of producing a React page tree, it resolves to a real HTTP router with no React/SSR machinery involved at all.
 
 All API route definitions live inside `app/_api/`.
 
