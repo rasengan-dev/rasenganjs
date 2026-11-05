@@ -25,6 +25,20 @@ export type BlogDataType = {
 export const BlogData: Array<BlogDataType> = [
   {
     id: randomId(),
+    title: 'Rasengan UI, Redesigned',
+    description: `
+      Rasengan UI is now a component system: 44 accessible components on Base UI and Tailwind CSS v4, themed by villages and natures you can switch at runtime, with its own CLI and an MCP server.
+    `,
+    authors: [Authors[AuthorUsernames.dilaneKombou]],
+    postedAt: 'November 5, 2026',
+    link: '/blog/rasengan-ui-redesigned',
+    kind: 'announcement',
+    cover: { label: 'Rasengan UI', layers: ['rasengan', 'tooling'] },
+    image: '/assets/blog/rasengan-ui-redesigned.png',
+    readingTime: '6 min',
+  },
+  {
+    id: randomId(),
     title: 'Rasengan 2.0 is Stable',
     description: `
       Rasengan v2.0.0 is out of beta. A Futon-powered core, colocated API routes, Bun and Cloudflare Workers support, and the fixes that came out of two months of real-world beta testing.

@@ -1,0 +1,169 @@
+---
+metadata:
+  title: 'Rasengan UI, Redesigned'
+  description: 'Rasengan UI is now a component system: 44 accessible components on Base UI and Tailwind CSS v4, themed by villages and natures you can switch at runtime, with its own CLI and an MCP server.'
+  openGraph:
+    title: 'Rasengan UI, Redesigned'
+    description: 'Rasengan UI is now a component system: 44 accessible components on Base UI and Tailwind CSS v4, themed by villages and natures you can switch at runtime, with its own CLI and an MCP server.'
+    url: 'https://rasengan.dev/blog/rasengan-ui-redesigned'
+    image: 'https://rasengan.dev/assets/blog/rasengan-ui-redesigned.png'
+  twitter:
+    title: 'Rasengan UI, Redesigned'
+    description: 'Rasengan UI is now a component system: 44 accessible components on Base UI and Tailwind CSS v4, themed by villages and natures you can switch at runtime, with its own CLI and an MCP server.'
+    image: 'https://rasengan.dev/assets/blog/rasengan-ui-redesigned.png'
+---
+
+<BlogDetailsHeader />
+
+Rasengan UI started as a collection of ready-made blocks for Rasengan.js apps: heroes, pricing tables, footers. They were useful for getting a page out quickly, but you couldn't build a whole product from them, and every project that used them looked the same.
+
+So we rebuilt it from the ground up. Rasengan UI is now a **component system**:
+
+- **44 components** on [Base UI](https://base-ui.com) and Tailwind CSS v4, copied into your project so the code is yours
+- **Villages**: whole design languages you switch at runtime, not just a colour palette
+- **Natures**: the accent hue, crossed with any village
+- **A CLI**, `rasengan-ui`, that installs components and updates them without losing your edits
+- **An MCP server**, so AI agents read and install components the right way
+
+Everything lives at [ui.rasengan.dev](https://ui.rasengan.dev).
+
+<br />
+
+## Components that wear a village
+
+Most component libraries give you one look and a theme file to recolour it. Recolouring only goes so far: a dashboard and a marketing site need different radii, densities, borders and motion, not just a different blue.
+
+A **village** is a complete design language: radius, borders, typography, density, shadows, motion and palette, in light and dark. Rasengan UI ships three:
+
+- **Konoha**, the Leaf: warm, rounded and balanced. The default.
+- **Kiri**, the Mist: soft contrast, translucent surfaces, airy controls.
+- **Iwa**, the Stone: no radius, heavy borders, mono labels, dense.
+
+The components never hard-code any of that. They only read a **token contract**, so the same `<Card>` becomes Konoha, Kiri or Iwa without a single changed line. The village is an attribute on `<html>`, so you can switch it at runtime:
+
+```html title="index.html"
+<html data-village="kiri" data-nature="suiton">
+```
+
+You can also mix villages on one page with `VillageScope`, for example an Iwa admin panel inside a Konoha app. Dialogs, menus and tooltips opened from inside the scope follow it, even though they render in a portal.
+
+```tsx title="src/app/admin.page.tsx"
+import { VillageScope } from '@/lib/village-scope';
+
+export default function AdminPage() {
+  return (
+    <VillageScope village="iwa">
+      <AdminDashboard />
+    </VillageScope>
+  );
+}
+```
+
+### Natures
+
+Crossed with the village, a **nature** gives the accent colour, named after the chakra natures: **Katon**, **Doton**, **Futon**, **Suiton** and **Raiton**. The sixth, **Onmyōton**, has no hue at all: the primary becomes the village's own ink, black on light and white on dark, for that monochrome look.
+
+Three villages, six natures, light and dark: that's 36 combinations out of the box, and every one is checked for contrast before it ships.
+
+<br />
+
+## Your own village
+
+Your product probably needs a fourth village: your brand colour, your radius, your fonts. The **village workshop** at [ui.rasengan.dev/villages/create](https://ui.rasengan.dev/villages/create) shows your village on real components while you tune it, and its address holds the recipe, so a link is enough to share a village in progress.
+
+The same engine runs in the CLI:
+
+```bash title="Terminal"
+npx rasengan-ui village create acme --base kiri --color "#ff5a1f" --density compact
+```
+
+A recipe (a base village, a brand colour and a few knobs) becomes a village file like the built-in ones. The engine checks every colour pair with every nature, in both schemes: 4.5:1 for text, 3:1 for control borders and tracks. Where a pair falls short, it moves the lightness and tells you what it changed. Where it can't, it refuses, and nothing is written.
+
+<AlertWithLink
+  status="info"
+  title="Make your own village"
+  link="https://ui.rasengan.dev/docs/villages"
+/>
+
+<br />
+
+## The rasengan-ui CLI
+
+Like shadcn/ui, Rasengan UI copies the components into your project. You own the code, edit it as you like, and nothing hides behind a package version. The new CLI keeps that model and fixes its weak spot: updates.
+
+In a React 19 project with Tailwind CSS v4, start with `init`. It detects Rasengan.js, Vite and Next.js, asks for a village and a nature, and sets up the CSS imports:
+
+```bash title="Terminal"
+npx create-rasengan@latest my-app --template tailwind -y
+cd my-app
+npx rasengan-ui init
+npx rasengan-ui add button dialog
+```
+
+Every file it writes is recorded in a `rasengan-ui.lock`, with a copy of the original. That's what makes the rest possible:
+
+- **`diff`** shows which components you edited and which have a new version in the registry
+- **`update`** brings in the new version and merges it with your edits, three ways, like git. On a real conflict you get conflict markers, never a silent overwrite.
+- **`village` / `nature`** add or switch the look of the whole project
+- **`doctor`** checks the config, the CSS imports and their order, the aliases, and the theme tokens that would override your village
+
+Already using shadcn? The registry speaks the same format. Add it once to `components.json`:
+
+```json title="components.json"
+{
+  "registries": {
+    "@rasengan": "https://ui.rasengan.dev/r/base/{name}.json"
+  }
+}
+```
+
+and `npx shadcn@latest add @rasengan/dialog` works.
+
+<AlertWithLink
+  status="info"
+  title="Read the installation guide"
+  link="https://ui.rasengan.dev/docs/installation"
+/>
+
+<br />
+
+## Built for agents too
+
+Agents write a lot of UI code now, and they tend to guess component APIs. Base UI uses `render` props where Radix uses `asChild`, and an agent that has only seen Radix will get it wrong.
+
+`rasengan-ui mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server built into the CLI. It lets Claude Code, Cursor or VS Code read a component's source and examples before writing code, see your project's village and which files you edited, and install components exactly as `rasengan-ui add` does:
+
+```bash title="Terminal"
+claude mcp add rasengan-ui -- npx rasengan-ui mcp
+```
+
+Only one tool writes, and like the CLI it keeps the files you edited unless told otherwise.
+
+<AlertWithLink
+  status="info"
+  title="Set up the MCP server"
+  link="https://ui.rasengan.dev/docs/mcp"
+/>
+
+<br />
+
+## Accessible by default
+
+Base UI takes care of focus management, keyboard navigation and ARIA wiring. On top of that, every release goes through the same checks:
+
+- **Contrast**: every text and control pair in every village, nature, scheme and tint, against WCAG thresholds
+- **axe**: every component page in every village, light and dark, with overlays open, against WCAG 2.2 AA
+- **Screenshots**: each component in every combination, compared with a baseline before anything changes
+
+<br />
+
+## What's next?
+
+- **Blocks**, rebuilt on top of the components, so a login page or a dashboard wears your village too
+- **More villages** in the box
+- **A Radix engine** next to Base UI, for teams already on Radix
+- **A Figma library** with the villages and natures as modes
+
+Rasengan UI works in any React 19 project with Tailwind v4, but it's at home in Rasengan.js: same conventions, same care for developer experience.
+
+[Browse the components](https://ui.rasengan.dev/components), pick your village, and happy building, Ninja! 🌀
