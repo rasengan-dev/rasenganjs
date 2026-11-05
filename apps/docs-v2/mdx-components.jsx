@@ -1,11 +1,11 @@
-import { isValidElement } from 'react';
+import { Fragment, isValidElement } from 'react';
 import {
   defineMDXConfig,
   useActiveTocItem,
   getIconForLanguageExtension,
 } from '@rasenganjs/mdx';
 import { Link } from 'rasengan';
-import { AdsCard } from '@/components/common/molecules/ads';
+import { AdsCards } from '@/components/common/molecules/ads';
 import { Pagination } from '@/components/common/molecules/pagination';
 import { StepItem } from '@/components/common/molecules/step-item';
 import { Tabs } from '@/components/common/molecules/tab';
@@ -350,7 +350,7 @@ export default defineMDXConfig({
     });
 
     return (
-      <div className="sticky w-[300px] top-42 max-h-[calc(100vh-1rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pb-20">
+      <div className="sticky w-[300px] top-42 max-h-[calc(100vh-10.5rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pb-20">
         <div className="mt-12d">
           <h2 className="text-sm font-semibold mt-0 mb-2 text-foreground/80">
             {/* <TextAlignStart /> */}
@@ -358,8 +358,8 @@ export default defineMDXConfig({
           </h2>
           <ul className="list-inside text-xs text-foreground/10 border-b pb-4">
             {toc.map((item, index) => (
-              <>
-                <li key={index} className="py-1 text-sm">
+              <Fragment key={item.anchor.id ?? index}>
+                <li className="py-1 text-sm">
                   <a
                     href={`#${item.anchor.id}`}
                     className={
@@ -389,11 +389,11 @@ export default defineMDXConfig({
                     ))}
                   </ul>
                 )}
-              </>
+              </Fragment>
             ))}
           </ul>
 
-          <AdsCard />
+          <AdsCards className="mt-6 flex flex-col gap-4" />
         </div>
       </div>
     );
@@ -409,6 +409,10 @@ export default defineMDXConfig({
         <div className="relative w-full min-w-0 flex shrink flex-col items-center">
           <div className="relative xl:max-w-[700px] min-w-0 mx-auto w-full">
             {children}
+
+            {toc && (
+              <AdsCards className="mt-16 grid gap-4 sm:grid-cols-2 xl:hidden" />
+            )}
           </div>
         </div>
 
