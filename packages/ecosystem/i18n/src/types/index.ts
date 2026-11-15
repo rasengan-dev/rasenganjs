@@ -12,10 +12,19 @@ export type I18nContext = {
   locale: string;
   locales: string[];
   resources: Resources;
+  routing: I18nRouting;
 
   // actions
   setLocale: (locale: string) => void;
 };
+
+/**
+ * Where the locale lives.
+ * - `path`: in the URL (`/fr/...`); `setLocale` navigates.
+ * - `none`: outside the URL, as a preference; `setLocale` changes the texts
+ *   without navigating and saves the choice in `localStorage`.
+ */
+export type I18nRouting = 'path' | 'none';
 
 /**
  * i18n config type
@@ -27,14 +36,28 @@ export type I18nConfig = {
   defaultLocale: string;
 
   /**
+   * Where the locale lives
+   * @default "path"
+   */
+  routing?: I18nRouting;
+
+  /**
    * Detection config
    */
   detection?: {
     /**
-     * Detection order
-     * @default ["path"]
+     * Detection order. With `routing: "none"`, `localStorage` and
+     * `acceptLanguage` are read in this order, then `defaultLocale` is used.
+     * @default ["path"] with `routing: "path"`,
+     * ["localStorage", "acceptLanguage"] with `routing: "none"`
      */
     order?: I18nDetectionOrder[];
+
+    /**
+     * `localStorage` key where the chosen locale is saved (`routing: "none"`)
+     * @default "rasengan-locale"
+     */
+    storageKey?: string;
   };
 
   /**

@@ -4,12 +4,12 @@
 ![NPM Downloads](https://img.shields.io/npm/dm/%40rasenganjs%2Fi18n)
 [![GitHub license](https://img.shields.io/github/license/rasengan-dev/rasengan-i18n)](https://github.com/rasengan-dev/rasengan-i18n/blob/main/LICENSE)
 
-The `@rasenganjs/i18n` makes it easy to add internationalization (i18n) to your Rasengan.js applications. It lets you manage translations using simple, static JSON files—keeping your localization workflow clear, fast, and scalable.
+The `@rasenganjs/i18n` makes it easy to add internationalization (i18n) to your Rasengan.js applications. It lets you manage translations using simple, static JSON files, keeping your localization workflow clear, fast, and scalable.
 
 ## Installation
 
 ```bash title="Terminal"
-npm install @rasenganjs/i18n@1.0.0-beta.1
+npm install @rasenganjs/i18n
 ```
 
 ## Usage
@@ -40,10 +40,13 @@ export default defineConfig(async () => {
 
 The `i18n plugin` takes a configuration object with the following properties:
 
-| Name             | Type   | Description                         | Optional | Default        |
-| ---------------- | ------ | ----------------------------------- | -------- | -------------- |
-| defaultLocale    | string | The default locale to use.          | false    | -              |
-| resources.source | string | The path to the messages directory. | true     | `src/messages` |
+| Name                 | Type                 | Description                                                                      | Optional | Default                                                                    |
+| -------------------- | -------------------- | -------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------- |
+| defaultLocale        | string               | The default locale to use.                                                       | false    | -                                                                          |
+| routing              | `'path'` \| `'none'` | Where the locale lives: in the URL, or outside it as a preference.               | true     | `'path'`                                                                   |
+| detection.order      | string[]             | With `routing: 'none'`, the sources read to detect the locale, in order.         | true     | `['path']`, or `['localStorage', 'acceptLanguage']` with `routing: 'none'` |
+| detection.storageKey | string               | With `routing: 'none'`, the `localStorage` key where the chosen locale is saved. | true     | `'rasengan-locale'`                                                        |
+| resources.source     | string               | The path to the messages directory.                                              | true     | `src/messages`                                                             |
 
 ### Messages
 
@@ -66,10 +69,11 @@ You have to register the `RasenganI18nProvider` component at the root of your ap
 ```tsx title="src/app/app.layout.tsx" showLineNumbers
 import { LayoutComponent, Outlet } from 'rasengan';
 import { RasenganI18nProvider } from '@rasenganjs/i18n';
+import i18n from 'virtual:rasengan/i18n';
 
 const RootLayout: LayoutComponent = () => {
   return (
-    <RasenganI18nProvider>
+    <RasenganI18nProvider i18n={i18n}>
       <Outlet />
     </RasenganI18nProvider>
   );
@@ -86,18 +90,18 @@ export default RootLayout;
 
 The `@rasenganjs/i18n` package provides a number of hooks to help you manage translations in your application.
 
-| Name             | Description                                                               |
-| ---------------- | ------------------------------------------------------------------------- |
-| `useTranslation` | Returns a function that returns the current translation based on the key. |
-| `useLocale`      | Returns the current locale and a function to change it.                   |
+| Name              | Description                                                               |
+| ----------------- | ------------------------------------------------------------------------- |
+| `useTranslations` | Returns a function that returns the current translation based on the key. |
+| `useLocale`       | Returns the current locale and a function to change it.                   |
 
-#### useTranslation
+#### useTranslations
 
 ```tsx title="src/components/greeting.tsx" showLineNumbers
-import { useTranslation } from '@rasenganjs/i18n';
+import { useTranslations } from '@rasenganjs/i18n';
 
 const Greeting = () => {
-  const t = useTranslation();
+  const t = useTranslations();
 
   return (
     <div>
@@ -109,7 +113,7 @@ const Greeting = () => {
 export default Greeting;
 ```
 
-The `useTranslation` hook takes an optional param called `namespace` that allows you to specify the namespace of the translation you want to use.
+The `useTranslations` hook takes an optional param called `namespace` that allows you to specify the namespace of the translation you want to use.
 <br />
 
 Let's suppose we have the following message:
@@ -126,13 +130,13 @@ Let's suppose we have the following message:
 }
 ```
 
-And we can use the `useTranslation` hook like this:
+And we can use the `useTranslations` hook like this:
 
 ```tsx title="src/components/greeting.tsx" showLineNumbers
-import { useTranslation } from '@rasenganjs/i18n';
+import { useTranslations } from '@rasenganjs/i18n';
 
 const Greeting = () => {
-  const t = useTranslation('home');
+  const t = useTranslations('home');
 
   return (
     <div>
@@ -143,6 +147,52 @@ const Greeting = () => {
 
 export default Greeting;
 ```
+
+#### Interpolation
+
+A message can hold placeholders between braces. `t` replaces each `{name}` with the value passed under the same name. A placeholder without a value is left as is.
+
+```json title="src/messages/en.json"
+{
+  "translation": {
+    "credits": {
+      "left": "{n} left"
+    }
+  }
+}
+```
+
+```tsx
+const t = useTranslations('credits');
+
+t('left', { n: 12 }); // "12 left"
+```
+
+#### Plurals
+
+A message can have one form per plural category of the language (`zero`, `one`, `two`, `few`, `many`, `other`), plus exact matches such as `=0`. The `other` form is required. `t` picks the form from the `count` value, using `Intl.PluralRules` for the current locale, and interpolates `{count}` like any other value.
+
+```json title="src/messages/fr.json"
+{
+  "translation": {
+    "credits": {
+      "=0": "Aucun crédit",
+      "one": "{count} crédit",
+      "other": "{count} crédits"
+    }
+  }
+}
+```
+
+```tsx
+const t = useTranslations();
+
+t('credits', { count: 0 }); // "Aucun crédit"
+t('credits', { count: 1 }); // "1 crédit"
+t('credits', { count: 12 }); // "12 crédits"
+```
+
+An exact match wins over the category. Without a `count`, a plural message returns its key path, like a missing key.
 
 #### useLocale
 
@@ -167,6 +217,25 @@ export default Navbar;
 ```
 
 > **Note:** The value passed to `setLocale` must be one of the locales defined into your messages directory.
+
+### Keeping the locale out of the URL
+
+By default, the locale is part of the URL (`/fr/home`) and `setLocale` navigates to the same page in the new locale. For an application where the language is a user preference rather than an address, such as a dashboard, set `routing` to `'none'`:
+
+```js title="rasengan.config.js" showLineNumbers {3}
+i18n({
+  defaultLocale: 'fr',
+  routing: 'none',
+});
+```
+
+With `routing: 'none'`:
+
+- the root layout doesn't need a `:locale` segment;
+- the locale is detected in the browser, following `detection.order`: the locale saved by a previous `setLocale` (`localStorage`), then the browser languages (`acceptLanguage`, `fr-CM` matching `fr`), then `defaultLocale`;
+- `setLocale` changes the texts without navigating and saves the choice, so it holds after a reload and in other tabs;
+- the server renders `defaultLocale`, and the detected locale takes over right after hydration;
+- the `lang` attribute of `<html>` follows the locale.
 
 ## Community
 

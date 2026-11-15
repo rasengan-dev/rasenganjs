@@ -10,6 +10,7 @@ export default createContext<I18nContext>({
   locale: 'en',
   locales: [],
   resources: {},
+  routing: 'path',
 
   setLocale: () => {},
 });
