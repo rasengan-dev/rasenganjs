@@ -1,4 +1,5 @@
 import { I18nConfig, Resources } from '../types/index.js';
+import { DEFAULT_STORAGE_KEY } from './detect.js';
 
 /**
  * Generates a unique identifier string.
@@ -52,27 +53,21 @@ export const getNestedValue = (obj: Record<string, any>, path: string): any => {
  * @returns
  */
 export const generateDefaultConfig = (config?: I18nConfig): I18nConfig => {
-  try {
-    return {
-      defaultLocale: config?.defaultLocale || 'en',
-      detection: {
-        order: config?.detection?.order || ['path'],
-      },
-      resources: {
-        source: config?.resources?.source || '/src/messages',
-      },
-    };
-  } catch (error) {
-    return {
-      defaultLocale: 'en',
-      detection: {
-        order: ['path'],
-      },
-      resources: {
-        source: '/src/messages',
-      },
-    };
-  }
+  const routing = config?.routing === 'none' ? 'none' : 'path';
+
+  return {
+    defaultLocale: config?.defaultLocale || 'en',
+    routing,
+    detection: {
+      order:
+        config?.detection?.order ||
+        (routing === 'none' ? ['localStorage', 'acceptLanguage'] : ['path']),
+      storageKey: config?.detection?.storageKey || DEFAULT_STORAGE_KEY,
+    },
+    resources: {
+      source: config?.resources?.source || '/src/messages',
+    },
+  };
 };
 
 /**

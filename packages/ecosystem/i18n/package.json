@@ -36,6 +36,8 @@
   "scripts": {
     "build:clean": "rimraf ./dist",
     "build": "pnpm run build:clean && tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "pack": "pnpm pack --pack-destination ./release",
     "deploy": "pnpm publish --access public"
   },
@@ -47,6 +49,7 @@
   "devDependencies": {
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
-    "tsup": "^8.5.1"
+    "tsup": "^8.5.1",
+    "vitest": "^4.1.9"
   }
 }
