@@ -1,7 +1,7 @@
 {
   "name": "@rasenganjs/i18n",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Library that handles internationalization for Rasengan.JS applications",
   "type": "module",
   "main": "dist/index.js",
